@@ -1,3 +1,11 @@
+.topcorner{
+    position:absolute;
+    top:0;
+    right:0;
+}
+.selected {
+    color: blue;
+}
 .dark-mode {
     filter: invert(1) hue-rotate(180deg);
 }
@@ -362,7 +370,7 @@
 }
 .yellow
 {
-    background-color: #F89E38;
+    background-color: #e0de59;
 }
 .red
 {
@@ -398,7 +406,7 @@
 }
 
 .active{
-    border: 2px solid #F60005 !important; box-sizing: border-box;
+    border: 5px solid #F60005 !important; box-sizing: border-box;
 }
 
 .quantityActive{
@@ -481,7 +489,9 @@
     display: table-cell;
     vertical-align: top;
   }
-
+  .clearBtn{
+      color: #ffffff;
+  }
   .calcBtn{
 
         display: -webkit-flex;

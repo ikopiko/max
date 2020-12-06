@@ -98,6 +98,7 @@ export default {
     }
     else if(this.$store.state.auth.user.data) {
       localStorage.setItem("loggedUser", JSON.stringify(this.$store.state.auth.user.data));
+      localStorage.setItem("TOKEN", this.$store.state.auth.user.data.token);
       //this.$store.getters.currentUser = this.$store.state.auth.user.data;
     }
     else {

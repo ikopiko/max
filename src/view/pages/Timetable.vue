@@ -175,7 +175,7 @@ export default {
             }
         },
         sendTimesheet(URL){
-            var TOKEN = this.loginToken;
+            var TOKEN = localStorage.getItem("TOKEN");
             axios
             .request({
                 method: "post",

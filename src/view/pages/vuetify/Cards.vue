@@ -30,7 +30,17 @@
                 {{ order.order_data.customer.adress }}</v-list-item-title
               >
               <v-list-item-title class="headline mb-1 delivery"
-                >{{ order.order_data.deliveryType }} Delivery</v-list-item-title
+                >{{ order.order_data.deliveryMethod }} 
+                  <span v-if="order.order_data.deliveryType === 'Ronnys' "> {{ order.order_data.deliveryMethod }} </span>
+              </v-list-item-title
+              >
+              <v-list-item-title class="headline mb-1 h4"
+                v-if="order.order_data.deliveryType === 'Ronnys' "
+                >Delivery Fee: {{ order.order_data.deliveryFee }}</v-list-item-title
+              >
+              <v-list-item-title class="headline mb-1 h4"
+                v-if="order.order_data.discount !== 0 "
+                >Discount: {{ order.order_data.discountName }} {{ order.order_data.discount }}</v-list-item-title
               >
               <div
                 class="row"
@@ -639,7 +649,7 @@ export default {
       orders: [],
       order_raw: [],
       prepOrder: [],
-      branch: "saburtalo",
+      branch: "digomi",
       status: 1,
       TOKEN: "ntoI_TodKtEjTTqj8HBVGmQPE3gW5TFY",
     };

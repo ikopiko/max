@@ -9,6 +9,16 @@ body, html {
 </style>
     <template>
   <div class="container" style="max-width: 100%; margin-right: 20px;">
+    <v-alert
+      :value="alert"
+      color="pink"
+      dark
+      border="top"
+      transition="scale-transition"
+      dismissible
+    >
+    Small Pizza Can't be A/B
+    </v-alert>
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -17,9 +27,16 @@ body, html {
     <div class="row">
       <div class="col-5 mt-2">
         <div class="sidebar-content">
+          
           <div class="row">
+            <div class="col-1">
+              <i class="fa fa-arrow-left fa-4x iconColor" @click="goBack()"></i> 
+            </div>
+          </div>
+
+          <div class="row my-5">
             <div class="col-2" @click="telMsg()">
-              <i class="fa fa-pencil-square-o fa-4x iconColor"></i>
+              <i class="fa fa-pencil-square-o fa-3x iconColor"></i>
             </div>
             <div class="col-8">
               <input class="tel" v-model="telMessage" @keypress="isNumber($event)"/>
@@ -29,11 +46,11 @@ body, html {
               <br/>
             </div>
           </div>
-          <div class="row">
+          <div class="row my-3">
             <div class="col-2">
               <i class="fa fa-files-o fa-4x iconColor" @click="copyLastOrder()"></i>
             </div>
-            <div class="col-8">
+            <div class="col-4 ">
               <p class="adr">
                 <span>{{ curentCustomer.name }}</span>
                 <br />
@@ -43,6 +60,7 @@ body, html {
                 <br />
                 <span>{{ curentCustomer.comment }}</span>
               </p>
+              <i class="material-icons md-36 topcorner" @click="clearCustomer();">close</i>
             </div>
           </div>
 
@@ -69,14 +87,14 @@ body, html {
               <div class="row" v-for="item in order.items" :key="item.id">
                 <div class="col-1">
                   <strong>
-                    <i class="material-icons md-24" @click="deleteProduct(item)">clear</i>
+                    <i class="material-icons md-24" style="font-size: 3em;" @click="deleteProduct(item)">clear</i>
                   </strong>
                 </div>
                 <div class="col-7" v-if="item.custom == 'no'">
                   <div class="d-flex justify-content-between">
                     <span class="orderDisplay" @click="foobar(item)">
-                      <strong>{{ item.qty }} {{ item.size.toUpperCase() }} {{ item.name }}</strong>
-                      <strong v-if="item.cuts"> 16 Cut</strong>
+                      <strong :class="{ selected : item.isSelected }">{{ item.qty }} {{ item.size.toUpperCase() }} {{ item.name }}</strong>
+                      <strong v-if="item.cuts" style="color:red;"> 16 Cut</strong>
                     </span>
                     <span>
                       <strong>{{ (item.totalPrice * item.qty).toFixed(2) }}</strong>
@@ -149,7 +167,7 @@ body, html {
                       <strong v-if="item.cuts"> 16 Cut</strong>
                     </span>
                     <span>
-                      <strong>{{ (item.totalPrice * item.qty).toFixed(2) }}</strong>
+                      <strong>{{ (item.price * item.qty).toFixed(2) }}</strong>
                     </span>
                   </div>
                 </div>
@@ -301,8 +319,8 @@ body, html {
 
                 <div class="col-4" style="margin:0px">
                   <div class="d-flex justify-content-between">
-                    <span class="material-icons" @click="minusQty(item)">remove</span>
-                    <span class="material-icons" @click="addQty(item)">add</span>
+                    <span class="material-icons" style="font-size: 3em;" @click="minusQty(item)">remove</span>
+                    <span class="material-icons" style="font-size: 3em;" @click="addQty(item)">add</span>
                   </div>
                 </div>
 
@@ -323,29 +341,15 @@ body, html {
                 <p class="text-left">
                   <span>
                     <strong>
-                      #
-                      <span class="activeOrder">{{ order.orderId }}</span>
+                      <span class="activeOrder h3">#{{ order.orderId }}</span>
                     </strong>
                   </span>
-                </p>
-                <p>
-                  <span>
+                  <span class="mx-3 h3">
                     <strong>{{ getTime }}</strong>
                   </span>
                 </p>
               </div>
-              <div class="col w-1 gray">
-                <p class="text-left updateCart">
-                  <span>
-                    <strong>#2254</strong>
-                  </span>
-                </p>
-                <p>
-                  <span>
-                    <strong>12:17</strong>
-                  </span>
-                </p>
-              </div>
+              
               <!-- Display Total Price and Tax  -->
               <div class="col w-1 gray">
                 <div class="row">
@@ -382,7 +386,7 @@ body, html {
 
                 <div class="row pizza p_binder">
                   <products
-                  v-if="!drinkCat"
+                    v-if="!drinkCat"
                     :categoryId="categoryId"
                     :halfProductVar="halfProduct"
                     @onProductSelect="productSelect"
@@ -393,10 +397,10 @@ body, html {
                   />
 
                   <drinks 
-                  v-if="drinkCat"
-                   @onProductSelect="productSelect"
-                   @onDoneOrder="doneOrder"
-                   @onDrinks="drinkProducts" />
+                    v-if="drinkCat"
+                    @onProductSelect="productSelect"
+                    @onDoneOrder="doneOrder"
+                    @onDrinks="drinkProducts" />
                 </div>
               </div>
                 <div class="row pizza p_binder" v-if="customerOrdersComponent">
@@ -404,54 +408,7 @@ body, html {
                     :customerPhone ="this.curentCustomer.tel"
                     @onSelectedOrder="selectedOrder"
                    />
-                </div>
-
-                <!-- <div class="row">
-
-                  <div class="col-md-2" style="padding-left: 0">
-                    <div class="w-b-1 square">
-                      <i class="fa fa-home fa-4x iconColor"></i>
-                    </div>
-                  </div>
-
-                  <div class="col-md-2" style="padding-left: 0">
-                    <div class="w-b-1 square">
-                      <span class="position-relative iconColor" style="top: 16px;">
-                        <strong>Drinks</strong>
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="col-md-2" style="padding-left: 0" @click="addHalf()">
-                    <div class="w-b-1 square">
-                      <i class="material-icons md-48 iconColor" style="margin-top: 4px;">tonality</i>
-                    </div>
-                  </div>
-
-                  <div class="col-md-2" style="padding-left: 0">
-                    <div class="w-b-1 square">
-                      <i class="fa fa-code fa-4x iconColor"></i>
-                    </div>
-                  </div>
-
-                  <div class="col-md-2" style="padding-left: 0">
-                    <div class="w-b-1 square">
-                      <i class="fa fa-cog fa-4x iconColor"></i>
-                    </div>
-                  </div>
-
-                  <div
-                    class="col-md-2"
-                    style="padding-left: 0"
-                    @click="doneOrder(), calculatorModal=true; "
-                  >
-                    <div class="w-b-1 square">
-                      <i class="fa fa-check fa-4x iconColor"></i>
-                    </div>
-                  </div>
-                  
-                </div> -->
-                
+                </div>                
               
             </td>
           </tr>
@@ -756,14 +713,14 @@ body, html {
           
 <div class="row my-5" v-if="showIngredients && !isSticks">
           <div class="col-md-1" style="padding-left: 0" @click="halfPizza('A')">
-            <div class="w-b-1 square" v-bind:class="[ {active : halfPizzaPart == 1}, {active: wholePizzaPart == 1} ]">
+            <div class="w-b-1 square" v-bind:class="[ {active : halfPizzaPart == 1}, {active: wholePizzaPart == 1}, {size_static: noAB} ]">
               <span class="position-relative" style="top: 16px;">
                 <strong>A</strong>
               </span>
             </div>
           </div>
           <div class="col-md-1" style="padding-left: 0" @click="halfPizza('B')">
-            <div class="w-b-1 square" v-bind:class="[{ active : halfPizzaPart == 2}, {active: wholePizzaPart == 2}]">
+            <div class="w-b-1 square" v-bind:class="[{ active : halfPizzaPart == 2}, {active: wholePizzaPart == 2}, {size_static: noAB}]">
               <span class="position-relative" style="top: 16px;">
                 <strong>B</strong>
               </span>
@@ -920,7 +877,7 @@ body, html {
                         <h4>Subtotal:</h4>
                       </div>
                       <div>
-                        <h4 id="total_price">{{ totalPrice.toFixed(2) }}</h4>
+                        <h4 id="total_price">{{ totalNet.toFixed(2) }}</h4>
                       </div>
                     </div>
                     <div class="col w-3 gray">
@@ -2000,9 +1957,7 @@ body, html {
                       <b-col sm="3">
                         <a href="javascript:void(0)" @click="logout()">Logout</a>
                       </b-col>
-                      <b-col sm="3">
-                        <a href="javascript:void(0)" @click="customerOrders()">Customer Orders</a>
-                      </b-col>
+
                     </b-row>
 
                  </b-container>
@@ -2046,6 +2001,7 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import Products from "../components/Products";
 import Drinks from "../components/Drinks"
 import Orders from "../components/Orders"
+import router from 'vue-router'
 // import authService from "../services/auth.service";
 //import Pizzas from '../components/Pizzas'
 //import Categories from '../components/Categories';
@@ -2072,6 +2028,8 @@ export default {
     },
   data() {
     return {
+      noAB: false,
+      alert: false,
       showProducts: true,
       showIngredients: false,
       cutActive: false,
@@ -2306,7 +2264,7 @@ export default {
         this.order = JSON.parse(localStorage.getItem("items"));
         this.itemIndex = this.order.items.length - 1;
         //this.pizza = JSON.parse(localStorage.getItem('customPizza'));
-        console.log(this.logged_user);
+        console.log('role', this.$store.state.auth.user.data.role);
       } catch (e) {
         localStorage.removeItem("items");
       }
@@ -2332,8 +2290,14 @@ export default {
         
         //var toppingsPrice = 0;
         this.order.items.forEach((i) => {
-          var price = i.totalPrice * i.qty;
-          totalPrice = totalPrice + price;
+          if(i.custom === 'other'){
+            var price = i.price * i.qty;
+            totalPrice = totalPrice + price;
+          } else {
+            var price = i.totalPrice * i.qty;
+            totalPrice = totalPrice + price;    
+          }
+        
         });
         
         return totalPrice + this.order.deliveryFee;
@@ -2456,6 +2420,9 @@ export default {
     },
   },
   methods: {
+        goBack(){
+          this.$router.go(-1);
+        },
         selectedOrder(items){
           this.order = items;
         },
@@ -2513,6 +2480,7 @@ export default {
             else {
                 this.searchResults = response.data.data;
                 console.log('Search Results: ',this.searchResults);
+                this.customer.tel = this.telMessage;
             }
 
             });
@@ -2618,6 +2586,7 @@ export default {
           this.customPizza.price = this.customPizza.price + product.priceBySizes.m / 2;
           this.customPizza.size = "m";
           this.customPizza.cuts = false;
+          this.customPizza.isSelected = false;
           this.halfProduct = true;
           product.qty = this.globalQuantity;
           this.selectedProducts.push(product);
@@ -2670,6 +2639,7 @@ export default {
           this.pizza.id = product.id;
           this.pizza.is_special = product.is_special;
           this.pizza.cuts = false;
+          this.pizza.isSelected = false;
           this.isSticks = false;
           this.isPizza = "yes";
           this.order.items.push(this.pizza);
@@ -2684,35 +2654,40 @@ export default {
         this.countTotalPrice();
       } 
       else if (product.category_name == "Sticks"){
+            
+            if(this.isHalfPizza == "yes"){
+              alert('Selected Product is not pizza');
+            } else {
 
-            let matched = false;
-
-            if(!matched){
-                this.sticks= {
-                        name: "",
-                        price: 0,
-                        totalPrice: 0,
-                        custom: "sticks",
-                        size: 'original',
-                        defaultToppings: [],
-                        toppings: [],
-                        qty: 0,
-                    },                
-                this.sticks.name = product.name;
-                this.sticks.qty = this.globalQuantity;
-                this.sticks.custom = "sticks";
-                console.log('recipe: ', this.getRecipe(product));
-                this.sticks.defaultToppings = this.getRecipe(product);
-                this.isSticks = true;
-                this.sticks.id = product.id;
-                this.sticks.price = parseFloat(product.price);
-                this.sticks.totalPrice = product.price;
-                this.selectedProducts.push(product);
-                this.itemIndex++;
-                this.order.items.push(this.sticks);
-                this.showProducts = false;
-                this.showIngredients = true;
-                }
+                let matched = false;
+                if(!matched){
+                    this.sticks= {
+                            name: "",
+                            price: 0,
+                            totalPrice: 0,
+                            custom: "sticks",
+                            size: 'original',
+                            defaultToppings: [],
+                            toppings: [],
+                            qty: 0,
+                        },                
+                    this.sticks.name = product.name;
+                    this.sticks.qty = this.globalQuantity;
+                    this.sticks.custom = "sticks";
+                    console.log('recipe: ', this.getRecipe(product));
+                    this.sticks.defaultToppings = this.getRecipe(product);
+                    this.isSticks = true;
+                    this.sticks.id = product.id;
+                    this.sticks.price = parseFloat(product.price);
+                    this.sticks.totalPrice = product.price;
+                    this.sticks.isSelected = false;
+                    this.selectedProducts.push(product);
+                    this.itemIndex++;
+                    this.order.items.push(this.sticks);
+                    this.showProducts = false;
+                    this.showIngredients = true;
+                    }
+            }
       }
       else {
         let matched = false;
@@ -2755,8 +2730,7 @@ export default {
       
       if (this.wholePizza || this.wholePizzaPart == 3) {
         if (topping.name.slice(0, 3) === "No ") {
-          alert(topping.name);
-          topping.isDeleted = false;
+          //topping.isDeleted = false;
           this.order.items[this.itemIndex].defaultToppings.forEach(
             (t, index) => {
               if (parseInt(t.id) === parseInt(topping.id)) {
@@ -2765,12 +2739,17 @@ export default {
                   index
                 ].isDeleted = false;
                 
-                var tpName = topping.name.slice(3)
                 topping.name = topping.name.slice(3);
-                this.order.items[this.itemIndex].defaultToppings[index].name = topping.name.slice(3);
-                if(this.order.items[this.itemIndex].is_special == 0){
-                this.order.items[this.itemIndex].totalPrice = 
+                this.order.items[this.itemIndex].defaultToppings[index].name = topping.name;
+                if(this.order.items[this.itemIndex].is_special == 0 || this.order.items[this.itemIndex].is_special == 1){
+                  if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                      this.order.items[this.itemIndex].totalPrice = 
                       this.order.items[this.itemIndex].totalPrice + t.price;
+                    }
                 }
               }
             }
@@ -2787,10 +2766,18 @@ export default {
                 ].isDeleted = true;
                 this.order.items[this.itemIndex].defaultToppings[index].name =
                   "No " + topping.name;
-                  //topping.name = "No " + topping.name;
-                  if(this.order.items[this.itemIndex].is_special == 0){
-                  this.order.items[this.itemIndex].totalPrice = 
-                      this.order.items[this.itemIndex].totalPrice - t.price;
+                  topping.name = "No " + topping.name;
+                  // alert(topping.id);
+                  // alert(typeof(topping.id) );
+                  if(this.order.items[this.itemIndex].is_special == 0 || this.order.items[this.itemIndex].is_special == 1){
+                    if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice - t.price;
+                    }
                   }
                   
               }
@@ -2798,8 +2785,8 @@ export default {
           );
           console.log("Default Toppings Array: ", this.pizza.defaultToppings);
         }
-      } else if (this.isHalfPizza == "yes") {
-        if (this.halfPizzaPart == 1) {
+      } 
+      if (this.wholePizzaPart == 1) {
           if (topping.name.slice(0, 3) === "No ") {
 
             topping.isDeleted = false;
@@ -2808,11 +2795,20 @@ export default {
                 if (parseInt(t.id) === parseInt(topping.id)) {
                   this.order.items[this.itemIndex].half1.defaultToppings[
                     index
-                  ].name = topping.name.slice(3);
+                  ].isDeleted = false;
                   topping.name = topping.name.slice(3);
-                  if(this.order.items[this.itemIndex].half1.is_special == 0){
+                  this.order.items[this.itemIndex].half1.defaultToppings[
+                    index
+                  ].name = topping.name;
+                  if(this.order.items[this.itemIndex].half1.is_special == 0  || this.order.items[this.itemIndex].half1.is_special == 1){
+                    if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
-                          this.order.items[this.itemIndex].totalPrice + t.price;
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice + t.price;
+                    }
                   }
                 }
               }
@@ -2828,16 +2824,23 @@ export default {
                   this.order.items[this.itemIndex].half1.defaultToppings[
                     index
                   ].name = "No " + topping.name;
-                  if(this.order.items[this.itemIndex].half1.is_special == 0){
+                  topping.name = "No " + topping.name;
+                  if(this.order.items[this.itemIndex].half1.is_special == 0  || this.order.items[this.itemIndex].half1.is_special == 1){
+                    if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
-                          this.order.items[this.itemIndex].totalPrice - t.price;
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice - t.price;
+                    }
                   }
                 }
               }
             );
             console.log("Default Toppings Array: ", this.pizza.defaultToppings);
           }
-        } else if (this.halfPizzaPart == 2) {
+        } else if (this.wholePizzaPart == 2) {
           if (topping.name.slice(0, 3) === "No ") {
             topping.isDeleted = false;
             console.log("Default Toppings Array: ", this.pizza.defaultToppings);
@@ -2847,13 +2850,19 @@ export default {
                   this.order.items[this.itemIndex].half2.defaultToppings[
                     index
                   ].isDeleted = false;
+                  topping.name = topping.name.slice(3);
                   this.order.items[this.itemIndex].half2.defaultToppings[
                     index
-                  ].name = topping.name.slice(3);
-                  topping.name = topping.name.slice(3);
-                  if(this.order.items[this.itemIndex].half2.is_special == 0){
+                  ].name = topping.name;
+                  if(this.order.items[this.itemIndex].half2.is_special == 0  || this.order.items[this.itemIndex].half2.is_special == 1){
+                    if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
-                          this.order.items[this.itemIndex].totalPrice + t.price;
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice + t.price;
+                    }
                   }
                 }
               }
@@ -2870,9 +2879,127 @@ export default {
                   this.order.items[this.itemIndex].half2.defaultToppings[
                     index
                   ].name = "No " + topping.name;
-                  if(this.order.items[this.itemIndex].half2.is_special == 0){
+                  topping.name = "No " + topping.name;
+                  if(this.order.items[this.itemIndex].half2.is_special == 0  || this.order.items[this.itemIndex].half2.is_special == 1){
+                    if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
-                          this.order.items[this.itemIndex].totalPrice - t.price;
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice - t.price;
+                    }
+                  }
+                }
+              }
+            );
+            console.log("Default Toppings Array: ", this.pizza.defaultToppings);
+          }
+        }
+      else if (this.isHalfPizza == "yes") {
+        if (this.halfPizzaPart == 1) {
+          if (topping.name.slice(0, 3) === "No ") {
+
+            topping.isDeleted = false;
+            this.order.items[this.itemIndex].half1.defaultToppings.forEach(
+              (t, index) => {
+                if (parseInt(t.id) === parseInt(topping.id)) {
+                  this.order.items[this.itemIndex].half1.defaultToppings[
+                    index
+                  ].isDeleted = false;
+                  topping.name = topping.name.slice(3);
+                  this.order.items[this.itemIndex].half1.defaultToppings[
+                    index
+                  ].name = topping.name;
+                  if(this.order.items[this.itemIndex].half1.is_special == 0  || this.order.items[this.itemIndex].half1.is_special == 1){
+                    if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice + t.price;
+                    }
+                  }
+                }
+              }
+            );
+            this.$forceUpdate();
+          } else {
+            this.order.items[this.itemIndex].half1.defaultToppings.forEach(
+              (t, index) => {
+                if (parseInt(t.id) === parseInt(topping.id)) {
+                  this.order.items[this.itemIndex].half1.defaultToppings[
+                    index
+                  ].isDeleted = true;
+                  this.order.items[this.itemIndex].half1.defaultToppings[
+                    index
+                  ].name = "No " + topping.name;
+                  topping.name = "No " + topping.name;
+                  if(this.order.items[this.itemIndex].half1.is_special == 0  || this.order.items[this.itemIndex].half1.is_special == 1){
+                    if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice - t.price;
+                    }
+                  }
+                }
+              }
+            );
+            console.log("Default Toppings Array: ", this.pizza.defaultToppings);
+          }
+        } else if (this.halfPizzaPart == 2) {
+          if (topping.name.slice(0, 3) === "No ") {
+            topping.isDeleted = false;
+            console.log("Default Toppings Array: ", this.pizza.defaultToppings);
+            this.order.items[this.itemIndex].half2.defaultToppings.forEach(
+              (t, index) => {
+                if (parseInt(t.id) === parseInt(topping.id)) {
+                  this.order.items[this.itemIndex].half2.defaultToppings[
+                    index
+                  ].isDeleted = false;
+                  topping.name = topping.name.slice(3);
+                  this.order.items[this.itemIndex].half2.defaultToppings[
+                    index
+                  ].name = topping.name;
+                  if(this.order.items[this.itemIndex].half2.is_special == 0  || this.order.items[this.itemIndex].half2.is_special == 1){
+                    if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice + t.price;
+                    }
+                  }
+                }
+              }
+            );
+            this.$forceUpdate();
+          } else {
+            topping.isDeleted = true;
+            this.order.items[this.itemIndex].half2.defaultToppings.forEach(
+              (t, index) => {
+                if (parseInt(t.id) === parseInt(topping.id)) {
+                  this.order.items[this.itemIndex].half2.defaultToppings[
+                    index
+                  ].isDeleted = true;
+                  this.order.items[this.itemIndex].half2.defaultToppings[
+                    index
+                  ].name = "No " + topping.name;
+                  topping.name = "No " + topping.name;
+                  if(this.order.items[this.itemIndex].half2.is_special == 0  || this.order.items[this.itemIndex].half2.is_special == 1){
+                    if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice - t.price;
+                    }
                   }
                 }
               }
@@ -2891,7 +3018,6 @@ export default {
                   index
                 ].isDeleted = false;
                 
-                var tpName = topping.name.slice(3)
                 topping.name = topping.name.slice(3);
                 this.order.items[this.itemIndex].defaultToppings[index].name = topping.name.slice(3);
                 if(this.order.items[this.itemIndex].is_special == 0){
@@ -3017,7 +3143,24 @@ export default {
       this.order.items.splice(0, this.order.items.length);
       localStorage.removeItem("items");
       this.calculatorModal = false;
-      this.showProductsComponent();
+      //this.showProductsComponent();
+      //alert('refresh');
+      // this.$router.push("/pos").catch(()=>{});
+      this.$router.go();
+    },
+    clearCustomer(){
+      this.curentCustomer = {
+        name: '',
+        sex: '',
+        email: '',
+        dob: '',
+        adress: '',
+        tel: '',
+        tel2: '',
+        comment: '',
+        comment2: ''
+      };
+      this.telMessage = '';
     },
 
     doneOrder() {
@@ -3049,18 +3192,22 @@ export default {
     addSauce(sauce) {
       if(sauce === 'original'){
         sauce = 'less';
+        this.curSauce = 'less';
       }
       else if(sauce === 'less'){
         sauce = 'heavy';
+        this.curSauce = 'heavy';
       }
       else if(sauce === 'heavy'){
         sauce = 'no';
+        this.curSauce = 'no';
       }
       else if(sauce === 'no'){
         sauce = 'original';
+        this.curSauce = 'original';
       }
 
-      this.curSauce = sauce;
+      // this.curSauce = sauce;
       
       if (this.isHalfPizza == "yes") {
           if(this.halfPizzaPart == 1){
@@ -3281,6 +3428,10 @@ export default {
     },
     addTopping(topping) {
       this.playSound();
+      if(topping.name.slice(0, 3) === "No ")
+      {
+        topping.name = topping.name.slice(3);
+      }
       if (this.isHalfPizza == "yes") {
         
         if(this.halfPizzaPart == 1){
@@ -3478,9 +3629,15 @@ export default {
         if(this.pizza.is_special == 0){
           this.pizza.defaultToppings.forEach((t) => {
             if (parseInt(t.id) === topping.id) {
-              if (t.name.slice(0, 3) == "No ") {
+              if (t.name.slice(0, 3) === "No ") {
+                if(topping.id == 5){
+                  this.pizza.totalPrice = this.pizza.totalPrice; 
+                }
+                else {
+                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                }
                 t.name = topping.name;
-                this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 t.isDeleted = false;
                 matched = true;
               }
@@ -3490,7 +3647,38 @@ export default {
                     this.pizza.totalPrice = this.pizza.price + t.price;
                 } else if (this.pizza.size == "m") {
                     t.price = this.toppingPrice[topping.isPremium].m;
+                    this.pizza.totalPrice = this.pizza.price ;
+                } else if (this.pizza.size == "xl") {
+                    t.price = this.toppingPrice[topping.isPremium].xl;
                     this.pizza.totalPrice = this.pizza.price + t.price;
+                }
+              // t.count += 1;
+              // matched = true;
+            }
+          });
+        }
+        else if(this.pizza.is_special == 1){
+          this.pizza.defaultToppings.forEach((t) => {
+            if (parseInt(t.id) === topping.id) {
+              if (t.name.slice(0, 3) == "No ") {
+                if(topping.id == 5){
+                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;  
+                }
+                else {
+                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                }
+                t.name = topping.name;
+                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                t.isDeleted = false;
+                matched = true;
+              }
+
+              if (this.pizza.size == "s") {
+                    t.price = this.toppingPrice[topping.isPremium].s;
+                    this.pizza.totalPrice = this.pizza.price + t.price;
+                } else if (this.pizza.size == "m") {
+                    t.price = this.toppingPrice[topping.isPremium].m;
+                    this.pizza.totalPrice = this.pizza.price ;
                 } else if (this.pizza.size == "xl") {
                     t.price = this.toppingPrice[topping.isPremium].xl;
                     this.pizza.totalPrice = this.pizza.price + t.price;
@@ -3752,14 +3940,25 @@ export default {
         var toppingTotal = 0;
 
         if (this.order.items[i].custom == "other") {
-          this.order.items[i].totalPrice =
-            this.order.items[i].price * this.order.items[i].qty;
+           this.order.items[i].totalPrice =
+           this.order.items[i].price * this.order.items[i].qty;
         } else if (
           !this.order.items[i].toppings &&
           this.order.items[i].toppings.length == 0
         ) {
           this.order.items[i].totalPrice = this.order.items[i].price;
-        } else {
+        } else if (this.order.items[i].custom == "sticks") {
+            for (var k = 0; k < this.order.items[i].toppings.length; k++) {
+              toppingTotal =
+                toppingTotal +
+                this.order.items[i].toppings[k].price *
+                  this.order.items[i].toppings[k].count;
+              //alert(toppingTotal);
+              this.order.items[i].totalPrice =
+                this.order.items[i].price + toppingTotal;
+            }
+        }
+        else {
           if (this.order.items[i].custom === "yes") {
             for (k = 0; k < this.order.items[i].half1.toppings.length; k++) {
               toppingTotal =
@@ -4003,28 +4202,34 @@ export default {
     },
     halfPizza(half) {
       this.playSound();
-      if(this.isPizza == 'yes'){
-        if (half == "A") {
-          this.wholePizza = false;
+      if(this.order.items[this.itemIndex].size === 's'){
+        // alert('Small Pizza cant be half/half');
+        this.alert = true;
+      }
+      else {
+        if(this.isPizza == 'yes'){
+          if (half == "A") {
+            this.wholePizza = false;
             this.wholePizzaPart = 1;
             this.smallHalf = true;
-        } else if (half == "B") {  
-            this.wholePizza = false;       
-            this.wholePizzaPart = 2;
-            this.smallHalf = true;
-        } else {
-            this.isHalfPizza = "no";
-        }  
-      } else{
-        if (half == "A") {
-            this.halfPizzaPart = 1;
-            this.halfPizzaAll = false;
-        } else if (half == "B") {
-            this.halfPizzaPart = 2;
-            this.halfPizzaAll = false;
-        } else {
-            this.halfPizzaAll = true;
-            this.isHalfPizza = "no";
+          } else if (half == "B") {  
+              this.wholePizza = false;       
+              this.wholePizzaPart = 2;
+              this.smallHalf = true;
+          } else {
+              this.isHalfPizza = "no";
+          }  
+        } else{
+          if (half == "A") {
+              this.halfPizzaPart = 1;
+              this.halfPizzaAll = false;
+          } else if (half == "B") {
+              this.halfPizzaPart = 2;
+              this.halfPizzaAll = false;
+          } else {
+              this.halfPizzaAll = true;
+              this.isHalfPizza = "no";
+          }
         }
       }
       //salert(this.isHalfPizza);
@@ -4032,8 +4237,13 @@ export default {
 
     addHalf() {
       this.playSound();
-      this.isHalfPizza = "yes";
-      this.halfPizzaAll = true;
+      if(this.isHalfPizza === 'yes'){
+        this.isHalfPizza = "no";
+      }
+      else {
+        this.isHalfPizza = "yes";
+      }
+      this.halfPizzaAll = !this.halfPizzaAll;
       // this.showProducts = true;
       // this.showIngredients = false;
     },
@@ -4076,8 +4286,12 @@ export default {
       this.smallHalf = false;
       this.halfPizzaCounter = 1;
       this.globalQuantity = 1;
+      this.curSauce = 'original';
       this.halfPizzaAll = false;
       this.showIngredients = false;
+      this.activeMedium = true;
+      this.activeSmall = false;
+      this.activeXl = false;
     },
     showProductsClear(){
       this.order.items.splice(this.itemIndex, 1);
@@ -4086,7 +4300,7 @@ export default {
     },
 
     compressArray(toppings) {
-      const uniqueToppings = {};  // თავიდან რაღაც ცვლადით დაიწყე, რომ ჩაყარო ტოპინგები
+      const uniqueToppings = {}; // თავიდან რაღაც ცვლადით დაიწყე, რომ ჩაყარო ტოპინგები
       toppings.forEach((topping) => {
         if (uniqueToppings[topping.name]) {
           uniqueToppings[topping.name].count += 1;
@@ -4107,18 +4321,51 @@ export default {
             this.showProducts = false;
             this.showIngredients = true;
             this.itemIndex = this.order.items.indexOf(item);
+            
+            // this.order.items[this.itemIndex].isSelected = true;
+
+
+            // this.order.items.forEach((x) => {
+            //   alert(this.order.items.indexOf(x));
+            //   if(indexOf(x) === this.itemIndex){
+            //     x.isSelected = true;
+            //   }
+            //   else {
+            //     x.isSelected = false;
+            //   }
+
+            // });
+
+            if(this.order.items[this.itemIndex].size === 's'){
+              this.activeSmall = true;
+              this.activeMedium = false;
+              this.activeXl = false;
+            }
+             else if(this.order.items[this.itemIndex].size === 'm'){
+              this.activeSmall = false;
+              this.activeMedium = true;
+              this.activeXl = false;
+            }
+            else if(this.order.items[this.itemIndex].size === 'xl'){
+              this.activeSmall = false;
+              this.activeMedium = false;
+              this.activeXl = true;
+            }
+
             if (item.custom === "no") {
 
                 this.pizza = item;
                 this.wholePizzaPart = 3;
                 this.halfPizzaAll = false;
                 this.isPizza = "yes";
+                this.curSauce = this.order.items[this.itemIndex].sauce;
             } else if (item.custom === "yes") {
               
                 this.customPizza = item;
                 this.halfPizzaPart = 3;
                 this.smallHalf = true;
                 this.wholePizza = false;
+                this.curSauce = this.order.items[this.itemIndex].sauce;
                 this.isHalfPizza = "yes";
                 this.halfPizzaAll = true;
             }
@@ -4132,6 +4379,7 @@ export default {
               this.halfPizzaAll = false;
             }
       }
+      this.$forceUpdate();
     },
     
     splitSelect(part){
@@ -4149,12 +4397,10 @@ export default {
         this.walkinActiveVar = true;
       }
       // this.walkinActiveVar = !this.walkinActiveVar;
-      if (this.takeoutActiveVar || this.deliveryActiveVar  || this.woltActive || this.glovoActive) {
+      if (this.takeoutActiveVar || this.deliveryActiveVar) {
         this.takeoutActiveVar = false;
         this.deliveryActiveVar = false;
         this.ronnysActive = false;
-        this.woltActive = false;
-        this.glovoActive = false;
         // alert(this.deliveryActiveVar);
       }
       this.order.deliveryFee = 0;
@@ -4165,12 +4411,10 @@ export default {
       this.playSound();
       //this.walkInActiveChange = !this.walkInActiveChange;
       this.takeoutActiveVar = true;
-      if (this.walkinActiveVar || this.deliveryActiveVar || this.woltActive || this.glovoActive) {
+      if (this.walkinActiveVar || this.deliveryActiveVar) {
         this.walkinActiveVar = false;
         this.deliveryActiveVar = false;
         this.ronnysActive = false;
-        this.woltActive = false;
-        this.glovoActive = false;
       }
       this.order.deliveryFee = 0;
       this.order.deliveryMethod = 'Take Out';
@@ -4179,7 +4423,7 @@ export default {
     deliveryActive() {
       this.playSound();
       this.deliveryActiveVar = !this.deliveryActiveVar;
-      if (this.walkinActiveVar || this.takeoutActiveVar || this.woltActive || this.glovoActive) {
+      if (this.walkinActiveVar || this.takeoutActiveVar) {
         this.walkinActiveVar = false;
         this.takeoutActiveVar = false;
       }
@@ -4248,11 +4492,11 @@ export default {
       this.playSound();
       
       if(this.order.deliveryMethod === "Walk In" || this.order.deliveryMethod === "Take Out"){
-        if(this.totalPrice.toFixed(2) >= this.cashInput.toFixed(2)){
-          alert('Enter Cash Ammount! ');
+        if(this.totalPrice > Number(this.cashInput)){
+          alert('Enter Cash Ammount!');
         }
         else {
-          this.cashInput = this.cashInput.toFixed(2);
+          this.cashInput = parseFloat(this.cashInput);
           this.confirmModal = true;
           this.paymentType = "cash";
         }
@@ -4344,6 +4588,7 @@ export default {
       this.cashInput = 0;
     },
     calcPay() {
+
       this.calculatorModal = false;
       this.showProducts = true;
       this.curentCustomer = {
@@ -4402,7 +4647,12 @@ export default {
     },
     copyLastOrder() {
       //Get user's last order here
-      this.order = this.lastOrder;
+      if(Object.keys(this.lastOrder).length === 0) {
+        alert("User Is Empty!");
+      }
+      else {
+        this.order = this.lastOrder;
+      }
     },
     closeCalc(){
         this.calculatorModal = false;
@@ -4557,19 +4807,30 @@ export default {
       
     },
     takeoutCustomer(){
-      
-      this.order.customer = this.curentCustomer;
-      console.log('take out customer : ', this.order.customer);
-      this.takeOutModal = false;
+      if(this.curentCustomer.tel === '')
+      {
+        alert('Phone field is empty!');
+      }
+      else {
+        this.order.customer = this.curentCustomer;
+        console.log('take out customer : ', this.order.customer);
+        this.takeOutModal = false;
+      }
       
     },
    deliveryCustomer(){
-      this.order.customer = this.curentCustomer;
-      this.order.deliveryType = 'Ronnys';
-      this.order.deliveryMethod = 'Delivery';
-      console.log('Ronnys customer : ', this.order.customer);
-      this.ronnysModal = false;
-      //this.deliveryFeeModal = true;
+      if(this.curentCustomer.adress === '' || this.curentCustomer.tel === '')
+      {
+        alert('Adress and Phone Fields are required!');
+      }
+      else {
+        this.order.customer = this.curentCustomer;
+        this.order.deliveryType = 'Ronnys';
+        this.order.deliveryMethod = 'Delivery';
+        console.log('Ronnys customer : ', this.order.customer);
+        this.ronnysModal = false;
+        //this.deliveryFeeModal = true;
+      }
     },
    glovoCustomer(){
       this.order.customer = this.curentCustomer;

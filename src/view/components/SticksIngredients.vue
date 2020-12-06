@@ -57,7 +57,7 @@ export default {
     }
   },
   mounted() {
-    const TOKEN = localStorage.getItem('TOKEN');
+    const TOKEN = localStorage.getItem("TOKEN");
     console.log(this.categoryId)
     axios.request({
             method: 'post',

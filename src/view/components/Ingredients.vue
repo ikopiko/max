@@ -10,15 +10,12 @@
                         <i class="fa fa-home fa-4x iconColor"></i>
                       </div>
                     </div>
-                    <!-- <div class="col-md-2 p-0"> <div class="w-1 pink font-weight-bold" @click="sendSauce('no')">No Sauce</div> </div> -->
                     <div class="col-md-2 p-0 paddingClear" > <div class="w-1 pink font-weight-bold" @click="sendSauce(sauce)">{{ sauce }} Sauce</div> </div>
-                    <!-- <div class="col-md-2 p-0"> <div class="w-1 pink font-weight-bold" @click="sendSauce('less')">Less Sauce</div> </div> -->
 
                     <div class="col-md-2 p-0 paddingClear" v-for="ingredient in filteredIngredients" :key="ingredient.id" >
-                            <!-- <div class="w-1 font-weight-bold"  -->
                         <div class="w-1 square font-weight-bold" @click="sendIngredient(ingredient);"
                               v-bind:class='[ingredient.class_name, highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "active" : ""]'>
-                              <button class="btn" v-if="highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true"><i class="fa" :class='highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "fa-close fa-lg" : ""' @click="deleteTopping($event, ingredient)"></i></button>
+                              <button class="btn" v-if="highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true"><i class="fa" :class='highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "fa-close fa-2x clearBtn" : ""' @click="deleteTopping($event, ingredient)"></i></button>
                               <!-- Styling topping Class -->
                                     <span>{{ ingredient.name }}  {{ mapping[ingredient.id] }}<br></span>
                         </div>   
@@ -73,7 +70,8 @@ export default {
     }
   },
   mounted() {
-    const TOKEN = localStorage.getItem('TOKEN');
+    this.sauce = 'original';
+    const TOKEN = localStorage.getItem("TOKEN");
     console.log(this.categoryId)
     axios.request({
             method: 'post',

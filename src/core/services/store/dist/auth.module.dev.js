@@ -60,6 +60,7 @@ var actions = (_actions = {}, _defineProperty(_actions, LOGIN, function (context
   });
 }), _defineProperty(_actions, LOGOUT, function (context) {
   localStorage.removeItem("loggedUser");
+  localStorage.removeItem("TOKEN");
   context.commit(PURGE_AUTH);
 }), _defineProperty(_actions, REGISTER, function (context, credentials) {
   return new Promise(function (resolve, reject) {

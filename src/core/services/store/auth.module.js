@@ -46,6 +46,7 @@ const actions = {
   },
   [LOGOUT](context) {
     localStorage.removeItem("loggedUser");  
+    localStorage.removeItem("TOKEN");  
     context.commit(PURGE_AUTH);
   },
   [REGISTER](context, credentials) {

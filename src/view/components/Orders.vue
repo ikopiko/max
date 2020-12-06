@@ -47,7 +47,7 @@ export default {
     }
   },
   mounted() {
-          const TOKEN = localStorage.getItem('TOKEN');
+          const TOKEN = localStorage.getItem("TOKEN");
           var bodyFormData = new FormData();
           bodyFormData.set("phone", this.customerPhone);
           
