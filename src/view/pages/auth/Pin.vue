@@ -163,10 +163,11 @@ export default {
         login(pin){
             var bodyFormData = new FormData();
             bodyFormData.set("pin", pin);
+            bodyFormData.set("mac", 'E839355BB7CE');
             axios.request({
                 method: "post",
                 url:
-                    "https://max.ronnyspizza.ge/rest/web/index.php?r=auth",
+                    "http://188.169.16.186:8082/rest/web/index.php?r=auth",
                 data: bodyFormData,
                 })
                 .then((response) => {

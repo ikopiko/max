@@ -25,16 +25,19 @@ body, html {
     />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <div class="row">
-      <div class="col-5 mt-2">
+      <div class="col-5">
         <div class="sidebar-content">
           
           <div class="row">
             <div class="col-1">
               <i class="fa fa-arrow-left fa-4x iconColor" @click="goBack()"></i> 
             </div>
+            <div class="col-1">
+              <i class="fa fa-arrow-right fa-4x iconColor" @click="print()"></i> 
+            </div>
           </div>
 
-          <div class="row my-5">
+          <div class="row my-1">
             <div class="col-2" @click="telMsg()">
               <i class="fa fa-pencil-square-o fa-3x iconColor"></i>
             </div>
@@ -46,7 +49,7 @@ body, html {
               <br/>
             </div>
           </div>
-          <div class="row my-3">
+          <div class="row">
             <div class="col-2">
               <i class="fa fa-files-o fa-4x iconColor" @click="copyLastOrder()"></i>
             </div>
@@ -71,9 +74,8 @@ body, html {
             </div>
           </div>
 
-          <hr />
           <!-- <audio ref="audioElm" src="@assets/beep.wav"></audio> -->
-          <div class="row m-1" style="max-height:300px; overflow: auto; overflow-x: hidden">
+          <div class="row" style="max-height:300px; overflow: auto; overflow-x: hidden">
             <div class="col-12">
               <div class="row">
                 <div class="col-3 mb-2">
@@ -90,40 +92,18 @@ body, html {
                     <i class="material-icons md-24" style="font-size: 3em;" @click="deleteProduct(item)">clear</i>
                   </strong>
                 </div>
-                <div class="col-7" v-if="item.custom == 'no'">
+                <!-- Pizza Render -->
+
+                <div class="col-7" v-if="item.custom == 'no'" @click="foobar(item)">
                   <div class="d-flex justify-content-between">
                     <span class="orderDisplay" @click="foobar(item)">
-                      <strong :class="{ selected : item.isSelected }">{{ item.qty }} {{ item.size.toUpperCase() }} {{ item.name }}</strong>
-                      <strong v-if="item.cuts" style="color:red;"> 16 Cut</strong>
+                      <strong>{{ item.qty }} {{ item.size.toUpperCase() }} {{ item.name }}</strong>
+                      <strong v-if="item.cuts"> 16 Cut</strong>
                     </span>
                     <span>
                       <strong>{{ (item.totalPrice * item.qty).toFixed(2) }}</strong>
                     </span>
                   </div>
-
-                  <div class="pl-4" style="font-size:14px" >
-                      <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
-                        <span>{{ item.crust }} Crust</span>
-                        <span>0.00</span>
-                      </div>
-                      <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'original'">
-                        <span>{{ item.sauce }} Sauce</span>
-                        <span>0.00</span>
-                      </div>
-                    <div
-                      class="d-flex justify-content-between"
-                      v-for="defTopping in item.defaultToppings"
-                      :key="defTopping.id"
-                    >
-                      <span
-                        v-if="defTopping.isDeleted"
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                      >{{ defTopping.name }}</span>
-                      <span
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted"
-                      >0.00</span>
-                    </div>
                     <div
                       class="d-flex justify-content-between orderDisplay"
                       v-for="topping in item.toppings"
@@ -133,32 +113,90 @@ body, html {
                       <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
                       <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
                     </div>
-                    
-                    <span v-if="item.half1.toppings.length > 0">A</span>
-                   
+
+                    <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
+                        <span>{{ item.crust }} Crust</span>
+                        <span>0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'original'">
+                        <span>{{ item.sauce }} Sauce</span>
+                        <span>0.00</span>
+                    </div>
+
+                  <div class="orderDisplay" @click="foobar(item)">
+                    <strong>&nbsp;</strong>
+                  </div>
+                  <div class="pl-4" style="font-size:14px">
+                    <div
+                      class="d-flex justify-content-between"
+                      v-for="defTopping in item.defaultToppings"
+                      :key="defTopping.id"
+                    >
+                      <span
+                        v-if="defTopping.isDeleted" 
+                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                      >{{ defTopping.name }}</span>
+                      <span
+                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                        v-if="defTopping.isDeleted && item.is_special == 0"
+                      >- {{ defTopping.price }}</span>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between"
+                      v-for="defTopping in item.half1.defaultToppings"
+                      :key="defTopping.id"
+                    >
+                      <span
+                        v-if="defTopping.isDeleted"
+                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                      >A - {{ defTopping.name }}</span>
+                      <span
+                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                        v-if="defTopping.isDeleted && item.is_special == 0"
+                      >- {{ defTopping.price }}</span>
+                    </div>
+
                     <div
                       class="d-flex justify-content-between orderDisplay"
                       v-for="topping in item.half1.toppings"
                       :key="topping.id"
                     >
-                      <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                      <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                      <span v-if="topping.count == 1">A + {{ topping.name }}</span>
+                      <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
                       <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
                     </div>
-                    <span v-if="item.half2.toppings.length > 0">B</span>
-                   
+                  </div>
+                  <div class="orderDisplay" @click="foobar(item)">
+                    <strong>&nbsp;</strong>
+                  </div>
+                  <div class="pl-4" style="font-size:14px">
+                    <div
+                      class="d-flex justify-content-between"
+                      v-for="defTopping in item.half2.defaultToppings"
+                      :key="defTopping.id"
+                    >
+                      <span
+                        v-if="defTopping.isDeleted"
+                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                      >B - {{ defTopping.name }}</span>
+                      <span
+                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                        v-if="defTopping.isDeleted && item.is_special == 0"
+                      >- {{ defTopping.price }}</span>
+                    </div>
                     <div
                       class="d-flex justify-content-between orderDisplay"
                       v-for="topping in item.half2.toppings"
                       :key="topping.id"
                     >
-                      <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                      <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                      <span v-if="topping.count == 1">B + {{ topping.name }}</span>
+                      <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
                       <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
                     </div>
-
                   </div>
                 </div>
+                <!-- End of Pizza Render -->
+
                 <!-- Other Products rendering -->
                 <div class="col-7" v-if="item.custom == 'other'">
                   <div class="d-flex justify-content-between">
@@ -246,14 +284,6 @@ body, html {
                     <strong>A {{ item.half1.name }}</strong>
                   </div>
                   <div class="pl-4" style="font-size:14px">
-                      <div class="d-flex justify-content-between deletedTopping" v-if="item.half1.crust == 'thin'">
-                        <span>{{ item.half1.crust }} Crust</span>
-                        <span>0.00</span>
-                    </div>
-                    <div class="d-flex justify-content-between deletedTopping" v-if="item.half1.sauce != 'original'">
-                        <span>{{ item.half1.sauce }} Sauce</span>
-                        <span>0.00</span>
-                    </div>
                     <div
                       class="d-flex justify-content-between"
                       v-for="defTopping in item.half1.defaultToppings"
@@ -265,8 +295,8 @@ body, html {
                       >{{ defTopping.name }}</span>
                       <span
                         :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted"
-                      >0.00</span>
+                        v-if="defTopping.isDeleted && item.half1.is_special == 0"
+                      >- {{ defTopping.price }}</span>
                     </div>
                     <div
                       class="d-flex justify-content-between orderDisplay"
@@ -282,14 +312,6 @@ body, html {
                     <strong>B {{ item.half2.name }}</strong>
                   </div>
                   <div class="pl-4" style="font-size:14px">
-                      <div class="d-flex justify-content-between deletedTopping" v-if="item.half2.crust == 'thin'">
-                        <span>{{ item.half2.crust }} Crust</span>
-                        <span>0.00</span>
-                    </div>
-                    <div class="d-flex justify-content-between deletedTopping" v-if="item.half2.sauce != 'original'">
-                        <span>{{ item.half2.sauce }} Sauce</span>
-                        <span>0.00</span>
-                    </div>
                     <div
                       class="d-flex justify-content-between"
                       v-for="defTopping in item.half2.defaultToppings"
@@ -301,8 +323,8 @@ body, html {
                       >{{ defTopping.name }}</span>
                       <span
                         :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted"
-                      >0.00</span>
+                        v-if="defTopping.isDeleted && item.half2.is_special == 0"
+                      >- {{ defTopping.price }}</span>
                     </div>
                     <div
                       class="d-flex justify-content-between orderDisplay"
@@ -434,7 +456,7 @@ body, html {
                 <h4 id="total_price">{{ cashInput }}</h4>
               </div>
             </div>
-            <div class="col w-3 gray">
+            <div class="col w-3 gray" v-if="(cashInput - totalPrice) >= 0">
               <div>
                 <h4>Change:</h4>
               </div>
@@ -442,6 +464,7 @@ body, html {
                 <h4 id="total_price">{{ (cashInput - totalPrice).toFixed(2) }}</h4>
               </div>
             </div>
+            <div class="col w-3 gray" v-if="(cashInput - totalPrice) < 0">&nbsp;</div>
             <div class="col w-3 gray" v-if="deliveryActiveVar">
               <div>
                 <h4>Delivery Fee:</h4>
@@ -452,7 +475,7 @@ body, html {
             </div>
           </div>
 
-          <div class="row" v-if="splitActive">
+          <!-- <div class="row" v-if="splitActive">
 
             <div class="col w-3 gray" :class="{active : splitPart == 1}" @click="splitSelect(1)">
               <div>
@@ -466,14 +489,14 @@ body, html {
                 <h4 id="split_2">{{ split.split2.input }} {{ split.split2.paymentType }}</h4>
               </div>
             </div>
-            <!-- <div class="col w-3 gray" v-for="(splitCnt, index) in split" :key="index" @click="splitSelect(index)">
+            <div class="col w-3 gray" v-for="(splitCnt, index) in split" :key="index" @click="splitSelect(index)">
               <div>
                 <h4>Split {{ index }}</h4>
                 <h4 id="split_1">{{ splitCnt.input }} {{ splitCnt.paymentType }}</h4>
               </div>
-            </div> -->
+            </div> 
 
-          </div>
+          </div> -->
 
           <div class="row" v-if="discountOrder || discountItem">
             
@@ -498,13 +521,13 @@ body, html {
             </div>
             <div class="col-1 calcBtn grey">Manager</div>
             <div class="col-3 calcBtn" @click="couponModal = true;" v-b-modal.couponModal>Coupon</div>
-            <div class="col-1 calcBtn" @click="calcCash(100)">100</div>
+            <div class="col-1 calcBtn lightGreen" @click="calcCash(100)">100</div>
             <div
               class="col-1 calcBtn blue"
               @click="walkinActive() "
               v-bind:class="{active: walkinActiveVar}"
             >Walk In</div>
-            <div class="col-1 calcBtn blue">&nbsp;</div>
+            <div class="col-1 calcBtn blue" @click="invoiceActive()">Invoice</div>
             <div class="col-2 feeClass" v-if="deliveryActiveVar" :class="{active: activeFee_el == 0 }" @click="activateFee(0)">1.5 GEL 0-3.9 Km</div>
 
             <!-- <div class="row" @click="activateFee(fee.id)"  v-for="fee in deliveryFee" :key="fee.id" >
@@ -517,10 +540,10 @@ body, html {
             <div class="col-1">&nbsp;</div>
             <div class="col-1 calcBtn blue" @click="diplomatDisc();">Diplomat</div>
             <div class="col-1 calcBtn blue" @click="employeeDisc();">Employee</div>
-            <div class="col-1 calcBtn" @click="calcInput('1')">1</div>
-            <div class="col-1 calcBtn" @click="calcInput('2')">2</div>
-            <div class="col-1 calcBtn" @click="calcInput('3')">3</div>
-            <div class="col-1 calcBtn" @click="calcCash(50)">50</div>
+            <div class="col-1 calcBtn" @click="calcInput('7')">7</div>
+            <div class="col-1 calcBtn" @click="calcInput('8')">8</div>
+            <div class="col-1 calcBtn" @click="calcInput('9')">9</div>
+            <div class="col-1 calcBtn lightGreen" @click="calcCash(50)">50</div>
             <div
               class="col-1 calcBtn blue"
               @click="takeoutActive()"
@@ -538,7 +561,7 @@ body, html {
             <div class="col-1 calcBtn" @click="calcInput('4')">4</div>
             <div class="col-1 calcBtn" @click="calcInput('5')">5</div>
             <div class="col-1 calcBtn" @click="calcInput('6')">6</div>
-            <div class="col-1 calcBtn" @click="calcCash(20)">20</div>
+            <div class="col-1 calcBtn lightGreen" @click="calcCash(20)">20</div>
             <div
               class="col-1 calcBtn blue"
               @click="ronnysDelivery()"
@@ -551,11 +574,11 @@ body, html {
           <div class="row my-1">
             <div class="col-1">&nbsp;</div>
             <div class="col-1 calcBtn blue" @click="noDisc()">NO Disc</div>
-            <div class="col-1 calcBtn blue" @click="splitPayment()">Split</div>
-            <div class="col-1 calcBtn" @click="calcInput('7')">7</div>
-            <div class="col-1 calcBtn" @click="calcInput('8')">8</div>
-            <div class="col-1 calcBtn" @click="calcInput('9')">9</div>
-            <div class="col-1 calcBtn" @click="calcCash(10)">10</div>
+            <div class="col-1 calcBtn blue" >&nbsp;</div>
+            <div class="col-1 calcBtn" @click="calcInput('1')">1</div>
+            <div class="col-1 calcBtn" @click="calcInput('2')">2</div>
+            <div class="col-1 calcBtn" @click="calcInput('3')">3</div>
+            <div class="col-1 calcBtn lightGreen" @click="calcCash(10)">10</div>
             <div class="col-2 calcBtn green" @click="doneCash()" v-b-modal.confirmModal>Cash</div>
             <div class="col-2 feeClass" v-if="deliveryActiveVar" :class="{active: activeFee_el == 3 }" @click="activateFee(3)">6 GEL 16-19.9 Km</div>
           </div>
@@ -566,7 +589,7 @@ body, html {
             <div class="col-1 calcBtn" @click="calcInput('0')">0</div>
             <div class="col-1 calcBtn" @click="calcInput('00')">00</div>
             <div class="col-1 calcBtn" @click="calcInput('.')">.</div>
-            <div class="col-1 calcBtn" @click="calcCash(5)">5</div>
+            <div class="col-1 calcBtn lightGreen" @click="calcCash(5)">5</div>
             <div class="col-2 calcBtn green" @click="payCard()" v-b-modal.confirmModal>Card</div>
             <div class="col-2 feeClass" v-if="deliveryActiveVar" :class="{active: activeFee_el == 4 }" @click="activateFee(4)">7 GEL 20-27.9 Km</div>
           </div>
@@ -575,7 +598,9 @@ body, html {
               <div class="col-2 calcBtn red" @click="calcClear()">
                   <i class="material-icons md-36" >close</i>
               </div>
-              <div class="col-6">&nbsp;</div>
+              <div class="col-3 calcBtn lightGreen" @click="calcPayAll(totalPrice)">PAY {{ totalPrice.toFixed(2) }}</div>
+              <div class="col-1 calcBtn lightGreen" @click="calcCash(2)">2</div>
+              <div class="col-2">&nbsp;</div>
               <div class="col-2 feeClass" v-if="deliveryActiveVar" :class="{active: activeFee_el == 5 }" @click="activateFee(5)">10 GEL 28 Km +</div>
           </div>
           <div class="row my-1">
@@ -606,7 +631,7 @@ body, html {
             v-if="wholePizzaPart == 1"
             :product="this.pizza"
             :sauce="curSauce"
-            :defaultToppings="this.pizza.defaultToppings"
+            :defaultToppings="this.pizza.half1.defaultToppings"
             :toppings="this.pizza.half1.toppings"
             :mapping="toppingIdCountMap"
             @onAddTopping="addTopping"
@@ -620,7 +645,7 @@ body, html {
             v-if="wholePizzaPart == 2"
             :product="this.pizza"
             :sauce="curSauce"
-            :defaultToppings="this.pizza.defaultToppings"
+            :defaultToppings="this.pizza.half2.defaultToppings"
             :toppings="this.pizza.half2.toppings"
             :mapping="toppingIdCountMap"
             @onAddTopping="addTopping"
@@ -734,10 +759,10 @@ body, html {
             </div>
           </div>
           <div class="col-md-1 p-0">
-            <div class="settingCircle green font-weight-bold" v-if="isHalfPizza === 'yes'" @click="addCrust(customPizza.crust)">
+            <div class="settingCircle green font-weight-bold" v-bind:class="{active: crustVar}" v-if="isHalfPizza === 'yes'" @click="addCrust(customPizza.crust)">
                 <span>Thin</span>
             </div>
-            <div class="settingCircle green font-weight-bold" v-if="isPizza === 'yes'" @click="addCrust(pizza.crust)">
+            <div class="settingCircle green font-weight-bold" v-bind:class="{active: crustVar}" v-if="isPizza === 'yes'" @click="addCrust(pizza.crust)">
               <span>Thin</span>
             </div>
           </div>
@@ -890,10 +915,10 @@ body, html {
                     </div>
                     <div class="col w-3 gray">
                       <div>
-                        <h4>Change:</h4>
+                        <h4>Total To Pay:</h4>
                       </div>
                       <div>
-                        <h4 id="total_price">{{ (cashInput - totalPrice).toFixed(2) }}</h4>
+                        <h4 id="total_price">{{ totalCustomer.toFixed(2) }}</h4>
                       </div>
                     </div>
                   </div>
@@ -934,87 +959,114 @@ body, html {
                 <div class="modal-body">
                   <b-container fluid>
                     
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_name">Name</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_name" v-model="customer.name" type="text" :state="nameState" aria-describeby="cus_name_feedback" placeholder="Enter Customer Name"></b-form-input>
-                        
-                        <b-form-invalid-feedback id="cus_name_feedback">
-                          This Field Is Required
-                        </b-form-invalid-feedback>
+                    <v-form
+                      ref="form"
+                      v-model="valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="customer.name"
+                        :counter="10"
+                        :rules="nameRules"
+                        class="my-2"
+                        label="Name"
+                        required
+                        clearable
+                      ></v-text-field>
 
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_mail">Email</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_mail" class="has-error" v-model="customer.email" type="email" ></b-form-input>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_gender">Gender</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-select id="cus_gender" v-model="customer.sex" :options="gender" ></b-form-select>
-                      </b-col>
-                    </b-row>
+                      <v-text-field
+                        v-model="customer.email"
+                        :rules="emailRules"
+                        class="my-2"
+                        label="E-mail"
+                        required
+                      ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_dob">Date of Birth</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_dob" v-model="customer.dob" type="date" ></b-form-input>
-                      </b-col>
-                    </b-row>
+                      <v-radio-group
+                          v-model="customer.sex"
+                          label="Gender"
+                          row
+                        >
+                          <v-radio
+                            label="Male"
+                            value="male"
+                          ></v-radio>
+                          <v-radio
+                            label="Female"
+                            value="female"
+                          ></v-radio>
+                          <v-radio
+                            label="None"
+                            value="none"
+                          ></v-radio>
+                        </v-radio-group>
+                       
+                        <v-row>
+                            <v-col cols="12" sm="12">
+                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
+                            </v-col>
+                        </v-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_address">Adress</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_adress" v-model="customer.adress" type="text" ></b-form-input>
-                      </b-col>
-                    </b-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_tel">Tel</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_tel" v-model="customer.tel" type="text" @keypress="isNumber($event)" :state="telState" aria-describeby="cus_tel_feedback" placeholder="Enter Customer number"></b-form-input>
+                        <!-- <v-row>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Entrance" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Floor" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Appartment" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="3" sm="12" md="3">
+                                <v-text-field label="Security code" clearable></v-text-field>
+                            </v-col>
+                        </v-row> -->
 
-                        <b-form-invalid-feedback id="cus_tel_feedback">
-                          This Field Is Required
-                        </b-form-invalid-feedback>
+                        <v-text-field
+                          v-model="customer.tel"
+                          @keypress="isNumber($event)"
+                          :rules="telRules"
+                          class="my-2"
+                          label="Tel"
+                          required
+                          clearable
+                        ></v-text-field>
 
-                      </b-col>
-                    </b-row>
+                        <v-text-field
+                          v-model="customer.comment"
+                          class="my-2"
+                          label="Comment"
+                          clearable
+                        ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com">Comment</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com" v-model="customer.comment" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com2">Comment 2</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com2" v-model="customer.comment2" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
+                        <!-- <v-text-field
+                          v-model="customer.comment2"
+                          class="my-2"
+                          label="Comment 2"
+                          clearable
+                        ></v-text-field> -->
+
+
+                      <v-btn
+                        v-if="!customerChecked"
+                        :disabled="!valid"
+                        color="green"
+                        class="btn btn-primary"
+                        @click="addCustomer()"
+                      >
+                        Add New Customer
+                      </v-btn>
+                      <v-btn
+                        v-if="customerChecked"
+                        :disabled="!valid"
+                        color="green"
+                        class="btn btn-primary"
+                        @click="editCustomer()"
+                      >
+                        Edit Customer
+                      </v-btn>
+                    </v-form>
 
 
                  </b-container>
@@ -1067,102 +1119,94 @@ body, html {
                 <div class="modal-body">
                   <b-container fluid>
                     
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_name">Name</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_name" v-model="curentCustomer.name" type="text" :state="curNameState" aria-describeby="cus_name_feedback" placeholder="Enter Customer Name"></b-form-input>
-                        
-                        <b-form-invalid-feedback id="cus_name_feedback">
-                          This Field Is Required
-                        </b-form-invalid-feedback>
+                    <v-form
+                      ref="form"
+                      v-model="valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="curentCustomer.name"
+                        :counter="10"
+                        :rules="nameRules"
+                        class="my-2"
+                        label="Name"
+                        required
+                        clearable
+                      ></v-text-field>
 
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_mail">Email</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_mail" class="has-error" v-model="curentCustomer.email" type="email" ></b-form-input>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_gender">Gender</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-select id="cus_gender" v-model="curentCustomer.sex" :options="gender" ></b-form-select>
-                      </b-col>
-                    </b-row>
+                      <v-text-field
+                        v-model="curentCustomer.email"
+                        :rules="emailRules"
+                        class="my-2"
+                        label="E-mail"
+                        required
+                      ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_dob">Date of Birth</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_dob" v-model="curentCustomer.dob" type="date" ></b-form-input>
-                      </b-col>
-                    </b-row>
+                      <v-radio-group
+                          v-model="curentCustomer.sex"
+                          label="Gender"
+                          row
+                        >
+                          <v-radio
+                            label="Male"
+                            value="male"
+                          ></v-radio>
+                          <v-radio
+                            label="Female"
+                            value="female"
+                          ></v-radio>
+                          <v-radio
+                            label="None"
+                            value="none"
+                          ></v-radio>
+                        </v-radio-group>
+                       
+                        <v-row>
+                            <v-col cols="12" sm="12">
+                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                            </v-col>
+                        </v-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_address">Adress</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_adress" v-model="curentCustomer.adress" type="text"  placeholder="Enter Customer Adress"></b-form-input>
 
-                        <b-form-invalid-feedback id="cus_adress_feedback">
-                          This Field Is Required
-                        </b-form-invalid-feedback>
-                      </b-col>
-                    </b-row>
+                        <!-- <v-row>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Entrance" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Floor" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Appartment" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="3" sm="12" md="3">
+                                <v-text-field label="Security code" clearable></v-text-field>
+                            </v-col>
+                        </v-row> -->
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_tel">Tel</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_tel" v-model="curentCustomer.tel" type="text" @keypress="isNumber($event)"  placeholder="Enter Customer number"></b-form-input>
+                        <v-text-field
+                          v-model="curentCustomer.tel"
+                          @keypress="isNumber($event)"
+                          :rules="telRules"
+                          class="my-2"
+                          label="Tel"
+                          required
+                          clearable
+                        ></v-text-field>
 
-                        <b-form-invalid-feedback id="cus_tel_feedback">
-                          This Field Is Required
-                        </b-form-invalid-feedback>
+                        <v-text-field
+                          v-model="curentCustomer.comment"
+                          class="my-2"
+                          label="Comment"
+                          clearable
+                        ></v-text-field>
 
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_tel">Tel 2</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_tel2" v-model="curentCustomer.tel2" type="text" @keypress="isNumber($event)" placeholder="Enter Customer Second number"></b-form-input>
-
-                      </b-col>
-                    </b-row>
-
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com">Comment</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com" v-model="curentCustomer.comment" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com2">Comment 2</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com2" v-model="curentCustomer.comment2" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
-
+                        <!-- <v-text-field
+                          v-model="customer.comment2"
+                          class="my-2"
+                          label="Comment 2"
+                          clearable
+                        ></v-text-field> -->
+                    </v-form>
 
                  </b-container>
                 </div>
@@ -1190,8 +1234,8 @@ body, html {
     <!-- End Of Delivery Modal -->
 
     <!-- Start Of Delivery Fee Modal -->
-
-   <div v-if="deliveryFeeModal">
+    <!-- Am not using anymore -->
+    <div v-if="deliveryFeeModal">
       <transition name="modal">
         <div class="modal-mask">
           <div class="modal-wrapper">
@@ -1239,8 +1283,8 @@ body, html {
     <!-- End Of Fee Modal -->
 
     <!-- Start Of Delivery Type Modal -->
-
-   <div v-if="deliveryTypeModal">
+    <!-- Am not using anymore -->
+    <div v-if="deliveryTypeModal">
       <transition name="modal">
         <div class="modal-mask">
           <div class="modal-wrapper">
@@ -1287,6 +1331,111 @@ body, html {
   
     <!-- End Of Delivery Type Modal -->
 
+    <!-- Start of invoice modal -->
+
+    <div v-if="invoiceModal">
+      <transition name="modal">
+        <div class="modal-mask">
+          <div class="modal-wrapper">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Delivery Information</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" @click="invoiceModal = false">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <b-container fluid>
+                    
+                   <v-form
+                      ref="form"
+                      v-model="valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="invoice.name"
+                        class="my-2"
+                        label="Name"
+                        clearable
+                      ></v-text-field>
+                      <v-text-field
+                        v-model="invoice.ltd"
+                        class="my-2"
+                        label="LTD"
+                        clearable
+                      ></v-text-field>
+
+                      <v-text-field
+                        v-model="invoice.email"
+                        class="my-2"
+                        label="E-mail"
+                      ></v-text-field>
+                       
+                        <v-row>
+                            <v-col cols="12" sm="12">
+                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                            </v-col>
+                        </v-row>
+
+
+                        <!-- <v-row>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Entrance" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Floor" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Appartment" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="3" sm="12" md="3">
+                                <v-text-field label="Security code" clearable></v-text-field>
+                            </v-col>
+                        </v-row> -->
+
+                        <v-text-field
+                          v-model="invoice.id"
+                          @keypress="isNumber($event)"
+                          class="my-2"
+                          label="Company ID #"
+                          clearable
+                        ></v-text-field>
+
+                        <v-text-field
+                          v-model="curentCustomer.tel"
+                          @keypress="isNumber($event)"
+                          :rules="telRules"
+                          class="my-2"
+                          label="Tel"
+                          clearable
+                        ></v-text-field>
+                    </v-form>
+
+                 </b-container>
+                </div>
+
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="invoiceModal = false"
+                  >Close</button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    @click="generateInvoice()"
+                  >Generate Invoice</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </div>
+
+    <!-- End of invoice modal -->
+
     <!-- Start Of Walk in Modal -->
 
    <div v-if="walkInModal">
@@ -1304,82 +1453,88 @@ body, html {
                 <div class="modal-body">
                   <b-container fluid>
                     
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_name">Name</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_name" v-model="curentCustomer.name" type="text"  placeholder="Enter Customer Name"></b-form-input>
-                        
+                   <v-form
+                      ref="form"
+                      v-model="valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="curentCustomer.name"
+                        class="my-2"
+                        label="Name"
+                        clearable
+                      ></v-text-field>
 
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_mail">Email</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_mail" class="has-error" v-model="curentCustomer.email" type="email" ></b-form-input>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_gender">Gender</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-select id="cus_gender" v-model="curentCustomer.sex" :options="gender" ></b-form-select>
-                      </b-col>
-                    </b-row>
+                      <v-text-field
+                        v-model="curentCustomer.email"
+                        class="my-2"
+                        label="E-mail"
+                      ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_dob">Date of Birth</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_dob" v-model="curentCustomer.dob" type="date" ></b-form-input>
-                      </b-col>
-                    </b-row>
-
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_address">Adress</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_adress" v-model="curentCustomer.adress" type="text" placeholder="Enter Customer Adress"></b-form-input>
-                      </b-col>
-                    </b-row>
-
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_tel">Tel</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_tel" v-model="curentCustomer.tel" type="text" @keypress="isNumber($event)" placeholder="Enter Customer number"></b-form-input>
+                      <v-radio-group
+                          v-model="curentCustomer.sex"
+                          label="Gender"
+                          row
+                        >
+                          <v-radio
+                            label="Male"
+                            value="male"
+                          ></v-radio>
+                          <v-radio
+                            label="Female"
+                            value="female"
+                          ></v-radio>
+                          <v-radio
+                            label="None"
+                            value="none"
+                          ></v-radio>
+                        </v-radio-group>
+                       
+                        <v-row>
+                            <v-col cols="12" sm="12">
+                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                            </v-col>
+                        </v-row>
 
 
-                      </b-col>
-                    </b-row>
+                        <!-- <v-row>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Entrance" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Floor" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Appartment" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="3" sm="12" md="3">
+                                <v-text-field label="Security code" clearable></v-text-field>
+                            </v-col>
+                        </v-row> -->
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com">Comment</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com" v-model="curentCustomer.comment" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com2">Comment 2</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com2" v-model="curentCustomer.comment2" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
+                        <v-text-field
+                          v-model="curentCustomer.tel"
+                          @keypress="isNumber($event)"
+                          :rules="telRules"
+                          class="my-2"
+                          label="Tel"
+                          clearable
+                        ></v-text-field>
 
+                        <v-text-field
+                          v-model="curentCustomer.comment"
+                          class="my-2"
+                          label="Comment"
+                          clearable
+                        ></v-text-field>
+
+                        <!-- <v-text-field
+                          v-model="customer.comment2"
+                          class="my-2"
+                          label="Comment 2"
+                          clearable
+                        ></v-text-field> -->
+                    </v-form>
 
                  </b-container>
                 </div>
@@ -1417,90 +1572,95 @@ body, html {
                 <div class="modal-header">
                   <h5 class="modal-title">Delivery Information</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" @click="takeOutModal = false">&times;</span>
+                    <span aria-hidden="true" @click="takeOutModal = false, takeoutActiveVar = false, walkinActiveVar = true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
                   <b-container fluid>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_name">Name</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_name" v-model="curentCustomer.name" type="text" placeholder="Enter Customer Name"></b-form-input>
-                        
+                   <v-form
+                      ref="form"
+                      v-model="valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="curentCustomer.name"
+                        class="my-2"
+                        label="Name"
+                        clearable
+                      ></v-text-field>
 
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_mail">Email</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_mail" class="has-error" v-model="curentCustomer.email" type="email" ></b-form-input>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_gender">Gender</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-select id="cus_gender" v-model="curentCustomer.sex" :options="gender" ></b-form-select>
-                      </b-col>
-                    </b-row>
+                      <v-text-field
+                        v-model="curentCustomer.email"
+                        :rules="emailRules"
+                        class="my-2"
+                        label="E-mail"
+                      ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_dob">Date of Birth</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_dob" v-model="curentCustomer.dob" type="date" ></b-form-input>
-                      </b-col>
-                    </b-row>
+                      <v-radio-group
+                          v-model="curentCustomer.sex"
+                          label="Gender"
+                          row
+                        >
+                          <v-radio
+                            label="Male"
+                            value="male"
+                          ></v-radio>
+                          <v-radio
+                            label="Female"
+                            value="female"
+                          ></v-radio>
+                          <v-radio
+                            label="None"
+                            value="none"
+                          ></v-radio>
+                        </v-radio-group>
+                       
+                        <v-row>
+                            <v-col cols="12" sm="12">
+                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable></v-text-field>
+                            </v-col>
+                        </v-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_address">Adress</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_adress" v-model="curentCustomer.adress" type="text" placeholder="Enter Customer Adress"></b-form-input>
-                      </b-col>
-                    </b-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_tel">Tel</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_tel" v-model="curentCustomer.tel" type="text" @keypress="isNumber($event)" :state="curTelState" aria-describeby="cus_tel_feedback" placeholder="Enter Customer number"></b-form-input>
+                        <!-- <v-row>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Entrance" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Floor" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Appartment" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="3" sm="12" md="3">
+                                <v-text-field label="Security code" clearable></v-text-field>
+                            </v-col>
+                        </v-row> -->
 
-                        <b-form-invalid-feedback id="cus_tel_feedback">
-                          This Field Is Required
-                        </b-form-invalid-feedback>
+                        <v-text-field
+                          v-model="curentCustomer.tel"
+                          @keypress="isNumber($event)"
+                          :rules="telRules"
+                          class="my-2"
+                          label="Tel"
+                          required
+                          clearable
+                        ></v-text-field>
 
-                      </b-col>
-                    </b-row>
+                        <v-text-field
+                          v-model="curentCustomer.comment"
+                          class="my-2"
+                          label="Comment"
+                          clearable
+                        ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com">Comment</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com" v-model="curentCustomer.comment" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com2">Comment 2</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com2" v-model="curentCustomer.comment2" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
+                        <!-- <v-text-field
+                          v-model="customer.comment2"
+                          class="my-2"
+                          label="Comment 2"
+                          clearable
+                        ></v-text-field> -->
+                    </v-form>
 
 
                  </b-container>
@@ -1510,7 +1670,7 @@ body, html {
                   <button
                     type="button"
                     class="btn btn-secondary"
-                    @click="takeOutModal = false"
+                    @click="takeOutModal = false, takeoutActiveVar = false, walkinActiveVar = true"
                   >Close</button>
                   <button
                     type="button"
@@ -1538,90 +1698,96 @@ body, html {
                 <div class="modal-header">
                   <h5 class="modal-title">Delivery Information</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" @click="ronnysModal = false">&times;</span>
+                    <span aria-hidden="true" @click="ronnysModal = false, deliveryActiveVar = false, ronnysActive = false, walkinActiveVar = true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
                   <b-container fluid>
                     
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_name">Name</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_name" v-model="curentCustomer.name" type="text" placeholder="Enter Customer Name"></b-form-input>
-                        
+                   <v-form
+                      ref="form"
+                      v-model="valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="curentCustomer.name"
+                        class="my-2"
+                        label="Name"
+                        clearable
+                      ></v-text-field>
 
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_mail">Email</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_mail" class="has-error" v-model="curentCustomer.email" type="email" ></b-form-input>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_gender">Gender</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-select id="cus_gender" v-model="curentCustomer.sex" :options="gender" ></b-form-select>
-                      </b-col>
-                    </b-row>
+                      <v-text-field
+                        v-model="curentCustomer.email"
+                        :rules="emailRules"
+                        class="my-2"
+                        label="E-mail"
+                      ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_dob">Date of Birth</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_dob" v-model="curentCustomer.dob" type="date" ></b-form-input>
-                      </b-col>
-                    </b-row>
+                      <v-radio-group
+                          v-model="curentCustomer.sex"
+                          label="Gender"
+                          row
+                        >
+                          <v-radio
+                            label="Male"
+                            value="male"
+                          ></v-radio>
+                          <v-radio
+                            label="Female"
+                            value="female"
+                          ></v-radio>
+                          <v-radio
+                            label="None"
+                            value="none"
+                          ></v-radio>
+                        </v-radio-group>
+                       
+                        <v-row>
+                            <v-col cols="12" sm="12">
+                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                            </v-col>
+                        </v-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_address">Adress</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_adress" v-model="curentCustomer.adress" type="text" placeholder="Enter Customer Adress"></b-form-input>
-                      </b-col>
-                    </b-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_tel">Tel</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_tel" v-model="curentCustomer.tel" type="text" @keypress="isNumber($event)" :state="curTelState" aria-describeby="cus_tel_feedback" placeholder="Enter Customer number"></b-form-input>
+                        <!-- <v-row>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Entrance" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Floor" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Appartment" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="3" sm="12" md="3">
+                                <v-text-field label="Security code" clearable></v-text-field>
+                            </v-col>
+                        </v-row> -->
 
-                        <b-form-invalid-feedback id="cus_tel_feedback">
-                          This Field Is Required
-                        </b-form-invalid-feedback>
+                        <v-text-field
+                          v-model="curentCustomer.tel"
+                          @keypress="isNumber($event)"
+                          :rules="telRules"
+                          class="my-2"
+                          label="Tel"
+                          required
+                          clearable
+                        ></v-text-field>
 
-                      </b-col>
-                    </b-row>
+                        <v-text-field
+                          v-model="curentCustomer.comment"
+                          class="my-2"
+                          label="Comment"
+                          clearable
+                        ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com">Comment</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com" v-model="curentCustomer.comment" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com2">Comment 2</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com2" v-model="curentCustomer.comment2" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
+                        <!-- <v-text-field
+                          v-model="customer.comment2"
+                          class="my-2"
+                          label="Comment 2"
+                          clearable
+                        ></v-text-field> -->
+                    </v-form>
 
 
                  </b-container>
@@ -1631,7 +1797,7 @@ body, html {
                   <button
                     type="button"
                     class="btn btn-secondary"
-                    @click="ronnysModal = false"
+                    @click="ronnysModal = false, ronnysActive = false, walkinActiveVar = true, deliveryActiveVar = false"
                   >Close</button>
                   <button
                     type="button"
@@ -1644,7 +1810,7 @@ body, html {
           </div>
         </div>
       </transition>
-    </div>
+   </div>
 
     <!-- End Of Ronnys Modal -->
 
@@ -1659,91 +1825,95 @@ body, html {
                 <div class="modal-header">
                   <h5 class="modal-title">Delivery Information</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" @click="glovoModal = false">&times;</span>
+                    <span aria-hidden="true" @click="glovoModal = false, glovoActive = false, walkinActiveVar = true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
                   <b-container fluid>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_name">Name</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_name" v-model="curentCustomer.name" type="text" placeholder="Enter Customer Name"></b-form-input>
-                        
+                    <v-form
+                      ref="form"
+                      v-model="valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="curentCustomer.name"
+                        class="my-2"
+                        label="3 Digit Code"
+                        required
+                        clearable
+                      ></v-text-field>
 
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_mail">Email</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_mail" class="has-error" v-model="curentCustomer.email" type="email" ></b-form-input>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_gender">Gender</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-select id="cus_gender" v-model="curentCustomer.sex" :options="gender" ></b-form-select>
-                      </b-col>
-                    </b-row>
+                      <v-text-field
+                        v-model="curentCustomer.email"
+                        :rules="emailRules"
+                        class="my-2"
+                        label="E-mail"
+                      ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_dob">Date of Birth</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_dob" v-model="curentCustomer.dob" type="date" ></b-form-input>
-                      </b-col>
-                    </b-row>
+                      <v-radio-group
+                          v-model="curentCustomer.sex"
+                          label="Gender"
+                          row
+                        >
+                          <v-radio
+                            label="Male"
+                            value="male"
+                          ></v-radio>
+                          <v-radio
+                            label="Female"
+                            value="female"
+                          ></v-radio>
+                          <v-radio
+                            label="None"
+                            value="none"
+                          ></v-radio>
+                        </v-radio-group>
+                       
+                        <v-row>
+                            <v-col cols="12" sm="12">
+                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                            </v-col>
+                        </v-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_address">Adress</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_adress" v-model="curentCustomer.adress" type="text" placeholder="Enter Customer Adress"></b-form-input>
-                      </b-col>
-                    </b-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_tel">Tel</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_tel" v-model="curentCustomer.tel" type="text" @keypress="isNumber($event)" :state="curTelState" aria-describeby="cus_tel_feedback" placeholder="Enter Customer number"></b-form-input>
+                        <!-- <v-row>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Entrance" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Floor" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Appartment" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="3" sm="12" md="3">
+                                <v-text-field label="Security code" clearable></v-text-field>
+                            </v-col>
+                        </v-row> -->
 
-                        <b-form-invalid-feedback id="cus_tel_feedback">
-                          This Field Is Required
-                        </b-form-invalid-feedback>
+                        <v-text-field
+                          v-model="curentCustomer.tel"
+                          @keypress="isNumber($event)"
+                          :rules="telRules"
+                          class="my-2"
+                          label="Tel"
+                          clearable
+                        ></v-text-field>
 
-                      </b-col>
-                    </b-row>
+                        <v-text-field
+                          v-model="curentCustomer.comment"
+                          class="my-2"
+                          label="Comment"
+                          clearable
+                        ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com">Comment</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com" v-model="curentCustomer.comment" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com2">Comment 2</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com2" v-model="curentCustomer.comment2" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
-
+                        <!-- <v-text-field
+                          v-model="customer.comment2"
+                          class="my-2"
+                          label="Comment 2"
+                          clearable
+                        ></v-text-field> -->
+                    </v-form>
 
                  </b-container>
                 </div>
@@ -1752,7 +1922,7 @@ body, html {
                   <button
                     type="button"
                     class="btn btn-secondary"
-                    @click="glovoModal = false"
+                    @click="glovoModal = false, glovoActive = false, walkinActiveVar = true"
                   >Close</button>
                   <button
                     type="button"
@@ -1780,90 +1950,98 @@ body, html {
                 <div class="modal-header">
                   <h5 class="modal-title">Delivery Information</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" @click="woltModal = false">&times;</span>
+                    <span aria-hidden="true" @click="woltModal = false, woltActive = false, takeoutActiveVar = true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
                   <b-container fluid>
                     
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_name">Name</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_name" v-model="curentCustomer.name" type="text" placeholder="Enter Customer Name"></b-form-input>
-                        
+                   <v-form
+                      ref="form"
+                      v-model="valid"
+                      lazy-validation
+                    >
+                      <v-text-field
+                        v-model="curentCustomer.name"
+                        :counter="10"
+                        :rules="nameRules"
+                        class="my-2"
+                        label="Name"
+                        required
+                        clearable
+                      ></v-text-field>
 
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_mail">Email</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_mail" class="has-error" v-model="curentCustomer.email" type="email" ></b-form-input>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_gender">Gender</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-select id="cus_gender" v-model="curentCustomer.sex" :options="gender" ></b-form-select>
-                      </b-col>
-                    </b-row>
+                      <v-text-field
+                        v-model="curentCustomer.email"
+                        :rules="emailRules"
+                        class="my-2"
+                        label="E-mail"
+                      ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_dob">Date of Birth</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_dob" v-model="curentCustomer.dob" type="date" ></b-form-input>
-                      </b-col>
-                    </b-row>
+                      <v-radio-group
+                          v-model="curentCustomer.sex"
+                          label="Gender"
+                          row
+                        >
+                          <v-radio
+                            label="Male"
+                            value="male"
+                          ></v-radio>
+                          <v-radio
+                            label="Female"
+                            value="female"
+                          ></v-radio>
+                          <v-radio
+                            label="None"
+                            value="none"
+                          ></v-radio>
+                        </v-radio-group>
+                       
+                        <v-row>
+                            <v-col cols="12" sm="12">
+                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                            </v-col>
+                        </v-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_address">Adress</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_adress" v-model="curentCustomer.adress" type="text" placeholder="Enter Customer Adress"></b-form-input>
-                      </b-col>
-                    </b-row>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_tel">Tel</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-input id="cus_tel" v-model="curentCustomer.tel" type="text" @keypress="isNumber($event)" :state="curTelState" aria-describeby="cus_tel_feedback" placeholder="Enter Customer number"></b-form-input>
+                        <!-- <v-row>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Entrance" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Floor" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="3">
+                                <v-text-field label="Appartment" clearable></v-text-field>
+                            </v-col>
+                            <v-col cols="3" sm="12" md="3">
+                                <v-text-field label="Security code" clearable></v-text-field>
+                            </v-col>
+                        </v-row> -->
 
-                        <b-form-invalid-feedback id="cus_tel_feedback">
-                          This Field Is Required
-                        </b-form-invalid-feedback>
+                        <v-text-field
+                          v-model="curentCustomer.tel"
+                          @keypress="isNumber($event)"
+                          :rules="telRules"
+                          class="my-2"
+                          label="Tel"
+                          clearable
+                        ></v-text-field>
 
-                      </b-col>
-                    </b-row>
+                        <v-text-field
+                          v-model="curentCustomer.comment"
+                          class="my-2"
+                          label="Comment"
+                          clearable
+                        ></v-text-field>
 
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com">Comment</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com" v-model="curentCustomer.comment" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
-                    
-                    <b-row class="my-1" >
-                      <b-col sm="3">
-                        <label for="cus_com2">Comment 2</label>
-                      </b-col>
-                      <b-col sm="9">
-                        <b-form-textarea id="cus_com2" v-model="curentCustomer.comment2" type="textarea" rows="3" max-rows="6"></b-form-textarea>
-                      </b-col>
-                    </b-row>
+                        <!-- <v-text-field
+                          v-model="customer.comment2"
+                          class="my-2"
+                          label="Comment 2"
+                          clearable
+                        ></v-text-field> -->
+                    </v-form>
 
 
                  </b-container>
@@ -1873,7 +2051,7 @@ body, html {
                   <button
                     type="button"
                     class="btn btn-secondary"
-                    @click="woltModal = false"
+                    @click="woltModal = false, woltActive = false, takeoutActiveVar = true"
                   >Close</button>
                   <button
                     type="button"
@@ -2028,6 +2206,22 @@ export default {
     },
   data() {
     return {
+      valid: true,
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => (v && v.length <= 20) || 'Name must be less than 20 characters',
+      ],
+      telRules: [
+        v => !!v || 'Phone is required',
+        v => (v && v.length ==20) || 'Phone be less than 20 characters',
+      ],
+      addressRules: [
+          v => !!v || 'Adress is required',
+      ],
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+      ],
       noAB: false,
       alert: false,
       showProducts: true,
@@ -2040,7 +2234,9 @@ export default {
         options: {
           format: 'DD/MM/YYYY hh:mm',
           useCurrent: false,
-      },      
+      },
+      dateCrm: new Date().toISOString().substr(0, 10),
+      menu: false,   
       telMessageActive: false,
       order: {
         orderId: Number,
@@ -2056,6 +2252,7 @@ export default {
         discountName: '',
         coupon: 0,
       },
+      crustVar: false,
       deliveryFee: [{id: 0,fee: 1.5, text: "1.5 GEL 0-3.9 Km"}, {id:1,fee:3, text: "3 GEL 4-9.9 Km"}, {id:2,fee:4.5, text: "4.5 GEL 10-15.9 Km"}, {id:3,fee:6, text: "6 GEL 16-19.9 Km"}, {id: 4,fee:7, text: "7 GEL 20-27.9 Km"}, {id: 5,fee:10, text: "10 GEL 28 Km +"}, {id:6,fee:13.5, text: "13.5 GEL Rustavi"} ],
       deliveryType: [{id: 0, type: 'ronnys'}, {id: 1, type: 'glovo'},{id: 2, type: 'wolt'}],
       deliveryFeeVar: -1,
@@ -2071,6 +2268,14 @@ export default {
       glovoModal: false,
       woltModal: false,
       ronnysModal: false,
+      invoice: {
+        tel: null,
+        name: '',
+        ltd: '',
+        id: null,
+        address: '',
+        email: ''
+      },
       deliveryModal: false,
       deliveryFeeModal: false,
       deliveryTypeModal: false,
@@ -2084,6 +2289,7 @@ export default {
       customerOrdersComponent: false,
       settingModal: false,
       confirmModal: false,
+      invoiceModal: false,
       changeModal: false,
       futureModal: false,
       paymentType: "",
@@ -2101,7 +2307,7 @@ export default {
       activeSmall: false,
       activeMedium: true,
       activeXl: false,
-      cashInput: 0,
+      cashInput: '',
       splitInput: 0,
       splitInput1: 0,
       splitInput2: 0,
@@ -2160,8 +2366,8 @@ export default {
         size: "m",
         defaultToppings: [],
         toppings: [],
-        half1: { toppings: [] },
-        half2: { toppings: [] },
+        half1: { toppings: [], defaultToppings: [] },
+        half2: { toppings: [], defaultToppings: [] },
         qty: 0,
       },
       customer: {
@@ -2202,12 +2408,9 @@ export default {
         half2: { name: "", defaultToppings: [], toppings: [] },
         qty: 0,
       },
-
       productList: {},
-
       //   pizza_: {crust: 'original', parts: [{toppings: []}, {toppings: []}]},  this.pizza_.parts[0].toppings
       //           {half1: {defaultTop: [], top: []}, half2: {defaultTop:[], top: []}}
-
       version: 0,
       globalQuantity: 1,
       globalQuantityClick: 0,
@@ -2215,6 +2418,7 @@ export default {
       //pizza: {crust: 'original', sauce: 'original', size: 'm', defaultTopping:[], toppings: [], qty: 0}
     };
   },
+
   beforeRouteEnter (to, from, next) {
     next(vm => {
        if (vm.$store.state.auth.user.data.role !== "admin" || vm.$store.state.auth.user.data.role !== "posaccess") {
@@ -2225,6 +2429,7 @@ export default {
        }
     });
   },
+
   mounted() {
     // let logged_user_name;
     // let logged_user_position;
@@ -2234,7 +2439,7 @@ export default {
       .request({
         method: "post",
         url:
-          "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/products/get-ingredients-price",
+          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/get-ingredients-price",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -2248,7 +2453,7 @@ export default {
       .request({
         method: "get",
         url:
-          "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/products/get-order-id",
+          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/get-order-id",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -2277,8 +2482,6 @@ export default {
     datePicker,
     Drinks,
     Orders,
-    //Pizzas,
-    //Categories,
     Ingredients,
     SticksIngredients
   },
@@ -2287,8 +2490,6 @@ export default {
       cache: false,
       get() {
         var totalPrice = 0;
-        
-        //var toppingsPrice = 0;
         this.order.items.forEach((i) => {
           if(i.custom === 'other'){
             var price = i.price * i.qty;
@@ -2297,7 +2498,6 @@ export default {
             var price = i.totalPrice * i.qty;
             totalPrice = totalPrice + price;    
           }
-        
         });
         
         return totalPrice + this.order.deliveryFee;
@@ -2328,6 +2528,7 @@ export default {
     curNameState() {
         return this.curentCustomer.name.length > 0 ? true : false
     },
+
     cusAdrsState(){
          return this.curentCustomer.adress.length > 0 ? true : false;
     },
@@ -2347,14 +2548,23 @@ export default {
       cache: false,
       get() {
         var totalPrice = 0;
+        var disc = (this.totalNet/100) * this.order.discount;
+        totalPrice = this.totalNet - disc;
+        return totalPrice;
+      },
+    },
+    totalCustomer: {
+      cache: false,
+      get() {
+        var totalPrice = 0;
         var totalDisc = 0;
-        //var toppingsPrice = 0;
         this.order.items.forEach((i) => {
           var price = i.totalPrice * i.qty;
           totalPrice = totalPrice + price;
         });
         var disc = (totalPrice/100) * this.order.discount;
-        totalPrice = totalPrice - disc;
+        var deliveryFee = this.order.deliveryFee; 
+        totalPrice = totalPrice - disc + deliveryFee;
         return totalPrice;
       },
     },
@@ -2404,25 +2614,50 @@ export default {
         this.sticks.toppings.forEach((t) => {
           mapping[t.id] = t.count || 1;
         });
-        // this.pizza.defaultToppings.forEach((t) => {
-        //     mapping[t.id] = t.count;
-        // });
       }
       else {
         this.pizza.toppings.forEach((t) => {
           mapping[t.id] = t.count || 1;
         });
-        // this.pizza.defaultToppings.forEach((t) => {
-        //     mapping[t.id] = t.count;
-        // });
       }
       return mapping;
     },
   },
   methods: {
+        validate () {
+          if(this.$refs.form.validate()){
+            alert('Form Is Valid!');
+          }
+          else {
+            alert('Form Is Not Valid!');
+          }
+          
+        },
+        reset () {
+          this.$refs.form.reset()
+        },
+        resetValidation () {
+          this.$refs.form.resetValidation()
+        },
+        setVal() {
+          setTimeout(() => this.telMessage = this.telMessage, 100);
+        },
         goBack(){
           this.$router.go(-1);
         },
+
+        print(){
+          axios
+            .request({
+              method: "post",
+              url:
+                "http://localhost/print/index.php",
+            })
+            .then((response) => {
+              console.log('------', response.data.data);
+            });
+        },
+
         selectedOrder(items){
           this.order = items;
         },
@@ -2448,11 +2683,10 @@ export default {
         },
 
         checkUser(tel){
-
+          
           const TOKEN = localStorage.getItem("TOKEN");
           var bodyFormData = new FormData();
           bodyFormData.set("phone", tel);
-          
           axios
             .request({
               method: "post",
@@ -2484,10 +2718,7 @@ export default {
             }
 
             });
-
-          
           console.log('Curent User Data: ', this.curentCustomer);
-
         },
 
         logout() {
@@ -2535,7 +2766,7 @@ export default {
           axios.request({
               method: "post",
               url:
-                "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/get-new-orders",
+                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-new-orders",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -2555,9 +2786,6 @@ export default {
         if (this.customPizza.qty === 0) {
           this.customPizza.qty = this.globalQuantity;
         }
-
-        //   pizza: {name: '', price: 0, crust: 'original', sauce: 'original', size: 'm', defaultToppings:[], toppings: [], qty: 0},
-        //   customPizza: {crust: 'original', sauce: '', size: '', price: 0, name: '', half1:{name: '', defaultToppings: [], toppings: []}, half2:{name: '',defaultToppings: [], toppings: []}, qty: 0 },
 
         if (this.isHalfPizza == "yes" && this.halfPizzaCounter == 1) {
           this.smallHalf = true;
@@ -2622,14 +2850,16 @@ export default {
             size: "m",
             defaultToppings: [],
             toppings: [],
-            half1: { toppings: [] },
-            half2: { toppings: [] },
+            half1: { toppings: [], defaultToppings: [] },
+            half2: { toppings: [], defaultToppings: [] },
             toppingChange: 0,
             qty: 0,
           };
-          this.pizza.defaultToppings = this.getRecipe(product);
+          //this.pizza.defaultToppings = this.getRecipe(product);
+          this.pizza.half1.defaultToppings = this.pizza.defaultToppings;
+          this.pizza.half2.defaultToppings = this.pizza.defaultToppings;
+          console.log('PIZZA HALF 1: ', this.getRecipe(product));
           this.pizza.name = product.name;
-
           this.pizza.price = product.priceBySizes.m;
           this.pizza.priceBySizes = product.priceBySizes;
           console.log("Unserialized price array: ", product.price);
@@ -2650,8 +2880,9 @@ export default {
           this.showProducts = false;
           this.showIngredients = true;
           console.log("Pizza array: ", this.pizza);
+          this.countTotalPrice();
+
         }
-        this.countTotalPrice();
       } 
       else if (product.category_name == "Sticks"){
             
@@ -2725,287 +2956,348 @@ export default {
       this.itemIndex = this.order.items.length - 1;
       console.log("selected item", this.selectedProducts);
       localStorage.setItem("items", JSON.stringify(this.order));
+      this.showProductsComponent();
     },
     deleteDefaultTopping(topping) {
-      
+      this.deleteTopping(topping);
       if (this.wholePizza || this.wholePizzaPart == 3) {
-        if (topping.name.slice(0, 3) === "No ") {
-          //topping.isDeleted = false;
+        //topping.isDeleted = false;
           this.order.items[this.itemIndex].defaultToppings.forEach(
             (t, index) => {
               if (parseInt(t.id) === parseInt(topping.id)) {
-                this.changeToppingPrice(this.order.items[this.itemIndex].size);
-                this.order.items[this.itemIndex].defaultToppings[
-                  index
-                ].isDeleted = false;
+                if (t.name.slice(0, 3) === "No ") {
+                  this.changeToppingPrice(this.order.items[this.itemIndex].size);
+                  this.order.items[this.itemIndex].defaultToppings[
+                    index
+                  ].isDeleted = false;
                 
-                topping.name = topping.name.slice(3);
+                t.name = t.name.slice(3);
                 this.order.items[this.itemIndex].defaultToppings[index].name = topping.name;
-                if(this.order.items[this.itemIndex].is_special == 0 || this.order.items[this.itemIndex].is_special == 1){
+                if(this.order.items[this.itemIndex].is_special == 0){
                   if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
                         this.order.items[this.itemIndex].totalPrice;
                     }
                     else {
                       this.order.items[this.itemIndex].totalPrice = 
-                      this.order.items[this.itemIndex].totalPrice + t.price;
+                      this.order.items[this.itemIndex].totalPrice;
+                    }
+                }
+                else if(this.order.items[this.itemIndex].is_special == 1){
+                  if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
                     }
                 }
               }
-            }
-          );
-          this.$forceUpdate();
-        } else {
-          // topping.name = "No " + topping.name;
-          topping.isDeleted = true;
-          this.order.items[this.itemIndex].defaultToppings.forEach(
-            (t, index) => {
-              if (parseInt(t.id) === parseInt(topping.id)) {
+              else {
                 this.order.items[this.itemIndex].defaultToppings[
                   index
                 ].isDeleted = true;
                 this.order.items[this.itemIndex].defaultToppings[index].name =
                   "No " + topping.name;
-                  topping.name = "No " + topping.name;
-                  // alert(topping.id);
-                  // alert(typeof(topping.id) );
-                  if(this.order.items[this.itemIndex].is_special == 0 || this.order.items[this.itemIndex].is_special == 1){
+                t.isDeleted = true;
+                if(this.order.items[this.itemIndex].is_special == 0){
+                    if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                        // this.order.items[this.itemIndex].totalPrice = 
+                        // this.order.items[this.itemIndex].totalPrice - t.price;
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                  }
+                  else if(this.order.items[this.itemIndex].is_special == 1){
                     if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
                         this.order.items[this.itemIndex].totalPrice;
                     }
                     else {
                         this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice - t.price;
+                        this.order.items[this.itemIndex].totalPrice;
                     }
                   }
-                  
               }
             }
+            this.countTotalPrice();
+          this.$forceUpdate();
+            }
           );
-          console.log("Default Toppings Array: ", this.pizza.defaultToppings);
-        }
+        
       } 
-      if (this.wholePizzaPart == 1) {
-          if (topping.name.slice(0, 3) === "No ") {
-
-            topping.isDeleted = false;
-            this.order.items[this.itemIndex].half1.defaultToppings.forEach(
-              (t, index) => {
-                if (parseInt(t.id) === parseInt(topping.id)) {
+      else if (this.wholePizzaPart == 1) {
+          this.order.items[this.itemIndex].half1.defaultToppings.forEach(
+            (t, index) => {
+              if (parseInt(t.id) === parseInt(topping.id)) {
+                if (t.name.slice(0, 3) === "No ") {
+                  this.changeToppingPrice(this.order.items[this.itemIndex].size);
                   this.order.items[this.itemIndex].half1.defaultToppings[
                     index
                   ].isDeleted = false;
-                  topping.name = topping.name.slice(3);
-                  this.order.items[this.itemIndex].half1.defaultToppings[
-                    index
-                  ].name = topping.name;
-                  if(this.order.items[this.itemIndex].half1.is_special == 0  || this.order.items[this.itemIndex].half1.is_special == 1){
+                
+                t.name = t.name.slice(3);
+                this.order.items[this.itemIndex].half1.defaultToppings[index].name = topping.name;
+                if(this.order.items[this.itemIndex].is_special == 0){
+                  if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                    }
+                }
+                else if(this.order.items[this.itemIndex].is_special == 1){
+                  if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                    }
+                }
+              }
+              else {
+                this.order.items[this.itemIndex].half1.defaultToppings[
+                  index
+                ].isDeleted = true;
+                this.order.items[this.itemIndex].half1.defaultToppings[index].name =
+                  "No " + topping.name;
+                t.isDeleted = true;
+                if(this.order.items[this.itemIndex].is_special == 0){
                     if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
                         this.order.items[this.itemIndex].totalPrice;
                     }
                     else {
                         this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice + t.price;
+                        this.order.items[this.itemIndex].totalPrice;
                     }
                   }
-                }
-              }
-            );
-            this.$forceUpdate();
-          } else {
-            this.order.items[this.itemIndex].half1.defaultToppings.forEach(
-              (t, index) => {
-                if (parseInt(t.id) === parseInt(topping.id)) {
-                  this.order.items[this.itemIndex].half1.defaultToppings[
-                    index
-                  ].isDeleted = true;
-                  this.order.items[this.itemIndex].half1.defaultToppings[
-                    index
-                  ].name = "No " + topping.name;
-                  topping.name = "No " + topping.name;
-                  if(this.order.items[this.itemIndex].half1.is_special == 0  || this.order.items[this.itemIndex].half1.is_special == 1){
+                  else if(this.order.items[this.itemIndex].is_special == 1){
                     if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
                         this.order.items[this.itemIndex].totalPrice;
                     }
                     else {
                         this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice - t.price;
+                        this.order.items[this.itemIndex].totalPrice;
                     }
                   }
-                }
               }
-            );
-            console.log("Default Toppings Array: ", this.pizza.defaultToppings);
+            }
+            this.countTotalPrice();
+          this.$forceUpdate();
+            }
+          );
+        } 
+      else if (this.wholePizzaPart == 2) {
+          this.order.items[this.itemIndex].half2.defaultToppings.forEach(
+          (t, index) => {
+            if (parseInt(t.id) === parseInt(topping.id)) {
+              if (t.name.slice(0, 3) === "No ") {
+                this.changeToppingPrice(this.order.items[this.itemIndex].size);
+                this.order.items[this.itemIndex].half2.defaultToppings[
+                  index
+                ].isDeleted = false;
+              
+              t.name = t.name.slice(3);
+              this.order.items[this.itemIndex].half2.defaultToppings[index].name = topping.name;
+              if(this.order.items[this.itemIndex].is_special == 0){
+                if(topping.id == 5){
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                  }
+                  else {
+                    this.order.items[this.itemIndex].totalPrice = 
+                    this.order.items[this.itemIndex].totalPrice;
+                  }
+              }
+              else if(this.order.items[this.itemIndex].is_special == 1){
+                if(topping.id == 5){
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                  }
+                  else {
+                    this.order.items[this.itemIndex].totalPrice = 
+                    this.order.items[this.itemIndex].totalPrice;
+                  }
+              }
+            }
+            else {
+              this.order.items[this.itemIndex].half2.defaultToppings[
+                index
+              ].isDeleted = true;
+              this.order.items[this.itemIndex].half2.defaultToppings[index].name =
+                "No " + topping.name;
+              t.isDeleted = true;
+              if(this.order.items[this.itemIndex].is_special == 0){
+                  if(topping.id == 5){
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                  }
+                  else {
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                  }
+                }
+                else if(this.order.items[this.itemIndex].is_special == 1){
+                  if(topping.id == 5){
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                  }
+                  else {
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                  }
+                }
+            }
           }
-        } else if (this.wholePizzaPart == 2) {
-          if (topping.name.slice(0, 3) === "No ") {
-            topping.isDeleted = false;
-            console.log("Default Toppings Array: ", this.pizza.defaultToppings);
-            this.order.items[this.itemIndex].half2.defaultToppings.forEach(
-              (t, index) => {
-                if (parseInt(t.id) === parseInt(topping.id)) {
-                  this.order.items[this.itemIndex].half2.defaultToppings[
-                    index
-                  ].isDeleted = false;
-                  topping.name = topping.name.slice(3);
-                  this.order.items[this.itemIndex].half2.defaultToppings[
-                    index
-                  ].name = topping.name;
-                  if(this.order.items[this.itemIndex].half2.is_special == 0  || this.order.items[this.itemIndex].half2.is_special == 1){
-                    if(topping.id == 5){
-                        this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice;
-                    }
-                    else {
-                        this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice + t.price;
-                    }
-                  }
-                }
-              }
-            );
-            this.$forceUpdate();
-          } else {
-            topping.isDeleted = true;
-            this.order.items[this.itemIndex].half2.defaultToppings.forEach(
-              (t, index) => {
-                if (parseInt(t.id) === parseInt(topping.id)) {
-                  this.order.items[this.itemIndex].half2.defaultToppings[
-                    index
-                  ].isDeleted = true;
-                  this.order.items[this.itemIndex].half2.defaultToppings[
-                    index
-                  ].name = "No " + topping.name;
-                  topping.name = "No " + topping.name;
-                  if(this.order.items[this.itemIndex].half2.is_special == 0  || this.order.items[this.itemIndex].half2.is_special == 1){
-                    if(topping.id == 5){
-                        this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice;
-                    }
-                    else {
-                        this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice - t.price;
-                    }
-                  }
-                }
-              }
-            );
-            console.log("Default Toppings Array: ", this.pizza.defaultToppings);
+          this.countTotalPrice();
+        this.$forceUpdate();
           }
-        }
+        );
+      }
       else if (this.isHalfPizza == "yes") {
         if (this.halfPizzaPart == 1) {
-          if (topping.name.slice(0, 3) === "No ") {
-
-            topping.isDeleted = false;
-            this.order.items[this.itemIndex].half1.defaultToppings.forEach(
-              (t, index) => {
-                if (parseInt(t.id) === parseInt(topping.id)) {
+          this.order.items[this.itemIndex].half1.defaultToppings.forEach(
+            (t, index) => {
+              if (parseInt(t.id) === parseInt(topping.id)) {
+                if (t.name.slice(0, 3) === "No ") {
+                  this.changeToppingPrice(this.order.items[this.itemIndex].size);
                   this.order.items[this.itemIndex].half1.defaultToppings[
                     index
                   ].isDeleted = false;
-                  topping.name = topping.name.slice(3);
-                  this.order.items[this.itemIndex].half1.defaultToppings[
-                    index
-                  ].name = topping.name;
-                  if(this.order.items[this.itemIndex].half1.is_special == 0  || this.order.items[this.itemIndex].half1.is_special == 1){
+                
+                t.name = t.name.slice(3);
+                this.order.items[this.itemIndex].half1.defaultToppings[index].name = topping.name;
+                if(this.order.items[this.itemIndex].half1.is_special == 0){
+                  if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                    }
+                }
+                else if(this.order.items[this.itemIndex].half1is_special == 1){
+                  if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                    }
+                }
+              }
+              else {
+                this.order.items[this.itemIndex].half1.defaultToppings[
+                  index
+                ].isDeleted = true;
+                this.order.items[this.itemIndex].half1.defaultToppings[index].name =
+                  "No " + topping.name;
+                t.isDeleted = true;
+                if(this.order.items[this.itemIndex].half1.is_special == 0){
                     if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
                         this.order.items[this.itemIndex].totalPrice;
                     }
                     else {
                         this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice + t.price;
+                        this.order.items[this.itemIndex].totalPrice;
                     }
                   }
-                }
-              }
-            );
-            this.$forceUpdate();
-          } else {
-            this.order.items[this.itemIndex].half1.defaultToppings.forEach(
-              (t, index) => {
-                if (parseInt(t.id) === parseInt(topping.id)) {
-                  this.order.items[this.itemIndex].half1.defaultToppings[
-                    index
-                  ].isDeleted = true;
-                  this.order.items[this.itemIndex].half1.defaultToppings[
-                    index
-                  ].name = "No " + topping.name;
-                  topping.name = "No " + topping.name;
-                  if(this.order.items[this.itemIndex].half1.is_special == 0  || this.order.items[this.itemIndex].half1.is_special == 1){
+                  else if(this.order.items[this.itemIndex].half1.is_special == 1){
                     if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
                         this.order.items[this.itemIndex].totalPrice;
                     }
                     else {
                         this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice - t.price;
+                        this.order.items[this.itemIndex].totalPrice;
                     }
                   }
-                }
               }
-            );
-            console.log("Default Toppings Array: ", this.pizza.defaultToppings);
-          }
+            }
+            this.countTotalPrice();
+          this.$forceUpdate();
+            }
+          );
         } else if (this.halfPizzaPart == 2) {
-          if (topping.name.slice(0, 3) === "No ") {
-            topping.isDeleted = false;
-            console.log("Default Toppings Array: ", this.pizza.defaultToppings);
-            this.order.items[this.itemIndex].half2.defaultToppings.forEach(
-              (t, index) => {
-                if (parseInt(t.id) === parseInt(topping.id)) {
+          this.order.items[this.itemIndex].half2.defaultToppings.forEach(
+            (t, index) => {
+              if (parseInt(t.id) === parseInt(topping.id)) {
+                if (t.name.slice(0, 3) === "No ") {
+                  this.changeToppingPrice(this.order.items[this.itemIndex].size);
                   this.order.items[this.itemIndex].half2.defaultToppings[
                     index
                   ].isDeleted = false;
-                  topping.name = topping.name.slice(3);
-                  this.order.items[this.itemIndex].half2.defaultToppings[
-                    index
-                  ].name = topping.name;
-                  if(this.order.items[this.itemIndex].half2.is_special == 0  || this.order.items[this.itemIndex].half2.is_special == 1){
+                
+                t.name = t.name.slice(3);
+                this.order.items[this.itemIndex].half2.defaultToppings[index].name = topping.name;
+                if(this.order.items[this.itemIndex].is_special == 0){
+                  if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                    }
+                }
+                else if(this.order.items[this.itemIndex].is_special == 1){
+                  if(topping.id == 5){
+                        this.order.items[this.itemIndex].totalPrice = 
+                        this.order.items[this.itemIndex].totalPrice;
+                    }
+                    else {
+                      this.order.items[this.itemIndex].totalPrice = 
+                      this.order.items[this.itemIndex].totalPrice;
+                    }
+                }
+              }
+              else {
+                this.order.items[this.itemIndex].half2.defaultToppings[
+                  index
+                ].isDeleted = true;
+                this.order.items[this.itemIndex].half2.defaultToppings[index].name =
+                  "No " + topping.name;
+                t.isDeleted = true;
+                if(this.order.items[this.itemIndex].is_special == 0){
                     if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
                         this.order.items[this.itemIndex].totalPrice;
                     }
                     else {
                         this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice + t.price;
+                        this.order.items[this.itemIndex].totalPrice;
                     }
                   }
-                }
-              }
-            );
-            this.$forceUpdate();
-          } else {
-            topping.isDeleted = true;
-            this.order.items[this.itemIndex].half2.defaultToppings.forEach(
-              (t, index) => {
-                if (parseInt(t.id) === parseInt(topping.id)) {
-                  this.order.items[this.itemIndex].half2.defaultToppings[
-                    index
-                  ].isDeleted = true;
-                  this.order.items[this.itemIndex].half2.defaultToppings[
-                    index
-                  ].name = "No " + topping.name;
-                  topping.name = "No " + topping.name;
-                  if(this.order.items[this.itemIndex].half2.is_special == 0  || this.order.items[this.itemIndex].half2.is_special == 1){
+                  else if(this.order.items[this.itemIndex].is_special == 1){
                     if(topping.id == 5){
                         this.order.items[this.itemIndex].totalPrice = 
                         this.order.items[this.itemIndex].totalPrice;
                     }
                     else {
                         this.order.items[this.itemIndex].totalPrice = 
-                        this.order.items[this.itemIndex].totalPrice - t.price;
+                        this.order.items[this.itemIndex].totalPrice;
                     }
                   }
-                }
               }
-            );
-            console.log("Default Toppings Array: ", this.pizza.defaultToppings);
-          }
+            }
+            this.countTotalPrice();
+          this.$forceUpdate();
+            }
+          );
         }
       } else if(this.isSticks){
         if (topping.name.slice(0, 3) === "No ") {
@@ -3050,31 +3342,32 @@ export default {
           console.log("Default Toppings Array: ", this.sticks.defaultToppings);
         }
       }
-
+      this.countTotalPrice();
       this.$forceUpdate();
     },
     deleteTopping(topping) {
       let index = -1;
-      if(this.wholePizzaPart == 1){
-        console.log("Half 1 View: ",this.order.items[this.itemIndex]);
+      if(this.wholePizzaPart == 1 || this.halfPizzaPart == 1){
         this.order.items[this.itemIndex].half1.toppings.forEach((t, idx) => {
         if (parseInt(t.id) === parseInt(topping.id)) {
           t.count = 0;
+          console.log('topping count delete: ', t.count);
           index = idx;
-          
         }
       });
       this.order.items[this.itemIndex].half1.toppings.splice(index, 1);
+      this.countTotalPrice();
       }
       else if(this.wholePizzaPart == 2){
         this.order.items[this.itemIndex].half1.toppings.forEach((t, idx) => {
         if (parseInt(t.id) === parseInt(topping.id)) {
           t.count = 0;
+          console.log('topping count delete: ', t.count);
           index = idx;
-          this.countTotalPrice();
         }
       });
       this.order.items[this.itemIndex].half2.toppings.splice(index, 1);
+      this.countTotalPrice();
       }
       else if(this.wholePizzaPart == 3){
         this.order.items[this.itemIndex].toppings.forEach((t, idx) => {
@@ -3082,10 +3375,11 @@ export default {
         t.count = 0;
         console.log('topping count delete: ', t.count);
         index = idx;
-        this.countTotalPrice();
+        
         }
       });
       this.order.items[this.itemIndex].toppings.splice(index, 1);
+      this.countTotalPrice();
       }
       else if(this.isSticks){
         this.order.items[this.itemIndex].toppings.forEach((t, idx) => {
@@ -3097,20 +3391,23 @@ export default {
       });
       
       }
-      
-      
       this.countTotalPrice();
       this.$forceUpdate();
     },
 
     deleteCusTopping(topping) {
       let index = -1;
+      let half1 = 0;
+      let half2 = 0;
       if (this.halfPizzaPart == 1) {
         this.order.items[this.itemIndex].half1.toppings.forEach((t, idx) => {
           if (parseInt(t.id) === parseInt(topping.id)) {
             t.count = 0;
             index = idx;
-          }
+            this.customPizza.half1.totalPrice = this.customPizza.price;
+            half1 = this.customPizza.half1.price; 
+            //this.customPizza.totalPrice = this.customPizza.price;
+          } 
         });
         this.order.items[this.itemIndex].half1.toppings.splice(index, 1);
         this.countTotalPrice();
@@ -3119,6 +3416,8 @@ export default {
           if (parseInt(t.id) === parseInt(topping.id)) {
             t.count = 0;
             index = idx;
+            this.customPizza.half2.totalPrice = this.customPizza.price;
+            half2 = this.customPizza.half2.price; 
           }
         });
         this.order.items[this.itemIndex].half2.toppings.splice(index, 1);
@@ -3137,19 +3436,28 @@ export default {
         });
         this.order.items[this.itemIndex].toppings.splice(index, 1);
         this.countTotalPrice();
+        this.$forceUpdate();
     },
 
     clearOrder() {
       this.order.items.splice(0, this.order.items.length);
       localStorage.removeItem("items");
       this.calculatorModal = false;
-      //this.showProductsComponent();
-      //alert('refresh');
-      // this.$router.push("/pos").catch(()=>{});
       this.$router.go();
     },
     clearCustomer(){
       this.curentCustomer = {
+        name: '',
+        sex: '',
+        email: '',
+        dob: '',
+        adress: '', 
+        tel: '',
+        tel2: '',
+        comment: '',
+        comment2: ''
+      };
+      this.customer = {
         name: '',
         sex: '',
         email: '',
@@ -3161,6 +3469,7 @@ export default {
         comment2: ''
       };
       this.telMessage = '';
+      this.customerChecked = false;
     },
 
     doneOrder() {
@@ -3177,8 +3486,10 @@ export default {
       var crust;
 
       if (crustPar === "thin") {
+        this.crustVar = false;
         crust = "original";
       } else if (crustPar === "original") {
+        this.crustVar = true;
         crust = "thin";
       }
       if (this.isHalfPizza == "yes") {
@@ -3242,6 +3553,7 @@ export default {
             this.customPizza.totalPrice = this.order.items[this.itemIndex].totalPrice;
             this.customPizza.price = this.customPizza.totalPrice;
             this.activeSmall = false;
+            this.noAB = false;
             this.activeMedium = false;
             this.activeXl = true;
         } else if (size === "m") {
@@ -3253,6 +3565,7 @@ export default {
             this.customPizza.price = this.customPizza.totalPrice;
             this.cutActive = false;
             this.activeSmall = false;
+            this.noAB = false;
             this.activeMedium = true;
             this.activeXl = false;
         } else if (size === "s") {
@@ -3263,6 +3576,7 @@ export default {
             this.customPizza.totalPrice = this.order.items[this.itemIndex].totalPrice;
             this.customPizza.price = this.customPizza.totalPrice;
             this.cutActive = false;
+            this.noAB = true;
             this.activeSmall = true;
             this.activeMedium = false;
             this.activeXl = false;
@@ -3277,6 +3591,7 @@ export default {
           ].priceBySizes.xl;
           this.order.items[this.itemIndex].price = this.order.items[this.itemIndex].totalPrice;
           this.activeSmall = false;
+          this.noAB = false;
             this.activeMedium = false;
             this.activeXl = true;
           
@@ -3287,6 +3602,7 @@ export default {
           this.order.items[this.itemIndex].cuts = false;
           this.order.items[this.itemIndex].price = this.order.items[this.itemIndex].totalPrice;
           this.cutActive = false;
+          this.noAB = false;
           this.activeSmall = false;
           this.activeMedium = true;
           this.activeXl = false;
@@ -3297,6 +3613,7 @@ export default {
           this.order.items[this.itemIndex].cuts = false;
           this.order.items[this.itemIndex].price = this.order.items[this.itemIndex].totalPrice;
           this.cutActive = false;
+          this.noAB = true;
           this.activeSmall = true;
           this.activeMedium = false;
           this.activeXl = false;
@@ -3308,21 +3625,22 @@ export default {
     },
 
     changeToppingPrice(size){
-      if(this.isPizza == 'yes'){
-        if(this.order.items[this.itemIndex].is_special === 0){
+      if(this.order.items[this.itemIndex].custom == 'no'){
+        
+        //if(this.order.items[this.itemIndex].is_special === 0){
           this.order.items[this.itemIndex].defaultToppings.forEach(t => {
           if(size == 's'){
-            t.price = this.toppingPrice[t.isPremium].s/2;
+            t.price = this.toppingPrice[t.isPremium].s;
           }
           if(size == 'm'){
-            t.price = this.toppingPrice[t.isPremium].m/2;
+            t.price = this.toppingPrice[t.isPremium].m;
           }
           if(size == 'xl'){
-            t.price = this.toppingPrice[t.isPremium].xl/2;
+            t.price = this.toppingPrice[t.isPremium].xl;
           }
         });  
-        }
-        
+
+
         this.order.items[this.itemIndex].toppings.forEach(t => {
           if(size == 's'){
             t.price = this.toppingPrice[t.isPremium].s;
@@ -3356,9 +3674,31 @@ export default {
             t.price = this.toppingPrice[t.isPremium].xl/2;
           }
         });
+        this.order.items[this.itemIndex].half1.defaultToppings.forEach(t => {
+          if(size == 's'){
+            t.price = this.toppingPrice[t.isPremium].s/2;
+          }
+          if(size == 'm'){
+            t.price = this.toppingPrice[t.isPremium].m/2;
+          }
+          if(size == 'xl'){
+            t.price = this.toppingPrice[t.isPremium].xl/2;
+          }
+        });
+        this.order.items[this.itemIndex].half2.defaultToppings.forEach(t => {
+          if(size == 's'){
+            t.price = this.toppingPrice[t.isPremium].s/2;
+          }
+          if(size == 'm'){
+            t.price = this.toppingPrice[t.isPremium].m/2;
+          }
+          if(size == 'xl'){
+            t.price = this.toppingPrice[t.isPremium].xl/2;
+          }
+        });
       }
       if(this.isHalfPizza == 'yes'){
-        if(this.order.items[this.itemIndex].is_special === 0){
+        // if(this.order.items[this.itemIndex].is_special === 0){
           this.order.items[this.itemIndex].half1.defaultToppings.forEach(t => {
           if(size == 's'){
             t.price = this.toppingPrice[t.isPremium].s/2;
@@ -3381,7 +3721,7 @@ export default {
             t.price = this.toppingPrice[t.isPremium].xl/2;
           }
         });  
-        }
+        // }
         
         this.order.items[this.itemIndex].toppings.forEach(t => {
           if(size == 's'){
@@ -3428,6 +3768,7 @@ export default {
     },
     addTopping(topping) {
       this.playSound();
+      let matchedTopping = false;
       if(topping.name.slice(0, 3) === "No ")
       {
         topping.name = topping.name.slice(3);
@@ -3440,6 +3781,7 @@ export default {
 
             this.customPizza.half1.defaultToppings.forEach((t) => {
           if (parseInt(t.id) === topping.id) {
+            matchedTopping = true;
             if (t.name.slice(0, 3) == "No ") {
               t.name = topping.name;
               t.isDeleted = false;
@@ -3456,6 +3798,7 @@ export default {
                 if (t.count === 4) {
                   t.count = 0;
                   this.deleteCusTopping(t);
+                  this.deleteDefaultTopping(t);
                   this.customPizza.totalPrice = this.customPizza.price;
                 }
                 // Adding topping price
@@ -3525,6 +3868,7 @@ export default {
                 if (t.count === 4) {
                   t.count = 0;
                   this.deleteCusTopping(t);
+                  this.deleteDefaultTopping(t);
                   this.customPizza.totalPrice = this.customPizza.price;
                 }
                 // Adding topping price
@@ -3579,6 +3923,7 @@ export default {
                 if (t.count === 4) {
                   t.count = 0;
                   this.deleteCusMainTopping(t);
+                  
                   this.customPizza.totalPrice = this.customPizza.price;
                 }
                 // Adding topping price
@@ -3625,10 +3970,80 @@ export default {
         // End of topping on whole pizza
         else if (this.isPizza == "yes") {
         let matched = false;
-        this.pizza.toppingChange++;
+        
+        //this.pizza.toppingChange++;
         if(this.pizza.is_special == 0){
           this.pizza.defaultToppings.forEach((t) => {
             if (parseInt(t.id) === topping.id) {
+              matchedTopping = true;
+              if (t.name.slice(0, 3) === "No ") {
+                if(topping.id == 5){
+
+                  this.pizza.totalPrice = this.pizza.totalPrice; 
+                }
+                else {
+                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                }
+                t.name = topping.name;
+                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                t.isDeleted = false;
+                matched = true;
+              }
+
+              if (this.pizza.size == "s") {
+                    t.price = this.toppingPrice[topping.isPremium].s;
+                    this.pizza.totalPrice = this.pizza.price + t.price;
+                } else if (this.pizza.size == "m") {
+                    t.price = this.toppingPrice[topping.isPremium].m;
+                    this.pizza.totalPrice = this.pizza.price;
+                } else if (this.pizza.size == "xl") {
+                    t.price = this.toppingPrice[topping.isPremium].xl;
+                    this.pizza.totalPrice = this.pizza.price + t.price;
+                }
+              // t.count += 1;
+              // matched = true;
+            }
+          });
+        }
+        else if(this.pizza.is_special == 1){
+          this.pizza.defaultToppings.forEach((t) => {
+            if (parseInt(t.id) === topping.id) {
+               matchedTopping = true;
+              if (t.name.slice(0, 3) == "No ") {
+                if(topping.id == 5){
+                  this.pizza.totalPrice = this.pizza.totalPrice;  
+                }
+                else {
+                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                }
+                t.name = topping.name;
+                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                t.isDeleted = false;
+                matched = true;
+              }
+
+              if (this.pizza.size == "s") {
+                    t.price = this.toppingPrice[topping.isPremium].s;
+                    this.pizza.totalPrice = this.pizza.price + t.price;
+                } else if (this.pizza.size == "m") {
+                    t.price = this.toppingPrice[topping.isPremium].m;
+                    this.pizza.totalPrice = this.pizza.price;
+                } else if (this.pizza.size == "xl") {
+                    t.price = this.toppingPrice[topping.isPremium].xl;
+                    this.pizza.totalPrice = this.pizza.price + t.price;
+                }
+              // t.count += 1;
+              // matched = true;
+            }
+          });
+        }
+
+        if (this.wholePizzaPart === 1){
+
+          if(this.pizza.is_special == 0){
+          this.pizza.half1.defaultToppings.forEach((t) => {
+            if (parseInt(t.id) === topping.id) {
+              matchedTopping = true;
               if (t.name.slice(0, 3) === "No ") {
                 if(topping.id == 5){
                   this.pizza.totalPrice = this.pizza.totalPrice; 
@@ -3647,7 +4062,7 @@ export default {
                     this.pizza.totalPrice = this.pizza.price + t.price;
                 } else if (this.pizza.size == "m") {
                     t.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price ;
+                    this.pizza.totalPrice = this.pizza.price;
                 } else if (this.pizza.size == "xl") {
                     t.price = this.toppingPrice[topping.isPremium].xl;
                     this.pizza.totalPrice = this.pizza.price + t.price;
@@ -3658,11 +4073,12 @@ export default {
           });
         }
         else if(this.pizza.is_special == 1){
-          this.pizza.defaultToppings.forEach((t) => {
+          this.pizza.half1.defaultToppings.forEach((t) => {
             if (parseInt(t.id) === topping.id) {
-              if (t.name.slice(0, 3) == "No ") {
+              matchedTopping = true;
+              if (t.name.slice(0, 3) == "No ") {       
                 if(topping.id == 5){
-                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;  
+                  this.pizza.totalPrice = this.pizza.totalPrice;  
                 }
                 else {
                   this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
@@ -3678,7 +4094,7 @@ export default {
                     this.pizza.totalPrice = this.pizza.price + t.price;
                 } else if (this.pizza.size == "m") {
                     t.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price ;
+                    this.pizza.totalPrice = this.pizza.price;
                 } else if (this.pizza.size == "xl") {
                     t.price = this.toppingPrice[topping.isPremium].xl;
                     this.pizza.totalPrice = this.pizza.price + t.price;
@@ -3688,8 +4104,6 @@ export default {
             }
           });
         }
-
-        if (this.wholePizzaPart === 1){
           
           this.wholePizzaActive = true;
           if (!matched) {
@@ -3700,16 +4114,19 @@ export default {
                 if (t.count === 4) {
                     t.count = 0;
                     this.deleteTopping(t);
+                    if(matchedTopping){
+                      this.deleteDefaultTopping(t);
+                    }
                 }
                     if (this.pizza.size == "s") {
                     t.price = this.toppingPrice[topping.isPremium].s/2;
-                    this.pizza.totalPrice = this.pizza.price + t.price * t.count;
+                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
                     } else if (this.pizza.size == "m") {
                     t.price = this.toppingPrice[topping.isPremium].m/2;
-                    this.pizza.totalPrice = this.pizza.price + t.price * t.count;
+                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
                     } else if (this.pizza.size == "xl") {
                     t.price = this.toppingPrice[topping.isPremium].xl/2;
-                    this.pizza.totalPrice = this.pizza.price + t.price * t.count;
+                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
                     }
                 matched = true;
                 }
@@ -3717,21 +4134,85 @@ export default {
             if (!matched) {
                 if (this.pizza.size == "s") {
                     topping.price = this.toppingPrice[topping.isPremium].s/2;
-                    this.pizza.totalPrice = this.pizza.price + topping.price;
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 } else if (this.pizza.size == "m") {
                     topping.price = this.toppingPrice[topping.isPremium].m/2;
-                    this.pizza.totalPrice = this.pizza.price + topping.price;
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 } else if (this.pizza.size == "xl") {
                     topping.price = this.toppingPrice[topping.isPremium].xl/2;
-                    this.pizza.totalPrice = this.pizza.price + topping.price;
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 }
-                
                 this.pizza.half1.toppings.push({ ...topping, count: 1 });
             }
             }
 
         }
         else if(this.wholePizzaPart === 2){
+          if(this.pizza.is_special == 0){
+          this.pizza.half2.defaultToppings.forEach((t) => {
+            if (parseInt(t.id) === topping.id) {
+              matchedTopping = true;
+              if (t.name.slice(0, 3) === "No ") {
+                if(topping.id == 5){
+                  this.pizza.totalPrice = this.pizza.totalPrice; 
+                }
+                else {
+                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                }
+                t.name = topping.name;
+                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                t.isDeleted = false;
+                matched = true;
+              }
+
+              if (this.pizza.size == "s") {
+                    t.price = this.toppingPrice[topping.isPremium].s;
+                    this.pizza.totalPrice = this.pizza.price + t.price;
+                } else if (this.pizza.size == "m") {
+                    t.price = this.toppingPrice[topping.isPremium].m;
+                    this.pizza.totalPrice = this.pizza.price;
+                } else if (this.pizza.size == "xl") {
+                    t.price = this.toppingPrice[topping.isPremium].xl;
+                    this.pizza.totalPrice = this.pizza.price + t.price;
+                }
+              // t.count += 1;
+              // matched = true;
+            }
+          });
+        }
+        else if(this.pizza.is_special == 1){
+          this.pizza.half2.defaultToppings.forEach((t) => {
+            if (parseInt(t.id) === topping.id) {
+              matchedTopping = true;
+              if (t.name.slice(0, 3) == "No ") {
+                if(topping.id == 5){
+                  this.pizza.totalPrice = this.pizza.totalPrice;  
+                }
+                else {
+                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                }
+                t.name = topping.name;
+                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                t.isDeleted = false;
+                matched = true;
+              }
+
+              if (this.pizza.size == "s") {
+                    t.price = this.toppingPrice[topping.isPremium].s;
+                    this.pizza.totalPrice = this.pizza.price + t.price;
+                } else if (this.pizza.size == "m") {
+                    t.price = this.toppingPrice[topping.isPremium].m;
+                    this.pizza.totalPrice = this.pizza.price;
+                } else if (this.pizza.size == "xl") {
+                    t.price = this.toppingPrice[topping.isPremium].xl;
+                    this.pizza.totalPrice = this.pizza.price + t.price;
+                }
+              // t.count += 1;
+              // matched = true;
+            }
+          });
+        }
+          
           this.wholePizzaActive = true;
           if (!matched) {
             matched = false;
@@ -3741,16 +4222,19 @@ export default {
                 if (t.count === 4) {
                     t.count = 0;
                     this.deleteTopping(t);
+                    if(matchedTopping){
+                      this.deleteDefaultTopping(t);
+                    }
                 }
                     if (this.pizza.size == "s") {
                     t.price = this.toppingPrice[topping.isPremium].s/2;
-                    this.pizza.totalPrice = this.pizza.price + t.price * t.count;
+                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
                     } else if (this.pizza.size == "m") {
                     t.price = this.toppingPrice[topping.isPremium].m/2;
-                    this.pizza.totalPrice = this.pizza.price + t.price * t.count;
+                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
                     } else if (this.pizza.size == "xl") {
                     t.price = this.toppingPrice[topping.isPremium].xl/2;
-                    this.pizza.totalPrice = this.pizza.price + t.price * t.count;
+                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
                     }
                 matched = true;
                 }
@@ -3758,13 +4242,13 @@ export default {
             if (!matched) {
                 if (this.pizza.size == "s") {
                     topping.price = this.toppingPrice[topping.isPremium].s/2;
-                    this.pizza.totalPrice = this.pizza.price + topping.price;
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 } else if (this.pizza.size == "m") {
                     topping.price = this.toppingPrice[topping.isPremium].m/2;
-                    this.pizza.totalPrice = this.pizza.price + topping.price;
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 } else if (this.pizza.size == "xl") {
                     topping.price = this.toppingPrice[topping.isPremium].xl/2;
-                    this.pizza.totalPrice = this.pizza.price + topping.price;
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 }
                 
                 this.pizza.half2.toppings.push({ ...topping, count: 1 });
@@ -3782,16 +4266,20 @@ export default {
                     t.count = 0;
                     console.log('Topping count: ', t.count);
                     this.deleteTopping(t);
-                }
+                    if(matchedTopping){
+                      this.deleteDefaultTopping(t);
+                    }
+                }   
                     if (this.pizza.size == "s") {
                     t.price = this.toppingPrice[topping.isPremium].s;
-                    this.pizza.totalPrice = this.pizza.price + t.price * t.count;
+                      this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
                     } else if (this.pizza.size == "m") {
                     t.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price + t.price * t.count;
+                    // alert(this.pizza.totalPrice); // ?????
+                    //this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
                     } else if (this.pizza.size == "xl") {
                     t.price = this.toppingPrice[topping.isPremium].xl;
-                    this.pizza.totalPrice = this.pizza.price + t.price * t.count;
+                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
                     }
                 matched = true;
                 }
@@ -3799,21 +4287,19 @@ export default {
             if (!matched) {
                 if (this.pizza.size == "s") {
                     topping.price = this.toppingPrice[topping.isPremium].s;
-                    this.pizza.totalPrice = this.pizza.price + topping.price;
+                    //this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 } else if (this.pizza.size == "m") {
                     topping.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price + topping.price;
+                    //this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 } else if (this.pizza.size == "xl") {
                     topping.price = this.toppingPrice[topping.isPremium].xl;
-                    this.pizza.totalPrice = this.pizza.price + topping.price;
+                    //this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
                 }
-                
+
                 this.pizza.toppings.push({ ...topping, count: 1 });
             }
             }
         }
-        this.countTotalPrice();
-        this.$forceUpdate();
       }
         // end of add pizza toppings
 
@@ -3860,8 +4346,6 @@ export default {
             this.sticks.toppings.push({ ...topping, count: 1 });
           }
         }
-        this.countTotalPrice();
-        this.$forceUpdate();
       }
 
       // end of add sticks tooppings
@@ -3957,69 +4441,162 @@ export default {
               this.order.items[i].totalPrice =
                 this.order.items[i].price + toppingTotal;
             }
+            if(this.order.items[i].toppings.length == 0){
+              this.order.items[i].totalPrice = this.order.items[i].price;
+            }
         }
         else {
           if (this.order.items[i].custom === "yes") {
+
+            let defCount = 0;
+            this.order.items[i].half1.defaultToppings.forEach(t => {
+              if(t.isDeleted){
+                    if(t.id == 5){
+                      defCount = defCount;
+                    }
+                    else {
+                      defCount = defCount + t.price;
+                    }
+                }
+            });
+            this.order.items[i].half2.defaultToppings.forEach(t => {
+              if(t.isDeleted){
+                    if(t.id == 5){
+                      defCount = defCount;
+                    }
+                    else {
+                      defCount = defCount + t.price;
+                    }
+                }
+            });
+            if(this.order.items[i].half1.is_special == 0){
+              this.order.items[i].defCount = defCount;
+            }
+            else {
+              this.order.items[i].defCount = 0;
+            }
+
+            if(this.order.items[i].half2.is_special == 0){
+              this.order.items[i].defCount = defCount;
+            }
+            else {
+              this.order.items[i].defCount = 0;
+            }
+  
             for (k = 0; k < this.order.items[i].half1.toppings.length; k++) {
               toppingTotal =
                 toppingTotal +
                 this.order.items[i].half1.toppings[k].price *
                   this.order.items[i].half1.toppings[k].count;
               //alert(toppingTotal);
-              this.order.items[i].totalPrice =
-                this.order.items[i].price + toppingTotal;
+                this.order.items[i].totalPrice =
+                      this.order.items[i].price + toppingTotal - this.order.items[i].defCount;
             }
             for (k = 0; k < this.order.items[i].half2.toppings.length; k++) {
               toppingTotal =
                 toppingTotal +
                 this.order.items[i].half2.toppings[k].price *
                   this.order.items[i].half2.toppings[k].count;
-              //alert(toppingTotal);
-              this.order.items[i].totalPrice =
-                this.order.items[i].price + toppingTotal;
-            }
-            for (k = 0; k < this.order.items[i].toppings.length; k++) {
-              toppingTotal =
-                toppingTotal +
-                this.order.items[i].toppings[k].price *
-                  this.order.items[i].toppings[k].count;
-              //alert(toppingTotal);
-              this.order.items[i].totalPrice =
-                this.order.items[i].price + toppingTotal;
-            }
-          } else {
-            for (k = 0; k < this.order.items[i].half1.toppings.length; k++) {
-              toppingTotal =
-                toppingTotal +
-                this.order.items[i].half1.toppings[k].price *
-                  this.order.items[i].half1.toppings[k].count;
-              //alert(toppingTotal);
-              this.order.items[i].totalPrice =
-                this.order.items[i].price + toppingTotal;
-            }
-            for (k = 0; k < this.order.items[i].half2.toppings.length; k++) {
-              toppingTotal =
-                toppingTotal +
-                this.order.items[i].half2.toppings[k].price *
-                  this.order.items[i].half2.toppings[k].count;
-              //alert(toppingTotal);
-              this.order.items[i].totalPrice =
-                this.order.items[i].price + toppingTotal;
+             
+                this.order.items[i].totalPrice =
+                      this.order.items[i].price + toppingTotal - this.order.items[i].defCount;
             }
             for (var k = 0; k < this.order.items[i].toppings.length; k++) {
               toppingTotal =
                 toppingTotal +
                 this.order.items[i].toppings[k].price *
                   this.order.items[i].toppings[k].count;
-              //alert(toppingTotal);
-              this.order.items[i].totalPrice =
-                this.order.items[i].price + toppingTotal;
+
+                    this.order.items[i].totalPrice =
+                      this.order.items[i].price + toppingTotal - this.order.items[i].defCount;
             }
+
+            if(this.order.items[i].toppings.length == 0 
+                && this.order.items[i].half1.toppings.length == 0 
+                && this.order.items[i].half2.toppings.length == 0) {
+                    this.order.items[i].totalPrice = this.order.items[i].price - this.order.items[i].defCount;
+                }
+            
+          } else {
+
+            
+            let defCount = 0;
+            this.order.items[i].defaultToppings.forEach(t => {
+                if(t.isDeleted){
+                    if(t.id == 5){
+                      defCount = defCount;
+                    }
+                    else {
+                      defCount = defCount + t.price;
+                    }
+                }
+            });
+            this.order.items[i].half1.defaultToppings.forEach(t => {
+              if(t.isDeleted){
+                    if(t.id == 5){
+                      defCount = defCount;
+                    }
+                    else {
+                      defCount = defCount + t.price;
+                    }
+                }
+            });
+            this.order.items[i].half2.defaultToppings.forEach(t => {
+              if(t.isDeleted){
+                defCount = defCount + t.price;
+                }
+            });
+            if(this.order.items[i].is_special == 0){
+              this.order.items[i].defCount = defCount;
+            }
+            else {
+              this.order.items[i].defCount = 0;
+            }
+
+            for (k = 0; k < this.order.items[i].half1.toppings.length; k++) {
+              toppingTotal =
+                toppingTotal +
+                this.order.items[i].half1.toppings[k].price *
+                  this.order.items[i].half1.toppings[k].count;
+              //alert(toppingTotal);
+                this.order.items[i].totalPrice =
+                      this.order.items[i].price + toppingTotal - this.order.items[i].defCount;
+            }
+            for (k = 0; k < this.order.items[i].half2.toppings.length; k++) {
+              toppingTotal =
+                toppingTotal +
+                this.order.items[i].half2.toppings[k].price *
+                  this.order.items[i].half2.toppings[k].count;
+             
+                this.order.items[i].totalPrice =
+                      this.order.items[i].price + toppingTotal - this.order.items[i].defCount;
+            }
+            for (var k = 0; k < this.order.items[i].toppings.length; k++) {
+              toppingTotal =
+                toppingTotal +
+                this.order.items[i].toppings[k].price *
+                  this.order.items[i].toppings[k].count;
+
+                    this.order.items[i].totalPrice =
+                      this.order.items[i].price + toppingTotal - this.order.items[i].defCount;
+
+              
+            }
+
+            if(this.order.items[i].toppings.length == 0 
+                && this.order.items[i].half1.toppings.length == 0 
+                && this.order.items[i].half2.toppings.length == 0) {
+                    this.order.items[i].totalPrice = this.order.items[i].price - this.order.items[i].defCount;
+                }
+            
           }
         }
+        this.changeToppingPrice(this.order.items[i].size);
       }
+
       this.$forceUpdate();
       this.totalPriceCounter();
+      this.changeToppingPrice(this.order.items[i]);
     },
 
     plusTopQty(topping) {
@@ -4093,7 +4670,7 @@ export default {
       }
     },
     itemTotalPrice(item) {
-      alert(item.totalPrice);
+      //alert(item.totalPrice);
     },
 
     getRecipe(product) {
@@ -4104,7 +4681,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/products/get-reciept-by-product-id",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/get-reciept-by-product-id",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -4137,6 +4714,16 @@ export default {
             // this.pizza.defaultToppings = response.data;
             this.pizza.defaultToppings = response.data.map((t) => {
               t.price=  this.toppingPrice[t.isPremium].m;
+              t.isDeleted = false;
+              return { ...t, count: 1 };
+            });
+            this.pizza.half1.defaultToppings = response.data.map((t) => {
+              t.price=  this.toppingPrice[t.isPremium].m/2;
+              t.isDeleted = false;
+              return { ...t, count: 1 };
+            });
+            this.pizza.half2.defaultToppings = response.data.map((t) => {
+              t.price=  this.toppingPrice[t.isPremium].m/2;
               t.isDeleted = false;
               return { ...t, count: 1 };
             });
@@ -4390,8 +4977,13 @@ export default {
         this.splitPart = 2; 
       }
     },
-
-    walkinActive() {
+    invoiceActive(){
+      this.invoiceModal = true;
+    },
+    generateInvoice(){
+      alert("Invoice is created! (Not now but wiil be :))");
+    },
+    walkinActive(ND) {
       this.playSound();
       if(!this.walkinActiveVar){
         this.walkinActiveVar = true;
@@ -4400,25 +4992,39 @@ export default {
       if (this.takeoutActiveVar || this.deliveryActiveVar) {
         this.takeoutActiveVar = false;
         this.deliveryActiveVar = false;
+        this.glovoActive = false;
+        this.woltActive = false;
         this.ronnysActive = false;
         // alert(this.deliveryActiveVar);
       }
       this.order.deliveryFee = 0;
       this.order.deliveryMethod = 'Walk In';
-      this.walkInModal = !this.walkInModal;
+      if(ND === 'no'){
+        // pass
+      }
+      else {
+        this.walkInModal = !this.walkInModal;
+      }
     },
-    takeoutActive() {
+    takeoutActive(ND) {
       this.playSound();
       //this.walkInActiveChange = !this.walkInActiveChange;
       this.takeoutActiveVar = true;
       if (this.walkinActiveVar || this.deliveryActiveVar) {
         this.walkinActiveVar = false;
         this.deliveryActiveVar = false;
+        this.glovoActive = false;
+        this.woltActive = false;
         this.ronnysActive = false;
       }
       this.order.deliveryFee = 0;
       this.order.deliveryMethod = 'Take Out';
+      if(ND === 'no'){
+        // pass
+      }
+      else {
       this.takeOutModal = !this.takeOutModal;
+      }
     },
     deliveryActive() {
       this.playSound();
@@ -4456,15 +5062,16 @@ export default {
         }
       }
       else {
-        this.cashInput = this.cashInput + cash;
+        this.cashInput = Number(this.cashInput) + cash;
       }
+    },
+
+    calcPayAll(cash){
+      this.cashInput = cash;
     },
 
     calcInput(input) {
       this.playSound();
-      if (this.cashInput == 0) {
-        this.cashInput = "";
-      }
 
       if(this.splitActive){
         if(this.splitPart === 1){
@@ -4484,63 +5091,90 @@ export default {
         }
       }
       else {
-        this.cashInput = this.cashInput + input;
+        this.cashInput = this.cashInput + input ;
+        let index = this.cashInput.length;
+        let decimal = '';
+        let foo = '';
+        if(index > 2 ){
+          if(this.cashInput.indexOf('.') === -1){
+              this.cashInput = this.cashInput.substr(0, index-2) + '.' + this.cashInput.substr(index -2, index);
+          }
+          else {
+              foo = this.cashInput.split('.').join('');
+              //alert(foo);
+              this.cashInput = foo.substr(0, index-3) + '.' + foo.substr(index -3, index);
+          }
+          //alert(decimal);
+          //this.cashInput = decimal;
+          // alert(this.cashInput.substr(0, index-2));
+          // alert(this.cashInput);
+        }
+        //this.cashInput = decimal;
       }
 
     },
     doneCash() {
       this.playSound();
-      
-      if(this.order.deliveryMethod === "Walk In" || this.order.deliveryMethod === "Take Out"){
-        if(this.totalPrice > Number(this.cashInput)){
-          alert('Enter Cash Ammount!');
-        }
-        else {
-          this.cashInput = parseFloat(this.cashInput);
-          this.confirmModal = true;
-          this.paymentType = "cash";
-        }
+      if(this.order.deliveryMethod === 'Delivery' && this.order.deliveryFee === 0){
+        alert('You Should Select Delivery Fee For Order!');
       }
       else {
-          if(!this.deliveryActiveVar && !this.walkinActiveVar && !this.takeoutActiveVar && !this.glovoActive && !this.woltActive){
-            alert('Please Specify Delivery Method');
+        if(this.order.deliveryMethod === "Walk In" || this.order.deliveryMethod === "Take Out"){
+          if(this.totalPrice > Number(this.cashInput)){
+            alert('Enter Cash Ammount!');
           }
           else {
-
-              if(this.splitActive){
-                if(this.splitPart === 1){
-                  this.split.split1.paymentType = 'cash';
-                }
-                else if (this.splitPart === 2){
-                  this.split.split2.paymentType = 'cash';
-                }
-              }
-              else {
-                this.cashInput = parseFloat(this.cashInput);
-                this.confirmModal = true;
-                this.paymentType = "cash";
-              }
-              //this.calcPay();
+            this.cashInput = parseFloat(this.cashInput);
+            this.confirmModal = true;
+            this.paymentType = "cash";
           }
+        }
+        else {
+            if(!this.deliveryActiveVar && !this.walkinActiveVar && !this.takeoutActiveVar && !this.glovoActive && !this.woltActive){
+              alert('Please Specify Delivery Method');
+            }
+            else {
+
+                if(this.splitActive){
+                  if(this.splitPart === 1){
+                    this.split.split1.paymentType = 'cash';
+                  }
+                  else if (this.splitPart === 2){
+                    this.split.split2.paymentType = 'cash';
+                  }
+                }
+                else {
+                  this.cashInput = parseFloat(this.cashInput);
+                  this.confirmModal = true;
+                  this.paymentType = "cash";
+                }
+                //this.calcPay();
+            }
+        }
       }
     },
     payCard() {
       this.playSound();
-      if(!this.deliveryActiveVar && !this.walkinActiveVar && !this.takeoutActiveVar && !this.glovoActive && !this.woltActive){
-        alert('Please Specify Delivery Method');
+      if(this.order.deliveryMethod === 'Delivery' && this.order.deliveryFee === 0){
+        alert('You Should Select Delivery Fee For Order!');
       }
-      else{
-        if(this.splitActive){
-          if(this.splitPart === 1){
-            this.split.split1.paymentType = 'card';
-          }
-          else if (this.splitPart === 2){
-            this.split.split2.paymentType = 'card';
-          }
+      else {
+        if(!this.deliveryActiveVar && !this.walkinActiveVar && !this.takeoutActiveVar && !this.glovoActive && !this.woltActive){
+          alert('Please Specify Delivery Method');
         }
-        else {
-            this.confirmModal = true;
-            this.paymentType = "card";
+        else{
+          if(this.splitActive){
+            if(this.splitPart === 1){
+              this.split.split1.paymentType = 'card';
+            }
+            else if (this.splitPart === 2){
+              this.split.split2.paymentType = 'card';
+            }
+          }
+          else {
+              this.confirmModal = true;
+              this.paymentType = "card";
+          }
         }
       }
       
@@ -4571,7 +5205,7 @@ export default {
         axios.request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/products/send-order",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/send-order",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -4585,7 +5219,7 @@ export default {
       }
     },
     calcClear() {
-      this.cashInput = 0;
+      this.cashInput = '';
     },
     calcPay() {
 
@@ -4637,6 +5271,8 @@ export default {
       console.log('Play Sound!');
     },
     telMsg() {
+      // this.$forceUpdate();
+      this.customer.tel = this.telMessage;
       this.crmModal = true;
       //this.telMessageActive ^= true;
     },
@@ -4652,6 +5288,17 @@ export default {
       }
       else {
         this.order = this.lastOrder;
+        if(this.order.deliveryMethod == 'Walk In'){
+          this.walkinActive('no');
+        } else if(this.order.deliveryMethod == 'Take Out'){
+          this.takeoutActive('no');
+        } else if(this.order.deliveryMethod == 'Delivery'){
+          this.ronnysDelivery('no');
+        } else if(this.order.deliveryMethod == 'Wolt'){
+          this.woltDelivery('no');   
+        } else if(this.order.deliveryMethod == 'Glovo'){
+          this.glovoDelivery('no');
+        }
       }
     },
     closeCalc(){
@@ -4661,7 +5308,7 @@ export default {
 
         this.showProductsComponent();
     },
-    glovoDelivery(){
+    glovoDelivery(ND){
       this.order.deliveryFee = 0;
       this.walkinActiveVar = false;
       this.deliveryActiveVar = false
@@ -4669,9 +5316,14 @@ export default {
       this.ronnysActive = false;
       this.woltActive = false;
       this.glovoActive = true;
-      this.glovoModal = true;
+      if(ND === 'no'){
+        // pass
+      }
+      else {
+        this.glovoModal = true;
+      }
     },
-    woltDelivery(){
+    woltDelivery(ND){
       this.order.deliveryFee = 0;
       this.walkinActiveVar = false;
       this.takeoutActiveVar = false;
@@ -4679,16 +5331,40 @@ export default {
       this.ronnysActive = false;
       this.woltActive = true;
       this.glovoActive = false;
-      this.woltModal = true;
+      if(ND === 'no'){
+        // pass
+      }
+      else {
+        this.woltModal = true;
+      }
     },
-    ronnysDelivery(){
+    ronnysDelivery(ND){
       this.deliveryActiveVar = true;
       this.walkinActiveVar = false;
       this.takeoutActiveVar = false;
       this.ronnysActive = true;
       this.woltActive = false;
       this.glovoActive = false;
-      this.ronnysModal = true;
+      if(ND === 'no'){
+        if (this.order.deliveryFee === 1.5)
+          this.activeFee_el = 0;
+        else if (this.order.deliveryFee === 3)
+          this.activeFee_el = 1;
+        else if (this.order.deliveryFee === 4.5)
+          this.activeFee_el = 2;
+        else if (this.order.deliveryFee === 6)
+          this.activeFee_el = 3;
+        else if (this.order.deliveryFee === 7)
+          this.activeFee_el = 4;
+        else if (this.order.deliveryFee === 10)
+          this.activeFee_el = 5;
+        else if (this.order.deliveryFee === 13.5)
+          this.activeFee_el = 6;
+        // pass
+      }
+      else {
+        this.ronnysModal = true;
+        }
       },
     discOrder(){
         this.discountItem = false;
@@ -4722,13 +5398,14 @@ export default {
       //alert(product.id);
       bodyFormData.set("name", this.customer.name);
       bodyFormData.set("address", this.customer.adress);
+      bodyFormData.set("sex", this.customer.sex);
       bodyFormData.set("phone", this.customer.tel);
       bodyFormData.set("comment", this.customer.comment);
       axios
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/customers/create-customer",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/customers/create-customer",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -4751,13 +5428,14 @@ export default {
       //alert(product.id);
       bodyFormData.set("name", this.customer.name);
       bodyFormData.set("address", this.customer.adress);
+      bodyFormData.set("sex", this.customer.sex);
       bodyFormData.set("phone", this.customer.tel);
       bodyFormData.set("comment", this.customer.comment);
       axios
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/customers/create-customer",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/customers/create-customer",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -4833,6 +5511,10 @@ export default {
       }
     },
    glovoCustomer(){
+     if(this.curentCustomer.adress === '' || this.curentCustomer.tel === '')
+      {
+        alert('Adress and Phone Fields are required!');
+      }
       this.order.customer = this.curentCustomer;
       this.order.deliveryType = 'Glovo';
       this.order.deliveryMethod = 'Glovo';
@@ -4840,6 +5522,10 @@ export default {
       this.glovoModal = false;
     },
    woltCustomer(){
+     if(this.curentCustomer.adress === '' || this.curentCustomer.tel === '')
+      {
+        alert('Adress and Phone Fields are required!');
+      }
       this.order.customer = this.curentCustomer;
       this.order.deliveryType = 'Wolt';
       this.order.deliveryMethod = 'Wolt';

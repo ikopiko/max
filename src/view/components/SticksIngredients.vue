@@ -12,7 +12,7 @@
                             <!-- <div class="w-1 font-weight-bold"  -->
                         <div class="w-1 font-weight-bold" @click="sendIngredient(ingredient);"
                               v-bind:class='[ingredient.class_name, highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "active" : ""]'>
-                              <button class="btn" v-if="highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true"><i class="fa" :class='highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "fa-close" : ""' @click="deleteTopping($event, ingredient)"></i></button>
+                              <button class="btn" v-if="highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true"><i class="fa" :class='highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "fa-close fa-2x clearBtn" : ""' @click="deleteTopping($event, ingredient)"></i></button>
                               <!-- Styling topping Class -->
                                     <span>{{ ingredient.name }}  {{ mapping[ingredient.id] }}<br></span>
                         </div>   
@@ -61,7 +61,7 @@ export default {
     console.log(this.categoryId)
     axios.request({
             method: 'post',
-            url: 'https://max.ronnyspizza.ge/rest/web/index.php?r=v1/products/get-ingredients',
+            url: 'http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/products/get-ingredients',
             headers: { 
               'Authorization': 'Bearer '+TOKEN, 
             }

@@ -152,7 +152,7 @@ export default {
   },
   methods: {
         timeFoo(state){
-            var shortURL = 'https://max.ronnyspizza.ge/rest/web/index.php?r=v1/timesheet/';
+            var shortURL = 'https://max.ronnyspizza.ge/ronny/rest/web/index.php?r=v1/timesheet/';
             if(state === 'in'){
                 var URL = shortURL + 'start';
                 alert('Work Day Started!');
@@ -229,7 +229,7 @@ export default {
                 axios.request({
                     method: "post",
                     url:
-                        "https://max.ronnyspizza.ge/rest/web/index.php?r=auth",
+                        "https://max.ronnyspizza.ge/ronny/rest/web/index.php?r=auth",
                     data: bodyFormData,
                     })
                     .then((response) => {

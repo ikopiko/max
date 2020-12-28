@@ -30,7 +30,7 @@ export default {
     const TOKEN = localStorage.getItem('TOKEN');
     axios.request({
             method: 'post',
-            url: 'https://max.ronnyspizza.ge/rest/web/index.php?r=v1/products/get-products-category',
+            url: 'http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/products/get-products-category',
             headers: { 
               'Authorization': 'Bearer '+TOKEN, 
             }

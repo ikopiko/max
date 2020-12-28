@@ -44,9 +44,9 @@
                           <td>{{row.item.order_data.customer.tel}}</td>
                           <td>{{row.item.order_data.items[0].name}}...</td>
                           <td>
-                              <v-btn class="mx-2" fab dark small color="green" @click="onButtonClick(row.item)">
-                                  <v-icon dark>read_more</v-icon>
-                              </v-btn>
+                            <v-btn class="mx-2" fab dark small color="green" @click="onButtonClick(row.item)">
+                                <v-icon dark>read_more</v-icon>
+                            </v-btn>
                           </td>
                         </tr>
                     </template>
@@ -65,18 +65,6 @@
           class="elevation-1"
           @page-count="pageCount = $event"
         ></v-data-table>
-
-        <div class="mx-2">
-          <v-btn
-            color="primary"
-            class="ma-2"
-            dark
-            @click="dialog = true"
-          >
-            Search Filters
-          </v-btn>
-        </div>
-        
       </v-card>
 
       <!-- Order Search Modal  -->
@@ -189,7 +177,7 @@ export default {
       .request({
         method: "post",
         url:
-          "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/get-current-orders",
+          "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },

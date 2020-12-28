@@ -34,6 +34,12 @@ const router = new Router({
           component: () => import("@/view/pages/Driversingle.vue")
         },
         {
+          path: "/checkout",
+          name: "checkout",
+          props: true,
+          component: () => import("@/view/pages/Checkout.vue")
+        },
+        {
           path: "/timetable",
           name: "timetable",
           component: () => import("@/view/pages/Timetable.vue")
@@ -72,6 +78,11 @@ const router = new Router({
           path: "/order",
           name: "order",
           component: () => import("@/view/pages/Order.vue")
+        },
+        {
+          path: "/orders",
+          name: "orders",
+          component: () => import("@/view/pages/Ordersnew.vue")
         },
         {
           path: "/builder",

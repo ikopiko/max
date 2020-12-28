@@ -4,174 +4,737 @@
 <template>
   <div id="app">
     <v-app id="inspire">
+      
 
       <div class="container">
         <div class="row">
-          <div class="col-3">
-            <v-autocomplete
-            
-              :items="driverList"
-              :filter="customFilter"
-              color="white"
-              item-text="username"
-              label="Users"
-            ></v-autocomplete>
-            <v-list
-                style="max-height: 400px"
-                class="overflow-y-auto"
-                flat
-                subheader
-                three-line
-                >
-                <v-subheader>Avialable Drivers</v-subheader>
+          <div class="col-lg-4 col-md-12">
+                    <table style="width:100%">
+                        <tbody>
+                            <tr>
+                                <td style="width:50%">
+                                    <h3>Safe</h3>
+                                </td>
+                                <td style="width:50%; text-align:right">
+                                  <i class="material-icons md-36" @click="addSafe()" v-if="safes.length === 0">add</i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <v-card v-for="safe in safes" :key="safe" @click="safeFormDialog = true;"
+                        class="mx-auto my-3" color="#BAE1BE" light max-width="400">
+                        <v-card-title>
+                            <span class="title font-weight-bold">{{ safe.safe_balance[0].amount }} ₾</span>
+                        </v-card-title>
 
-                <v-skeleton-loader
-                  v-if="driverLoad"
-                  type="card-avatar, article, actions"
-                ></v-skeleton-loader>
-                
-                <v-list-item-group
-                    v-if="!driverLoad"
-                    v-model="driverIndex"
-                    single
-                    active-class=""
-                >
-                    <v-list-item v-for="driver in driverList" :key="driver.id">
-                    <template v-slot:default="{ active }">
-                        <v-list-item-action>
-                        <v-checkbox :input-value="active" :label="driver.username" ></v-checkbox>
-                        </v-list-item-action>
-                    </template>
-                    </v-list-item>
+                        <!-- <v-card-text class="headline font-weight-bold">
+                            "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
+                        </v-card-text> -->
 
-                </v-list-item-group>
-            </v-list>
-          </div>
-          <div class="col-6">
-             <v-text-field
-                v-model="balance"
-                @keypress="onlyNumber"
-                :counter="10"
-                :key="balance"
-                class="col-4"
-                label="Balance Ammount"
-                required
-              ></v-text-field>
+                        <v-card-actions>
+                            <v-list-item class="grow">
+                                <v-list-item-avatar color="grey darken-3">
+                                    <i class="material-icons md-36">
+                                        face
+                                    </i>
+                                </v-list-item-avatar>
 
-              <template>
-
-                  <v-list shaped max-width="300px">
-                    <v-subheader>Select Default Balance</v-subheader>
-                    <v-list-item-group
-                      v-model="selectedItem"
-                      color="primary"
-                    >
-                      <v-list-item
-                        v-for="(item, i) in items"
-                        :key="i"
-                        @click="setVal()"
-                      >
-                        <v-list-item-icon>
-                          <v-icon v-text="item.icon"></v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                          <v-list-item-title v-text="item.text"></v-list-item-title>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </v-list-item-group>
-                  </v-list>
-              </template>
-          </div>
-          <div class="col-2">
-            {{ filteredDriver }} - {{ balance }}
-
-            <div class="my-2">
-                <v-btn
-                color="error"
-                dark
-                x-large
-                @click="addBalance()"
-                >
-                Add Balance
-                </v-btn>
+                                <v-list-item-content>
+                                    <v-list-item-title>{{ safe.branch }}</v-list-item-title>
+                                </v-list-item-content>
+                                <v-row align="center" justify="end">
+                                    <i class="material-icons md-36">
+                                        alarm
+                                    </i>
+                                    <span class="subheading mr-2">21:55</span>
+                                </v-row>
+                            </v-list-item>
+                        </v-card-actions>
+                    </v-card>
             </div>
-          </div>
+            <!-- End of safe -->
+            <div class="col-lg-4 col-md-12">
+                     <table style="width:100%">
+                        <tbody>
+                            <tr>
+                                <td style="width:50%">
+                                    <h3>POS</h3>
+                                </td>
+                                <td style="width:50%; text-align:right">
+                                  <i class="material-icons md-36" @click="addTill()">add</i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <v-card v-for="till in tills" :key="till.id"  
+                        class="mx-auto my-3" color="#FE9A53" light max-width="400">
+                        <v-card-title>
+                            <span class="title font-weight-bold" v-if="till.amount < 300">{{ till.amount }} ₾ - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="till.amount >= 300"><span style="color: red;" v-if="till.amount >= 300">DROP NEEDED {{ till.amount }} ₾</span>  - {{ till.name }}</span>
+                        </v-card-title>
+
+                        <v-card-actions>
+                            <v-list-item class="grow">
+                                <v-list-item-avatar color="grey darken-3" @click="tillFoo(till)">
+                                    <i class="material-icons md-36">
+                                        face
+                                    </i>
+                                </v-list-item-avatar>
+                               
+                                <v-list-item-content>
+                                    <v-list-item-title>{{ till.name }} - {{ till.branch_name }}</v-list-item-title>
+                                </v-list-item-content>
+                                <v-row align="center" justify="end">
+                                    <i class="material-icons md-36">
+                                        alarm
+                                    </i>
+                                    <span class="subheading mr-2">21:55</span>
+                                </v-row>
+                            </v-list-item>
+                        </v-card-actions>
+
+                        <v-expand-transition v-if="posID === till.poses_id">
+                            <v-card
+                              v-if="tillFormDialog"
+                              light max-width="400"
+                              class="transition-fast-in-fast-out v-card--reveal"
+                              style="height: 100%;"
+                            >
+                              <v-card-text>
+                                <v-container>
+                                  <v-row>
+                                    <v-col
+                                      cols="12"
+                                      sm="6"
+                                      md="4"
+                                    >
+                                      <v-text-field
+                                        v-model="posAmount"
+                                        label="Amount"
+                                      ></v-text-field>
+                                    </v-col>
+                                  </v-row>
+                                  <v-row>
+                                    <v-col
+                                      cols="12"
+                                      sm="12"
+                                      md="8"
+                                    >
+                                      <v-text-field
+                                        label="Optional Comment"
+                                      ></v-text-field>
+                                    </v-col>
+                                  </v-row>
+                                  <v-row>
+                                    <v-col
+                                      cols="12"
+                                      sm="6"
+                                      md="4"
+                                    >
+                                      <v-btn
+                                        elevation="2"
+                                        x-large
+                                        color="grey"
+                                        class="white--text"
+                                        @click="tillFormDialog = false"
+                                      >Close</v-btn>
+                                    </v-col>
+                                    <v-col
+                                      cols="12"
+                                      sm="6"
+                                      md="4"
+                                    >
+                                      <v-btn
+                                        elevation="2"
+                                        x-large
+                                        class="white--text"
+                                        color="green"
+                                        @click="addToPos()"
+                                      >ADD</v-btn>
+                                    </v-col>
+                                    <v-col
+                                      cols="12"
+                                      sm="6"
+                                      md="4"
+                                    >
+                                      <v-btn
+                                        elevation="2"
+                                        color="blue"
+                                        x-large
+                                        class="white--text"
+                                        @click="dropFromPos()"
+                                      >DROP</v-btn>
+                                    </v-col>
+                                  </v-row>
+                                </v-container>
+                              </v-card-text>
+                            </v-card>
+                          </v-expand-transition>
+                    </v-card>
+                </div>
+                <!-- End of Tills -->
+                <div class="col-lg-4 col-md-12">
+                    <table style="width:100%">
+                        <tbody>
+                            <tr>
+                                <td style="width:50%">
+                                    <h3>Drivers</h3>
+                                </td>
+                                <td style="width:50%; text-align:right">
+                                    <i class="material-icons md-36" @click="addDriver()">add</i>
+                                    <span class="mdi mdi-plus-thick"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <v-card class="mx-auto mt-30" color="#F1F1F1" light max-width="400">
+
+                        <v-card-title>
+                            <span class="title font-weight-bold">- ₾</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <!-- <v-card-title>Choose Drivers</v-card-title> -->
+
+                            <v-form>
+                                <v-select :items="safes.name" :rules="[v => !!v || 'Driver Not Selected First']" label="Select Driver First" required></v-select>
+
+                                <v-text-field label="Enter Amount" v-model="example" :rules="exampleRules"></v-text-field>
+
+                                <v-textarea clearable label="Comment" value="" hint="Some comment"></v-textarea>
+                                <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
+                                    ADD
+                                </v-btn>
+                            </v-form>
+                           
+                            <v-list-item class="grow">
+                                <v-list-item-avatar color="grey darken-3">
+                                    <v-icon class="mr-1">
+                                        mdi-badge-account-horizontal-outline
+                                    </v-icon>
+                                </v-list-item-avatar>
+
+                                <v-list-item-content>
+                                    <v-list-item-title>Selected Driver Name</v-list-item-title>
+                                </v-list-item-content>
+
+                            </v-list-item>
+                            <v-list-item class="grow">
+                              <v-list-item-avatar color="grey darken-3">
+                                <v-icon class="mr-1">
+                                    mdi-clock-time-seven-outline
+                                </v-icon>
+                              </v-list-item-avatar>
+
+                              <v-list-item-content>
+                                <v-list-item-title></v-list-item-title>16:01
+                              </v-list-item-content>
+                              <v-chip-group v-model="selection" active-class="deep-purple accent-4 white--text" column>
+                                <v-chip>5:30PM</v-chip>
+
+                                <v-chip class="back_drop">7:30PM</v-chip>
+
+                            </v-chip-group>
+                            </v-list-item>
+
+                        </v-card-text>
+
+                        <v-card-actions>
+
+                        </v-card-actions>
+                    </v-card>
+
+                </div>
+                <!-- End of Dirvers -->
         </div>
       </div>
-            
-
-        <!-- <div class="mx-2">
-          <v-btn
-            color="primary"
-            class="ma-2"
-            dark
-            @click="dialog = true"
-          >
-            Search Filters
-          </v-btn>
-        </div> -->
-        
-
-      <!-- Order Search Modal  -->
+      
       <v-dialog
-        v-model="dialog"
-        fullscreen
-        hide-overlay
-        transition="dialog-bottom-transition"
-        scrollable
+        v-model="safeDialog"
+        persistent
+        max-width="600px"
       >
         <v-card>
           <v-card-title>
-            <span>Banks & Tills</span>
-            <v-spacer></v-spacer>
-          </v-card-title>  
-
-            <v-list
-                style="max-height: 400px"
-                class="overflow-y-auto"
-                flat
-                subheader
-                three-line
+            <span class="headline">Manager -> Safe</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
                 >
-                <v-subheader>Avialable Drivers</v-subheader>
-
-                <v-skeleton-loader
-                  v-if="driverLoad"
-                  type="card-avatar, article, actions"
-                ></v-skeleton-loader>
-                
-                <v-list-item-group
-                    v-if="!driverLoad"
-                    v-model="driverIndex"
-                    single
-                    active-class=""
+                  Irakli Andguladze
+                  <br />
+                  127 ₾
+                  <br />
+                  Didid Digomi
+                  <br />
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="8"
                 >
-                    <v-list-item v-for="driver in driverList" :key="driver.id">
-                    <template v-slot:default="{ active }">
-                        <v-list-item-action>
-                        <v-checkbox :input-value="active" :label="driver.username" ></v-checkbox>
-                        </v-list-item-action>
-                    </template>
-                    </v-list-item>
-
-                </v-list-item-group>
-            </v-list>
-
-            <v-text-field>123</v-text-field>
-
-          <v-card-actions>
-            <v-btn
-              color="primary"
-              text
-              @click="dialog = false"
-            >
-              Close
-            </v-btn>
-          </v-card-actions>
+                <v-autocomplete
+                  :items="driverList"
+                  :filter="customFilter"
+                  color="white"
+                  item-text="username"
+                  label="Manager"
+                ></v-autocomplete>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-text-field
+                    label="Amount"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="12"
+                  md="8"
+                >
+                  <v-text-field
+                    label="Optional Comment"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    color="grey"
+                    class="white--text"
+                    @click="safeDialog = false"
+                  >Close</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                  >ADD</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text"
+                  >DROP</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
         </v-card>
       </v-dialog>
-      <!-- End of Order Search Modal  -->
 
+      <v-dialog
+        v-model="safeFormDialog"
+        @keydown.esc="safeFormDialog = false"
+        persistent
+        max-width="600px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Safe</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-text-field
+                    label="Amount"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="12"
+                  md="8"
+                >
+                  <v-text-field
+                    label="Optional Comment"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    color="grey"
+                    class="white--text"
+                    @click="safeFormDialog = false"
+                  >Close</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                    @click="addToSafe()"
+                  >ADD</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text"
+                    @click="dropFromSafe()"
+                  >DROP</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog
+        v-model="tillFormDialog1"
+        @keydown.esc="tillFormDialog = false"
+        persistent
+        max-width="600px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Till</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-text-field
+                    v-model="posAmount"
+                    label="Amount"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="12"
+                  md="8"
+                >
+                  <v-text-field
+                    label="Optional Comment"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    color="grey"
+                    class="white--text"
+                    @click="tillFormDialog = false"
+                  >Close</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                    @click="addToPos()"
+                  >ADD</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text"
+                    @click="dropFromPos()"
+                  >DROP</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+      
+      <v-dialog
+        v-model="tillDialog"
+        @keydown.esc="tillDialog = false"
+        persistent
+        max-width="600px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Till -> Cashier</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-form>
+                  <v-select :items="allPoses" item-text="name" item-value="id" v-model="selectedPos" :rules="[v => !!v || 'Driver Not Selected First']" label="Select POS First" required></v-select>
+
+                  <v-text-field label="Enter Amount" v-model="posAmount" :rules="exampleRules"></v-text-field>
+
+                  <v-text-field clearable label="Comment" v-model="posComment" value="" hint="Some comment"></v-text-field>
+                </v-form>
+              </v-row>
+
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    color="grey"
+                    class="white--text"
+                    @click="tillDialog = false"
+                  >Close</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                    @click="addToPos()"
+                  >ADD</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+      
+      <v-dialog
+        v-model="tillDialog1"
+        persistent
+        max-width="600px"
+      >
+        <v-card class="mx-auto mt-30" color="#F1F1F1" light max-width="400">
+
+                        <v-card-title>
+                            <span class="title font-weight-bold">- ₾</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <!-- <v-card-title>Choose Drivers</v-card-title> -->
+
+                            <v-form>
+                                <v-select :items="items" :rules="[v => !!v || 'Driver Not Selected First']" label="Select Driver First" required></v-select>
+
+                                <v-text-field label="Enter Amount" v-model="example" :rules="exampleRules"></v-text-field>
+
+                                <v-textarea clearable label="Comment" value="" hint="Some comment"></v-textarea>
+                                <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
+                                    ADD
+                                </v-btn>
+                            </v-form>
+                           
+                            <v-list-item class="grow">
+                                <v-list-item-avatar color="grey darken-3">
+                                    <v-icon class="mr-1">
+                                        mdi-badge-account-horizontal-outline
+                                    </v-icon>
+                                </v-list-item-avatar>
+
+                                <v-list-item-content>
+                                    <v-list-item-title>Selected Driver Name</v-list-item-title>
+                                </v-list-item-content>
+
+                            </v-list-item>
+                            <v-list-item class="grow">
+                                <v-list-item-avatar color="grey darken-3">
+                                    <v-icon class="mr-1">
+                                        mdi-clock-time-seven-outline
+                                    </v-icon>
+                                </v-list-item-avatar>
+
+                                <v-list-item-content>
+                                    <v-list-item-title></v-list-item-title>16:01
+                                </v-list-item-content>
+ <v-chip-group v-model="selection" active-class="deep-purple accent-4 white--text" column>
+                                <v-chip>5:30PM</v-chip>
+
+                                <v-chip class="back_drop">7:30PM</v-chip>
+
+                            </v-chip-group>
+                            </v-list-item>
+
+                        </v-card-text>
+
+                        <v-card-actions>
+
+                        </v-card-actions>
+                    </v-card>
+      </v-dialog>
+
+      <v-dialog
+        v-model="driverDialog"
+        persistent
+        max-width="600px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Driver</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  Irakli Andguladze
+                  <br />
+                  127 ₾
+                  <br />
+                  Didi Digomi
+                  <br />
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="8"
+                >
+                <v-autocomplete
+                  :items="driverList"
+                  :filter="customFilter"
+                  color="white"
+                  item-text="username"
+                  label="Manager"
+                ></v-autocomplete>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-text-field
+                    label="Amount"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="12"
+                  md="8"
+                >
+                  <v-text-field
+                    label="Optional Comment"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    color="grey"
+                    class="white--text"
+                    @click="driverDialog = false"
+                  >Close</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                  >ADD</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text"
+                  >DROP</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       
     </v-app>
   </div>
@@ -188,8 +751,48 @@ export default {
   components: {},
   data() {
     return {
+      posID: '',
+      selectedPos: [],
+      posAmount: 0,
+      posComment: '',
+      safeAmount: 0,
+      safeComment: '',
+      safeFormDialog: false,
+      tillFormDialog: false,
+      safe: {
+        name : 'Safe 1',
+        manager: 'Irakli Andguladze',
+        balance: 2067,
+      },
+      safes: [],
+      till: { 
+        name : 'Till 1',
+        cashier: 'Irakli Andguladze',
+        balance: 458 
+      },
+      tills: [],
+      allPoses: [],
+      driver: { 
+        name : 'Driver 1',
+        driverName: 'Irakli Andguladze',
+        balance: 87
+      },
+      drivers: [],
+      items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+        valid: true,
+        name: '',
+        amountRules: [
+            v => !!v || 'Emount not entered',
+        ],
+        exampleRules: [
+            v => !!v || "Emount can't be blank",
+            v => (v && v >= 0) || "Loan should be above 0",
+            v => (v && v <= 500) || "Max should not be above 500",
+        ],
+      e6: 1,
       loggedUser: {},
       orders: [],
+      old: false,
       singleSelect: true,
       selected: [],
       search: '',
@@ -200,7 +803,7 @@ export default {
       //   v => (v && v.length <= 10) || 'Balance must be number',
       // ],
       selectedItem: -1,
-      items: [
+      items1: [
         { text: 'Pos Default Balance', icon: 'fact_check' },
         { text: 'Driver Default Balance', icon: 'moped' },
       ],
@@ -209,13 +812,18 @@ export default {
         { balance: 'driver', amount: 40 },
       ],
       driverList: [],
-      driver: [],
+      //driver: [],
       loading: true,
       options: {},
       branch: 'saburtalo',
+      branchId: 1,
       status: 4,
+      today: '', 
+      safeDate: '2020-12-22',
       driverLoad: true,
-      dialog: false,    
+      safeDialog: false,    
+      tillDialog: false,    
+      driverDialog: false,    
       dialog2: false,
       dialog3: false,
       notifications: false,
@@ -254,28 +862,40 @@ export default {
     });
   },
   mounted() {
-   this.loggedUser = this.$store.state.auth.user.data;
 
-    const TOKEN = this.loggedUser.token;
-    var bodyFormData = new FormData();
-    bodyFormData.set("branch", this.branch);
-    bodyFormData.set("status", this.status);
+    var date = new Date();
+    var dd = String(date.getDate()).padStart(2, '0');
+    var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = date.getFullYear();
+    
+
+    this.today = yyyy + '-' + mm + '-' + dd;
+
+    this.loggedUser = this.$store.state.auth.user.data;
+
+      const TOKEN = this.loggedUser.token;
+      this.getSafes();
+
+      this.getPoses();
+
+      var bodyFormPosAll = new FormData();
+      bodyFormPosAll.set("branch_id", this.branchId);
 
     axios
       .request({
         method: "post",
         url:
-          "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/list",
+          "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/list-by-branch",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
-        data: bodyFormData,
+        data: bodyFormPosAll,
       })
       .then((response) => {
-        this.driverList = response.data.data;
-        this.driverLoad = false;
-        console.log("Driver List: ", response.data.data);
+        this.allPoses = response.data.data;
+        console.log("All POS List: ", this.allPoses);
       });
+
   },
   computed: {
       filteredOrdersPos() {
@@ -302,6 +922,111 @@ export default {
     },
   },
   methods: {
+    getSafes(){
+      const TOKEN = this.loggedUser.token;
+      var bodyFormSafe = new FormData();
+      bodyFormSafe.set("branch_id", this.branchId);
+      bodyFormSafe.set("day", this.today);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/get-safes",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormSafe,
+        })
+        .then((response) => {
+          this.safes = response.data.data;
+          console.log("Safe List: ", this.safes);
+        });
+    },
+    getPoses(){
+      const TOKEN = this.loggedUser.token;
+      var bodyFormPos = new FormData();
+      bodyFormPos.set("branch_id", this.branchId);
+      bodyFormPos.set("day", this.today);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/get-poses",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormPos,
+        })
+        .then((response) => {
+          this.tills = response.data.data;
+
+          console.log("POS List: ", this.tills);
+        });
+    },
+    addToPos(){
+      console.log('Selected POS: ', this.selectedPos);
+      console.log('POS Amount: ', this.posAmount);
+      console.log('POS Comment: ', this.posComment);
+      alert('Balance Added To POS');
+    },
+    dropFromPos(){
+
+      //this.posAmount = -Math.abs(this.posAmount);
+      //alert(this.posAmount)
+
+      const TOKEN = this.loggedUser.token;
+      var bodyDropSafe = new FormData();
+      console.log(this.posID);
+      console.log(this.safes[0].id);
+      console.log(this.posAmount);
+      bodyDropSafe.set("pos_id", this.posID);
+      bodyDropSafe.set("amount", this.posAmount);
+      bodyDropSafe.set("safe_id", this.safes[0].id);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/add-balance-to-safe",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyDropSafe,
+        })
+        .then((response) => {
+          
+          console.log("Balance Change Response:  ", response);
+          this.tillFormDialog = false;
+          this.getSafes();
+          this.getPoses();
+          this.posAmount = 0;
+        });
+
+    },
+    addToSafe(){
+      alert('Balance Added To Safe');
+    },
+    dropFromSafe(){
+      alert("Balance Droped From Safe");
+    },
+    addSafe() {
+      this.safeDialog = true;
+      // this.safes.push(this.safe);
+    },
+    addTill() {
+      this.tillDialog = true;
+      // this.tills.push(this.till);
+    },
+    addDriver() {
+      this.driverDialog = true;
+      this.drivers.push(this.driver);
+    },
+    tillFoo(pos){
+      this.tillFormDialog = true;
+      this.posID = pos.poses_id;
+    },
     setVal() {
       setTimeout(() => this.balance = this.defaultBalance[this.selectedItem].amount, 100)
     },
@@ -359,7 +1084,7 @@ export default {
           .request({
             method: "post",
             url:
-              "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/add-balance-to-driver",
+              "https://max.ronnyspizza.ge/ronny/rest/web/index.php?r=v1/manager/add-balance-to-driver",
             headers: {
               Authorization: "Bearer " + TOKEN,
             },

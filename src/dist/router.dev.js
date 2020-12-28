@@ -63,6 +63,15 @@ var router = new _vueRouter["default"]({
         });
       }
     }, {
+      path: "/checkout",
+      name: "checkout",
+      props: true,
+      component: function component() {
+        return Promise.resolve().then(function () {
+          return _interopRequireWildcard(require("@/view/pages/Checkout.vue"));
+        });
+      }
+    }, {
       path: "/timetable",
       name: "timetable",
       component: function component() {
@@ -118,6 +127,14 @@ var router = new _vueRouter["default"]({
       component: function component() {
         return Promise.resolve().then(function () {
           return _interopRequireWildcard(require("@/view/pages/Order.vue"));
+        });
+      }
+    }, {
+      path: "/orders",
+      name: "orders",
+      component: function component() {
+        return Promise.resolve().then(function () {
+          return _interopRequireWildcard(require("@/view/pages/Ordersnew.vue"));
         });
       }
     }, {

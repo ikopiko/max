@@ -1,24 +1,8 @@
 <script>
 /* eslint-disable */
 </script>
-
 <template>
-    <div>
-        <v-btn
-            class="ma-3"
-            dark
-            @click="goBack()"
-        >
-        <v-icon
-          dark
-          left
-        >
-          mdi-arrow-left
-        </v-icon>Back
-        </v-btn>
-        
-        <span v-if="order.source === 'pos'">    
-            <v-card
+    <v-card
             class="my-3 mx-3 cardStyle"
             max-width="344"
             outlined
@@ -400,39 +384,23 @@
                 <b-button variant="success" @click="customerDelivery(order)">Ready</b-button>
             </v-card-actions>
             </v-card>
-        </span>
-
-        <webPrint />
-    </div>
-
 </template>
-
 <script>
-import webPrint from "../components/Print"
 export default {
-    name: 'Single Order',
-    data(){
+        props: {
+        orderProp: {
+            type: Object,
+        },
+
+    },
+    
+    data() {
         return {
             order: [],
         }
     },
-    props: {
-      orderProp: {
-          type: Object,
-      },
-
-  },
     mounted() {
-        console.log('Single Order: ', this.orderProp);
         this.order = this.orderProp;
-    },
-    components: {
-        webPrint,
-    },
-    methods: {
-        goBack(){
-             this.$router.go(-1);
-        },
     },
 }
 </script>

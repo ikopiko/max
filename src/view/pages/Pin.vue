@@ -125,7 +125,7 @@ export default {
             axios.request({
                 method: "post",
                 url:
-                    "https://max.ronnyspizza.ge/rest/web/index.php?r=auth",
+                    "http://max.ronnyspizza.ge/ronny/rest/web/index.php?r=auth",
                 data: bodyFormData,
                 })
                 .then((response) => {

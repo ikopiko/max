@@ -437,12 +437,13 @@
                     <span class="orderDisplay" @click="foobar(item)">
                       <strong
                         >{{ item.quantity }}
+                        <!-- {{ item.meta_data[0].value }} -->
                         {{ item.name }}</strong
                       >
                     </span>
                     <span>
                       <!-- {{ (item.total.toFixed(2) * item.quantity) }}  -->
-                      00.00
+                      {{ item.price }}                  
                       <!-- შეიძლება გააყლევოს -->
                     </span>
                   </div>
@@ -696,7 +697,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/get-new-orders",
+            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-new-orders",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -721,7 +722,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/get-current-orders",
+            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -758,7 +759,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/update-order-status",
+            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/update-order-status",
           headers: {
             Authorization: "Bearer " + this.TOKEN,
           },

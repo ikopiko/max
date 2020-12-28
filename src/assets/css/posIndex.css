@@ -409,6 +409,28 @@
     border: 5px solid #F60005 !important; box-sizing: border-box;
 }
 
+.active_default{
+    border: 5px solid #353232 !important; box-sizing: border-box;
+}
+
+
+.cross {
+    /* height: 120px;
+    width:25%;
+    background: linear-gradient(to top right, #fff calc(50% - 1px), #aaa, #fff calc(50% + 1px) ) */
+
+        width: 130px;
+        height: 51px;
+        margin-left: 6px;
+        border-bottom: 5px solid #353232;
+        -webkit-transform:
+            translateY(-20px)
+            translateX(5px)
+            rotate(27deg); 
+        position: absolute;
+        /* top: -20px; */
+}
+
 .quantityActive{
     border: 2px solid #F60005 !important;box-sizing: border-box;
 }
@@ -520,6 +542,9 @@
   }
   .green{
       background-color: #49B25D;
+  }
+  .lightGreen{
+      background-color: #70ec87;
   }
   .red{
       background-color: #D23A32;

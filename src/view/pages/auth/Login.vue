@@ -77,7 +77,7 @@
             The Pin You Entered is Not Correct
         </v-alert>
         <v-alert dense text type="success">
-            The Pin You Entered is Not Correct
+            The Pin You Entered is Correct
         </v-alert>
         <div class="row">
             <div class="col-12" style="margin: auto">
@@ -395,6 +395,7 @@ export default {
         login(pin) {
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
+            bodyFormData.set("mac", 'E839355BB7CE');
 
             axios.request( {
                     method: "post",
@@ -403,23 +404,20 @@ export default {
                 }
 
             ) .then((response)=> {
-                    if(response.status===200 && !response.data.is_error) {
+                    if(!response.data.is_error) {
                         console.log('Success Login -- ', response);
                         this.onPinSubmit(pin);
                     }
 
                     else {
-                        console.log('Login Failed');
+                        console.log('Login Failed', response);
                         this.pinError=true;
                     }
 
                 }
 
             );
-
-        }
-
-        ,
+        },
         logKey(e) {
             //alert(e.target);
             e=e || window.event;

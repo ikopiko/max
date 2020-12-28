@@ -232,8 +232,8 @@ export default {
       .request({
         method: "post",
         url:
-          "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/get-current-orders",
-        //   "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/get-delivery-orders",
+          "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
+        //   "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-delivery-orders",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -249,11 +249,10 @@ export default {
       .request({
         method: "post",
         url:
-          "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/list",
+          "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/timesheet/users",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
-        data: bodyFormData,
       })
       .then((response) => {
         this.driverList = response.data.data;
@@ -292,7 +291,7 @@ export default {
         .request({
             method: "post",
             url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/attach-order-to-driver",
+            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/attach-order-to-driver",
             //  Combine order and driver LINK HERE!!!!,
             headers: {
             Authorization: "Bearer " + TOKEN,
@@ -320,7 +319,7 @@ export default {
         .request({
             method: "post",
             url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/get-current-orders",
+            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
             headers: {
             Authorization: "Bearer " + TOKEN,
             },
