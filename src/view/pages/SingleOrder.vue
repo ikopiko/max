@@ -402,13 +402,11 @@
             </v-card>
         </span>
 
-        <webPrint />
     </div>
 
 </template>
 
 <script>
-import webPrint from "../components/Print"
 export default {
     name: 'Single Order',
     data(){
@@ -425,9 +423,6 @@ export default {
     mounted() {
         console.log('Single Order: ', this.orderProp);
         this.order = this.orderProp;
-    },
-    components: {
-        webPrint,
     },
     methods: {
         goBack(){

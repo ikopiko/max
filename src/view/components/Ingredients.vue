@@ -3,8 +3,7 @@
 </script>
 <template>
                 <!-- Display All Ingredients -->
-                <div class="row">
-
+                <div class="row">r
                     <div class="col-md-2 p-0 paddingClear"> 
                       <div class="w-1-grey square" @click="sendClear()">
                         <i class="fa fa-home fa-4x iconColor"></i>
@@ -18,11 +17,10 @@
                               <!-- <button class="btn" v-if="highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true"><i class="fa" :class='highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "fa-close fa-2x clearBtn" : ""' @click="deleteTopping($event, ingredient)"></i></button> -->
                               <!-- Styling topping Class -->
                                     <span>{{ ingredient.name }}  {{ mapping[ingredient.id] }}<br></span>
-                          <div :class="{ 'cross': deletedDefToppings(ingredient)}"> 
+                          <div :class="[deletedDefToppings(ingredient) ? 'cross': '']"> 
                           </div>
                         </div>   
-                    </div>
-                    
+                    </div>   
                 </div>
 
 </template>
@@ -117,10 +115,11 @@ export default {
     },
     deletedDefToppings(ingredient){
       for(var i = 0; i < this.defaultToppings.length; i++){   
-          if(parseInt(this.defaultToppings[i].id) === ingredient.id && this.defaultToppings[i].isDeleted){     
+          if(parseInt(this.defaultToppings[i].id) === ingredient.id && this.defaultToppings[i].isDeleted){
             return true;
           }
       }
+      this.$forceUpdate();
     },
     highlightToppings(ingredient){
       for(var k = 0; k < this.toppings.length; k++){   

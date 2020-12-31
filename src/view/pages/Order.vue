@@ -124,7 +124,7 @@ export default {
       loading: true,
       options: {},
       branch: 'saburtalo',
-      status: 4,
+      status: 1,
       dialog: false,
       dialog2: false,
       dialog3: false,

@@ -24,7 +24,7 @@
                     <v-card v-for="safe in safes" :key="safe" @click="safeFormDialog = true;"
                         class="mx-auto my-3" color="#BAE1BE" light max-width="400">
                         <v-card-title>
-                            <span class="title font-weight-bold">{{ safe.safe_balance[0].amount }} ₾</span>
+                            <span class="title font-weight-bold">{{ safe.amount }} ₾</span>
                         </v-card-title>
 
                         <!-- <v-card-text class="headline font-weight-bold">
@@ -189,60 +189,110 @@
                         </tbody>
                     </table>
 
-                    <v-card class="mx-auto mt-30" color="#F1F1F1" light max-width="400">
-
-                        <v-card-title>
-                            <span class="title font-weight-bold">- ₾</span>
-                        </v-card-title>
-                        <v-card-text>
-                            <!-- <v-card-title>Choose Drivers</v-card-title> -->
-
-                            <v-form>
-                                <v-select :items="safes.name" :rules="[v => !!v || 'Driver Not Selected First']" label="Select Driver First" required></v-select>
-
-                                <v-text-field label="Enter Amount" v-model="example" :rules="exampleRules"></v-text-field>
-
-                                <v-textarea clearable label="Comment" value="" hint="Some comment"></v-textarea>
-                                <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
-                                    ADD
-                                </v-btn>
-                            </v-form>
-                           
-                            <v-list-item class="grow">
-                                <v-list-item-avatar color="grey darken-3">
-                                    <v-icon class="mr-1">
-                                        mdi-badge-account-horizontal-outline
-                                    </v-icon>
-                                </v-list-item-avatar>
-
-                                <v-list-item-content>
-                                    <v-list-item-title>Selected Driver Name</v-list-item-title>
-                                </v-list-item-content>
-
-                            </v-list-item>
-                            <v-list-item class="grow">
-                              <v-list-item-avatar color="grey darken-3">
-                                <v-icon class="mr-1">
-                                    mdi-clock-time-seven-outline
-                                </v-icon>
-                              </v-list-item-avatar>
-
-                              <v-list-item-content>
-                                <v-list-item-title></v-list-item-title>16:01
-                              </v-list-item-content>
-                              <v-chip-group v-model="selection" active-class="deep-purple accent-4 white--text" column>
-                                <v-chip>5:30PM</v-chip>
-
-                                <v-chip class="back_drop">7:30PM</v-chip>
-
-                            </v-chip-group>
-                            </v-list-item>
-
-                        </v-card-text>
+                    <v-card v-for="drv in drivers" :key="drv.id"  
+                        class="mx-auto my-3" color="#FE9A53" light max-width="400">
+                        <!-- <v-card-title>
+                            <span class="title font-weight-bold" v-if="till.amount < 300">{{ till.amount }} ₾ - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="till.amount >= 300"><span style="color: red;" v-if="till.amount >= 300">DROP NEEDED {{ till.amount }} ₾</span>  - {{ till.name }}</span>
+                        </v-card-title> -->
 
                         <v-card-actions>
-
+                            <v-list-item class="grow">
+                                <v-list-item-avatar color="grey darken-3" @click="driverFoo(drv)">
+                                    <i class="material-icons md-36">
+                                        face
+                                    </i>
+                                </v-list-item-avatar>
+                               
+                                <v-list-item-content>
+                                    <v-list-item-title>{{ drv.username }}</v-list-item-title>
+                                </v-list-item-content>
+                                <v-row align="center" justify="end">
+                                    <i class="material-icons md-36">
+                                        alarm
+                                    </i>
+                                    <span class="subheading mr-2">21:55</span>
+                                </v-row>
+                            </v-list-item>
                         </v-card-actions>
+
+                        <v-expand-transition v-if="driverID === drv.id">
+                            <v-card
+                              v-if="driverFormDialog"
+                              light max-width="400"
+                              class="transition-fast-in-fast-out v-card--reveal"
+                              style="height: 100%;"
+                            >
+                              <v-card-text>
+                                <v-container>
+                                  <v-row>
+                                    <v-col
+                                      cols="12"
+                                      sm="6"
+                                      md="4"
+                                    >
+                                      <v-text-field
+                                        v-model="driverAmount"
+                                        label="Amount"
+                                      ></v-text-field>
+                                    </v-col>
+                                  </v-row>
+                                  <v-row>
+                                    <v-col
+                                      cols="12"
+                                      sm="12"
+                                      md="8"
+                                    >
+                                      <v-text-field
+                                        label="Optional Comment"
+                                      ></v-text-field>
+                                    </v-col>
+                                  </v-row>
+                                  <v-row>
+                                    <v-col
+                                      cols="12"
+                                      sm="6"
+                                      md="4"
+                                    >
+                                      <v-btn
+                                        elevation="2"
+                                        x-large
+                                        color="grey"
+                                        class="white--text"
+                                        @click="driverFormDialog = false"
+                                      >Close</v-btn>
+                                    </v-col>
+                                    <v-col
+                                      cols="12"
+                                      sm="6"
+                                      md="4"
+                                    >
+                                      <v-btn
+                                        elevation="2"
+                                        x-large
+                                        class="white--text"
+                                        color="green"
+                                        @click="addToDriver()"
+                                      >ADD</v-btn>
+                                    </v-col>
+                                    <v-col
+                                      cols="12"
+                                      sm="6"
+                                      md="4"
+                                    >
+                                      <v-btn
+                                        elevation="2"
+                                        color="blue"
+                                        x-large
+                                        class="white--text"
+                                        @click="dropFromDriver()"
+                                      >DROP</v-btn>
+                                    </v-col>
+                                  </v-row>
+                                </v-container>
+                              </v-card-text>
+                            </v-card>
+                          </v-expand-transition>
                     </v-card>
 
                 </div>
@@ -374,6 +424,7 @@
                 >
                   <v-text-field
                     label="Amount"
+                    v-model="posAmount"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -561,75 +612,13 @@
                     x-large
                     class="white--text"
                     color="green"
-                    @click="addToPos()"
+                    @click="addPos()"
                   >ADD</v-btn>
                 </v-col>
               </v-row>
             </v-container>
           </v-card-text>
         </v-card>
-      </v-dialog>
-      
-      <v-dialog
-        v-model="tillDialog1"
-        persistent
-        max-width="600px"
-      >
-        <v-card class="mx-auto mt-30" color="#F1F1F1" light max-width="400">
-
-                        <v-card-title>
-                            <span class="title font-weight-bold">- ₾</span>
-                        </v-card-title>
-                        <v-card-text>
-                            <!-- <v-card-title>Choose Drivers</v-card-title> -->
-
-                            <v-form>
-                                <v-select :items="items" :rules="[v => !!v || 'Driver Not Selected First']" label="Select Driver First" required></v-select>
-
-                                <v-text-field label="Enter Amount" v-model="example" :rules="exampleRules"></v-text-field>
-
-                                <v-textarea clearable label="Comment" value="" hint="Some comment"></v-textarea>
-                                <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
-                                    ADD
-                                </v-btn>
-                            </v-form>
-                           
-                            <v-list-item class="grow">
-                                <v-list-item-avatar color="grey darken-3">
-                                    <v-icon class="mr-1">
-                                        mdi-badge-account-horizontal-outline
-                                    </v-icon>
-                                </v-list-item-avatar>
-
-                                <v-list-item-content>
-                                    <v-list-item-title>Selected Driver Name</v-list-item-title>
-                                </v-list-item-content>
-
-                            </v-list-item>
-                            <v-list-item class="grow">
-                                <v-list-item-avatar color="grey darken-3">
-                                    <v-icon class="mr-1">
-                                        mdi-clock-time-seven-outline
-                                    </v-icon>
-                                </v-list-item-avatar>
-
-                                <v-list-item-content>
-                                    <v-list-item-title></v-list-item-title>16:01
-                                </v-list-item-content>
- <v-chip-group v-model="selection" active-class="deep-purple accent-4 white--text" column>
-                                <v-chip>5:30PM</v-chip>
-
-                                <v-chip class="back_drop">7:30PM</v-chip>
-
-                            </v-chip-group>
-                            </v-list-item>
-
-                        </v-card-text>
-
-                        <v-card-actions>
-
-                        </v-card-actions>
-                    </v-card>
       </v-dialog>
 
       <v-dialog
@@ -752,13 +741,16 @@ export default {
   data() {
     return {
       posID: '',
+      driverID: '',
       selectedPos: [],
       posAmount: 0,
+      driverAmount: 0,
       posComment: '',
       safeAmount: 0,
       safeComment: '',
       safeFormDialog: false,
       tillFormDialog: false,
+      driverFormDialog: false,
       safe: {
         name : 'Safe 1',
         manager: 'Irakli Andguladze',
@@ -878,6 +870,8 @@ export default {
 
       this.getPoses();
 
+      this.getDrivers();
+
       var bodyFormPosAll = new FormData();
       bodyFormPosAll.set("branch_id", this.branchId);
 
@@ -965,11 +959,79 @@ export default {
           console.log("POS List: ", this.tills);
         });
     },
+
+    getDrivers(){
+      const TOKEN = this.loggedUser.token;
+      var bodyFormDriver = new FormData();
+      bodyFormDriver.set("branch", 'saburtalo');
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/clockedin-drivers",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormDriver,
+        })
+        .then((response) => {
+          this.drivers = response.data.data;
+          console.log("Drivers List: ", this.drivers);
+        });
+    },
+    addPos(){
+      const TOKEN = this.loggedUser.token;
+      var bodyAddPos = new FormData();
+      bodyAddPos.set("pos_id", this.selectedPos);
+      bodyAddPos.set("amount", this.posAmount);
+      bodyAddPos.set("safe_id", this.safes[0].id);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/edit-balance",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyAddPos,
+        })
+        .then((response) => {
+          
+          console.log("Balance Change Response:  ", response);
+          this.tillDialog = false;
+          this.getSafes();
+          this.getPoses();
+          this.posAmount = 0;
+        });
+    },
     addToPos(){
-      console.log('Selected POS: ', this.selectedPos);
-      console.log('POS Amount: ', this.posAmount);
-      console.log('POS Comment: ', this.posComment);
-      alert('Balance Added To POS');
+
+      const TOKEN = this.loggedUser.token;
+      var bodyAddPosBalance = new FormData();
+      bodyAddPosBalance.set("pos_id", this.posID);
+      bodyAddPosBalance.set("amount", this.posAmount);
+      bodyAddPosBalance.set("safe_id", this.safes[0].id);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/edit-balance",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyAddPosBalance,
+        })
+        .then((response) => {
+          
+          console.log("Balance Change Response:  ", response);
+          this.tillDialog = false;
+          this.getSafes();
+          this.getPoses();
+          this.posAmount = 0;
+        });
     },
     dropFromPos(){
 
@@ -978,18 +1040,15 @@ export default {
 
       const TOKEN = this.loggedUser.token;
       var bodyDropSafe = new FormData();
-      console.log(this.posID);
-      console.log(this.safes[0].id);
-      console.log(this.posAmount);
       bodyDropSafe.set("pos_id", this.posID);
-      bodyDropSafe.set("amount", this.posAmount);
+      bodyDropSafe.set("amount", -this.posAmount);
       bodyDropSafe.set("safe_id", this.safes[0].id);
 
       axios
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/add-balance-to-safe",
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/edit-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1006,10 +1065,68 @@ export default {
 
     },
     addToSafe(){
-      alert('Balance Added To Safe');
+      
+      const TOKEN = this.loggedUser.token;
+      var bodyAddSafeBalance = new FormData();
+      bodyAddSafeBalance.set("amount", this.posAmount);
+      bodyAddSafeBalance.set("safe_id", this.safes[0].id);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/drop-safe-balance",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyAddSafeBalance,
+        })
+        .then((response) => {
+          
+          console.log("Balance Change Response:  ", response);
+          this.safeFormDialog = false;
+          this.getSafes();
+          this.getPoses();
+          this.posAmount = 0;
+        });
+
     },
     dropFromSafe(){
-      alert("Balance Droped From Safe");
+      
+      console.log("Tired of this shit, need vacation");
+            
+      const TOKEN = this.loggedUser.token;
+      var bodyDropSafeBalance = new FormData();
+      bodyDropSafeBalance.set("amount", - this.posAmount);
+      bodyDropSafeBalance.set("safe_id", this.safes[0].id);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/drop-safe-balance",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyDropSafeBalance,
+        })
+        .then((response) => {
+          
+          console.log("Balance Change Response:  ", response);
+          this.safeFormDialog = false;
+          this.getSafes();
+          this.getPoses();
+          this.posAmount = 0;
+        });
+
+    },
+    addToDriver(){
+      alert('Add ' + this.driverAmount + ' To Driver');
+      this.driverFormDialog = false;
+    },
+    dropFromDriver(){
+      alert('Drop ' + this.driverAmount + ' From Driver');
+      this.driverFormDialog = false;
     },
     addSafe() {
       this.safeDialog = true;
@@ -1026,6 +1143,10 @@ export default {
     tillFoo(pos){
       this.tillFormDialog = true;
       this.posID = pos.poses_id;
+    },
+    driverFoo(driver){
+      this.driverFormDialog = true;
+      this.driverID = driver.id;
     },
     setVal() {
       setTimeout(() => this.balance = this.defaultBalance[this.selectedItem].amount, 100)

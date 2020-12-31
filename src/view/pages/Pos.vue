@@ -32,9 +32,6 @@ body, html {
             <div class="col-1">
               <i class="fa fa-arrow-left fa-4x iconColor" @click="goBack()"></i> 
             </div>
-            <div class="col-1">
-              <i class="fa fa-arrow-right fa-4x iconColor" @click="print()"></i> 
-            </div>
           </div>
 
           <div class="row my-1">
@@ -138,7 +135,7 @@ body, html {
                       >{{ defTopping.name }}</span>
                       <span
                         :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.is_special == 0"
+                        v-if="defTopping.isDeleted && item.is_special == 0 && defTopping.id != 5"
                       >- {{ defTopping.price }}</span>
                     </div>
                     <div
@@ -152,7 +149,7 @@ body, html {
                       >A - {{ defTopping.name }}</span>
                       <span
                         :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.is_special == 0"
+                        v-if="defTopping.isDeleted && item.is_special == 0 && defTopping.id != 5"
                       >- {{ defTopping.price }}</span>
                     </div>
 
@@ -181,7 +178,7 @@ body, html {
                       >B - {{ defTopping.name }}</span>
                       <span
                         :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.is_special == 0"
+                        v-if="defTopping.isDeleted && item.is_special == 0 && defTopping.id != 5"
                       >- {{ defTopping.price }}</span>
                     </div>
                     <div
@@ -295,7 +292,7 @@ body, html {
                       >{{ defTopping.name }}</span>
                       <span
                         :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.half1.is_special == 0"
+                        v-if="defTopping.isDeleted && item.half1.is_special == 0 && defTopping.id != 5"
                       >- {{ defTopping.price }}</span>
                     </div>
                     <div
@@ -305,7 +302,7 @@ body, html {
                     >
                       <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                       <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                      <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
+                      <span>{{ (topping.price*topping.count).toFixed(2) }} </span>
                     </div>
                   </div>
                   <div class="orderDisplay" @click="foobar(item)">
@@ -323,8 +320,8 @@ body, html {
                       >{{ defTopping.name }}</span>
                       <span
                         :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.half2.is_special == 0"
-                      >- {{ defTopping.price }}</span>
+                        v-if="defTopping.isDeleted && item.half2.is_special == 0 && defTopping.id != 5"
+                      >- {{ defTopping.price }} </span>
                     </div>
                     <div
                       class="d-flex justify-content-between orderDisplay"
@@ -414,6 +411,7 @@ body, html {
                     @onProductSelect="productSelect"
                     @onAddHalf="addHalf"
                     @onSetting="posSetting"
+                    @onFunction="posFunction"
                     @onDoneOrder="doneOrder"
                     @onDrinks="drinkProducts"
                   />
@@ -2155,9 +2153,46 @@ body, html {
       </transition>
     </div>
 
-    
-
     <!-- End Of Setting Modal -->
+
+    <!-- Start Of Function Modal -->
+    <div v-if="functionModal">
+      <transition name="modal">
+        <div class="modal-mask">
+          <div class="modal-wrapper">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Settings</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" @click="functionModal = false">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                  <v-btn
+                    color="red"
+                    elevation="1"
+                    x-large
+                    @click="print()"
+                  >NO SALE</v-btn>
+                
+                </div>
+
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="functionModal = false"
+                  >Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </div>
+    <!-- End of Function Modal -->
   
   </div>
 </template>
@@ -2288,6 +2323,7 @@ export default {
       couponModal: false,
       customerOrdersComponent: false,
       settingModal: false,
+      functionModal: false,
       confirmModal: false,
       invoiceModal: false,
       changeModal: false,
@@ -4543,7 +4579,12 @@ export default {
             });
             this.order.items[i].half2.defaultToppings.forEach(t => {
               if(t.isDeleted){
-                defCount = defCount + t.price;
+                if(t.id == 5){
+                      defCount = defCount;
+                    }
+                    else {
+                      defCount = defCount + t.price;
+                    }
                 }
             });
             if(this.order.items[i].is_special == 0){
@@ -4746,51 +4787,31 @@ export default {
         );
       } else {
         this.globalQuantity = qty;
-        // this.globalQuantityClick = curTime;  // ჯამში 1 წამი
       }
 
       this.globalQuantityClick = curTime;
-
-      // // this.qtyBar = !this.qtyBar;
-      // if(this.qtyBar == true){
-      //     //alert(this.qtyBar);
-      //     //alert(qty);
-      //     this.globalQuantity = + qty;
-      //     //alert(this.globalQuantity);
-      //     //setTimeout(() => this.qtyBar = false, 2000);
-      //     setTimeout(function(){ this.qtyBar = false }, 2000);
-      // }
-      // //this.globalQuantity = 0;
-      // //alert(this.qtyBar);
     },
     addToOrder() {
-      //alert('Item is added to order');
       if (this.isHalfPizza == "yes" || this.halfPizzaCounter == 3) {
         this.customPizza.custom = "yes";
         this.order.items.push(this.customPizza);
-        //this.customPizza.splice(0, this.customPizza.length);
-        //this.customPizza = {};
         this.isHalfPizza = "no";
         this.halfPizzaCounter = 1;
       } else if (this.isPizza == "yes") {
         console.log("----pizza----", this.pizza);
         this.pizza.custom = "no";
         this.order.items.push(this.pizza);
-        //this.pizza.splice(0, this.pizza.length);
-        //this.pizza = {};
         this.isPizza = "no";
       }
       localStorage.setItem("items", JSON.stringify(this.order));
       this.showProducts = true;
       this.showIngredients = false;
 
-      //alert(this.showProducts);
       console.log("Order Array: ", this.order);
     },
     halfPizza(half) {
       this.playSound();
       if(this.order.items[this.itemIndex].size === 's'){
-        // alert('Small Pizza cant be half/half');
         this.alert = true;
       }
       else {
@@ -4819,7 +4840,6 @@ export default {
           }
         }
       }
-      //salert(this.isHalfPizza);
     },
 
     addHalf() {
@@ -4831,12 +4851,9 @@ export default {
         this.isHalfPizza = "yes";
       }
       this.halfPizzaAll = !this.halfPizzaAll;
-      // this.showProducts = true;
-      // this.showIngredients = false;
     },
     seeHalf() {
       this.playSound();
-      //this.isHalfPizza = 'yes';
       if(this.isHalfPizza == 'yes'){
         this.isPizza = 'no';
         this.halfPizzaAll = true;
@@ -4846,8 +4863,6 @@ export default {
         this.wholePizza = false;
         this.wholePizzaPart = 3;
       }
-      // this.showProducts = true;
-      // this.showIngredients = false;
     },
 
     toppingCounter(item, topping) {
@@ -4908,20 +4923,6 @@ export default {
             this.showProducts = false;
             this.showIngredients = true;
             this.itemIndex = this.order.items.indexOf(item);
-            
-            // this.order.items[this.itemIndex].isSelected = true;
-
-
-            // this.order.items.forEach((x) => {
-            //   alert(this.order.items.indexOf(x));
-            //   if(indexOf(x) === this.itemIndex){
-            //     x.isSelected = true;
-            //   }
-            //   else {
-            //     x.isSelected = false;
-            //   }
-
-            // });
 
             if(this.order.items[this.itemIndex].size === 's'){
               this.activeSmall = true;
@@ -4988,14 +4989,12 @@ export default {
       if(!this.walkinActiveVar){
         this.walkinActiveVar = true;
       }
-      // this.walkinActiveVar = !this.walkinActiveVar;
       if (this.takeoutActiveVar || this.deliveryActiveVar) {
         this.takeoutActiveVar = false;
         this.deliveryActiveVar = false;
         this.glovoActive = false;
         this.woltActive = false;
         this.ronnysActive = false;
-        // alert(this.deliveryActiveVar);
       }
       this.order.deliveryFee = 0;
       this.order.deliveryMethod = 'Walk In';
@@ -5008,7 +5007,6 @@ export default {
     },
     takeoutActive(ND) {
       this.playSound();
-      //this.walkInActiveChange = !this.walkInActiveChange;
       this.takeoutActiveVar = true;
       if (this.walkinActiveVar || this.deliveryActiveVar) {
         this.walkinActiveVar = false;
@@ -5101,15 +5099,9 @@ export default {
           }
           else {
               foo = this.cashInput.split('.').join('');
-              //alert(foo);
               this.cashInput = foo.substr(0, index-3) + '.' + foo.substr(index -3, index);
           }
-          //alert(decimal);
-          //this.cashInput = decimal;
-          // alert(this.cashInput.substr(0, index-2));
-          // alert(this.cashInput);
         }
-        //this.cashInput = decimal;
       }
 
     },
@@ -5148,7 +5140,6 @@ export default {
                   this.confirmModal = true;
                   this.paymentType = "cash";
                 }
-                //this.calcPay();
             }
         }
       }
@@ -5191,9 +5182,9 @@ export default {
       if (this.paymentType == "cash") {
         this.confirmModal = false;
         this.order.paymentType = 'Cash';
+        this.print();
         this.changeModal = true;
       } else if (this.paymentType == "card") {
-        //alert("Card Payment Is Confirmed!");
         this.order.paymentType = 'Card';
         this.confirmModal = false;
       }
@@ -5262,7 +5253,6 @@ export default {
       
       this.telMessage = '';
       this.customerChecked = false;
-      //console.log('Done Order: ', this.order);
       this.calcClear();
       this.clearOrder();
     },
@@ -5271,10 +5261,8 @@ export default {
       console.log('Play Sound!');
     },
     telMsg() {
-      // this.$forceUpdate();
       this.customer.tel = this.telMessage;
       this.crmModal = true;
-      //this.telMessageActive ^= true;
     },
     futureOrder() {
       this.order.date = this.date;
@@ -5369,12 +5357,10 @@ export default {
     discOrder(){
         this.discountItem = false;
         this.discountOrder = !this.discountOrder;
-        //this.order.discount = this.cashInput; 
     },
     discItem(){
         this.discountOrder = false;
         this.discountItem = true;
-        //this.order.discount = this.cashInput; 
     },
     noDisc(){
         this.order.discount = 0;
@@ -5395,7 +5381,6 @@ export default {
 
       const TOKEN = localStorage.getItem("TOKEN");
       var bodyFormData = new FormData();
-      //alert(product.id);
       bodyFormData.set("name", this.customer.name);
       bodyFormData.set("address", this.customer.adress);
       bodyFormData.set("sex", this.customer.sex);
@@ -5425,7 +5410,6 @@ export default {
     editCustomer(){
       const TOKEN = localStorage.getItem("TOKEN");
       var bodyFormData = new FormData();
-      //alert(product.id);
       bodyFormData.set("name", this.customer.name);
       bodyFormData.set("address", this.customer.adress);
       bodyFormData.set("sex", this.customer.sex);
@@ -5538,6 +5522,9 @@ export default {
     },
     posSetting(){
       this.settingModal = !this.settingModal;
+    },
+    posFunction(){
+      this.functionModal = !this.functionModal;
     }
   },
 };

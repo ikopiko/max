@@ -395,7 +395,7 @@ export default {
         login(pin) {
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
-            bodyFormData.set("mac", 'E839355BB7CE');
+            //bodyFormData.set("mac", 'E839355BB7CE');
 
             axios.request( {
                     method: "post",

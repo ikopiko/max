@@ -28,7 +28,7 @@
                     </div>
                   </div>
                   <div class="col-md-2 paddingClear" style="padding-left: 0">
-                    <div class="w-b-1 square">
+                    <div class="w-b-1 square" @click="sendFunction()">
                       <i class="fa fa-code fa-4x iconColor"></i>
                     </div>
                   </div>
@@ -136,6 +136,9 @@ export default {
     },
     sendSetting(){
       this.$emit('onSetting');
+    },
+    sendFunction(){
+      this.$emit('onFunction');
     },
     drinksProducts(){
       this.$emit('onDrinks');
