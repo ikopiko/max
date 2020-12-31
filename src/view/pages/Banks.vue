@@ -21,20 +21,16 @@
                             </tr>
                         </tbody>
                     </table>
-                    <v-card v-for="safe in safes" :key="safe" @click="safeFormDialog = true;"
+                    <v-card v-for="safe in safes" :key="safe"
                         class="mx-auto my-3" color="#BAE1BE" light max-width="400">
                         <v-card-title>
                             <span class="title font-weight-bold">{{ safe.amount }} ₾</span>
                         </v-card-title>
 
-                        <!-- <v-card-text class="headline font-weight-bold">
-                            "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
-                        </v-card-text> -->
-
                         <v-card-actions>
                             <v-list-item class="grow">
                                 <v-list-item-avatar color="grey darken-3">
-                                    <i class="material-icons md-36">
+                                    <i class="material-icons md-36" @click="safeFormDialog = true">
                                         face
                                     </i>
                                 </v-list-item-avatar>
@@ -50,6 +46,82 @@
                                 </v-row>
                             </v-list-item>
                         </v-card-actions>
+
+                      <v-expand-transition>
+                        <v-card v-if="safeFormDialog">
+                          <v-card-title>
+                            <span class="headline">Safe</span>
+                          </v-card-title>
+                          <v-card-text>
+                            <v-container>
+                              <v-row>
+                                <v-col
+                                  cols="12"
+                                  sm="6"
+                                  md="4"
+                                >
+                                  <v-text-field
+                                    label="Amount"
+                                    v-model="posAmount"
+                                  ></v-text-field>
+                                </v-col>
+                              </v-row>
+                              <v-row>
+                                <v-col
+                                  cols="12"
+                                  sm="12"
+                                  md="8"
+                                >
+                                  <v-text-field
+                                    label="Optional Comment"
+                                  ></v-text-field>
+                                </v-col>
+                              </v-row>
+                              <v-row>
+                                <v-col
+                                  cols="12"
+                                  sm="6"
+                                  md="4"
+                                >
+                                  <v-btn
+                                    elevation="2"
+                                    x-large
+                                    color="grey"
+                                    class="white--text"
+                                    @click="safeFormDialog = false"
+                                  >Close</v-btn>
+                                </v-col>
+                                <v-col
+                                  cols="12"
+                                  sm="6"
+                                  md="4"
+                                >
+                                  <v-btn
+                                    elevation="2"
+                                    x-large
+                                    class="white--text"
+                                    color="green"
+                                    @click="addToSafe()"
+                                  >ADD</v-btn>
+                                </v-col>
+                                <v-col
+                                  cols="12"
+                                  sm="6"
+                                  md="4"
+                                >
+                                  <v-btn
+                                    elevation="2"
+                                    color="blue"
+                                    x-large
+                                    class="white--text"
+                                    @click="dropFromSafe()"
+                                  >DROP</v-btn>
+                                </v-col>
+                              </v-row>
+                            </v-container>
+                          </v-card-text>
+                        </v-card>
+                      </v-expand-transition>
                     </v-card>
             </div>
             <!-- End of safe -->
@@ -163,7 +235,7 @@
                                         color="blue"
                                         x-large
                                         class="white--text"
-                                        @click="dropFromPos()"
+                                        @click="dropFromPos(till)"
                                       >DROP</v-btn>
                                     </v-col>
                                   </v-row>
@@ -396,168 +468,6 @@
                     color="blue"
                     x-large
                     class="white--text"
-                  >DROP</v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog
-        v-model="safeFormDialog"
-        @keydown.esc="safeFormDialog = false"
-        persistent
-        max-width="600px"
-      >
-        <v-card>
-          <v-card-title>
-            <span class="headline">Safe</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-text-field
-                    label="Amount"
-                    v-model="posAmount"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="12"
-                  md="8"
-                >
-                  <v-text-field
-                    label="Optional Comment"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-btn
-                    elevation="2"
-                    x-large
-                    color="grey"
-                    class="white--text"
-                    @click="safeFormDialog = false"
-                  >Close</v-btn>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-btn
-                    elevation="2"
-                    x-large
-                    class="white--text"
-                    color="green"
-                    @click="addToSafe()"
-                  >ADD</v-btn>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-btn
-                    elevation="2"
-                    color="blue"
-                    x-large
-                    class="white--text"
-                    @click="dropFromSafe()"
-                  >DROP</v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog
-        v-model="tillFormDialog1"
-        @keydown.esc="tillFormDialog = false"
-        persistent
-        max-width="600px"
-      >
-        <v-card>
-          <v-card-title>
-            <span class="headline">Till</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-text-field
-                    v-model="posAmount"
-                    label="Amount"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="12"
-                  md="8"
-                >
-                  <v-text-field
-                    label="Optional Comment"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-btn
-                    elevation="2"
-                    x-large
-                    color="grey"
-                    class="white--text"
-                    @click="tillFormDialog = false"
-                  >Close</v-btn>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-btn
-                    elevation="2"
-                    x-large
-                    class="white--text"
-                    color="green"
-                    @click="addToPos()"
-                  >ADD</v-btn>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-btn
-                    elevation="2"
-                    color="blue"
-                    x-large
-                    class="white--text"
-                    @click="dropFromPos()"
                   >DROP</v-btn>
                 </v-col>
               </v-row>
@@ -1008,6 +918,8 @@ export default {
     },
     addToPos(){
 
+      
+
       const TOKEN = this.loggedUser.token;
       var bodyAddPosBalance = new FormData();
       bodyAddPosBalance.set("pos_id", this.posID);
@@ -1027,41 +939,46 @@ export default {
         .then((response) => {
           
           console.log("Balance Change Response:  ", response);
-          this.tillDialog = false;
-          this.getSafes();
-          this.getPoses();
-          this.posAmount = 0;
-        });
-    },
-    dropFromPos(){
-
-      //this.posAmount = -Math.abs(this.posAmount);
-      //alert(this.posAmount)
-
-      const TOKEN = this.loggedUser.token;
-      var bodyDropSafe = new FormData();
-      bodyDropSafe.set("pos_id", this.posID);
-      bodyDropSafe.set("amount", -this.posAmount);
-      bodyDropSafe.set("safe_id", this.safes[0].id);
-
-      axios
-        .request({
-          method: "post",
-          url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/edit-balance",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyDropSafe,
-        })
-        .then((response) => {
-          
-          console.log("Balance Change Response:  ", response);
           this.tillFormDialog = false;
           this.getSafes();
           this.getPoses();
           this.posAmount = 0;
         });
+    },
+    dropFromPos(pos){
+
+      //this.posAmount = -Math.abs(this.posAmount);
+      //alert(this.posAmount)
+
+      if(pos.amount < this.posAmount){
+          alert('There is not that amount of money in POS');
+      }
+      else {
+          const TOKEN = this.loggedUser.token;
+          var bodyDropSafe = new FormData();
+          bodyDropSafe.set("pos_id", this.posID);
+          bodyDropSafe.set("amount", -this.posAmount);
+          bodyDropSafe.set("safe_id", this.safes[0].id);
+
+          axios
+            .request({
+              method: "post",
+              url:
+                "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/edit-balance",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+              data: bodyDropSafe,
+            })
+            .then((response) => {
+              
+              console.log("Balance Change Response:  ", response);
+              this.tillFormDialog = false;
+              this.getSafes();
+              this.getPoses();
+              this.posAmount = 0;
+            });
+      }
 
     },
     addToSafe(){

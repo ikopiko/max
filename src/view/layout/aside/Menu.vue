@@ -166,6 +166,31 @@
         </a>
       </li>
     </router-link>
+
+    <router-link
+      to="/banks"
+      v-slot="{ href, navigate, isActive, isExactActive }"
+    >
+      <li
+        aria-haspopup="true"
+        data-menu-toggle="hover"
+        class="menu-item"
+        :class="[
+          isActive && 'menu-item-active',
+          isExactActive && 'menu-item-active'
+        ]"
+      >
+        <a :href="href" class="menu-link" @click="navigate">
+          <v-icon
+            class="menu-icon"
+            large
+          >
+          account_balance
+          </v-icon>
+          <span class="menu-text">Banks</span>
+        </a>
+      </li>
+    </router-link>
     
   </ul>
 </template>

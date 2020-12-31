@@ -232,8 +232,7 @@ export default {
       .request({
         method: "post",
         url:
-          "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
-        //   "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-delivery-orders",
+          "http://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/get-current-orders",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -245,20 +244,24 @@ export default {
         console.log("orders data: ", response.data.data);
       });
 
-    axios
-      .request({
-        method: "post",
-        url:
-          "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/timesheet/users",
-        headers: {
-          Authorization: "Bearer " + TOKEN,
-        },
-      })
-      .then((response) => {
-        this.driverList = response.data.data;
-        this.driverLoad = false;
-        console.log("Driver List: ", response.data.data);
-      });
+      var bodyFormDriver = new FormData();
+      bodyFormDriver.set("branch", 'saburtalo');
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/clockedin-drivers",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormDriver,
+        })
+        .then((response) => {
+          this.driverList = response.data.data;
+          this.driverLoad = false;
+          console.log("Drivers List: ", this.driverList);
+        });
   },
   computed: {
 
