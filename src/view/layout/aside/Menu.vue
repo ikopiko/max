@@ -60,7 +60,7 @@
     </router-link>
     
     <router-link
-      to="/order"
+      to="/orders"
       v-slot="{ href, navigate, isActive, isExactActive }"
     >
       <li

@@ -57,7 +57,7 @@
               class="mx-5 col-3 cardClass"
               outlined
               :class="{ cardClassActive  : ordersView || allView }"
-            ><router-link class="mx-5" to="/order"> 
+            ><router-link class="mx-5" to="/orders"> 
               <v-list-item three-line>
                 <v-list-item-content>
                   <v-list-item-title class="headline h2 bold mb-1">

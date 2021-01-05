@@ -193,7 +193,6 @@ export default {
         method: "post",
         url:
           "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
-        // "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-delivery-orders",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },

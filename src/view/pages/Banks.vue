@@ -254,7 +254,6 @@
                                     <h3>Drivers</h3>
                                 </td>
                                 <td style="width:50%; text-align:right">
-                                    <i class="material-icons md-36" @click="addDriver()">add</i>
                                     <span class="mdi mdi-plus-thick"></span>
                                 </td>
                             </tr>
@@ -262,23 +261,24 @@
                     </table>
 
                     <v-card v-for="drv in drivers" :key="drv.id"  
-                        class="mx-auto my-3" color="#FE9A53" light max-width="400">
-                        <!-- <v-card-title>
-                            <span class="title font-weight-bold" v-if="till.amount < 300">{{ till.amount }} ₾ - {{ till.name }}</span>
-                            <span class="title font-weight-bold" v-if="till.amount >= 300"><span style="color: red;" v-if="till.amount >= 300">DROP NEEDED {{ till.amount }} ₾</span>  - {{ till.name }}</span>
-                        </v-card-title> -->
+                        class="mx-auto my-3" color="#46BDF2" light max-width="400">
+                        <v-card-title>
+                            <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }} ₾ - {{ drv.username }}</span>
+                            <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} ₾</span>  - {{ till.name }}</span>
+                        </v-card-title>
 
                         <v-card-actions>
                             <v-list-item class="grow">
+                              
                                 <v-list-item-avatar color="grey darken-3" @click="driverFoo(drv)">
                                     <i class="material-icons md-36">
                                         face
                                     </i>
                                 </v-list-item-avatar>
                                
-                                <v-list-item-content>
+                                <!-- <v-list-item-content>
                                     <v-list-item-title>{{ drv.username }}</v-list-item-title>
-                                </v-list-item-content>
+                                </v-list-item-content> -->
                                 <v-row align="center" justify="end">
                                     <i class="material-icons md-36">
                                         alarm
@@ -913,6 +913,7 @@ export default {
           this.tillDialog = false;
           this.getSafes();
           this.getPoses();
+          this.getDrivers();
           this.posAmount = 0;
         });
     },
@@ -942,6 +943,7 @@ export default {
           this.tillFormDialog = false;
           this.getSafes();
           this.getPoses();
+          this.getDrivers();
           this.posAmount = 0;
         });
     },
@@ -954,6 +956,7 @@ export default {
           alert('There is not that amount of money in POS');
       }
       else {
+
           const TOKEN = this.loggedUser.token;
           var bodyDropSafe = new FormData();
           bodyDropSafe.set("pos_id", this.posID);
@@ -976,6 +979,7 @@ export default {
               this.tillFormDialog = false;
               this.getSafes();
               this.getPoses();
+              this.getDrivers();
               this.posAmount = 0;
             });
       }
@@ -1004,6 +1008,7 @@ export default {
           this.safeFormDialog = false;
           this.getSafes();
           this.getPoses();
+          this.getDrivers();
           this.posAmount = 0;
         });
 
@@ -1033,16 +1038,63 @@ export default {
           this.safeFormDialog = false;
           this.getSafes();
           this.getPoses();
+          this.getDrivers();
           this.posAmount = 0;
         });
 
     },
     addToDriver(){
-      alert('Add ' + this.driverAmount + ' To Driver');
-      this.driverFormDialog = false;
+
+      const TOKEN = this.loggedUser.token;
+      var bodyAddDriverBalance = new FormData();
+      bodyAddDriverBalance.set("amount", this.driverAmount);
+      bodyAddDriverBalance.set("driver_id", this.driverID);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/edit-balance",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyAddDriverBalance,
+        })
+        .then((response) => {
+          
+          console.log("Balance Change Response:  ", response);
+          this.driverFormDialog = false;
+          this.getSafes();
+          this.getPoses();
+          this.getDrivers();
+          this.driverAmount = 0;
+        });
     },
     dropFromDriver(){
-      alert('Drop ' + this.driverAmount + ' From Driver');
+      const TOKEN = this.loggedUser.token;
+      var bodyAddDriverBalance = new FormData();
+      bodyAddDriverBalance.set("amount", - this.driverAmount);
+      bodyAddDriverBalance.set("driver_id", this.driverID);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/edit-balance",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyAddDriverBalance,
+        })
+        .then((response) => {
+          
+          console.log("Balance Change Response:  ", response);
+          this.driverFormDialog = false;
+          this.getSafes();
+          this.getPoses();
+          this.getDrivers();
+          this.driverAmount = 0;
+        });
       this.driverFormDialog = false;
     },
     addSafe() {

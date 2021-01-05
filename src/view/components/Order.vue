@@ -331,59 +331,7 @@
                 }}</v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
-
-            <v-card-actions v-if="statusIndex === 1">
-                <v-btn
-                color="orange lighten-2"
-                text
-                >
-                Waiting For Baker 1
-                </v-btn>
-
-                <v-spacer></v-spacer>
-
-                <b-button variant="success" @click="baker1Done(order)">Ready</b-button>
-            </v-card-actions>
-
-            <v-card-actions v-if="statusIndex === 2">
-                <v-btn
-                color="orange lighten-2"
-                text
-                >
-                Waiting For Baker 2
-                </v-btn>
-
-                <v-spacer></v-spacer>
-
-                <b-button variant="success" @click="baker2Done(order)">Ready</b-button>
-            </v-card-actions>
-
-            <v-card-actions v-if="statusIndex === 3">
-                <v-btn
-                color="orange lighten-2"
-                text
-                >
-                Pizza In Oven
-                </v-btn>
-
-                <v-spacer></v-spacer>
-
-                <b-button variant="success" @click="boxPizza(order)">BOX</b-button>
-            </v-card-actions>
-
-            <v-card-actions v-if="statusIndex === 4">
-                <v-btn
-                color="orange lighten-2"
-                text
-                >
-                Waiting For Customer
-                </v-btn>
-
-                <v-spacer></v-spacer>
-
-                <b-button variant="success" @click="customerDelivery(order)">Ready</b-button>
-            </v-card-actions>
-            </v-card>
+    </v-card>
 </template>
 <script>
 export default {
@@ -396,11 +344,12 @@ export default {
     
     data() {
         return {
-            order: [],
         }
     },
-    mounted() {
-        this.order = this.orderProp;
+    computed: {
+        order(){
+            return this.orderProp
+        },
     },
 }
 </script>

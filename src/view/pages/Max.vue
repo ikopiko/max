@@ -56,10 +56,6 @@
         </v-card>
       </v-tab-item>
     </v-tabs-items>
-
-      <!-- <div class="col-xxl-4 order-1 order-xxl-2">
-        <Card></Card>
-      </div> -->
     </div>
 </template>
 
@@ -67,7 +63,7 @@
 /* eslint-disable */
 import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
 
-import Card from "@/view/pages/vuetify/Cards.vue";
+import Card from "@/view/components/Cards.vue";
 
 export default {
   name: "dashboard",

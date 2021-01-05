@@ -389,9 +389,8 @@ export default {
                     this.$forceUpdate();
                 }
             }
-        }
+        },
 
-        ,
         login(pin) {
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
@@ -418,6 +417,7 @@ export default {
 
             );
         },
+        
         logKey(e) {
             //alert(e.target);
             e=e || window.event;
