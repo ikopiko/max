@@ -4,20 +4,6 @@
 <template>
   <div>
     <div class="container">
-      <!-- <div class="row">
-        <div class="col-md-5 menu_static" :class="{ menu_active  : posView || allView }">
-          <router-link to="/max"><p> POS </p></router-link>
-        </div>
-        <div class="col-md-5 menu_static" :class="{ menu_active : ordersView || allView }" >
-          <router-link to="/order"> Order List </router-link>
-        </div>
-        <div class="col-md-5 menu_static" :class="{ menu_active : managerView || allView }" >
-          <router-link to="/max"> MAX </router-link>
-        </div>
-        <div class="col-md-5 menu_static" :class="{ menu_active : managerView || allView }" >
-          <router-link to="/order"> Manager </router-link>
-        </div>
-      </div> -->
       <div class="row">
        
           <v-card

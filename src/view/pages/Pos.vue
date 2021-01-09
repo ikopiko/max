@@ -613,11 +613,13 @@ body, html {
         
 
         <div class="row mt-1" v-if="showIngredients">
+          <!-- Testing New Component Render -- Not Working Y`et -->
           <!-- <ingredients
-            v-if="wholePizza"
-            :product="this.pizza"
-            :defaultToppings="this.pizza.defaultToppings"
-            :toppings="this.pizza.toppings"
+            :product="this.ingProduct"
+            :defaultToppings="this.ingDefToppings"
+            :isHalfPizza="this.ingHalfPizza"
+            :halfPizzaPart="this.ingHalfPizzaPart"
+            :toppings="this.ingToppings"
             :mapping="toppingIdCountMap"
             @onAddTopping="addTopping"
             @onSendSauce="addSauce"
@@ -670,8 +672,8 @@ body, html {
           <ingredients
             v-if="halfPizzaPart == 1"
             :product="this.customPizza.half1"
-            :isHalfPizza="this.isHalfPizza"
             :sauce="curSauce"
+            :isHalfPizza="this.isHalfPizza"
             :halfPizzaPart="this.halfPizzaPart"
             :defaultToppings="this.customPizza.half1.defaultToppings"
             :toppings="this.customPizza.half1.toppings"
@@ -731,7 +733,6 @@ body, html {
             @onDeleteDefTopping="deleteDefaultTopping"
             @onDeleteTopping="deleteTopping"
            />
-          <!-- <ingredients @onIngredientSelect = 'ingredientSelect' /> -->
         </div>
           
 <div class="row my-5" v-if="showIngredients && !isSticks">
@@ -2321,6 +2322,11 @@ export default {
       diplomatDiscount: 15,
       employeeDiscount: 20,
       couponModal: false,
+      ingProduct: {},
+      ingHalfPizza: false,
+      ingHalfPizzaPart: -1,
+      ingDefToppings: [],
+      ingToppings: [],
       customerOrdersComponent: false,
       settingModal: false,
       functionModal: false,
@@ -2458,10 +2464,10 @@ export default {
   beforeRouteEnter (to, from, next) {
     next(vm => {
        if (vm.$store.state.auth.user.data.role !== "admin" || vm.$store.state.auth.user.data.role !== "posaccess") {
-         vm.$router.push({name: "pos"});
+         vm.$router.push({name: "pos"}).catch(()=>{});
        }
        else {
-         vm.$router.push({name: "dashboard"});
+         vm.$router.push({name: "dashboard"}).catch(()=>{});
        }
     });
   },
@@ -2657,6 +2663,59 @@ export default {
         });
       }
       return mapping;
+    },
+    ingredientComponent() {
+
+      if(this.wholePizzaPart === 1) {
+        this.ingProduct = this.pizza;
+        this.ingDefToppings = this.pizza.half1.defaultToppings;
+        this.ingToppings = this.pizza.half1.toppings;
+        this.ingHalfPizza = this.isHalfPizza;
+        this.ingHalfPizzaPart = -1;
+
+        return 'WPP1';
+      }
+      else if(this.wholePizzaPart === 2) {
+        this.ingProduct = this.pizza;
+        this.ingDefToppings = this.pizza.half2.defaultToppings;
+        this.ingToppings = this.pizza.half2.toppings;
+        this.ingHalfPizza = this.isHalfPizza;
+        this.ingHalfPizzaPart = -1;
+        return 'WPP2';
+      }
+      else if(this.wholePizzaPart === 3) {
+        this.ingProduct = this.pizza;
+        this.ingDefToppings = this.pizza.defaultToppings;
+        this.ingToppings = this.pizza.toppings.concat(this.pizza.half1.toppings, this.pizza.half2.toppings);
+        this.ingHalfPizza = this.isHalfPizza;
+        this.ingHalfPizzaPart = -1;
+        return 'WPPA';
+      }
+      else if(this.halfPizzaPart === 1) {
+        this.ingProduct = this.customPizza.half1;
+        this.ingDefToppings = this.customPizza.half1.defaultToppings;
+        this.ingToppings = this.customPizza.half1.toppings;
+        this.ingHalfPizza = this.isHalfPizza;
+        this.ingHalfPizzaPart = this.halfPizzaPart;
+        return 'HPP1';
+      }
+      else if(this.wholePizzaPart === 2) {
+        this.ingProduct = this.customPizza.half2;
+        this.ingDefToppings = this.customPizza.half2.defaultToppings;
+        this.ingToppings = this.customPizza.half2.topping;
+        this.ingHalfPizza = this.isHalfPizza;
+        this.ingHalfPizzaPart = this.halfPizzaPart;
+        return 'HPP2';
+      }
+      else if(this.halfPizzaAll) {
+        this.ingProduct = this.customPizza;
+        this.ingDefToppings = this.customPizza.half2.defaultToppings.concat(this.customPizza.half1.defaultToppings);
+        this.ingToppings = this.customPizza.half2.toppings.concat(this.customPizza.half1.toppings, this.customPizza.toppings);
+        this.ingHalfPizza = this.isHalfPizza;
+        this.ingHalfPizzaPart = this.halfPizzaPart;
+        return 'HPA';
+      }
+
     },
   },
   methods: {

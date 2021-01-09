@@ -175,7 +175,6 @@ export default {
             }
         },
         sendTimesheet(URL){
-          alert(URL);
             var TOKEN = localStorage.getItem("TOKEN");
             axios
             .request({
@@ -219,7 +218,6 @@ export default {
                     var index = this.pinDecon.indexOf('-');
                     this.pinDecon[index] = char;
                     this.enteredPin = this.enteredPin + char;
-                    //alert('Number is: ' + this.enteredPin);
                     this.$forceUpdate();
                     }
                 }
@@ -235,7 +233,6 @@ export default {
                     })
                     .then((response) => {
                         if(response.status === 200 && !response.data.is_error){
-                            //alert('Success Loggin');
                             console.log('------', response);
                             this.loginToken = response.data.data.token;
                             this.pinUser = response.data.data;
@@ -249,7 +246,6 @@ export default {
                 
             },
             logKey(e){
-            //alert(e.target);
             e = e || window.event;
             var charCode = (e.which) ? e.which : e.keyCode;
             if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
