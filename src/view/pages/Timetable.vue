@@ -4,26 +4,31 @@
 <template>
     <b-container>   
           <b-row>
-              <b-col cols="3">{{ pinUser.first_name  }}  {{ pinUser.role }} </b-col>
+              <!-- <b-col cols="3">{{ pinUser.first_name  }}  {{ pinUser.role }} </b-col>
               <b-col cols="3">
                 <ul id="display">
                     <li v-for="num in pinSync" :key="num">{{ num }}</li>
                     <div class="clear"></div>
                 </ul>
-              </b-col>
+              </b-col> -->
+              <b-col cols="3">&nbsp;</b-col>
+              <b-col cols="3">&nbsp;</b-col>
               <b-col cols="3">{{ timeNow }}</b-col>
           </b-row>
           
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('1')">1</div>
+              <!-- <div class="numChar" @click="pinChar('1')">1</div> -->
+              &nbsp;
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('2')">2</div>
+              <!-- <div class="numChar" @click="pinChar('2')">2</div> -->
+              &nbsp;
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('3')">3</div>
+              <!-- <div class="numChar" @click="pinChar('3')">3</div> -->
+              &nbsp;
             </b-col>
             
             <b-col cols="2">
@@ -38,13 +43,16 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('4')">4</div>
+              <!-- <div class="numChar" @click="pinChar('4')">4</div> -->
+              &nbsp;
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('5')">5</div>
+              <!-- <div class="numChar" @click="pinChar('5')">5</div> -->
+              &nbsp;
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('6')">6</div>
+              <!-- <div class="numChar" @click="pinChar('6')">6</div> -->
+              &nbsp;
             </b-col>
             
             <b-col cols="4">
@@ -57,13 +65,16 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('7')">7</div>
+              <!-- <div class="numChar" @click="pinChar('7')">7</div> -->
+              &nbsp;
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('8')">8</div>
+              <!-- <div class="numChar" @click="pinChar('8')">8</div> -->
+              &nbsp;
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('9')">9</div>
+              <!-- <div class="numChar" @click="pinChar('9')">9</div> -->
+              &nbsp;
             </b-col>
 
             <b-col cols="4">
@@ -76,10 +87,12 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('4')">C</div>
+              <!-- <div class="numChar" @click="pinChar('4')">C</div> -->
+              &nbsp;
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('5')">0</div>
+              <!-- <div class="numChar" @click="pinChar('5')">0</div> -->
+              &nbsp
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
               <div  >&nbsp;</div>

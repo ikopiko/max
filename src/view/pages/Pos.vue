@@ -2473,9 +2473,6 @@ export default {
   },
 
   mounted() {
-    // let logged_user_name;
-    // let logged_user_position;
-    // this.order.deliveryFee = 0;
     const TOKEN = localStorage.getItem("TOKEN");
     axios
       .request({
@@ -2488,7 +2485,6 @@ export default {
       })
       .then((response) => {
         this.toppingPrice = response.data;
-        //console.log(response.data)
       });
 
       axios
@@ -2510,7 +2506,6 @@ export default {
       try {
         this.order = JSON.parse(localStorage.getItem("items"));
         this.itemIndex = this.order.items.length - 1;
-        //this.pizza = JSON.parse(localStorage.getItem('customPizza'));
         console.log('role', this.$store.state.auth.user.data.role);
       } catch (e) {
         localStorage.removeItem("items");
@@ -5261,12 +5256,33 @@ export default {
           },
           data: { order: this.order },
         }).then((response) => {
+          
+          this.printOrder(response.data);
           if(response.status === 200 && this.paymentType == "card"){
             this.calcPay();
           }
-
+            console.log("Order Response", response);
         });
       }
+    },
+    printOrder(orderID){
+        const TOKEN = localStorage.getItem("TOKEN");
+        var bodyFormData = new FormData();
+        bodyFormData.set("id", orderID);
+        axios.request({
+          method: "post",
+          url:
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/print",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormData,
+        }).then((response) => {
+            if(response.data.is_error){
+              alert("Error Printing Order");
+            }
+            console.log("Order Response", response);
+        });
     },
     calcClear() {
       this.cashInput = '';

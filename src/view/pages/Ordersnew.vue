@@ -56,28 +56,6 @@
                       class="elevation-1"
                       @page-count="pageCount = $event"
                     >
-                        <!-- <template v-slot:default>
-                          <tbody>
-                            <tr
-                            v-for="orderItem in filteredOrders"
-                            :key="orderItem.order_id"
-                            @click="foobar(orderItem)"
-                            >
-                            <td>{{ orderItem.id }}</td>
-                            <td>{{ orderItem.branch }}</td>
-                            <td>{{ orderItem.order_data.deliveryMethod }}</td>
-                            <td>{{ orderItem.order_data.adress }}</td>
-                            <td>{{ orderItem.order_data.customer.name }}</td>
-                            <td>{{ orderItem.order_data.customer.tel }}</td>
-                            <td>{{ item.tab }}</td>
-                            <td>
-                                <v-btn class="mx-2" fab dark small color="green" @click="onButtonClick(orderItem)">
-                                    <v-icon dark>read_more</v-icon>
-                                </v-btn>
-                            </td>
-                            </tr>
-                        </tbody>
-                        </template> -->
                         <template v-slot:item="row">
                             <tr>
                               <td>

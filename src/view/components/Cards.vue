@@ -650,7 +650,7 @@ export default {
       orders: [],
       order_raw: [],
       prepOrder: [],
-      branch: "digomi",
+      branch: "saburtalo",
       status: 1,
       TOKEN: "ntoI_TodKtEjTTqj8HBVGmQPE3gW5TFY",
     };
@@ -668,10 +668,6 @@ export default {
     this.getOrderPrep();
   },
   computed: {
-    loggedUser() {
-      const user = this.$store.state.auth.user.first_name;
-      return user;
-    },
     filteredOrdersPos() {
       return this.prepOrder.filter((x) => x.source === "pos");
     },
@@ -688,16 +684,14 @@ export default {
   methods: {
     getOrder() {
       var bodyFormData = new FormData();
-      //alert(product.id);
-      // alert(this.$store.getters.currentUser.data.first_name);
-      // alert(this.$store.state.auth.user.data.first_name);
       bodyFormData.set("branch", this.branch);
-      const TOKEN = this.TOKEN;
+      const TOKEN = this.$store.state.auth.user.data.token;
+      console.log("TOOOOOOOKEN: ",TOKEN);
       axios
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-new-orders",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-new-orders",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -717,21 +711,19 @@ export default {
       //alert(product.id);
       bodyFormData.set("branch", this.branch);
       bodyFormData.set("status", this.statusIndex);
-      const TOKEN = this.TOKEN;
+      const TOKEN = this.$store.state.auth.user.data.token;
+      console.log("TOOOOOOOKEN: ",TOKEN);
       axios
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-current-orders",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
           data: bodyFormData,
         })
         .then((response) => {
-          // response.data.data[0].order_data = JSON.parse(
-          //   response.data.data[0].order_data
-          // );
           console.log('response', response);
           response.data.data.forEach((x, index) => {
             const first_char = response.data.data[index].order_data.charAt(0);
@@ -745,7 +737,6 @@ export default {
 
           this.prepOrder = response.data.data;
           console.log("prepOrder: ", this.prepOrder);
-          //this.order_raw.legacy[0].order_data = JSON.parse(this.order_raw.legacy[0].order_data);
         });
     },
 
@@ -759,7 +750,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/update-order-status",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/update-order-status",
           headers: {
             Authorization: "Bearer " + this.TOKEN,
           },

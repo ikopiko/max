@@ -18,6 +18,9 @@
                                 <td style="width:50%; text-align:right">
                                   <i class="material-icons md-36" @click="addSafe()" v-if="safes.length === 0">add</i>
                                 </td>
+                                <td style="width:50%; text-align:right">
+                                  <i class="material-icons md-36" @click="closeSafe()" >flaky</i>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -634,6 +637,82 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+
+      <v-dialog
+        v-model="safeCloseDialog"
+        persistent
+        max-width="600px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Close Day - Safe</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="3" class="justify-end">{{  safeCash}}</v-col>
+                <v-col cols="3">Cash</v-col>
+                <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="3">{{ safeCard }}</v-col>
+                <v-col cols="3">Card</v-col>
+                <v-col cols="6"><v-text-field label="Cad Amount" v-model="cardActual"></v-text-field></v-col>
+              </v-row>  
+              <v-row>
+                <v-col cols="3">{{ safeTotal }}</v-col>
+                <v-col cols="3">Total</v-col>
+                <v-col cols="6"><v-text-field label="Total Amount" v-model="totalActual"></v-text-field></v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3">{{ safeGlovo }}</v-col>
+                <v-col cols="3">Glovo</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3">{{ safeWolt }}</v-col>
+                <v-col cols="3">Wolt</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="9">
+                  <v-text-field label="Note if short or over" v-model="safeCloseComment"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    color="grey"
+                    class="white--text"
+                    @click="safeCloseDialog = false"
+                  >Close</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                    @click="addPos()"
+                  >ADD</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       
     </v-app>
   </div>
@@ -653,11 +732,20 @@ export default {
       posID: '',
       driverID: '',
       selectedPos: [],
+      safeCash: 800.6,
+      safeCard: 1047.2,
+      safeGlovo: 264.1,
+      safeWolt: 494.1,
+      safeTotal: null,
+      cashActual: 0,
+      cardActual: 0,
+      totalActual: 0,
       posAmount: 0,
       driverAmount: 0,
       posComment: '',
       safeAmount: 0,
-      safeComment: '',
+      safeCloseComment: '',
+      safeCloseDialog: false,
       safeFormDialog: false,
       tillFormDialog: false,
       driverFormDialog: false,
@@ -1100,6 +1188,13 @@ export default {
     addSafe() {
       this.safeDialog = true;
       // this.safes.push(this.safe);
+    },
+    closeSafe(){
+      
+      this.safeTotal = this.safeCash + this.safeCard + this.safeGlovo + this.safeWolt;
+
+      this.safeCloseDialog = true;
+      
     },
     addTill() {
       this.tillDialog = true;

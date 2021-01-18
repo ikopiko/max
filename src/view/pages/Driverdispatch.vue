@@ -18,7 +18,6 @@
                         append-icon="mdi-magnify"
                         label="Search"
                         single-line
-                        
                     ></v-text-field>
                     </v-card-title>
                     <v-card-text>
@@ -34,8 +33,7 @@
                       :loading = "loading"
                       class="elevation-1"
                       @page-count="pageCount = $event"
-                      >
-                      
+                      >             
                       </v-data-table>
                     </v-card-text>
                     
@@ -93,6 +91,8 @@
                 color="error"
                 dark
                 x-large
+                disabled
+                depressed
                 @click="deliveryProcess()"
                 >
                 Deliveries in progress
@@ -174,7 +174,7 @@ export default {
       driver: [],
       search: '',
       branch: 'saburtalo',
-      status: 4,
+      status: 1,
       deliveryStatus: 6,
       page: 0,
       pageCount: 0,
@@ -232,7 +232,7 @@ export default {
       .request({
         method: "post",
         url:
-          "http://max.ronnyspizza.ge/rest/web/index.php?r=v1/manager/get-current-orders",
+          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-current-orders",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -282,6 +282,7 @@ export default {
     onButtonClick(item) {
       this.$router.push({name: 'singleorder', params: {orderProp: item} });
     },
+
         driverOut(){
         const TOKEN = this.loggedUser.token;
         var bodyFormData = new FormData();
