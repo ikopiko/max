@@ -13,14 +13,13 @@
 {
     background-color: #ffffff;
     height: 40px;
-    width: 50px;
+    width: 40px;
     text-align: center;
-    border-radius: 4px;
+    border-radius: 44px;
     margin: 4px;
-    border: 2px solid #C0C1C3;
-    /* box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
+    box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
     -webkit-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
-    -moz-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset; */
+    -moz-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
     color: #000000;
     font-size: 14px;
     font-weight: 300;
@@ -46,54 +45,37 @@
     pointer-events: none;
 }
 
-body .row, body .col-5, body .col-7
-{
-    margin: 0px !important;
-    padding: 0px !important;
-}
 
-.app
-{
-    width: 100%;
-}
+
+
 
 .w-b-1
 {
-    background-color: #E6E6E7;
-    height: 54px;
+    background-color: #E7E7E8;
+    height: 60px;
     width: 100%;
     text-align: center;
-    border: 1px solid #ffffff;
+    border: 1px solid #BBBCBE;
     border-radius: 50px;
-    margin: 0px;
+    margin: 2px;
     /* box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
     -webkit-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
     -moz-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset; */
     color: #000000;
     font-size: 14px;
     font-weight: 300;
-    position: relative;
 
 }
 .w-b-1:hover
 {
     border: 2px solid #F4992F;
 }
-.w-b-1 .fa-4x
-{
-    font-size: 3.5em !important;
-}
+
 .w-b-1 span
 {
-    position: absolute !important;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-.col-12 
-{
-    padding-top: 0px !important;
-    padding-bottom: 0px !important;
+    position: relative;
+    top: 18px;
+    font-weight: 500;
 }
 .w-1
 {
@@ -103,7 +85,7 @@ body .row, body .col-5, body .col-7
     justify-content: center;
     background-color: #ffffff;
     height: 60px;
-    /* width:120px; */
+    width:120px;
     text-align: center;
     border-radius: 4px;
     margin: 4px;
@@ -180,28 +162,22 @@ body .row, body .col-5, body .col-7
     color:red;
 }
 .drinkClass {
-    background-color: #B3B3B3;
-    color: #000000;
+    background-color: #4A7ABC;
 }
 .ronnysDrinkClass {
-    background-color: #B7E5B3;
-    color: #000000;
+    background-color: #9CCE77;
 }
 .extraClass {
-    background-color: #E6E6E7;
-    color: #000000;
+    background-color: #BC6C4B;
 }
 .pizzaClass {
-    background-color: #87A2D2;
-    color: #ffffff;
+    background-color: #5D6597;
 }
 .cookieClass {
-    background-color: #EC8B74;
-    color: #000000;
+    background-color: #BC854C;
 }
 .stickClass {
-    background-color: #FDFFC2;
-    color: #000000;
+    background-color: #BDA64A;
 }
 .cheeseClass {
     background-color: #FBCE41;
@@ -414,7 +390,7 @@ body .row, body .col-5, body .col-7
 }
 .gray
 {
-    background-color: #E6E6E7;
+    background-color: #cccccc;
 }
 .circle
 {
@@ -422,11 +398,7 @@ body .row, body .col-5, body .col-7
 }
 .square
 {
-    border-radius: 0px !important;
-}
-.table
-{
-    margin-bottom: 0px !important;
+    border-radius: 4px !important;
 }
 .table td, .table th
 {
@@ -465,7 +437,9 @@ body .row, body .col-5, body .col-7
 
 
 .paddingClear{
-    padding: 0px !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    padding-bottom: 0px !important;
 }
 .size_static{
     opacity: 0.5 !important;
@@ -587,7 +561,7 @@ body .row, body .col-5, body .col-7
   .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
 .material-icons.md-36 { font-size: 36px; }
-.material-icons.md-48 { font-size: 3.5rem; margin-top: 0px !important; }
+.material-icons.md-48 { font-size: 48px; }
 
 /* Rules for using icons as black on a light background. */
 .material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
@@ -596,6 +570,3 @@ body .row, body .col-5, body .col-7
 /* Rules for using icons as white on a dark background. */
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
-
-
-

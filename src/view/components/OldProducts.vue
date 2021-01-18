@@ -6,22 +6,22 @@
         <!-- Display Products -->
         <div class="row">
                
-               <div class=" col paddingClear" v-for="product in limitProducts" :key="product.id">
+               <div class=" col-md-2 paddingClear" v-for="product in limitProducts" :key="product.id">
                     <div class="w-b-1 square" @click="send(product)" v-bind:class="[product.class_name]">
                        <span class="position-relative" ><strong>{{ product.name.slice(0,10) }}</strong></span>
                     </div>
                 </div> 
-                <div class="col paddingClear" style="padding-left: 0">
+                <div class="col-md-2 paddingClear" style="padding-left: 0">
                     <div class="w-b-1 square">
                       <i class="fa fa-home fa-4x iconColor"></i>
                     </div>
                   </div>
-                  <div class="col paddingClear" style="padding-left: 0">
+                  <div class="col-md-2 paddingClear" style="padding-left: 0">
                       <div class="w-b-1 square" @click="drinksProducts()">
                         <i class="fa fa-coffee fa-4x iconColor"></i>
                       </div>                
                   </div> 
-                <div class="col paddingClear" style="padding-left: 0">
+                <div class="col-md-2 paddingClear" style="padding-left: 0">
                     <div class="w-b-1 square" @click="sendAddHalf()" :class="{ active: halfActive}">
                       <!-- <span class="position-relative" style="top: 16px;"><strong>A/B</strong></span> -->
                       <i class="material-icons md-48 iconColor" style="margin-top: 4px;">tonality</i> 

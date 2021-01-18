@@ -2461,16 +2461,16 @@ export default {
     };
   },
 
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-       if (vm.$store.state.auth.user.data.role !== "admin" || vm.$store.state.auth.user.data.role !== "posaccess") {
-         vm.$router.push({name: "pos"}).catch(()=>{});
-       }
-       else {
-         vm.$router.push({name: "dashboard"}).catch(()=>{});
-       }
-    });
-  },
+  // beforeRouteEnter (to, from, next) {
+  //   next(vm => {
+  //      if (vm.$store.state.auth.user.data.role !== "admin" || vm.$store.state.auth.user.data.role !== "posaccess") {
+  //        vm.$router.push({name: "pos"}).catch(()=>{});
+  //      }
+  //      else {
+  //        vm.$router.push({name: "dashboard"}).catch(()=>{});
+  //      }
+  //   });
+  // },
 
   mounted() {
     const TOKEN = localStorage.getItem("TOKEN");
