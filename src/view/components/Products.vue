@@ -4,13 +4,15 @@
 <template>
       <div class="app">
         <!-- Display Products -->
-        <div class="row">
+        <div class="row" id="toppings">
                
                <div class=" col paddingClear" v-for="product in limitProducts" :key="product.id">
                     <div class="w-b-1 square" @click="send(product)" v-bind:class="[product.class_name]">
                        <span class="position-relative" ><strong>{{ product.name.slice(0,10) }}</strong></span>
                     </div>
                 </div> 
+        </div>
+        <div class="row" id="buttons">        
                 <div class="col paddingClear" style="padding-left: 0">
                     <div class="w-b-1 square">
                       <i class="fa fa-home fa-4x iconColor"></i>
