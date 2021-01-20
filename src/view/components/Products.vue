@@ -4,15 +4,15 @@
 <template>
       <div class="app">
         <!-- Display Products -->
-        <div class="row" id="toppings">
-               
+        <div class="row right-2" id="toppings">
                <div class=" col paddingClear" v-for="product in limitProducts" :key="product.id">
                     <div class="w-b-1 square" @click="send(product)" v-bind:class="[product.class_name]">
                        <span class="position-relative" ><strong>{{ product.name.slice(0,10) }}</strong></span>
                     </div>
                 </div> 
         </div>
-        <div class="row" id="buttons">        
+        <div class="butonebi">
+        <div class="row right-3" id="buttons">        
                 <div class="col paddingClear" style="padding-left: 0">
                     <div class="w-b-1 square">
                       <i class="fa fa-home fa-4x iconColor"></i>
@@ -49,6 +49,8 @@
                     </div>
                   </div>   
         </div>
+        </div>
+        
         <!-- Display Pizza Recipie Ingredients -->
         <!-- <div class="row pizza p_binder">
             <div class="col-md-2" style="padding-left: 0" v-for="recipe in recipes" :key="recipe.id">

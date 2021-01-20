@@ -60,6 +60,25 @@ body .row, body .col-5, body .col-7
 .w-b-1
 {
     background-color: #E6E6E7;
+    height: 55px;
+    width: 95px;
+    text-align: center;
+    /* border: 1px solid #ffffff; */
+    border-radius: 0px;
+    margin: 1px;
+    /* box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
+    -webkit-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
+    -moz-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset; */
+    color: #000000;
+    font-size: 14px;
+    font-weight: 300;
+    position: relative;
+
+}
+
+.w-h-1
+{
+    background-color: #E6E6E7;
     height: 54px;
     width: 100%;
     text-align: center;
@@ -75,6 +94,7 @@ body .row, body .col-5, body .col-7
     position: relative;
 
 }
+
 .w-b-1:hover
 {
     border: 2px solid #F4992F;
@@ -90,12 +110,29 @@ body .row, body .col-5, body .col-7
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
 .col-12 
 {
     padding-top: 0px !important;
     padding-bottom: 0px !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
 }
 .w-1
+{
+    background-color: #E6E6E7;
+    height: 55px;
+    width: 95px;
+    text-align: center;
+    
+    border-radius: 0px;
+    margin: 1px;
+    color: #000000;
+    font-size: 14px;
+    font-weight: 300;
+    position: relative;
+}
+/* .w-1
 {
     display: -webkit-flex;
     display: flex;
@@ -103,36 +140,27 @@ body .row, body .col-5, body .col-7
     justify-content: center;
     background-color: #ffffff;
     height: 60px;
-    /* width:120px; */
     text-align: center;
     border-radius: 4px;
     margin: 4px;
-   /* box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
-    -webkit-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
-    -moz-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;*/
+   
     color: #000000;
     font-size: 14px;
     font-weight: 300;
-}
+} */
 .w-1-grey
 {
-    display: -webkit-flex;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #BBBCBE;
-    background-color: #E7E7E8;
-    height: 60px;
-    width:120px;
+    background-color: #E6E6E7;
+    height: 54px;
+    width: 96px;
     text-align: center;
-    border-radius: 4px;
-    margin: 4px;
-   /* box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
-    -webkit-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
-    -moz-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;*/
+    border: 1px solid #ffffff;
+    border-radius: 0px;
+    margin: 0px;
     color: #000000;
     font-size: 14px;
     font-weight: 300;
+    position: relative;
 }
 .settingCircle
 {
@@ -434,29 +462,23 @@ body .row, body .col-5, body .col-7
 }
 
 .active{
-    border: 5px solid #F60005 !important; box-sizing: border-box;
+    border: 3px solid #F60005 !important; box-sizing: border-box;
 }
 
 .active_default{
-    border: 5px solid #353232 !important; box-sizing: border-box;
+    border: 3px solid #353232 !important; box-sizing: border-box;
 }
 
 
 .cross {
-    /* height: 120px;
-    width:25%;
-    background: linear-gradient(to top right, #fff calc(50% - 1px), #aaa, #fff calc(50% + 1px) ) */
 
-        width: 130px;
-        height: 51px;
-        margin-left: 6px;
-        border-bottom: 5px solid #353232;
-        -webkit-transform:
-            translateY(-20px)
-            translateX(5px)
-            rotate(27deg); 
-        position: absolute;
-        /* top: -20px; */
+    width: 103px;
+    height: 60px;
+    margin-left: 0px;
+    border-bottom: 5px solid #353232;
+    -webkit-transform: translateY(-20px) translateX(5px) rotate(27deg);
+    position: absolute;
+    top: -10px;
 }
 
 .quantityActive{
@@ -596,6 +618,5 @@ body .row, body .col-5, body .col-7
 /* Rules for using icons as white on a dark background. */
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
-
 
 

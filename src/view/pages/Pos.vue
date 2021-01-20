@@ -27,325 +27,329 @@ body, html {
     <div class="row">
       <div class="col-5">
         <div class="sidebar-content">
-          
-          <div class="row">
-            <div class="col-1">
-              <i class="fa fa-arrow-left fa-4x iconColor" @click="goBack()"></i> 
-            </div>
-          </div>
+          <div class="left-1">
+              <div class="row">
+                <div class="col-1">
+                  <i class="fa fa-arrow-left fa-4x iconColor" @click="goBack()"></i> 
+                </div>
+              </div>
 
-          <div class="row my-1">
-            <div class="col-2" @click="telMsg()">
-              <i class="fa fa-pencil-square-o fa-3x iconColor"></i>
-            </div>
-            <div class="col-8">
-              <input class="tel" v-model="telMessage" @keypress="isNumber($event)"/>
-              <span>
-              <i class="fa fa-check fa-2x iconColor" @click="checkUser(telMessage)"></i> 
-              </span>
-              <br/>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-2">
-              <i class="fa fa-files-o fa-4x iconColor" @click="copyLastOrder()"></i>
-            </div>
-            <div class="col-4 ">
-              <p class="adr">
-                <span>{{ curentCustomer.name }}</span>
-                <br />
-                <span>{{ curentCustomer.adress }}</span>
-                <br />
-                <span>{{ curentCustomer.tel }}</span>
-                <br />
-                <span>{{ curentCustomer.comment }}</span>
-              </p>
-              <i class="material-icons md-36 topcorner" @click="clearCustomer();">close</i>
-            </div>
-          </div>
+              <div class="row my-1">
+                <div class="col-2" @click="telMsg()">
+                  <i class="fa fa-pencil-square-o fa-3x iconColor"></i>
+                </div>
+                <div class="col-8">
+                  <input class="tel" v-model="telMessage" @keypress="isNumber($event)"/>
+                  <span>
+                  <i class="fa fa-check fa-2x iconColor" @click="checkUser(telMessage)"></i> 
+                  </span>
+                  <br/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-2">
+                  <i class="fa fa-files-o fa-4x iconColor" @click="copyLastOrder()"></i>
+                </div>
+                <div class="col-4 ">
+                  <p class="adr">
+                    <span>{{ curentCustomer.name }}</span>
+                    <br />
+                    <span>{{ curentCustomer.adress }}</span>
+                    <br />
+                    <span>{{ curentCustomer.tel }}</span>
+                    <br />
+                    <span>{{ curentCustomer.comment }}</span>
+                  </p>
+                  <i class="material-icons md-36 topcorner" @click="clearCustomer();">close</i>
+                </div>
+              </div>
 
-          <div class="row">
-            <div class="col-2">
-              <i class="material-icons md-36" @click="clearOrder();">close</i>
-              <!-- <button @click="clearOrder();">Clear</button> -->
-            </div>
+              <div class="row">
+                <div class="col-2">
+                  <i class="material-icons md-36" @click="clearOrder();">close</i>
+                  <!-- <button @click="clearOrder();">Clear</button> -->
+                </div>
+              </div>
+
           </div>
 
           <!-- <audio ref="audioElm" src="@assets/beep.wav"></audio> -->
-          <div class="row" style="max-height:300px; overflow: auto; overflow-x: hidden">
-            <div class="col-12">
-              <div class="row">
-                <div class="col-3 mb-2">
-                  <strong>Qty</strong>
-                </div>
-                <div class="col-6">
-                  <strong>Description</strong>
+          <div class="left-2">
+              <div class="row" style="max-height:300px; overflow: auto; overflow-x: hidden">
+                <div class="col-12">
+                  <div class="row">
+                    <div class="col-3 mb-2">
+                      <strong>Qty</strong>
+                    </div>
+                    <div class="col-6">
+                      <strong>Description</strong>
+                    </div>
+                  </div>
+                  <hr />
+                  <div class="row" v-for="item in order.items" :key="item.id">
+                    <div class="col-1">
+                      <strong>
+                        <i class="material-icons md-24" style="font-size: 3em;" @click="deleteProduct(item)">clear</i>
+                      </strong>
+                    </div>
+                    <!-- Pizza Render -->
+
+                    <div class="col-7" v-if="item.custom == 'no'" @click="foobar(item)">
+                      <div class="d-flex justify-content-between">
+                        <span class="orderDisplay" @click="foobar(item)">
+                          <strong>{{ item.qty }} {{ item.size.toUpperCase() }} {{ item.name }}</strong>
+                          <strong v-if="item.cuts"> 16 Cut</strong>
+                        </span>
+                        <span>
+                          <strong>{{ (item.totalPrice * item.qty).toFixed(2) }}</strong>
+                        </span>
+                      </div>
+                        <div
+                          class="d-flex justify-content-between orderDisplay"
+                          v-for="topping in item.toppings"
+                          :key="topping.id"
+                        >
+                          <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                          <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                          <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
+                            <span>{{ item.crust }} Crust</span>
+                            <span>0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'original'">
+                            <span>{{ item.sauce }} Sauce</span>
+                            <span>0.00</span>
+                        </div>
+
+                      <div class="orderDisplay" @click="foobar(item)">
+                        <strong>&nbsp;</strong>
+                      </div>
+                      <div class="pl-4" style="font-size:14px">
+                        <div
+                          class="d-flex justify-content-between"
+                          v-for="defTopping in item.defaultToppings"
+                          :key="defTopping.id"
+                        >
+                          <span
+                            v-if="defTopping.isDeleted" 
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                          >{{ defTopping.name }}</span>
+                          <span
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                            v-if="defTopping.isDeleted && item.is_special == 0 && defTopping.id != 5"
+                          >- {{ defTopping.price }}</span>
+                        </div>
+                        <div
+                          class="d-flex justify-content-between"
+                          v-for="defTopping in item.half1.defaultToppings"
+                          :key="defTopping.id"
+                        >
+                          <span
+                            v-if="defTopping.isDeleted"
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                          >A - {{ defTopping.name }}</span>
+                          <span
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                            v-if="defTopping.isDeleted && item.is_special == 0 && defTopping.id != 5"
+                          >- {{ defTopping.price }}</span>
+                        </div>
+
+                        <div
+                          class="d-flex justify-content-between orderDisplay"
+                          v-for="topping in item.half1.toppings"
+                          :key="topping.id"
+                        >
+                          <span v-if="topping.count == 1">A + {{ topping.name }}</span>
+                          <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
+                          <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
+                        </div>
+                      </div>
+                      <div class="orderDisplay" @click="foobar(item)">
+                        <strong>&nbsp;</strong>
+                      </div>
+                      <div class="pl-4" style="font-size:14px">
+                        <div
+                          class="d-flex justify-content-between"
+                          v-for="defTopping in item.half2.defaultToppings"
+                          :key="defTopping.id"
+                        >
+                          <span
+                            v-if="defTopping.isDeleted"
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                          >B - {{ defTopping.name }}</span>
+                          <span
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                            v-if="defTopping.isDeleted && item.is_special == 0 && defTopping.id != 5"
+                          >- {{ defTopping.price }}</span>
+                        </div>
+                        <div
+                          class="d-flex justify-content-between orderDisplay"
+                          v-for="topping in item.half2.toppings"
+                          :key="topping.id"
+                        >
+                          <span v-if="topping.count == 1">B + {{ topping.name }}</span>
+                          <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
+                          <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- End of Pizza Render -->
+
+                    <!-- Other Products rendering -->
+                    <div class="col-7" v-if="item.custom == 'other'">
+                      <div class="d-flex justify-content-between">
+                        <span class="orderDisplay" @click="foobar(item)">
+                          <strong>{{ item.qty }} {{ item.name }}</strong>
+                          <strong v-if="item.cuts"> 16 Cut</strong>
+                        </span>
+                        <span>
+                          <strong>{{ (item.price * item.qty).toFixed(2) }}</strong>
+                        </span>
+                      </div>
+                    </div>
+                    <!-- Sticks Rendering -->
+                    <div class="col-7" v-if="item.custom == 'sticks'">
+                      <div class="d-flex justify-content-between">
+                        <span class="orderDisplay" @click="foobar(item)">
+                          <strong>{{ item.qty }} {{ item.name }}</strong>
+                          <strong v-if="item.cuts"> 16 Cut</strong>
+                        </span>
+                        <span>
+                          <strong>{{ (item.totalPrice * item.qty).toFixed(2) }}</strong>
+                        </span>
+                      </div>
+
+                      <div class="pl-4" style="font-size:14px" >
+                      
+                        <div
+                          class="d-flex justify-content-between"
+                          v-for="defTopping in item.defaultToppings"
+                          :key="defTopping.id"
+                        >
+                          <span
+                            v-if="defTopping.isDeleted"
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                          >{{ defTopping.name }}</span>
+                          <span
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                            v-if="defTopping.isDeleted"
+                          >0.00</span>
+                        </div>
+
+                        <div
+                          class="d-flex justify-content-between orderDisplay"
+                          v-for="topping in item.toppings"
+                          :key="topping.id"
+                        >
+                          <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                          <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                          <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Half and Half Pizza View -->
+
+                    <div class="col-7" v-if="item.custom == 'yes'" @click="foobar(item)">
+                      <div class="d-flex justify-content-between">
+                        <span class="orderDisplay" @click="foobar(item)">
+                          <strong>{{ item.qty }} {{ item.size.toUpperCase() }} A/B</strong>
+                          <strong v-if="item.cuts"> 16 Cut</strong>
+                        </span>
+                        <span>
+                          <strong>{{ (item.totalPrice * item.qty).toFixed(2) }}</strong>
+                        </span>
+                      </div>
+                        <div
+                          class="d-flex justify-content-between orderDisplay"
+                          v-for="topping in item.toppings"
+                          :key="topping.id"
+                        >
+                          <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                          <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                          <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
+                            <span>{{ item.crust }} Crust</span>
+                            <span>0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'original'">
+                            <span>{{ item.sauce }} Sauce</span>
+                            <span>0.00</span>
+                        </div>
+
+                      <div class="orderDisplay" @click="foobar(item)">
+                        <strong>A {{ item.half1.name }}</strong>
+                      </div>
+                      <div class="pl-4" style="font-size:14px">
+                        <div
+                          class="d-flex justify-content-between"
+                          v-for="defTopping in item.half1.defaultToppings"
+                          :key="defTopping.id"
+                        >
+                          <span
+                            v-if="defTopping.isDeleted"
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                          >{{ defTopping.name }}</span>
+                          <span
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                            v-if="defTopping.isDeleted && item.half1.is_special == 0 && defTopping.id != 5"
+                          >- {{ defTopping.price }}</span>
+                        </div>
+                        <div
+                          class="d-flex justify-content-between orderDisplay"
+                          v-for="topping in item.half1.toppings"
+                          :key="topping.id"
+                        >
+                          <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                          <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                          <span>{{ (topping.price*topping.count).toFixed(2) }} </span>
+                        </div>
+                      </div>
+                      <div class="orderDisplay" @click="foobar(item)">
+                        <strong>B {{ item.half2.name }}</strong>
+                      </div>
+                      <div class="pl-4" style="font-size:14px">
+                        <div
+                          class="d-flex justify-content-between"
+                          v-for="defTopping in item.half2.defaultToppings"
+                          :key="defTopping.id"
+                        >
+                          <span
+                            v-if="defTopping.isDeleted"
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                          >{{ defTopping.name }}</span>
+                          <span
+                            :class="defTopping.isDeleted ? 'deletedTopping' : '' "
+                            v-if="defTopping.isDeleted && item.half2.is_special == 0 && defTopping.id != 5"
+                          >- {{ defTopping.price }} </span>
+                        </div>
+                        <div
+                          class="d-flex justify-content-between orderDisplay"
+                          v-for="topping in item.half2.toppings"
+                          :key="topping.id"
+                        >
+                          <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                          <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                          <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- End Of Half and Half Pizza View -->
+
+                    <div class="col-4" style="margin:0px">
+                      <div class="d-flex justify-content-between">
+                        <span class="material-icons" style="font-size: 3em;" @click="minusQty(item)">remove</span>
+                        <span class="material-icons" style="font-size: 3em;" @click="addQty(item)">add</span>
+                      </div>
+                    </div>
+
+                    <!-- <div>{{ item.qty }}</div> -->
+                  </div>
                 </div>
               </div>
-              <hr />
-              <div class="row" v-for="item in order.items" :key="item.id">
-                <div class="col-1">
-                  <strong>
-                    <i class="material-icons md-24" style="font-size: 3em;" @click="deleteProduct(item)">clear</i>
-                  </strong>
-                </div>
-                <!-- Pizza Render -->
-
-                <div class="col-7" v-if="item.custom == 'no'" @click="foobar(item)">
-                  <div class="d-flex justify-content-between">
-                    <span class="orderDisplay" @click="foobar(item)">
-                      <strong>{{ item.qty }} {{ item.size.toUpperCase() }} {{ item.name }}</strong>
-                      <strong v-if="item.cuts"> 16 Cut</strong>
-                    </span>
-                    <span>
-                      <strong>{{ (item.totalPrice * item.qty).toFixed(2) }}</strong>
-                    </span>
-                  </div>
-                    <div
-                      class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.toppings"
-                      :key="topping.id"
-                    >
-                      <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                      <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                      <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
-                        <span>{{ item.crust }} Crust</span>
-                        <span>0.00</span>
-                    </div>
-                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'original'">
-                        <span>{{ item.sauce }} Sauce</span>
-                        <span>0.00</span>
-                    </div>
-
-                  <div class="orderDisplay" @click="foobar(item)">
-                    <strong>&nbsp;</strong>
-                  </div>
-                  <div class="pl-4" style="font-size:14px">
-                    <div
-                      class="d-flex justify-content-between"
-                      v-for="defTopping in item.defaultToppings"
-                      :key="defTopping.id"
-                    >
-                      <span
-                        v-if="defTopping.isDeleted" 
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                      >{{ defTopping.name }}</span>
-                      <span
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.is_special == 0 && defTopping.id != 5"
-                      >- {{ defTopping.price }}</span>
-                    </div>
-                    <div
-                      class="d-flex justify-content-between"
-                      v-for="defTopping in item.half1.defaultToppings"
-                      :key="defTopping.id"
-                    >
-                      <span
-                        v-if="defTopping.isDeleted"
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                      >A - {{ defTopping.name }}</span>
-                      <span
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.is_special == 0 && defTopping.id != 5"
-                      >- {{ defTopping.price }}</span>
-                    </div>
-
-                    <div
-                      class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.half1.toppings"
-                      :key="topping.id"
-                    >
-                      <span v-if="topping.count == 1">A + {{ topping.name }}</span>
-                      <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
-                      <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
-                    </div>
-                  </div>
-                  <div class="orderDisplay" @click="foobar(item)">
-                    <strong>&nbsp;</strong>
-                  </div>
-                  <div class="pl-4" style="font-size:14px">
-                    <div
-                      class="d-flex justify-content-between"
-                      v-for="defTopping in item.half2.defaultToppings"
-                      :key="defTopping.id"
-                    >
-                      <span
-                        v-if="defTopping.isDeleted"
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                      >B - {{ defTopping.name }}</span>
-                      <span
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.is_special == 0 && defTopping.id != 5"
-                      >- {{ defTopping.price }}</span>
-                    </div>
-                    <div
-                      class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.half2.toppings"
-                      :key="topping.id"
-                    >
-                      <span v-if="topping.count == 1">B + {{ topping.name }}</span>
-                      <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
-                      <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
-                    </div>
-                  </div>
-                </div>
-                <!-- End of Pizza Render -->
-
-                <!-- Other Products rendering -->
-                <div class="col-7" v-if="item.custom == 'other'">
-                  <div class="d-flex justify-content-between">
-                    <span class="orderDisplay" @click="foobar(item)">
-                      <strong>{{ item.qty }} {{ item.name }}</strong>
-                      <strong v-if="item.cuts"> 16 Cut</strong>
-                    </span>
-                    <span>
-                      <strong>{{ (item.price * item.qty).toFixed(2) }}</strong>
-                    </span>
-                  </div>
-                </div>
-                <!-- Sticks Rendering -->
-                <div class="col-7" v-if="item.custom == 'sticks'">
-                  <div class="d-flex justify-content-between">
-                    <span class="orderDisplay" @click="foobar(item)">
-                      <strong>{{ item.qty }} {{ item.name }}</strong>
-                      <strong v-if="item.cuts"> 16 Cut</strong>
-                    </span>
-                    <span>
-                      <strong>{{ (item.totalPrice * item.qty).toFixed(2) }}</strong>
-                    </span>
-                  </div>
-
-                  <div class="pl-4" style="font-size:14px" >
-                   
-                    <div
-                      class="d-flex justify-content-between"
-                      v-for="defTopping in item.defaultToppings"
-                      :key="defTopping.id"
-                    >
-                      <span
-                        v-if="defTopping.isDeleted"
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                      >{{ defTopping.name }}</span>
-                      <span
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted"
-                      >0.00</span>
-                    </div>
-
-                    <div
-                      class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.toppings"
-                      :key="topping.id"
-                    >
-                      <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                      <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                      <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Half and Half Pizza View -->
-
-                <div class="col-7" v-if="item.custom == 'yes'" @click="foobar(item)">
-                  <div class="d-flex justify-content-between">
-                    <span class="orderDisplay" @click="foobar(item)">
-                      <strong>{{ item.qty }} {{ item.size.toUpperCase() }} A/B</strong>
-                      <strong v-if="item.cuts"> 16 Cut</strong>
-                    </span>
-                    <span>
-                      <strong>{{ (item.totalPrice * item.qty).toFixed(2) }}</strong>
-                    </span>
-                  </div>
-                    <div
-                      class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.toppings"
-                      :key="topping.id"
-                    >
-                      <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                      <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                      <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
-                    </div>
-
-                    <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
-                        <span>{{ item.crust }} Crust</span>
-                        <span>0.00</span>
-                    </div>
-                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'original'">
-                        <span>{{ item.sauce }} Sauce</span>
-                        <span>0.00</span>
-                    </div>
-
-                  <div class="orderDisplay" @click="foobar(item)">
-                    <strong>A {{ item.half1.name }}</strong>
-                  </div>
-                  <div class="pl-4" style="font-size:14px">
-                    <div
-                      class="d-flex justify-content-between"
-                      v-for="defTopping in item.half1.defaultToppings"
-                      :key="defTopping.id"
-                    >
-                      <span
-                        v-if="defTopping.isDeleted"
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                      >{{ defTopping.name }}</span>
-                      <span
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.half1.is_special == 0 && defTopping.id != 5"
-                      >- {{ defTopping.price }}</span>
-                    </div>
-                    <div
-                      class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.half1.toppings"
-                      :key="topping.id"
-                    >
-                      <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                      <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                      <span>{{ (topping.price*topping.count).toFixed(2) }} </span>
-                    </div>
-                  </div>
-                  <div class="orderDisplay" @click="foobar(item)">
-                    <strong>B {{ item.half2.name }}</strong>
-                  </div>
-                  <div class="pl-4" style="font-size:14px">
-                    <div
-                      class="d-flex justify-content-between"
-                      v-for="defTopping in item.half2.defaultToppings"
-                      :key="defTopping.id"
-                    >
-                      <span
-                        v-if="defTopping.isDeleted"
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                      >{{ defTopping.name }}</span>
-                      <span
-                        :class="defTopping.isDeleted ? 'deletedTopping' : '' "
-                        v-if="defTopping.isDeleted && item.half2.is_special == 0 && defTopping.id != 5"
-                      >- {{ defTopping.price }} </span>
-                    </div>
-                    <div
-                      class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.half2.toppings"
-                      :key="topping.id"
-                    >
-                      <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                      <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                      <span>{{ (topping.price*topping.count).toFixed(2) }}</span>
-                    </div>
-                  </div>
-                </div>
-                <!-- End Of Half and Half Pizza View -->
-
-                <div class="col-4" style="margin:0px">
-                  <div class="d-flex justify-content-between">
-                    <span class="material-icons" style="font-size: 3em;" @click="minusQty(item)">remove</span>
-                    <span class="material-icons" style="font-size: 3em;" @click="addQty(item)">add</span>
-                  </div>
-                </div>
-
-                <!-- <div>{{ item.qty }}</div> -->
-              </div>
-            </div>
           </div>
           <br />
           <br />
@@ -534,7 +538,7 @@ body, html {
                       </div>
                     </div> -->
           </div>
-          <div class="row my-1">
+          <div class="row my-1 right-1">
             <div class="col-1">&nbsp;</div>
             <div class="col-1 calcBtn blue" @click="diplomatDisc();">Diplomat</div>
             <div class="col-1 calcBtn blue" @click="employeeDisc();">Employee</div>
@@ -612,7 +616,7 @@ body, html {
 
         
 
-        <div class="row mt-1" v-if="showIngredients">
+        <div class="row mt-1 right-2" v-if="showIngredients">
           <!-- Testing New Component Render -- Not Working Y`et -->
           <!-- <ingredients
             :product="this.ingProduct"
@@ -735,23 +739,23 @@ body, html {
            />
         </div>
           
-<div class="row my-5" v-if="showIngredients && !isSticks">
+      <div class="row my-5 right-3" v-if="showIngredients && !isSticks">
           <div class="col-md-1" style="padding-left: 0" @click="halfPizza('A')">
-            <div class="w-b-1 square" v-bind:class="[ {active : halfPizzaPart == 1}, {active: wholePizzaPart == 1}, {size_static: noAB} ]">
+            <div class="w-h-1 square" v-bind:class="[ {active : halfPizzaPart == 1}, {active: wholePizzaPart == 1}, {size_static: noAB} ]">
               <span class="position-relative" style="top: 16px;">
                 <strong>A</strong>
               </span>
             </div>
           </div>
           <div class="col-md-1" style="padding-left: 0" @click="halfPizza('B')">
-            <div class="w-b-1 square" v-bind:class="[{ active : halfPizzaPart == 2}, {active: wholePizzaPart == 2}, {size_static: noAB}]">
+            <div class="w-h-1 square" v-bind:class="[{ active : halfPizzaPart == 2}, {active: wholePizzaPart == 2}, {size_static: noAB}]">
               <span class="position-relative" style="top: 16px;">
                 <strong>B</strong>
               </span>
             </div>
           </div>
           <div class="col-md-2" style="padding-left: 0">
-            <div class="w-b-1 square" v-bind:class="[{ active : halfPizzaAll}, {active : wholePizzaPart == 3 }]" @click="seeHalf();">
+            <div class="w-h-1 square" v-bind:class="[{ active : halfPizzaAll}, {active : wholePizzaPart == 3 }]" @click="seeHalf();">
               <span class="position-relative" style="top: 16px;">
                 <strong>A/B</strong>  
               </span>
@@ -2781,7 +2785,7 @@ export default {
             .request({
               method: "post",
               url:
-                "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/customers/get-customer",
+                "https://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/customers/get-customer",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -5461,6 +5465,7 @@ export default {
       bodyFormData.set("sex", this.customer.sex);
       bodyFormData.set("phone", this.customer.tel);
       bodyFormData.set("comment", this.customer.comment);
+      alert(TOKEN);
       axios
         .request({
           method: "post",

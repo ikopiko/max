@@ -5,16 +5,16 @@
 <template>
       <!-- Display All Ingredients -->
       <div class="ingredients">
-        <div class="row">
+        <div class="row right-2">
             <div class="col-md-2 p-0 paddingClear"> 
               <div class="w-1-grey square" @click="sendClear()">
                 <i class="fa fa-home fa-4x iconColor"></i>
               </div>
             </div>
-            <div class="col-md-2 p-0 paddingClear" > <div class="w-1 pink font-weight-bold" @click="sendSauce(sauce)">{{ sauce }} Sauce</div> </div>
+            <div class="col-md-2 p-0 paddingClear" > <div class="w-b-1 pink font-weight-bold" @click="sendSauce(sauce)">{{ sauce }} Sauce</div> </div>
 
             <div class="col-md-2 p-0 paddingClear" v-for="ingredient in filteredIngredients" :key="ingredient.id" >
-                <div class="w-1 square font-weight-bold" @click="sendIngredient(ingredient)"
+                <div class="w-b-1 square font-weight-bold" @click="sendIngredient(ingredient)"
                       v-bind:class='[ingredient.class_name, highlightDefToppings(ingredient) == true ? "active_default" : "",  highlightToppings(ingredient) == true ? "active" : ""]'>
                             <span>{{ ingredient.name }}  {{ mapping[ingredient.id] }}<br></span>
                   <div v-bind:class="[ deletedDefToppings(ingredient) ? 'cross': '']"> 
@@ -151,4 +151,3 @@ export default {
   }
 }
 </script>
-`
