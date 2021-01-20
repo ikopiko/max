@@ -12,12 +12,15 @@
                             <!-- <div class="w-1 font-weight-bold"  -->
                         <div class="w-b-1 font-weight-bold" @click="sendIngredient(ingredient);"
                               v-bind:class='[ingredient.class_name, highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "active" : ""]'>
-                              <button class="btn" v-if="highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true"><i class="fa" :class='highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "fa-close fa-2x clearBtn" : ""' @click="deleteTopping($event, ingredient)"></i></button>
                               <!-- Styling topping Class -->
                                     <span>{{ ingredient.name }}  {{ mapping[ingredient.id] }}<br></span>
+                                    <div v-bind:class="[ deletedDefToppings(ingredient) ? 'cross': '']"> 
+                                    </div>
                         </div>   
                     </div>
-                    <div class="col-md-2 p-0 paddingClear"> <div class="w-1 " @click="sendAdd()"><i class="fa fa-check fa-4x iconColor"></i></div> </div>
+                    <div class="row right-3">
+                      <div class="col-md-2 p-0 paddingClear"> <div class="w-1 " @click="sendAdd()"><i class="fa fa-check fa-4x iconColor"></i></div> </div>
+                    </div>
                 </div>
 
 </template>
@@ -101,6 +104,13 @@ export default {
       for(var k = 0; k < this.toppings.length; k++){   
           if(parseInt(this.toppings[k].id) === ingredient.id){     
               return true;
+          }
+      }
+    },
+    deletedDefToppings(ingredient){
+      for(var i = 0; i < this.defaultToppings.length; i++){   
+          if(parseInt(this.defaultToppings[i].id) === ingredient.id && this.defaultToppings[i].isDeleted){
+            return true;
           }
       }
     },
