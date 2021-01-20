@@ -515,40 +515,36 @@ body, html {
           
 
           <div class="row my-1">
-            <div class="col-1">&nbsp;</div>
             <div class="col-2 calcBtn blue" @click="diplomatDisc();">Diplomat</div>
             <div class="col-6">&nbsp;</div>
-            <div class="col-1 calcBtn lightGreen" @click="calcCash(100)">100</div>
+            <div class="col-2 calcBtn lightGreen" @click="calcCash(100)">100</div>
             <div class="col-2 calcBtn blue" @click="invoiceActive()">Invoice</div>
           </div>
           <div class="row my-1">
-            <div class="col-1">&nbsp;</div>
             <div class="col-2 calcBtn blue" @click="studentDiscount();">Student</div>
             <div class="col-2 calcBtn" @click="calcInput('7')">7</div>
             <div class="col-2 calcBtn" @click="calcInput('8')">8</div>
             <div class="col-2 calcBtn" @click="calcInput('9')">9</div>
-            <div class="col-1 calcBtn lightGreen" @click="calcCash(50)">50</div>
+            <div class="col-2 calcBtn lightGreen" @click="calcCash(50)">50</div>
             <div class="col-2 calcBtn blue" v-bind:class="{active: woltActive}" @click="woltDelivery();">Wolt</div>
           </div>
 
 
           <div class="row my-1">
-            <div class="col-1">&nbsp;</div>
             <div class="col-2 calcBtn blue" @click="teamDiscount();">Team</div>
             <div class="col-2 calcBtn" @click="calcInput('4')">4</div>
             <div class="col-2 calcBtn" @click="calcInput('5')">5</div>
             <div class="col-2 calcBtn" @click="calcInput('6')">6</div>
-            <div class="col-1 calcBtn lightGreen" @click="calcCash(20)">20</div>
+            <div class="col-2 calcBtn lightGreen" @click="calcCash(20)">20</div>
             <div class="col-2 calcBtn blue" v-bind:class="{active: glovoActive}" @click="glovoDelivery();">Glovo</div>
 
           </div>
           <div class="row my-1">
-            <div class="col-1">&nbsp;</div>
             <div class="col-2 calcBtn blue" @click="studentDiscount();">Student</div>
             <div class="col-2 calcBtn" @click="calcInput('1')">1</div>
             <div class="col-2 calcBtn" @click="calcInput('2')">2</div>
             <div class="col-2 calcBtn" @click="calcInput('3')">3</div>
-            <div class="col-1 calcBtn lightGreen" @click="calcCash(10)">10</div>
+            <div class="col-2 calcBtn lightGreen" @click="calcCash(10)">10</div>
             <div
               class="col-2 calcBtn blue"
               @click="ronnysDelivery()"
@@ -556,11 +552,10 @@ body, html {
             >Delivery</div>
           </div>
           <div class="row">
-            <div class="col-1">&nbsp;</div>
             <div class="col-2 calcBtn blue" @click="socialDiscount();">Social</div>
             <div class="col-4 calcBtn" @click="calcInput('0')">0</div>
             <div class="col-2 calcBtn" @click="calcInput('.')">.</div>
-            <div class="col-1 calcBtn lightGreen" @click="calcCash(5)">5</div>
+            <div class="col-2 calcBtn lightGreen" @click="calcCash(5)">5</div>
             <div
               class="col-2 calcBtn blue"
               @click="takeoutActive()"
@@ -568,12 +563,11 @@ body, html {
             >Take Out</div>
           </div>
           <div class="row my-1">
-              <div class="col-1">&nbsp;</div>
               <div class="col-2 calcBtn blue" @click="socialDiscount();">Social</div>
               <div class="col-6 calcBtn red" @click="calcClear()">
                   <i class="material-icons md-36" >close</i>
               </div>
-              <div class="col-1 calcBtn lightGreen" @click="calcCash(2)">2</div>
+              <div class="col-2 calcBtn lightGreen" @click="calcCash(2)">2</div>
               <div
               class="col-2 calcBtn blue"
               @click="walkinActive() "
@@ -582,14 +576,12 @@ body, html {
               
           </div>
           <div class="row my-1">
-              <div class="col-1">&nbsp;</div>
               <div class="col-2 calcBtn blue" @click="socialDiscount();">Social</div>
               <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">PAY {{ totalPrice.toFixed(2) }}</div>
-              <div class="col-1 calcBtn lightGreen" @click="calcCash(1)">1</div>
+              <div class="col-2 calcBtn lightGreen" @click="calcCash(1)">1</div>
               <div class="col-2">&nbsp;</div>
           </div>
           <div class="row my-1">
-              <div class="col-1">&nbsp;</div>
               <div class="col-2 calcBtn blue" @click="noDisc()">NO Disc</div>
               <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{active: activeFee_el == 0 }" @click="activateFee(0)">1.5 GEL 0-3.9 Km</div>
               <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{active: activeFee_el == 1 }" @click="activateFee(1)">3 GEL 4-9.9 Km</div>
@@ -598,7 +590,14 @@ body, html {
               <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{active: activeFee_el == 4 }" @click="activateFee(4)">7 GEL 20-27.9 Km</div>
               <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{active: activeFee_el == 5 }" @click="activateFee(5)">10 GEL 28 Km +</div>
               <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{active: activeFee_el == 6 }" @click="activateFee(6)">13.5 GEL Rustavi</div>
-              <div class="col-2">&nbsp;</div>
+              <div class="col-3">&nbsp;</div>
+          </div>
+          <div class="row clacFooter">
+              <div class="col-2 paddingClear" style="padding-left: 0" @click="closeCalc()">
+              <div class="w-b-1 square">
+                  <i class="fa fa-home fa-4x iconColor"></i>
+              </div>
+            </div>
           </div>
         </div>
         <!-- End of UX Change -->
@@ -797,6 +796,7 @@ body, html {
 
         <hr />
       </div>
+      
     </div>
 
     <!-- Coupon Modal -->
