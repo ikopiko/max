@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<div class="container">
+<div class="container container-1024">
     <v-alert :value="alert" color="pink" dark border="top" transition="scale-transition" dismissible>
         Small Pizza Can't be A/B
     </v-alert>
@@ -13,24 +13,30 @@
         <div class="col-5">
             <div class="sidebar-content">
                 <div class="left-1">
-                    <div class="row" style="padding:10px 20px">
-                        <div class="goBack">
-                            <i class="fa fa-arrow-left fa-3x iconColor " @click="goBack()"></i>
+                    <div class="row">
+                        <div class="col-1">
+                            <i class="fa fa-arrow-left fa-4x iconColor" @click="goBack()"></i>
                         </div>
-                        <div class="addCustomer" @click="telMsg()">
-                            <i class="fa fa-pencil-square-o fa-3x iconColor "></i>
+                    </div>
+
+                    <div class="row my-1">
+                        <div class="col-2" @click="telMsg()">
+                            <i class="fa fa-pencil-square-o fa-3x iconColor"></i>
                         </div>
-                        <div class="inputNumer">
-                            <input class="tel"  v-model="telMessage" @keypress="isNumber($event)" />
+                        <div class="col-8">
+                            <input class="tel" v-model="telMessage" @keypress="isNumber($event)" />
+                            <span>
+                                <i class="fa fa-check fa-2x iconColor" @click="checkUser(telMessage)"></i>
+                            </span>
                             <br />
                         </div>
                     </div>
                     <div class="row">
-                        <div class="copyOrder">
-                            <i class="fa fa-files-o fa-3x iconColor " @click="copyLastOrder()"></i>
+                        <div class="col-2">
+                            <i class="fa fa-files-o fa-4x iconColor" @click="copyLastOrder()"></i>
                         </div>
-                        <div class="adr">
-                            <p>
+                        <div class="col-4">
+                            <p class="adr">
                                 <span>{{ curentCustomer.name }}</span>
                                 <br />
                                 <span>{{ curentCustomer.adress }}</span>
@@ -39,13 +45,13 @@
                                 <br />
                                 <span>{{ curentCustomer.comment }}</span>
                             </p>
-                            <i class="material-icons md-36 topcorner clearCustomer" v-if="customerChecked" @click="clearCustomer()">close</i>
+                            <i class="material-icons md-36 topcorner" @click="clearCustomer()">close</i>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-2">
-                            
+                            <i class="material-icons md-36" @click="clearOrder()">close</i>
                             <!-- <button @click="clearOrder();">Clear</button> -->
                         </div>
                     </div>
@@ -54,51 +60,45 @@
                 <!-- <audio ref="audioElm" src="@assets/beep.wav"></audio> -->
                 <div class="left-2">
                     <div class="row" >
-                       
                         <div class="col-12">
                             <div class="row">
-                                <div class="titleInner d-flex justify-content-between">
-                                    <div class="col-2 mb-2">
-                                        <strong>Qty</strong>
-                                    </div>
-                                    <div class="col-8">
-                                        <strong>Description</strong>
-                                    </div>
-                                    <div class="col-2">
-                                        <i class="material-icons md-36 clearOrder" @click="clearOrder()" v-if="order.items.length != 0">close</i>
-                                    </div>
+                                <div class="col-3 mb-2">
+                                    <strong>Qty</strong>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Description</strong>
                                 </div>
                             </div>
-                            
+                            <hr />
                             <div class="row" v-for="item in order.items" :key="item.id">
                                 <div class="col-1">
+                                    <strong>
                                         <i class="material-icons md-24" style="font-size: 3em" @click="deleteProduct(item)">clear</i>
+                                    </strong>
                                 </div>
                                 <!-- Pizza Render -->
 
                                 <div class="col-7" v-if="item.custom == 'no'" @click="foobar(item)">
                                     <div class="d-flex justify-content-between">
-                                        <span class="orderDisplay itemName" @click="foobar(item)">
-                                            <strong>{{ item.size.toUpperCase() }}
+                                        <span class="orderDisplay" @click="foobar(item)">
+                                            <strong>{{ item.qty }} {{ item.size.toUpperCase() }}
                                                 {{ item.name }}</strong>
                                             <strong v-if="item.cuts"> 16 Cut</strong>
                                         </span>
-                                        <span class="itemPrice" >
+                                        <span>
                                             <strong>{{
-                                (item.totalPrice * item.qty).toFixed(2)
-                                }}</strong>
+                          (item.totalPrice * item.qty).toFixed(2)
+                        }}</strong>
                                         </span>
                                     </div>
-                                    <div class="toppingInner">
-                                        <div class="toppingName" v-for="topping in item.toppings" :key="topping.id">
-                                            <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                                            <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                            <span  class="toppingPrice" >{{
-                                                    (topping.price * topping.count).toFixed(2)
-                                                }}
-                                            </span>
-                                        </div>
+                                    <div class="d-flex justify-content-between orderDisplay" v-for="topping in item.toppings" :key="topping.id">
+                                        <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                                        <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                                        <span>{{
+                        (topping.price * topping.count).toFixed(2)
+                      }}</span>
                                     </div>
+
                                     <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
                                         <span>{{ item.crust }} Crust</span>
                                         <span>0.00</span>
@@ -149,10 +149,10 @@
                             defTopping.id != 5
                           ">- {{ defTopping.price }}</span>
                                         </div>
-                                        <div class="d-flex justify-content-between orderDisplay itemName" v-for="topping in item.half2.toppings" :key="topping.id">
+                                        <div class="d-flex justify-content-between orderDisplay" v-for="topping in item.half2.toppings" :key="topping.id">
                                             <span v-if="topping.count == 1">B + {{ topping.name }}</span>
                                             <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
-                                            <span  class="itemPrice">{{
+                                            <span>{{
                           (topping.price * topping.count).toFixed(2)
                         }}</span>
                                         </div>
@@ -163,11 +163,11 @@
                                 <!-- Other Products rendering -->
                                 <div class="col-7" v-if="item.custom == 'other'">
                                     <div class="d-flex justify-content-between">
-                                        <span class="orderDisplay itemName" @click="foobar(item)">
+                                        <span class="orderDisplay" @click="foobar(item)">
                                             <strong>{{ item.qty }} {{ item.name }}</strong>
                                             <strong v-if="item.cuts"> 16 Cut</strong>
                                         </span>
-                                        <span class="itemPrice">
+                                        <span>
                                             <strong>{{
                           (item.price * item.qty).toFixed(2)
                         }}</strong>
@@ -177,11 +177,11 @@
                                 <!-- Sticks Rendering -->
                                 <div class="col-7" v-if="item.custom == 'sticks'">
                                     <div class="d-flex justify-content-between">
-                                        <span class="orderDisplay itemName" @click="foobar(item)">
+                                        <span class="orderDisplay" @click="foobar(item)">
                                             <strong>{{ item.qty }} {{ item.name }}</strong>
                                             <strong v-if="item.cuts"> 16 Cut</strong>
                                         </span>
-                                        <span  class="itemPrice">
+                                        <span>
                                             <strong>{{
                           (item.totalPrice * item.qty).toFixed(2)
                         }}</strong>
@@ -194,14 +194,12 @@
                                             <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="defTopping.isDeleted">0.00</span>
                                         </div>
 
-                                        <div class="toppingSticInner">
-                                            <div class="toppingName" v-for="topping in item.toppings" :key="topping.id">
-                                                <span  v-if="topping.count == 1">+ {{ topping.name }}</span>
-                                                <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                                <span class="toppingSticPrice">{{
-                                                (topping.price * topping.count).toFixed(2)
-                                                }}</span>
-                                            </div>
+                                        <div class="d-flex justify-content-between orderDisplay" v-for="topping in item.toppings" :key="topping.id">
+                                            <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                                            <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                                            <span>{{
+                          (topping.price * topping.count).toFixed(2)
+                        }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -252,7 +250,7 @@
                                         <div class="d-flex justify-content-between orderDisplay" v-for="topping in item.half1.toppings" :key="topping.id">
                                             <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                             <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                            <span class="itemPrice">{{ (topping.price * topping.count).toFixed(2) }}
+                                            <span>{{ (topping.price * topping.count).toFixed(2) }}
                                             </span>
                                         </div>
                                     </div>
@@ -272,7 +270,7 @@
                                         <div class="d-flex justify-content-between orderDisplay" v-for="topping in item.half2.toppings" :key="topping.id">
                                             <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                             <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                            <span  class="itemPrice">{{
+                                            <span>{{
                           (topping.price * topping.count).toFixed(2)
                         }}</span>
                                         </div>
@@ -282,10 +280,8 @@
 
                                 <div class="col-4" style="margin: 0px">
                                     <div class="d-flex justify-content-between">
-                                        <span class="material-icons iconMinus" v-if="item.qty > 1" @click="minusQty(item)">remove</span>
-                                        <span class="material-icons iconMinus" v-if="item.qty == 1" @click="minusQty(item)">delete_outline</span>
-                                        <span class="itemQty">{{ item.qty }}</span>
-                                        <span class="material-icons iconPlus" @click="addQty(item)">add</span>
+                                        <span class="material-icons" style="font-size: 3em" @click="minusQty(item)">remove</span>
+                                        <span class="material-icons" style="font-size: 3em" @click="addQty(item)">add</span>
                                     </div>
                                 </div>
 
@@ -496,7 +492,7 @@
                         Social
                     </div>
                     <div class="col-6 calcBtn red" @click="calcClear()">
-                        <i class="material-icons md-36 clearItem">close</i>
+                        <i class="material-icons md-36">close</i>
                     </div>
                     <div class="col-2 calcBtn lightGreen" @click="calcCash(2)">2</div>
                     <div class="col-2 calcBtn blue" @click="walkinActive()" v-bind:class="{ active: walkinActiveVar }">
@@ -536,17 +532,16 @@
                     <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 6 }" @click="activateFee(6)">
                         13.5 GEL Rustavi
                     </div>
-                    <div class="col">&nbsp;</div>
+                    <div class="col-3">&nbsp;</div>
                 </div>
-                <div class="row calcFooter">
+                <div class="row clacFooter">
                     <div class="col-2 paddingClear" style="padding-left: 0" @click="closeCalc()">
-                        <div class="w-b-1 square calcBtn">
-                            <i class="fa fa-home fa-4x iconColor home"></i>
+                        <div class="w-b-1 square">
+                            <i class="fa fa-home fa-4x iconColor"></i>
                         </div>
                     </div>
                     <div class="col-2 calcBtn green" @click="doneCash()" v-b-modal.confirmModal>Cash</div>
                     <div class="col-2 calcBtn green" @click="payCard()" v-b-modal.confirmModal>Card</div>
-                    <div class="col-2 calcBtn green" @click="payLater()" v-b-modal.confirmModal>Pay Later</div>
                 </div>
             </div>
             <!-- End of UX Change -->

@@ -219,6 +219,7 @@ export default {
   data(){
     return {
       loggedUser: {},
+      loggedUserFull: {},
       posView: false,
       ordersView: false,
       timeView: false,
@@ -228,6 +229,8 @@ export default {
     }
   },
   mounted() {
+    this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
+    console.log("Fullll", this.loggedUserFull);
     this.loggedUser = this.$store.state.auth.user.data;;
 
     if(this.loggedUser.role === "admin"){

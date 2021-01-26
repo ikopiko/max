@@ -171,7 +171,7 @@
 }
 </style>
 <script>
-import {    mapState} from "vuex";
+import {mapState} from "vuex";
 
 import {
     LOGIN,
@@ -303,7 +303,7 @@ export default {
             setTimeout(()=> {
 
                     // send login request
-                    this.$store .dispatch(LOGIN, {
+                    this.$store.dispatch(LOGIN, {
                             username, password
                         }
 
@@ -326,8 +326,9 @@ export default {
 
         ,
 
-        onPinSubmit(sentPin) {
-            const pin=sentPin;
+        onPinSubmit(sentPin, sentMac) {
+            const pin = sentPin;
+            const mac = sentMac;
 
             // clear existing errors
             this.$store.dispatch(LOGOUT);
@@ -339,8 +340,9 @@ export default {
             setTimeout(()=> {
 
                     // send login request
-                    this.$store .dispatch(LOGIN, {
-                            pin
+                    this.$store.dispatch(LOGIN, {
+                            pin,
+                            mac
                         }
 
                     ) // go to which page after successfully login
@@ -392,20 +394,22 @@ export default {
         },
 
         login(pin) {
+            var mac = 'd4:c9:ef:d5:70:8f';
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
-            //bodyFormData.set("mac", 'E839355BB7CE');
+            bodyFormData.set("mac", mac);
 
             axios.request( {
                     method: "post",
-                    url: "https://max.ronnyspizza.ge/rest/web/index.php?r=auth",
+                    url: "http://188.169.16.186:8082/ronny/rest/web/index.php?r=auth",
                     data: bodyFormData,
                 }
 
             ) .then((response)=> {
                     if(!response.data.is_error) {
                         console.log('Success Login -- ', response);
-                        this.onPinSubmit(pin);
+                        localStorage.setItem("loggedUserData", JSON.stringify(response.data.data));
+                        this.onPinSubmit(pin, mac);
                     }
 
                     else {

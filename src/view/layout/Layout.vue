@@ -76,7 +76,6 @@ export default {
     KTHeader,
     KTHeaderMobile,
     KTFooter,
-    // KTSubheader,
     KTStickyToolbar,
     KTScrollTop,
     Loader
@@ -89,8 +88,6 @@ export default {
     HtmlClass.init(this.layoutConfig());
   },
   mounted() {
-    const os = require('os');    
-    console.log("MAC: ", os.networkInterfaces());
 
     // check if current user is authenticated
     if (!this.isAuthenticated) {

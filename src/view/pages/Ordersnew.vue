@@ -57,11 +57,7 @@
                       @page-count="pageCount = $event"
                     >
                         <template v-slot:item="row">
-                            <tr>
-                              <td>
-                                <v-simple-checkbox color="green" v-bind="selectedOrder" v-on="selectedOrder">
-                                </v-simple-checkbox>
-                              </td>
+                            <tr @click="onButtonClick(row.item)">
                               <td>{{row.item.id}}</td>
                               <td>{{row.item.branch}}</td>
                               <td>{{row.item.order_data.deliveryMethod}}</td>
@@ -70,8 +66,8 @@
                               <td>{{row.item.order_data.customer.tel}}</td>
                               <td>{{row.item.order_data.items[0].name}}...</td>
                               <td>
-                                <v-btn class="mx-2" fab dark small color="green" @click="onButtonClick(row.item)">
-                                    <v-icon dark>read_more</v-icon>
+                                <v-btn class="mx-2" fab dark small color="green" @click="re_open(row.item)">
+                                    <v-icon dark>open_in_new</v-icon>
                                 </v-btn>
                               </td>
                             </tr>
@@ -81,25 +77,20 @@
             </v-tabs-items>
             </v-tabs>
             <v-row>
-              <v-btn elevation='2' dark x-large class="mx-2 my-2">
-                Closed
+              <v-btn elevation='2' dark large class="mx-2 my-2" v-for="status in orderStatuses" :key="status" @click="changeOrder(status)">
+                {{ status.status_name }}
               </v-btn>
-              <v-btn elevation='2' dark x-large class="mx-2 my-2">
-                Pay later
-              </v-btn>
-              <v-btn elevation='2' dark x-large class="mx-2 my-2">
-                Void
-              </v-btn>
-              <v-btn elevation='2' dark x-large class="mx-2 my-2">
-                Refunded
-              </v-btn>
-              <v-btn elevation='2' dark x-large class="mx-2 my-2">
-                Waste
-              </v-btn>
+              <v-select
+                :items="orderStatuses"
+                v-model="statusModel"
+                item-text="status_name"
+                label="Function"
+              ></v-select>
             </v-row>
         </v-card>
         <v-card class="col-4">
-            <orderList :orderProp="order" />
+            <i class="material-icons md-36 topcorner" @click="clearOrder()">close</i>
+            <orderList :orderProp="order" v-if="showOrderComponent"/>
         </v-card>
     </v-row>
   </v-container>
@@ -118,6 +109,11 @@ import axios from 'axios';
         itemIndex: -1,
         filteredOrders: [],
         order: [],
+        lastOrder: [],
+        orderStatuses: [],
+        selectedOrder: [],
+        showOrderComponent: true,
+        statusModel: null,
         search: '',
         singleSelect: true,
         tab: 0,
@@ -198,16 +194,48 @@ import axios from 'axios';
         console.log("orders data: ", response.data.data);
       });
 
+      axios
+      .request({
+        method: "post",
+        url:
+          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/order-statuses",
+        headers: {
+          Authorization: "Bearer " + TOKEN,
+        },
+      })
+      .then((response) => {
+        this.orderStatuses = response.data.data
+      });
+
     },
     components: {
         orderList,
     },
     methods: {
+      
+        changeOrder(status){
+            this.filteredOrders = this.orders.filter((x) => x.status === status.id);
+        },
+        re_open(order){
+            console.log('Reopen order: ', order);
+            localStorage.setItem("reopenItem", JSON.stringify(order));
+            this.$router.push({ path: 'pos'});
+        },
         foobar(item){
             this.itemIndex = this.orders.indexOf(item);
         },
+        clearOrder(){
+          this.order = [];
+          this.selectedOrder = [];
+          this.showOrderComponent = false;
+        },
         onButtonClick(item) {
-          this.order = item;
+            this.showOrderComponent = true;
+            this.order = item;
+            this.lastOrder = item;
+            this.selectedOrder = item;
+
+            console.log("Selected Item: ", this.selectedOrder);
         },
         getTab(tab){
             if(tab.content === 'all') {
