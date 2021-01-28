@@ -2,7 +2,7 @@
 /* eslint-disable */
 </script>
 <template>
-  <v-container>
+  <v-container data-app>
     <v-row>
         <v-card class="col-8">
           <!-- <v-card-text>
@@ -80,17 +80,18 @@
               <v-btn elevation='2' dark large class="mx-2 my-2" v-for="status in orderStatuses" :key="status" @click="changeOrder(status)">
                 {{ status.status_name }}
               </v-btn>
-              <v-select
+            </v-row>
+        </v-card>
+        <v-card class="col-4">
+            <i class="material-icons md-36 topcorner" @click="clearOrder()" v-if="showOrderComponent">close</i>
+            <orderList :orderProp="order" v-if="showOrderComponent" />
+            <v-select
+                v-if="showOrderComponent"
                 :items="orderStatuses"
                 v-model="statusModel"
                 item-text="status_name"
                 label="Function"
               ></v-select>
-            </v-row>
-        </v-card>
-        <v-card class="col-4">
-            <i class="material-icons md-36 topcorner" @click="clearOrder()">close</i>
-            <orderList :orderProp="order" v-if="showOrderComponent"/>
         </v-card>
     </v-row>
   </v-container>
@@ -112,7 +113,7 @@ import axios from 'axios';
         lastOrder: [],
         orderStatuses: [],
         selectedOrder: [],
-        showOrderComponent: true,
+        showOrderComponent: false,
         statusModel: null,
         search: '',
         singleSelect: true,

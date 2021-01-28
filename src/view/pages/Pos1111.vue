@@ -90,15 +90,13 @@
                                         </span>
                                     </div>
                                     <div class="toppingInner">
-                                        <div class="wholeTopping">
-                                            <div class="toppingName" v-for="topping in item.toppings" :key="topping.id">
-                                                <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                                                <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                                <span  class="toppingPrice" >{{
-                                                        (topping.price * topping.count).toFixed(2)
-                                                    }}
-                                                </span>
-                                            </div>
+                                        <div class="toppingName" v-for="topping in item.toppings" :key="topping.id">
+                                            <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                                            <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                                            <span  class="toppingPrice" >{{
+                                                    (topping.price * topping.count).toFixed(2)
+                                                }}
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
@@ -114,58 +112,49 @@
                                         <strong>&nbsp;</strong>
                                     </div>
                                     <div class="pl-4" style="font-size: 14px">
-                                        <div class="wholeDefTopping">
-                                            <div class="d-flex justify-content-between" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
-                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
-                                                <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                                defTopping.isDeleted &&
-                                item.is_special == 0 &&
-                                defTopping.id != 5
-                            ">- {{ defTopping.price }}</span>
-                                            </div>
+                                        <div class="d-flex justify-content-between" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
+                                            <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
+                                            <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                            defTopping.isDeleted &&
+                            item.is_special == 0 &&
+                            defTopping.id != 5
+                          ">- {{ defTopping.price }}</span>
                                         </div>
-                                        <div class="aSideDefTopping">
-                                            <div class="d-flex justify-content-between" v-for="defTopping in item.half1.defaultToppings" :key="defTopping.id">
-                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">A - {{ defTopping.name }}</span>
-                                                <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                                defTopping.isDeleted &&
-                                item.is_special == 0 &&
-                                defTopping.id != 5
-                            ">- {{ defTopping.price }}</span>
-                                            </div>
+                                        <div class="d-flex justify-content-between" v-for="defTopping in item.half1.defaultToppings" :key="defTopping.id">
+                                            <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">A - {{ defTopping.name }}</span>
+                                            <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                            defTopping.isDeleted &&
+                            item.is_special == 0 &&
+                            defTopping.id != 5
+                          ">- {{ defTopping.price }}</span>
                                         </div>
-                                        <div class="aSideTopping">
-                                            <div  v-for="topping in item.half1.toppings" :key="topping.id">
-                                                <span v-if="topping.count == 1">A + {{ topping.name }}</span>
-                                                <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
-                                                <span class="price">{{
-                            (topping.price * topping.count).toFixed(2)
-                            }}</span>
-                                            </div>
+
+                                        <div class="d-flex justify-content-between orderDisplay" v-for="topping in item.half1.toppings" :key="topping.id">
+                                            <span v-if="topping.count == 1">A + {{ topping.name }}</span>
+                                            <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
+                                            <span>{{
+                          (topping.price * topping.count).toFixed(2)
+                        }}</span>
                                         </div>
                                     </div>
                                     <div class="orderDisplay" @click="foobar(item)">
                                         <strong>&nbsp;</strong>
                                     </div>
                                     <div class="pl-4" style="font-size: 14px">
-                                        <div class="bSideDefTopping">
-                                            <div  v-for="defTopping in item.half2.defaultToppings" :key="defTopping.id">
-                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">B - {{ defTopping.name }}</span>
-                                                <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                                defTopping.isDeleted &&
-                                item.is_special == 0 &&
-                                defTopping.id != 5
-                            ">- {{ defTopping.price }}</span>
-                                            </div>
+                                        <div class="d-flex justify-content-between" v-for="defTopping in item.half2.defaultToppings" :key="defTopping.id">
+                                            <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">B - {{ defTopping.name }}</span>
+                                            <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                            defTopping.isDeleted &&
+                            item.is_special == 0 &&
+                            defTopping.id != 5
+                          ">- {{ defTopping.price }}</span>
                                         </div>
-                                        <div class="bSideTopping">
-                                            <div  v-for="topping in item.half2.toppings" :key="topping.id">
-                                                <span v-if="topping.count == 1">B + {{ topping.name }}</span>
-                                                <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
-                                                <span  class="price">{{
-                            (topping.price * topping.count).toFixed(2)
-                            }}</span>
-                                            </div>
+                                        <div class="d-flex justify-content-between orderDisplay itemName" v-for="topping in item.half2.toppings" :key="topping.id">
+                                            <span v-if="topping.count == 1">B + {{ topping.name }}</span>
+                                            <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
+                                            <span  class="itemPrice">{{
+                          (topping.price * topping.count).toFixed(2)
+                        }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -603,11 +592,6 @@
             </div>
 
             <div class="row my-5 right-3" v-if="showIngredients && !isSticks">
-              <div class="col p-0 paddingClear">
-                  <div class="w-1-grey square" @click="showProductsClear()">
-                    <i class="fa fa-home fa-4x iconColor"></i>
-                  </div>
-                </div>
                 <div class="col" style="padding-left: 0" @click="halfPizza('A')">
                     <div class="w-h-1 square" v-bind:class="[
                 { active: halfPizzaPart == 1 },
@@ -677,6 +661,12 @@
                     <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: mediumCuts }" @click="cuts(6)">
                         <span class="topMargin">6 Cut</span>
                     </div>
+                </div>
+
+                <div class="col p-0 paddingClear">
+                  <div class="w-1-grey square" @click="showProductsClear()">
+                    <i class="fa fa-home fa-4x iconColor"></i>
+                  </div>
                 </div>
                 <div class="col p-0 paddingClear">
                     <div class="w-1" @click="showProductsComponent()">

@@ -783,22 +783,6 @@ body .col-12 {
     margin-right: 20px;
 }
 
-.aSideTopping
-{
-    left: 0px;
-    position: relative;
-    top: 20px;
-}
-.bSideTopping
-{
-    left: 0px;
-    position: relative;
-    top: 20px;
-}
-.aSideTopping.price
-{
-    position: absolute; right: 0px;
-}
 
 @media (min-width: 960px) {
     .container-12 {

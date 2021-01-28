@@ -6,11 +6,7 @@
       <!-- Display All Ingredients -->
       <div class="ingredients">
         <div class="row right-2">
-            <div class="col-md-2 p-0 paddingClear"> 
-              <div class="w-1-grey square" @click="sendClear()">
-                <i class="fa fa-home fa-4x iconColor"></i>
-              </div>
-            </div>
+
             <div class="col-md-2 p-0 paddingClear" > <div class="w-b-1 pink font-weight-bold" @click="sendSauce(sauce)">{{ sauce }} Sauce</div> </div>
 
             <div class="col-md-2 p-0 paddingClear" v-for="ingredient in filteredIngredients" :key="ingredient.id" >
