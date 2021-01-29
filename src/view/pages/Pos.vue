@@ -4,9 +4,9 @@
 
 <template>
 <div class="container container-12">
-    <v-alert :value="alert" color="pink" dark border="top" transition="scale-transition" dismissible>
+    <!-- <v-alert :value="alert" color="pink" dark border="top" transition="scale-transition" dismissible>
         Small Pizza Can't be A/B
-    </v-alert>
+    </v-alert> -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <div class="row">
@@ -115,7 +115,7 @@
                                     </div>
                                     <div class="pl-4" style="font-size: 14px">
                                         <div class="wholeDefTopping">
-                                            <div class="d-flex justify-content-between" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
+                                            <div class="toppingName" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
                                                 <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
                                                 <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                                 defTopping.isDeleted &&
@@ -125,7 +125,7 @@
                                             </div>
                                         </div>
                                         <div class="aSideDefTopping">
-                                            <div class="d-flex justify-content-between" v-for="defTopping in item.half1.defaultToppings" :key="defTopping.id">
+                                            <div class="toppingName" v-for="defTopping in item.half1.defaultToppings" :key="defTopping.id">
                                                 <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">A - {{ defTopping.name }}</span>
                                                 <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                                 defTopping.isDeleted &&
@@ -138,7 +138,7 @@
                                             <div  v-for="topping in item.half1.toppings" :key="topping.id">
                                                 <span v-if="topping.count == 1">A + {{ topping.name }}</span>
                                                 <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
-                                                <span class="price">{{
+                                                <span class="totalPrice">{{
                             (topping.price * topping.count).toFixed(2)
                             }}</span>
                                             </div>
@@ -159,10 +159,10 @@
                                             </div>
                                         </div>
                                         <div class="bSideTopping">
-                                            <div  v-for="topping in item.half2.toppings" :key="topping.id">
+                                            <div class="toppingName" v-for="topping in item.half2.toppings" :key="topping.id">
                                                 <span v-if="topping.count == 1">B + {{ topping.name }}</span>
                                                 <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
-                                                <span  class="price">{{
+                                                <span  class="toppingPrice">{{
                             (topping.price * topping.count).toFixed(2)
                             }}</span>
                                             </div>
@@ -355,7 +355,7 @@
                             <div class="row pizza p_binder">
                                 <products v-if="!drinkCat" :categoryId="categoryId" :halfProductVar="halfProduct" @onProductSelect="productSelect" @onAddHalf="addHalf" @onSetting="posSetting" @onFunction="posFunction" @onDoneOrder="doneOrder" @onDrinks="drinkProducts" />
 
-                                <drinks v-if="drinkCat" @onProductSelect="productSelect" @onDoneOrder="doneOrder" @onDrinks="drinkProducts" />
+                                <drinks v-if="drinkCat" @onProductSelect="productSelect" @onDoneOrder="doneOrder" @onDrinks="drinkProducts" @onSetting="posSetting" @onFunction="posFunction" />
                             </div>
                         </div>
                         <div class="row pizza p_binder" v-if="customerOrdersComponent">
@@ -410,29 +410,6 @@
                     </div>
                 </div>
 
-                <!-- <div class="row" v-if="splitActive">
-
-            <div class="col w-3 gray" :class="{active : splitPart == 1}" @click="splitSelect(1)">
-              <div>
-                <h4>Split 1</h4>
-                <h4 id="split_1">{{ split.split1.input }} {{ split.split1.paymentType }}</h4>
-              </div>
-            </div>
-            <div class="col w-3 gray" :class="{active: splitPart == 2}" @click="splitSelect(2)">
-              <div>
-                <h4>Split 2</h4>
-                <h4 id="split_2">{{ split.split2.input }} {{ split.split2.paymentType }}</h4>
-              </div>
-            </div>
-            <div class="col w-3 gray" v-for="(splitCnt, index) in split" :key="index" @click="splitSelect(index)">
-              <div>
-                <h4>Split {{ index }}</h4>
-                <h4 id="split_1">{{ splitCnt.input }} {{ splitCnt.paymentType }}</h4>
-              </div>
-            </div> 
-
-          </div> -->
-
                 <div class="row" v-if="discountOrder || discountItem">
                     <div class="col w-3 gray">
                         <div>
@@ -445,7 +422,7 @@
                 </div>
 
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="diplomatDisc()">
+                    <div class="col-2 calcBtn blue" @click="diplomatModal = true, order.discount = diplomatDiscount">
                         Diplomat
                     </div>
                     <div class="col-6">&nbsp;</div>
@@ -457,7 +434,7 @@
                     </div>
                 </div>
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="studentDiscount()">
+                    <div class="col-2 calcBtn blue" @click="studentModal = true, order.discount = studentDiscount">
                         Student
                     </div>
                     <div class="col-2 calcBtn" @click="calcInput('7')">7</div>
@@ -470,7 +447,7 @@
                 </div>
 
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="teamDiscount()">Team</div>
+                    <div class="col-2 calcBtn blue" @click="teamModal = true, order.discount = employeeDiscount">Team</div>
                     <div class="col-2 calcBtn" @click="calcInput('4')">4</div>
                     <div class="col-2 calcBtn" @click="calcInput('5')">5</div>
                     <div class="col-2 calcBtn" @click="calcInput('6')">6</div>
@@ -480,7 +457,7 @@
                     </div>
                 </div>
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="studentDiscount()">
+                    <div class="col-2 calcBtn blue" @click="studentDisc()">
                         Student
                     </div>
                     <div class="col-2 calcBtn" @click="calcInput('1')">1</div>
@@ -526,27 +503,6 @@
                 </div>
                 <div class="row my-1">
                     <div class="col-2 calcBtn blue" @click="noDisc()">NO Disc</div>
-                    <!-- <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 0 }" @click="activateFee(0)">
-                        1.5 GEL 0-3.9 Km
-                    </div>
-                    <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 1 }" @click="activateFee(1)">
-                        3 GEL 4-9.9 Km
-                    </div>
-                    <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 2 }" @click="activateFee(2)">
-                        4.5 GEL 10-15.9 Km
-                    </div>
-                    <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 3 }" @click="activateFee(3)">
-                        6 GEL 16-19.9 Km
-                    </div>
-                    <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 4 }" @click="activateFee(4)">
-                        7 GEL 20-27.9 Km
-                    </div>
-                    <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 5 }" @click="activateFee(5)">
-                        10 GEL 28 Km +
-                    </div>
-                    <div class="col-1 feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 6 }" @click="activateFee(6)">
-                        13.5 GEL Rustavi
-                    </div> -->
                     <div class="col">&nbsp;</div>
                 </div>
                 <div class="row calcFooter">
@@ -565,20 +521,7 @@
             <!-- End Of Calculator Component -->
 
             <div class="row mt-1 right-2" v-if="showIngredients">
-                <!-- Testing New Component Render -- Not Working Y`et -->
-                <!-- <ingredients
-            :product="this.ingProduct"
-            :defaultToppings="this.ingDefToppings"
-            :isHalfPizza="this.ingHalfPizza"
-            :halfPizzaPart="this.ingHalfPizzaPart"
-            :toppings="this.ingToppings"
-            :mapping="toppingIdCountMap"
-            @onAddTopping="addTopping"
-            @onSendSauce="addSauce"
-            @onShowProductsComponent="showProductsComponent"
-            @onDeleteDefTopping="deleteDefaultTopping"
-            @onDeleteTopping="deleteTopping"
-          /> -->
+\
                 <ingredients v-if="wholePizzaPart == 1" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half1.defaultToppings" :toppings="this.pizza.half1.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
                 <ingredients v-if="wholePizzaPart == 2" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half2.defaultToppings" :toppings="this.pizza.half2.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
                 <ingredients v-if="wholePizzaPart == 3" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.defaultToppings" :toppings="
@@ -854,31 +797,10 @@
                                             </v-col>
                                         </v-row>
 
-                                        <!-- <v-row>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Entrance" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Floor" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Appartment" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="3" sm="12" md="3">
-                                <v-text-field label="Security code" clearable></v-text-field>
-                            </v-col>
-                        </v-row> -->
 
                                         <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
 
                                         <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-                                        <!-- <v-text-field
-                          v-model="customer.comment2"
-                          class="my-2"
-                          label="Comment 2"
-                          clearable
-                        ></v-text-field> -->
 
                                         <v-btn v-if="!customerChecked" :disabled="!valid" color="green" class="btn btn-primary" @click="addCustomer()">
                                             Add New Customer
@@ -1031,7 +953,6 @@
     <!-- End Of Fee Modal -->
 
     <!-- Start Of Delivery Type Modal -->
-    <!-- Am not using anymore -->
     <div v-if="deliveryTypeModal">
         <transition name="modal">
             <div class="modal-mask">
@@ -1102,22 +1023,6 @@
                                                 <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
                                             </v-col>
                                         </v-row>
-
-                                        <!-- <v-row>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Entrance" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Floor" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Appartment" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="3" sm="12" md="3">
-                                <v-text-field label="Security code" clearable></v-text-field>
-                            </v-col>
-                        </v-row> -->
-
                                         <v-text-field v-model="invoice.id" @keypress="isNumber($event)" class="my-2" label="Company ID #" clearable></v-text-field>
 
                                         <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
@@ -1159,6 +1064,9 @@
                             <div class="modal-body">
                                 <b-container fluid>
                                     <v-form ref="form" v-model="valid" lazy-validation>
+                                        
+                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                                        
                                         <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
 
                                         <v-text-field v-model="curentCustomer.email" class="my-2" label="E-mail"></v-text-field>
@@ -1175,31 +1083,8 @@
                                             </v-col>
                                         </v-row>
 
-                                        <!-- <v-row>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Entrance" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Floor" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Appartment" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="3" sm="12" md="3">
-                                <v-text-field label="Security code" clearable></v-text-field>
-                            </v-col>
-                        </v-row> -->
-
-                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-
                                         <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                                        <!-- <v-text-field
-                          v-model="customer.comment2"
-                          class="my-2"
-                          label="Comment 2"
-                          clearable
-                        ></v-text-field> -->
                                     </v-form>
                                 </b-container>
                             </div>
@@ -1242,6 +1127,9 @@
                             <div class="modal-body">
                                 <b-container fluid>
                                     <v-form ref="form" v-model="valid" lazy-validation>
+
+                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                                        
                                         <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
 
                                         <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
@@ -1258,31 +1146,8 @@
                                             </v-col>
                                         </v-row>
 
-                                        <!-- <v-row>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Entrance" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Floor" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Appartment" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="3" sm="12" md="3">
-                                <v-text-field label="Security code" clearable></v-text-field>
-                            </v-col>
-                        </v-row> -->
-
-                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-
                                         <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                                        <!-- <v-text-field
-                          v-model="customer.comment2"
-                          class="my-2"
-                          label="Comment 2"
-                          clearable
-                        ></v-text-field> -->
                                     </v-form>
                                 </b-container>
                             </div>
@@ -1330,6 +1195,9 @@
                             <div class="modal-body">
                                 <b-container fluid>
                                     <v-form ref="form" v-model="valid" lazy-validation>
+                                        
+                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                                        
                                         <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
 
                                         <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
@@ -1346,31 +1214,8 @@
                                             </v-col>
                                         </v-row>
 
-                                        <!-- <v-row>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Entrance" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Floor" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Appartment" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="3" sm="12" md="3">
-                                <v-text-field label="Security code" clearable></v-text-field>
-                            </v-col>
-                        </v-row> -->
-
-                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-
                                         <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                                        <!-- <v-text-field
-                          v-model="customer.comment2"
-                          class="my-2"
-                          label="Comment 2"
-                          clearable
-                        ></v-text-field> -->
                                     </v-form>
                                 </b-container>
                                 <div class="row">
@@ -1457,31 +1302,10 @@
                                             </v-col>
                                         </v-row>
 
-                                        <!-- <v-row>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Entrance" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Floor" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Appartment" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="3" sm="12" md="3">
-                                <v-text-field label="Security code" clearable></v-text-field>
-                            </v-col>
-                        </v-row> -->
-
                                         <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
 
                                         <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                                        <!-- <v-text-field
-                          v-model="customer.comment2"
-                          class="my-2"
-                          label="Comment 2"
-                          clearable
-                        ></v-text-field> -->
                                     </v-form>
                                 </b-container>
                             </div>
@@ -1494,7 +1318,10 @@
                     ">
                                     Close
                                 </button>
-                                <button type="button" class="btn btn-primary" @click="glovoCustomer()">
+                                <button type="button" class="btn btn-primary" @click="glovoCustomer('cash')">
+                                    Glovo Cash: {{ order.totalPrice }}
+                                </button>
+                                <button type="button" class="btn btn-primary" @click="glovoCustomer('paid')">
                                     Glovo Order: {{ order.totalPrice }}
                                 </button>
                             </div>
@@ -1698,6 +1525,190 @@
         </transition>
     </div>
     <!-- End of Function Modal -->
+
+    <!-- Start Of Diplomat Modal -->
+
+    <div width="50%" v-if="diplomatModal">
+        <transition name="modal">
+            <div class="modal-mask">
+                <div class="modal-wrapper">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Diplomat Discount
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true" @click="diplomatModal = false">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <b-container fluid>
+                                    <v-form ref="form" v-model="valid" lazy-validation>
+                                        <v-text-field v-model="discountInfo.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                                        
+                                        <v-text-field v-model="discountInfo.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+
+                                        <v-radio-group v-model="discountInfo.sex" label="Gender" row>
+                                            <v-radio label="Male" value="male"></v-radio>
+                                            <v-radio label="Female" value="female"></v-radio>
+                                            <v-radio label="None" value="none"></v-radio>
+                                        </v-radio-group>
+
+                                        <v-text-field v-model="discountInfo.id" class="my-2" label="Diplomat #" ></v-text-field>
+                                        
+
+                                        <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="discountInfo.adress" clearable required></v-text-field>
+   
+                                        <v-text-field v-model="discountInfo.driver" class="my-2" label="Driver Details" clearable></v-text-field>
+
+                                        <v-text-field v-model="discountInfo.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+
+                                        <v-text-field v-model="discountInfo.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                                    </v-form>
+                                </b-container>
+                            </div>
+
+                            <div class="modal-footer">
+                                <v-btn x-large elevation="2" @click="diplomatModal = false">
+                                    Close
+                                </v-btn>
+                                <v-btn x-large elevation="2" color="red" @click="diplomatDisc()">
+                                    Discount: - {{ totalDisc.toFixed(2) }}
+                                </v-btn>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <!-- End of diplomat modal -->
+
+    <!-- Start of student modal -->
+
+    <div width="50%" v-if="studentModal">
+        <transition name="modal">
+            <div class="modal-mask">
+                <div class="modal-wrapper">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Student Discount
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true" @click="studentModal = false">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <b-container fluid>
+                                    <v-form ref="form" v-model="valid" lazy-validation>
+                                        <v-text-field v-model="discountInfo.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                                        
+                                        <v-text-field v-model="discountInfo.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+
+                                        <v-radio-group v-model="discountInfo.sex" label="Gender" row>
+                                            <v-radio label="Male" value="male"></v-radio>
+                                            <v-radio label="Female" value="female"></v-radio>
+                                            <v-radio label="None" value="none"></v-radio>
+                                        </v-radio-group>
+
+                                        <v-text-field v-model="discountInfo.id" class="my-2" label="Personal #" ></v-text-field>
+                                        
+
+                                        <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="discountInfo.adress" clearable required></v-text-field>
+   
+                                        <v-text-field v-model="discountInfo.driver" class="my-2" label="Driver Details" clearable></v-text-field>
+
+                                        <v-text-field v-model="discountInfo.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+
+                                        <v-text-field v-model="discountInfo.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                                    </v-form>
+                                </b-container>
+                            </div>
+
+                            <div class="modal-footer">
+                                <v-btn x-large elevation="2" @click="studentModal = false">
+                                    Close
+                                </v-btn>
+                                <v-btn x-large elevation="2" color="red" @click="studentDisc()">
+                                    Discount: - {{ totalDisc.toFixed(2) }}
+                                </v-btn>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <!-- End of student modal -->
+
+    <!-- Start of team modal -->
+
+    <div width="50%" v-if="teamModal">
+        <transition name="modal">
+            <div class="modal-mask">
+                <div class="modal-wrapper">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Student Discount
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true" @click="teamModal = false">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <b-container fluid>
+                                    <v-form ref="form" v-model="valid" lazy-validation>
+                                        <v-text-field v-model="discountInfo.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                                        
+                                        <v-text-field v-model="discountInfo.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+
+                                        <v-radio-group v-model="discountInfo.sex" label="Gender" row>
+                                            <v-radio label="Male" value="male"></v-radio>
+                                            <v-radio label="Female" value="female"></v-radio>
+                                            <v-radio label="None" value="none"></v-radio>
+                                        </v-radio-group>
+
+                                        <v-text-field v-model="discountInfo.id" class="my-2" label="Personal #" ></v-text-field>
+                                        
+
+                                        <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="discountInfo.adress" clearable required></v-text-field>
+   
+                                        <v-text-field v-model="discountInfo.driver" class="my-2" label="Driver Details" clearable></v-text-field>
+
+                                        <v-text-field v-model="discountInfo.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+
+                                        <v-text-field v-model="discountInfo.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                                    </v-form>
+                                </b-container>
+                            </div>
+
+                            <div class="modal-footer">
+                                <v-btn x-large elevation="2" @click="teamModal = false">
+                                    Close
+                                </v-btn>
+                                <v-btn x-large elevation="2" color="red" @click="studentDisc()">
+                                    Discount: - {{ totalDisc.toFixed(2) }}
+                                </v-btn>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <!-- End of student modal -->
+
 </div>
 </template>
 <script>
@@ -1746,7 +1757,6 @@ export default {
     return {
       valid: true,
       nameRules: [
-        v => !!v || 'Name is required',
         v => (v && v.length <= 20) || 'Name must be less than 20 characters',
       ],
       telRules: [
@@ -1757,7 +1767,6 @@ export default {
           v => !!v || 'Adress is required',
       ],
       emailRules: [
-        v => !!v || 'E-mail is required',
         v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
       ],
       noAB: false,
@@ -1768,6 +1777,7 @@ export default {
       mediumCuts: false,
       smallHalf: false,
       qtyBar: false,
+      discountInfo: [],
       telMessage: '',
       date: new Date(),
         options: {
@@ -1805,6 +1815,9 @@ export default {
       woltActive: false,
       active_el: -1,
       activeFee_el: -1,
+      diplomatModal: false,
+      studentModal: false,
+      teamModal: false,
       calculatorModal: false,
       calculatorModal1: false,
       crmModal: false,
@@ -1829,6 +1842,7 @@ export default {
       discountItem: false,
       diplomatDiscount: 15,
       employeeDiscount: 20,
+      studentDiscount: 15,
       couponModal: false,
       ingProduct: {},
       ingHalfPizza: false,
@@ -5000,12 +5014,22 @@ export default {
         this.order.discount = 0;
     },
     diplomatDisc(){
-        this.order.discount = this.diplomatDiscount;
-        this.order.discountName = 'Diplomat';
+      this.diplomatModal = false;
+      this.order.discount = this.diplomatDiscount;
+      this.order.discountInfo = this.discountInfo;
+      this.order.discountName = 'Diplomat';
+    },
+    studentDisc(){
+      this.studentModal = false;
+      this.order.discount = this.studentDiscount;
+      this.order.discountInfo = this.discountInfo;
+      this.order.discountName = 'Student';
     },
     employeeDisc(){
+        this.teamModal = false;
         this.order.discount = this.employeeDiscount;
-        this.order.discountName = 'Employee';
+        this.order.discountInfo = this.discountInfo;
+        this.order.discountName = 'Team';
     },
     doneDisc(){
         this.order.discount = this.cashInput; 
@@ -5137,14 +5161,20 @@ export default {
         //this.deliveryFeeModal = true;
       }
     },
-   glovoCustomer(){
+   glovoCustomer(payment){
      if(this.curentCustomer.adress === '' || this.curentCustomer.tel === '')
       {
         alert('Adress and Phone Fields are required!');
       }
+
       this.order.customer = this.curentCustomer;
       this.order.deliveryType = 'Glovo';
-      this.order.deliveryMethod = 'Glovo';
+      if(payment === 'cash'){
+        this.order.deliveryMethod = 'Glovo Cash';
+      }
+      else if(payment === 'paid'){
+        this.order.deliveryMethod = 'Glovo';
+      }
       console.log('Glovo customer : ', this.order.customer);
       this.glovoModal = false;
       this.payLater();

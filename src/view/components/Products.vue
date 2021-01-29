@@ -5,50 +5,50 @@
       <div class="app">
         <!-- Display Products -->
         <div class="row right-2" id="toppings">
-               <div class=" col paddingClear" v-for="product in limitProducts" :key="product.id">
+               <div class=" col-2 paddingClear" v-for="product in products" :key="product.id">
                     <div class="w-b-1 square" @click="send(product)" v-bind:class="[product.class_name]">
-                       <span class="position-relative" ><strong>{{ product.name.slice(0,10) }}</strong></span>
+                       <span class="position-relative" ><strong>{{ product.name }}</strong></span>
                     </div>
                 </div> 
         </div>
         <div class="butonebi">
-        <div class="row right-3" id="buttons">        
-                <div class="col paddingClear" style="padding-left: 0">
-                    <div class="w-b-1 square">
-                      <i class="fa fa-home fa-4x iconColor"></i>
-                    </div>
-                  </div>
+          <div class="row right-3" id="buttons">        
                   <div class="col paddingClear" style="padding-left: 0">
-                      <div class="w-b-1 square" @click="drinksProducts()">
-                        <i class="fa fa-coffee fa-4x iconColor"></i>
-                      </div>                
-                  </div> 
-                <div class="col paddingClear" style="padding-left: 0">
-                    <div class="w-b-1 square" @click="sendAddHalf()" :class="{ active: halfActive}">
-                      <!-- <span class="position-relative" style="top: 16px;"><strong>A/B</strong></span> -->
-                      <i class="material-icons md-48 iconColor" style="margin-top: 4px;">tonality</i> 
+                      <div class="w-b-1 square">
+                        <i class="fa fa-home fa-4x iconColor"></i>
+                      </div>
                     </div>
-                  </div>
-                  <div class="col-md-2 paddingClear" style="padding-left: 0">
-                    <div class="w-b-1 square" @click="sendFunction()">
-                      <i class="fa fa-code fa-4x iconColor"></i>
+                    <div class="col paddingClear" style="padding-left: 0">
+                        <div class="w-b-1 square" @click="drinksProducts()">
+                          <i class="fa fa-coffee fa-4x iconColor"></i>
+                        </div>                
+                    </div> 
+                  <div class="col paddingClear" style="padding-left: 0">
+                      <div class="w-b-1 square" @click="sendAddHalf()" :class="{ active: halfActive}">
+                        <!-- <span class="position-relative" style="top: 16px;"><strong>A/B</strong></span> -->
+                        <i class="material-icons md-48 iconColor" style="margin-top: 4px;">tonality</i> 
+                      </div>
                     </div>
-                  </div>
-                  <div class="col-md-2 paddingClear" style="padding-left: 0">
-                    <div class="w-b-1 square" @click="sendSetting()">
-                      <i class="fa fa-cog fa-4x iconColor"></i>
+                    <div class="col-md-2 paddingClear" style="padding-left: 0">
+                      <div class="w-b-1 square" @click="sendFunction()">
+                        <i class="fa fa-code fa-4x iconColor"></i>
+                      </div>
                     </div>
-                  </div>
-                  <div
-                    class="col-md-2 paddingClear"
-                    style="padding-left: 0"
-                    @click="sendDoneOrder() "
-                  >
-                    <div class="w-b-1 square">
-                      <i class="fa fa-check fa-4x iconColor"></i>
+                    <div class="col-md-2 paddingClear" style="padding-left: 0">
+                      <div class="w-b-1 square" @click="sendSetting()">
+                        <i class="fa fa-cog fa-4x iconColor"></i>
+                      </div>
                     </div>
-                  </div>   
-        </div>
+                    <div
+                      class="col-md-2 paddingClear"
+                      style="padding-left: 0"
+                      @click="sendDoneOrder() "
+                    >
+                      <div class="w-b-1 square">
+                        <i class="fa fa-check fa-4x iconColor"></i>
+                      </div>
+                    </div>   
+          </div>
         </div>
         
         <!-- Display Pizza Recipie Ingredients -->
