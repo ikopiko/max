@@ -630,10 +630,7 @@
   </div>
 </template>
 
-
-
 <script>
-// import KTCodePreview from "@/view/content/CodePreview.vue";
 import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
 import axios from "axios";
 
@@ -651,7 +648,6 @@ export default {
       order_raw: [],
       prepOrder: [],
       branch: "saburtalo",
-      status: 1,
       TOKEN: "ntoI_TodKtEjTTqj8HBVGmQPE3gW5TFY",
     };
   },
@@ -743,32 +739,33 @@ export default {
     updateStatus(status, orderId){
       var bodyFormData = new FormData();
       //alert(product.id);
-      bodyFormData.set("branch", this.branch);
-      bodyFormData.set("status", status);
-      bodyFormData.set("order_id", orderId);
+      bodyFormData.set("order_status", status);
+      bodyFormData.set("id", orderId);
       axios
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/update-order-status",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/change-status",
           headers: {
             Authorization: "Bearer " + this.TOKEN,
           },
           data: bodyFormData,
         })
         .then((response) => {
-          console.log("Order Status Changed!");
+          console.log("Order Status Changed!", response);
+          this.getOrderPrep();
+          this.$forceUpdate();
         });
     },
 
     baker1Done(order){
-      this.updateStatus(2, order.id);
+      this.updateStatus('in_kitchen', order.id);
     },
     baker2Done(order){
-      this.updateStatus(3, order.id);
+      this.updateStatus('prepearing', order.id);
     },
     boxPizza(order){
-      this.updateStatus(4, order.id);
+      this.updateStatus('finished_bake', order.id);
     },
 
   },

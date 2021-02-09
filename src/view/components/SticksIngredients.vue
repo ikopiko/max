@@ -4,21 +4,22 @@
 <template>
                 <!-- Display All Ingredients -->
                 <div class="row right-2">
-                    <div class="col-md-2 p-0"> <div class="w-b-1 square" @click="sendClear()"><i class="fa fa-home fa-4x iconColor"></i></div> </div>
-                    <div class="col-md-2 p-0"> <div class="w-b-1 pink font-weight-bold static" @click="sendSize('small')"><span>Small</span></div> </div>
-                    <div class="col-md-2 p-0"> <div class="w-b-1 pink font-weight-bold static" @click="sendSize('original')"><span>Original</span></div> </div>
 
                     <div class="col-md-2 p-0" v-for="ingredient in filteredIngredients" :key="ingredient.id" >
                             <!-- <div class="w-1 font-weight-bold"  -->
                         <div class="w-b-1 font-weight-bold" @click="sendIngredient(ingredient);"
                               v-bind:class='[ingredient.class_name, highlightDefToppings(ingredient) == true || highlightToppings(ingredient) == true ? "active" : ""]'>
                               <!-- Styling topping Class -->
-                                    <span>{{ ingredient.name }}  {{ mapping[ingredient.id] }}<br></span>
-                                    <div v-bind:class="[ deletedDefToppings(ingredient) ? 'cross': '']"> 
-                                    </div>
+                              <span>{{ ingredient.name }}  {{ mapping[ingredient.id] }}<br></span>
+                              <div v-bind:class="[ deletedDefToppings(ingredient) ? 'cross': '']"> 
+                              </div>
                         </div>   
                     </div>
+
                     <div class="row right-3">
+                      <div class="col-6">&nbsp;</div>
+                      <div class="col-md-2 p-0"> <div class="w-b-1 square" @click="sendClear()"><i class="fa fa-home fa-4x iconColor"></i></div> </div>
+                      <div class="col-md-2 p-0"> <div class="w-b-1 square " @click="sendSize('thin')"><span>thin</span></div> </div>
                       <div class="col-md-2 p-0 paddingClear"> <div class="w-1 " @click="sendAdd()"><i class="fa fa-check fa-4x iconColor"></i></div> </div>
                     </div>
                 </div>
@@ -57,6 +58,11 @@ export default {
       isHighlated: false,
     }
   },
+  computed: {
+      productChunks(){
+          return _.chunk(Object.values(this.ingredients), 2);
+      }
+    },
   mounted() {
     const TOKEN = localStorage.getItem("TOKEN");
     console.log(this.categoryId)

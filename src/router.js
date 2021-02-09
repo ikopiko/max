@@ -59,16 +59,6 @@ const router = new Router({
           name: "banks",
           component: () => import("@/view/pages/Banks.vue")
         },
-        // {
-        //   path: "/pos",
-        //   name: "pos",
-        //   component: () => import("@/view/pages/Pos.vue")
-        // },
-        // {
-        //   path: "/pin",
-        //   name: "pin",
-        //   component: () => import("@/view/pages/Pin.vue")
-        // },
         {
           path: "/loader",
           name: "loader",

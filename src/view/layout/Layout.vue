@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <KTFooter></KTFooter>
+            <!-- <KTFooter></KTFooter> -->
         </div>
     </div>
     <KTScrollTop></KTScrollTop>

@@ -145,8 +145,8 @@
                     <v-card v-for="till in tills" :key="till.id"  
                         class="mx-auto my-3" color="#FE9A53" light max-width="400">
                         <v-card-title>
-                            <span class="title font-weight-bold" v-if="till.amount < 300">{{ till.amount }} ₾ - {{ till.name }}</span>
-                            <span class="title font-weight-bold" v-if="till.amount >= 300"><span style="color: red;" v-if="till.amount >= 300">DROP NEEDED {{ till.amount }} ₾</span>  - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="till.cash < 300">{{ till.cash }} Gel - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="till.cash >= 300"><span style="color: red;" v-if="till.cash >= 300">DROP NEEDED {{ till.cash }} Gel </span>  - {{ till.name }}</span>
                         </v-card-title>
 
                         <v-card-actions>
@@ -861,7 +861,7 @@ export default {
 
     this.today = yyyy + '-' + mm + '-' + dd;
 
-    this.loggedUser = this.$store.state.auth.user.data;
+    this.loggedUser = JSON.parse(localStorage.getItem("loggedUserData"));
 
       const TOKEN = this.loggedUser.token;
       this.getSafes();
@@ -877,7 +877,7 @@ export default {
       .request({
         method: "post",
         url:
-          "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/list-by-branch",
+          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/list-by-branch",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -888,7 +888,12 @@ export default {
         console.log("All POS List: ", this.allPoses);
       });
 
+      
+
   },
+  created () {
+        this.timer = setInterval(this.getPoses, 5000)
+    },
   computed: {
       filteredOrdersPos() {
       this.orders.forEach(x => {
@@ -924,7 +929,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/get-safes",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/get-safes",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -945,7 +950,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/get-poses",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/get-poses",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -961,13 +966,13 @@ export default {
     getDrivers(){
       const TOKEN = this.loggedUser.token;
       var bodyFormDriver = new FormData();
-      bodyFormDriver.set("branch", 'saburtalo');
+      bodyFormDriver.set("branch", 'digomi');
 
       axios
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/clockedin-drivers",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/clockedin-drivers",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -989,7 +994,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/edit-balance",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/edit-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1019,7 +1024,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/edit-balance",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/edit-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1055,7 +1060,7 @@ export default {
             .request({
               method: "post",
               url:
-                "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/edit-balance",
+                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/edit-balance",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -1084,7 +1089,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/drop-safe-balance",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/drop-safe-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1114,7 +1119,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/poses/drop-safe-balance",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/drop-safe-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1142,7 +1147,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/edit-balance",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/edit-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1168,7 +1173,7 @@ export default {
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/edit-balance",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/edit-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1269,7 +1274,7 @@ export default {
           .request({
             method: "post",
             url:
-              "https://max.ronnyspizza.ge/ronny/rest/web/index.php?r=v1/manager/add-balance-to-driver",
+              "http://188.169.16.186:8082/ronny/ronny/rest/web/index.php?r=v1/manager/add-balance-to-driver",
             headers: {
               Authorization: "Bearer " + TOKEN,
             },

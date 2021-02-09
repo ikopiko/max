@@ -30,7 +30,7 @@
           flat
         >
           <Card 
-          :statusIndex= 0 />
+          :statusIndex= 1 />
         </v-card>
       </v-tab-item>
       <v-tab-item>
@@ -39,11 +39,7 @@
           flat
         >
           <Card
-          :statusIndex= 1 />
-          <Card
           :statusIndex= 2 />
-          <Card
-          :statusIndex= 3 />
         </v-card> 
       </v-tab-item>
       <v-tab-item>
@@ -68,7 +64,6 @@ import Card from "@/view/components/Cards.vue";
 export default {
   name: "dashboard",
   components: {
-
     Card
   },
   data() {

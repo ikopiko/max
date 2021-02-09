@@ -4,13 +4,13 @@
 <template>
     <b-container>   
           <b-row>
-              <!-- <b-col cols="3">{{ pinUser.first_name  }}  {{ pinUser.role }} </b-col>
+              <b-col cols="3">{{ pinUser.first_name  }}  {{ pinUser.role }} </b-col>
               <b-col cols="3">
                 <ul id="display">
                     <li v-for="num in pinSync" :key="num">{{ num }}</li>
                     <div class="clear"></div>
                 </ul>
-              </b-col> -->
+              </b-col>
               <b-col cols="3">&nbsp;</b-col>
               <b-col cols="3">&nbsp;</b-col>
               <b-col cols="3">{{ timeNow }}</b-col>
@@ -19,16 +19,16 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('1')">1</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('1')">1</div>
+              <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('2')">2</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('2')">2</div>
+              <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('3')">3</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('3')">3</div>
+              <!-- &nbsp; -->
             </b-col>
             
             <b-col cols="2">
@@ -43,16 +43,16 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('4')">4</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('4')">4</div>
+              <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('5')">5</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('5')">5</div>
+              <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('6')">6</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('6')">6</div>
+              <!-- &nbsp; -->
             </b-col>
             
             <b-col cols="4">
@@ -65,16 +65,16 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('7')">7</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('7')">7</div>
+              <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('8')">8</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('8')">8</div>
+              <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('9')">9</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('9')">9</div>
+              <!-- &nbsp; -->
             </b-col>
 
             <b-col cols="4">
@@ -87,15 +87,15 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('4')">C</div> -->
-              &nbsp;
+              <div class="numChar" @click="pinChar('4')">C</div>
+              <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <!-- <div class="numChar" @click="pinChar('5')">0</div> -->
-              &nbsp
+              <div class="numChar" @click="pinChar('5')">0</div>
+              <!-- &nbsp -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div  >&nbsp;</div>
+              <div class="numChar" @click="pinChar('enter')">E</div>
             </b-col>
             
             <b-col cols="2">
@@ -165,7 +165,7 @@ export default {
   },
   methods: {
         timeFoo(state){
-            var shortURL = 'https://max.ronnyspizza.ge/rest/web/index.php?r=v1/timesheet/';
+            var shortURL = 'http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/timesheet/';
             if(state === 'in'){
                 var URL = shortURL + 'start';
                 alert('Work Day Started!');
@@ -188,7 +188,7 @@ export default {
             }
         },
         sendTimesheet(URL){
-            var TOKEN = localStorage.getItem("TOKEN");
+            var TOKEN = this.loginToken;
             axios
             .request({
                 method: "post",
@@ -218,7 +218,7 @@ export default {
                     this.enteredPin = '';
                 }
                 else if(char === 'enter'){
-                    alert('Done');
+                    this.login(this.enteredPin);
                 }
                 else {
                     if(this.enteredPin.length === 4)
@@ -241,7 +241,7 @@ export default {
                 axios.request({
                     method: "post",
                     url:
-                        "https://max.ronnyspizza.ge/ronny/rest/web/index.php?r=auth",
+                        "http://188.169.16.186:8082/ronny/rest/web/index.php?r=auth/clocked",
                     data: bodyFormData,
                     })
                     .then((response) => {

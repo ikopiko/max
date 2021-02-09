@@ -217,6 +217,12 @@ body .col-12 {
     top: 20px;
     left: 12px;
 }
+.deletedToppingStick {
+    color: red;
+    position: relative;
+    top: 50px;
+    left: 12px;
+}
 
 .drinkClass {
     background-color: #B3B3B3;
@@ -565,7 +571,7 @@ body .col-12 {
 } */
 
 .modal-dialog {
-    width: 100%;
+    width: 700px;
     top: 10px;
     /* height: 100%; */
     padding: 0;
@@ -682,7 +688,9 @@ body .col-12 {
 }
 
 
-
+.v-text-field{
+    width: 600px;
+}
 
 /*-------------------*/
 

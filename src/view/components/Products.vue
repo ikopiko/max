@@ -36,7 +36,7 @@
                     </div>
                     <div class="col-md-2 paddingClear" style="padding-left: 0">
                       <div class="w-b-1 square" @click="sendSetting()">
-                        <i class="fa fa-cog fa-4x iconColor"></i>
+                        <i class="fa fa-list fa-4x iconColor"></i>
                       </div>
                     </div>
                     <div
