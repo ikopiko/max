@@ -248,9 +248,7 @@ export default {
     mounted() {
         window.addEventListener("keypress", e=> {
                 this.logKey(e);
-            }
-
-        );
+        });
     }
 
     ,
@@ -434,9 +432,7 @@ export default {
             else {
                 return this.pinChar(e.key);
             }
-        }
-
-        ,
+        },
 
     }
 

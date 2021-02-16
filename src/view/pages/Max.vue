@@ -11,10 +11,18 @@
     >
       <v-tab
         v-for="item in items"
+        @click="getTab(item)"
         :key="item.id"
       >
       <v-badge
+          v-if="item.content != 0"
           :color= item.color 
+          :content= item.content 
+        >
+        {{ item.name }}
+      </v-badge>
+      <v-badge
+          v-if="item.content == 0"
           :content= item.content 
         >
         {{ item.name }}
@@ -24,31 +32,13 @@
     </v-tabs>
     
     <v-tabs-items v-model="tab">
-      <v-tab-item>
+      <v-tab-item v-for="item in items" :key="item">
         <v-card
           color="basil"
           flat
         >
           <Card 
-          :statusIndex= 1 />
-        </v-card>
-      </v-tab-item>
-      <v-tab-item>
-        <v-card
-          color="basil"
-          flat
-        >
-          <Card
-          :statusIndex= 2 />
-        </v-card> 
-      </v-tab-item>
-      <v-tab-item>
-        <v-card
-          color="basil"
-          flat
-        >
-          <Card 
-          :statusIndex= 3 />
+          :orders = filteredOrders />
         </v-card>
       </v-tab-item>
     </v-tabs-items>
@@ -58,6 +48,7 @@
 <script>
 /* eslint-disable */
 import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
+import axios from "axios";
 
 import Card from "@/view/components/Cards.vue";
 
@@ -69,11 +60,14 @@ export default {
   data() {
     return {
       loggedUser: {},
+      loader: true,
+      orders: [],
+      filteredOrders: [],
       tab: 1,
       items: [
-        {name: "Pending Orders", content: 1, color: 'red'},
-        {name: "Preparing in Kitchen", content: 3, color: 'green'},
-        {name: "Completed Orders", content: 8, color: 'yellow'},
+        {id: 0, name: "Pending Orders", content: null, color: 'red'},
+        {id: 1, name: "Preparing in Kitchen", content: null, color: 'green'},
+        {id: 2, name: "Completed Orders", content: null, color: 'yellow'},
       ],
     };
   },
@@ -90,34 +84,58 @@ export default {
   },
   mounted() {
     this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
-    this.loggedUser = this.$store.state.auth.user.data;
+    // this.loggedUser = this.$store.state.auth.user.data;
+    this.updateOrders();
+
+    this.filteredOrders = this.orders.filter((x) => x.status == 2 || x.status == 3 || x.status == 4);
   },
+  created () {
+      this.timer = setInterval(this.updateOrders, 500)
+    },
   methods: {
-    setActiveTab1(event) {
-      this.tabIndex = this.setActiveTab(event);
-    },
-    setActiveTab2(event) {
-      this.tabIndex2 = this.setActiveTab(event);
-    },
     /**
      * Set current active on click
      * @param event
      */
-    setActiveTab(event) {
-      // get all tab links
-      const tab = event.target.closest('[role="tablist"]');
-      const links = tab.querySelectorAll(".nav-link");
-      // remove active tab links
-      for (let i = 0; i < links.length; i++) {
-        links[i].classList.remove("active");
-      }
+    getTab(tab){
+            if(tab.id == 0) {
+              this.filteredOrders = this.orders.filter((x) => x.status == 1);
+            }
+            else if(tab.id == 1) {
+              this.filteredOrders = this.orders.filter((x) => x.status == 2 || x.status == 3 || x.status == 4);
+            }
+            else if(tab.id == 2) {
+              this.filteredOrders = this.orders.filter((x) => x.status == 5);
+            }
+            this.$forceUpdate();
+        },
+        updateOrders(){
+          const TOKEN = localStorage.getItem("TOKEN");
 
-      // set current active tab
-      event.target.classList.add("active");
+          var bodyFormData = new FormData();
+          bodyFormData.set("status_key", '1,2,3,4,5');
 
-      // set clicked tab index to bootstrap tab
-      return parseInt(event.target.getAttribute("data-tab"));
-    }
+          axios
+            .request({
+              method: "post",
+              url:
+                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/list",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+              data: bodyFormData,
+            })
+            .then((response) => {
+              this.orders = response.data.data;
+              console.log("response 123: ", this.orders);
+
+              this.items[0].content = this.orders.filter((x) => x.status == 1).length;
+              this.items[1].content = this.orders.filter((x) => x.status == 2 || x.status == 3 || x.status == 4).length;
+              this.items[2].content = this.orders.filter((x) => x.status == 5).length;
+
+            });
+          this.getTab(this.items[this.tab]);
+        },
   }
 };
 </script>

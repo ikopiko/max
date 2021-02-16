@@ -346,285 +346,91 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-card-actions v-if="statusIndex === 1">
+          <v-card-actions v-if="order.status == 1">
+
+            Waiting For Kitchen
+
+            <v-spacer></v-spacer>
+            
             <v-btn
-              color="orange lighten-2"
+              class="green"
               text
+              x-large
+              @click="kitchenDone(order)"
             >
+              Ready
+            </v-btn>
+            <!-- <b-button variant="success" @click="kitchenDone(order)">Ready</b-button> -->
+          </v-card-actions>
+
+          <v-card-actions v-if="order.status == 2">
+            
               Waiting For Baker 1
-            </v-btn>
 
             <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="baker1Done(order)">Ready</b-button>
+            <v-btn
+              class="purple"
+              text
+              x-large
+              @click="baker1Done(order)"
+            >
+              Ready
+            </v-btn>
+            
+            <!-- <b-button variant="success" @click="baker1Done(order)">Ready</b-button> -->
           </v-card-actions>
 
-          <v-card-actions v-if="statusIndex === 2">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
+          <v-card-actions v-if="order.status == 3">
+
               Waiting For Baker 2
-            </v-btn>
 
             <v-spacer></v-spacer>
 
-            <b-button variant="success" @click="baker2Done(order)">Ready</b-button>
+            <v-btn
+              class="yellow"
+              text
+              x-large
+              @click="baker2Done(order)"
+            >
+              Ready
+            </v-btn>
+            <!-- <b-button variant="success" @click="baker2Done(order)">Ready</b-button> -->
           </v-card-actions>
 
-          <v-card-actions v-if="statusIndex === 3">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
+          <v-card-actions v-if="order.status == 4">
+
               Pizza In Oven
-            </v-btn>
 
             <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="boxPizza(order)">BOX</b-button>
+            <v-btn
+              class="aqua"
+              text
+              x-large
+              @click="boxPizza(order)"
+            >
+              Ready
+            </v-btn>
+            <!-- <b-button variant="success" @click="boxPizza(order)">BOX</b-button> -->
           </v-card-actions>
 
-          <v-card-actions v-if="statusIndex === 4">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
+          <v-card-actions v-if="order.status == 5">
+
               Waiting For Customer
-            </v-btn>
 
             <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="customerDelivery(order)">Ready</b-button>
+            <v-btn
+              class="lightGreen"
+              text
+              x-large
+              @click="customerDelivery(order)"
+            >
+              Ready
+            </v-btn>
+            <!-- <b-button variant="success" @click="customerDelivery(order)">Ready</b-button> -->
           </v-card-actions>
         </v-card>
       </span>
-      <span v-if="order.source === 'woocommerce'">
-        <v-card
-          class="mx-3 cardStyle"
-          max-width="344"
-          outlined
-        >
-          <v-list-item three-line>
-            <v-list-item-content>
-              <div class="overline mb-4">
-                #{{ order.order_id }}
-                <div style="float: right; text-align: right">
-                  {{ order.created_at }}
-                </div>
-              </div>
-              <v-list-item-title class="headline cardStyle mb-1"
-                >{{ order.order_data.billing.first_name }}
-                {{ order.order_data.billing.last_name }}</v-list-item-title
-              >
-              <v-list-item-title class="headline mb-1">{{
-                order.order_data.billing.email
-              }}</v-list-item-title>
-              <v-list-item-title class="headline mb-1"
-                >{{ order.order_data.billing.phone }}
-                {{ order.order_data.billing.address_1 }}</v-list-item-title
-              >
-              <v-list-item-title class="headline mb-1 delivery"
-                >Ronnys Delivery</v-list-item-title
-              >
-              <div
-                class="row"
-                v-for="(item, idx) in order.order_data.line_items"
-                :key="idx"
-              >
-                <div class="col-12">
-                  <div class="d-flex justify-content-between">
-                    <span class="orderDisplay" @click="foobar(item)">
-                      <strong
-                        >{{ item.quantity }}
-                        <!-- {{ item.meta_data[0].value }} -->
-                        {{ item.name }}</strong
-                      >
-                    </span>
-                    <span>
-                      <!-- {{ (item.total.toFixed(2) * item.quantity) }}  -->
-                      {{ item.price }}                  
-                      <!-- შეიძლება გააყლევოს -->
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div class="cardPrice">
-                <strong>{{ order.total }}</strong>
-              </div>
-              <v-list-item-title class="headline cardStyle mb-1">{{
-                order.order_data.billing.address_1
-              }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
 
-          <v-card-actions v-if="statusIndex === 1">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
-              Waiting For Baker 1
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="baker1Done(order)">Ready</b-button>
-          </v-card-actions>
-
-          <v-card-actions v-if="statusIndex === 2">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
-              Waiting For Baker 2
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="baker2Done(order)">Ready</b-button>
-          </v-card-actions>
-
-          <v-card-actions v-if="statusIndex === 3">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
-              Pizza In Oven
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="boxPizza(order)">BOX</b-button>
-          </v-card-actions>
-
-          <v-card-actions v-if="statusIndex === 4">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
-              Waiting For Customer
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="customerDelivery(order)">Ready</b-button>
-          </v-card-actions>
-
-        </v-card>
-      </span>
-      <span v-if="order.source === 'Legacy'">
-        <v-card
-          class="mx-3 cardStyle"
-          max-width="344"
-          outlined
-        >
-          <v-list-item three-line>
-            <v-list-item-content>
-              <div class="overline mb-4">
-                #{{ order.order_id }}
-                <div style="float: right; text-align: right">
-                  {{ order.created_at }}
-                </div>
-              </div>
-              <v-list-item-title class="headline cardStyle mb-1"
-                >{{ order.order_data.client_first_name }}
-                {{ order.order_data.client_last_name }}</v-list-item-title
-              >
-              <v-list-item-title class="headline mb-1">{{
-                order.order_data.client_email
-              }}</v-list-item-title>
-              <v-list-item-title class="headline mb-1 break-word"
-                >{{ order.order_data.client_phone }}
-                {{ order.order_data.client_address }}</v-list-item-title
-              >
-              <v-list-item-title class="headline mb-1 delivery"
-                >Ronnys Delivery</v-list-item-title
-              >
-              <div
-                class="row"
-                v-for="item in order.order_data.items"
-                :key="item.id"
-              >
-                <div class="col-12">
-                  <div class="d-flex justify-content-between">
-                      <strong
-                        >{{ item.quantity }} X
-                        <!-- <span v-for="itemOption in item.options" :key="itemOption">
-                          {{ itemOption.name }}
-                        </span> -->
-                        {{ item.name }}</strong
-                      >
-                    <span>
-                      <!-- {{ (item.total.toFixed(2) * item.quantity) }}  -->
-                      {{ item.total_item_price }}
-                      <!-- შეიძლება გააყლევოს -->
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div class="cardPrice">
-                <strong>{{ order.total_price }}</strong>
-              </div>
-              <v-list-item-title class="headline cardStyle mb-1">{{
-                order.order_data.client_address
-              }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-
-          <v-card-actions v-if="statusIndex === 1">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
-              Prepareing
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="baker1Done(order)">Ready</b-button>
-          </v-card-actions>
-
-          <v-card-actions v-if="statusIndex === 2">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
-              Making
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="baker2Done(order)">Ready</b-button>
-          </v-card-actions>
-
-          <v-card-actions v-if="statusIndex === 3">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
-              Bake
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="boxPizza(order)">BOX</b-button>
-          </v-card-actions>
-
-          <v-card-actions v-if="statusIndex === 4">
-            <v-btn
-              color="orange lighten-2"
-              text
-            >
-              Box
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <b-button variant="success" @click="customerDelivery(order)">Ready</b-button>
-          </v-card-actions>
-        </v-card>
-
-      </span>
 
     </span>
   </div>
@@ -636,15 +442,14 @@ import axios from "axios";
 
 export default {
   props: {
-        statusIndex: {
-            type: Number,
-            default: -1
+        orders: {
+            type: Array,
+            default: []
         },
 
     },
   data() {
     return {
-      orders: [],
       order_raw: [],
       prepOrder: [],
       branch: "saburtalo",
@@ -675,7 +480,7 @@ export default {
     },
   },
   created () {
-        this.timer = setInterval(this.getOrderPrep, 20000)
+        this.timer = setInterval(this.getOrderPrep, 500)
     },
   methods: {
     getOrder() {
@@ -703,37 +508,7 @@ export default {
         });
     },
     getOrderPrep() {
-      var bodyFormData = new FormData();
-      //alert(product.id);
-      bodyFormData.set("branch", this.branch);
-      bodyFormData.set("status", this.statusIndex);
-      const TOKEN = this.$store.state.auth.user.data.token;
-      console.log("TOOOOOOOKEN: ",TOKEN);
-      axios
-        .request({
-          method: "post",
-          url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-current-orders",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyFormData,
-        })
-        .then((response) => {
-          console.log('response', response);
-          response.data.data.forEach((x, index) => {
-            const first_char = response.data.data[index].order_data.charAt(0);
-            const last_char = response.data.data[index].order_data.charAt(response.data.data[index].order_data.length -1);
-            if(first_char === '[' && last_char === ']'){
-              response.data.data[index].order_data = response.data.data[index].order_data.substring(1, response.data.data[index].order_data.length-1);  
-            }
-            response.data.data[index].order_data = JSON.parse(response.data.data[index].order_data);
-          });
-          console.log("------", response.data.data[0].order_data);
-
-          this.prepOrder = response.data.data;
-          console.log("prepOrder: ", this.prepOrder);
-        });
+      this.prepOrder = this.orders;
     },
 
     updateStatus(status, orderId){
@@ -758,14 +533,20 @@ export default {
         });
     },
 
-    baker1Done(order){
+    kitchenDone(order){
       this.updateStatus('in_kitchen', order.id);
     },
-    baker2Done(order){
+    baker1Done(order){
       this.updateStatus('prepearing', order.id);
     },
-    boxPizza(order){
+    baker2Done(order){
       this.updateStatus('finished_bake', order.id);
+    },
+    boxPizza(order){
+      this.updateStatus('ready', order.id);
+    },
+    customerDelivery(order){
+      this.updateStatus('Finished', order.id);
     },
 
   },

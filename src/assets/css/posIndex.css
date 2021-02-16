@@ -106,7 +106,11 @@
 }
 body{
     max-height: 768px;
-    overflow: hidden;
+    overflow: auto;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
 }
 body .row,
 body .col-5,
@@ -442,7 +446,7 @@ body .col-12 {
 }
 
 .green {
-    background-color: #49B25D;
+    background-color: #49B25D !important;
 }
 
 .yellow {
@@ -461,9 +465,7 @@ body .col-12 {
     background-color: #BD7795;
 }
 
-.blue {
-    background-color: #205192;
-}
+
 
 .gray {
     background-color: #E6E6E7;
@@ -627,7 +629,7 @@ body .col-12 {
 }
 
 .blue {
-    background-color: #5DCCF5;
+    background-color: #5DCCF5 !important;
 }
 
 .green {

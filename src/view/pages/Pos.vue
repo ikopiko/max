@@ -71,7 +71,7 @@
                             </div>
                             
                             <div class="row" v-for="item in order.items" :key="item.id">
-                                <div class="col-1">
+                                <div class="col-1" v-if="!restrictEdit">
                                         <i class="material-icons md-24" style="font-size: 3em" @click="deleteProduct(item)">clear</i>
                                 </div>
                                 <!-- Pizza Render -->
@@ -308,10 +308,10 @@
 
                                 <div class="col-4" style="margin: 0px">
                                     <div class="d-flex justify-content-between">
-                                        <span class="material-icons iconMinus" v-if="item.qty > 1" @click="minusQty(item)">remove</span>
-                                        <span class="material-icons iconMinus" v-if="item.qty == 1" @click="minusQty(item)">delete_outline</span>
+                                        <span class="material-icons iconMinus" v-bind:class="{ static: restrictEdit }" v-if="item.qty > 1 " @click="minusQty(item)">remove</span>
+                                        <span class="material-icons iconMinus" v-bind:class="{ static: restrictEdit }" v-if="item.qty == 1" @click="minusQty(item)">delete_outline</span>
                                         <span class="itemQty">{{ item.qty }}</span>
-                                        <span class="material-icons iconPlus" @click="addQty(item)">add</span>
+                                        <span class="material-icons iconPlus" v-bind:class="{ static: restrictEdit }" @click="addQty(item)">add</span>
                                     </div>
                                 </div>
 
@@ -437,7 +437,7 @@
                 </div>
 
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="diplomatModal = true, order.discount = diplomatDiscount">
+                    <div class="col-2 calcBtn blue" @click="diplomatModal = true">
                         Diplomat
                     </div>
                     <div class="col-6">&nbsp;</div>
@@ -449,7 +449,7 @@
                     </div>
                 </div>
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="studentModal = true, order.discount = studentDiscount">
+                    <div class="col-2 calcBtn blue" @click="studentModal = true">
                         Student
                     </div>
                     <div class="col-2 calcBtn" @click="calcInput('7')">7</div>
@@ -462,7 +462,7 @@
                 </div>
 
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="teamModal = true, order.discount = employeeDiscount">Team</div>
+                    <div class="col-2 calcBtn blue" @click="teamModal = true">Team</div>
                     <div class="col-2 calcBtn" @click="calcInput('4')">4</div>
                     <div class="col-2 calcBtn" @click="calcInput('5')">5</div>
                     <div class="col-2 calcBtn" @click="calcInput('6')">6</div>
@@ -520,12 +520,17 @@
                     <div class="col-2 calcBtn blue" @click="noDisc()">NO Disc</div>
                     <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 0 }" @click="activatePromise(0)">15</div>
                     <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 1 }" @click="activatePromise(1)">20</div>
-                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 2 }" @click="activatePromise(2)">25</div>
-                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 3 }" @click="activatePromise(3)">30</div>
-                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 4 }" @click="activatePromise(4)">40</div>
+                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 2 }" @click="activatePromise(2)">30</div>
+                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 3 }" @click="activatePromise(3)">40</div>
+                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 4 }" @click="activatePromise(4)">50</div>
                 </div>
                 <div class="row calcFooter">
-                    <div class="col-2 paddingClear" style="padding-left: 0" @click="closeCalc()">
+                    <div v-if="!restrictEdit" class="col-2 paddingClear" style="padding-left: 0" @click="closeCalc()">
+                        <div class="w-b-1 square calcBtn">
+                            <i class="fa fa-home fa-4x iconColor home"></i>
+                        </div>
+                    </div>
+                    <div v-if="restrictEdit" class="col-2 paddingClear" style="padding-left: 0">
                         <div class="w-b-1 square calcBtn">
                             <i class="fa fa-home fa-4x iconColor home"></i>
                         </div>
@@ -757,10 +762,10 @@
                                     </div>
                                     <div class="col w-3 gray">
                                         <div>
-                                            <h4>Total To Pay:</h4>
+                                            <h4>Change:</h4>
                                         </div>
                                         <div>
-                                            <h4 id="total_price">{{ totalCustomer.toFixed(2) }}</h4>
+                                            <h4 id="total_price">{{ (cashInput - totalPrice).toFixed(2) }}</h4>
                                         </div>
                                     </div>
                                 </div>
@@ -780,75 +785,6 @@
     <!-- End of Change Modal -->
 
     <!-- Start Of CRM Modal -->
-<!-- 
-    <div v-if="crmModal1">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" v-if="!customerChecked">
-                                    Add New Customer
-                                </h5>
-                                <h5 class="modal-title" v-if="customerChecked">
-                                    Edit Customer
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="crmModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
-                                        <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
-
-                                        <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" required></v-text-field>
-
-                                        <v-radio-group v-model="customer.sex" label="Gender" row>
-                                            <v-radio label="Male" value="male"></v-radio>
-                                            <v-radio label="Female" value="female"></v-radio>
-                                            <v-radio label="None" value="none"></v-radio>
-                                        </v-radio-group>
-
-                                        <v-row>
-                                            <v-col cols="12" sm="12">
-                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
-                                            </v-col>
-                                        </v-row>
-
-
-                                        <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-
-                                        <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-                                        <v-btn v-if="!customerChecked" :disabled="!valid" color="primary" class="btn btn-primary" @click="addCustomer()">
-                                            Add New Customer
-                                        </v-btn>
-                                        <v-btn v-if="customerChecked" :disabled="!valid" color="green" class="btn btn-primary" @click="editCustomer()">
-                                            Edit Customer
-                                        </v-btn>
-                                    </v-form>
-                                </b-container>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="crmModal = false">
-                                    Close
-                                </button>
-                                <button v-if="!customerChecked" type="button" class="btn btn-primary" @click="addCustomer()">
-                                    Add Customer
-                                </button>
-                                <button v-if="customerChecked" type="button" class="btn btn-primary" @click="editCustomer()">
-                                    Edit Customer
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div> -->
 
     <v-dialog 
       v-model="crmModal"
@@ -883,6 +819,7 @@
                   <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
 
                   <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                  <v-text-field v-model="customer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
 
               </v-form>
             </v-row>
@@ -955,31 +892,10 @@
                                             </v-col>
                                         </v-row>
 
-                                        <!-- <v-row>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Entrance" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Floor" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="3">
-                                <v-text-field label="Appartment" clearable></v-text-field>
-                            </v-col>
-                            <v-col cols="3" sm="12" md="3">
-                                <v-text-field label="Security code" clearable></v-text-field>
-                            </v-col>
-                        </v-row> -->
-
                                         <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
 
                                         <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                                        <!-- <v-text-field
-                          v-model="customer.comment2"
-                          class="my-2"
-                          label="Comment 2"
-                          clearable
-                        ></v-text-field> -->
                                     </v-form>
                                 </b-container>
                             </div>
@@ -1088,7 +1004,7 @@
 
     <!-- Start of invoice modal -->
 
-    <div v-if="invoiceModal">
+    <!-- <div v-if="invoiceModal">
         <transition name="modal">
             <div class="modal-mask">
                 <div class="modal-wrapper">
@@ -1133,133 +1049,167 @@
                 </div>
             </div>
         </transition>
-    </div>
+    </div> -->
+
+    <v-dialog 
+      v-model="invoiceModal"
+      max-width="700px"
+    >
+    <v-card :justify="end">
+        <v-card-title>
+          <span class="headline">Invoice Information</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-text-field v-model="invoice.name" class="my-2" label="Name" clearable></v-text-field>
+                  <v-text-field v-model="invoice.ltd" class="my-2" label="LTD" clearable></v-text-field>
+
+                  <v-text-field v-model="invoice.email" class="my-2" label="E-mail"></v-text-field>
+
+                  <v-row>
+                      <v-col cols="12" sm="12">
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                      </v-col>
+                  </v-row>
+                  <v-text-field v-model="invoice.id" @keypress="isNumber($event)" class="my-2" label="Company ID #" clearable></v-text-field>
+
+                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+              </v-form>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+           <v-btn
+            color="blue darken-1"
+            text
+            x-large
+            @click="generateInvoice()"
+          >
+            Generate Invoice}
+          </v-btn>   
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
 
     <!-- End of invoice modal -->
 
     <!-- Start Of Walk in Modal -->
 
-    <div v-if="walkInModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Delivery Information</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="walkInModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
+    
+    <v-dialog 
+      v-model="walkInModal"
+      max-width="700px"
+    >
+    <v-card :justify="end">
+        <v-card-title>
+          <span class="headline">Walk In Information</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-form ref="form" v-model="valid" lazy-validation>
                                         
-                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-                                        
-                                        <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
 
-                                        <v-text-field v-model="curentCustomer.email" class="my-2" label="E-mail"></v-text-field>
+                  <v-text-field v-model="curentCustomer.email" class="my-2" label="E-mail"></v-text-field>
 
-                                        <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
-                                            <v-radio label="Male" value="male"></v-radio>
-                                            <v-radio label="Female" value="female"></v-radio>
-                                            <v-radio label="None" value="none"></v-radio>
-                                        </v-radio-group>
+                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                      <v-radio label="Male" value="male"></v-radio>
+                      <v-radio label="Female" value="female"></v-radio>
+                      <v-radio label="None" value="none"></v-radio>
+                  </v-radio-group>
 
-                                        <v-row>
-                                            <v-col cols="12" sm="12">
-                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
-                                            </v-col>
-                                        </v-row>
+                  <v-row>
+                      <v-col cols="12" sm="12">
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                      </v-col>
+                  </v-row>
 
-                                        <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                                    </v-form>
-                                </b-container>
-                            </div>
+                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="walkInModal = false">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="walkinCustomer()">
-                                    Walk In Customer
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
+              </v-form>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+           <v-btn
+            color="blue darken-1"
+            class="blue"
+            text
+            x-large
+            @click="walkinCustomer()"
+          >
+            Walk In Customer
+          </v-btn>   
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
 
     <!-- End Of Walk In Modal -->
 
     <!-- Start Of Take out Modal -->
 
-    <div v-if="takeOutModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Delivery Information</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="
-                        (takeOutModal = false),
-                          (takeoutActiveVar = false),
-                          (walkinActiveVar = true)
-                      ">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
+    <v-dialog 
+      v-model="takeOutModal"
+      max-width="700px"
+    >
+    <v-card :justify="end">
+        <v-card-title>
+          <span class="headline">Take Out Information</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-form ref="form" v-model="valid" lazy-validation>
 
-                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-                                        
-                                        <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
 
-                                        <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
 
-                                        <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
-                                            <v-radio label="Male" value="male"></v-radio>
-                                            <v-radio label="Female" value="female"></v-radio>
-                                            <v-radio label="None" value="none"></v-radio>
-                                        </v-radio-group>
+                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                      <v-radio label="Male" value="male"></v-radio>
+                      <v-radio label="Female" value="female"></v-radio>
+                      <v-radio label="None" value="none"></v-radio>
+                  </v-radio-group>
 
-                                        <v-row>
-                                            <v-col cols="12" sm="12">
-                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable></v-text-field>
-                                            </v-col>
-                                        </v-row>
+                  <v-row>
+                      <v-col cols="12" sm="12">
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable></v-text-field>
+                      </v-col>
+                  </v-row>
 
-                                        <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                                    </v-form>
-                                </b-container>
-                            </div>
+                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="
-                      (takeOutModal = false),
-                        (takeoutActiveVar = false),
-                        (walkinActiveVar = true)
-                    ">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="takeoutCustomer()">
-                                    Take Out: {{ order.totalPrice }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
+              </v-form>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+           <v-btn
+            color="blue darken-1"
+            class="blue"
+            text
+            x-large
+            @click="takeoutCustomer()"
+          >
+            Take Out: {{ order.totalPrice }}
+          </v-btn>   
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
 
     <!-- End Of Walk In Modal -->
 
@@ -1299,6 +1249,8 @@
 
                       <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
+                      <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+
                   </v-form>
               </b-container>
               <div class="row">
@@ -1331,24 +1283,13 @@
           <v-spacer></v-spacer>
           <v-btn
             color="blue darken-1"
+            class="blue"
             text
             x-large
             @click="deliveryCustomer()"
           >
             Delivery: {{ order.totalPrice }}
           </v-btn>   
-          <v-btn
-            color="blue darken-1"
-            text
-            x-large
-            @click="
-                      (ronnysModal = false),
-                      (ronnysActive = false),
-                      (walkinActiveVar = true),
-                      (deliveryActiveVar = false)
-                    ">
-            Close
-          </v-btn>
         </v-card-actions>
     </v-card>
     </v-dialog>
@@ -1357,138 +1298,127 @@
 
     <!-- Start Of Glovo Modal -->
 
-    <div v-if="glovoModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Delivery Information</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="
-                        (glovoModal = false),
-                          (glovoActive = false),
-                          (walkinActiveVar = true)
-                      ">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
-                                        <v-text-field v-model="curentCustomer.name" class="my-2" label="3 Digit Code" required clearable></v-text-field>
+   
+    <v-dialog 
+      v-model="glovoModal"
+      max-width="700px"
+    >
+    <v-card :justify="end">
+        <v-card-title>
+          <span class="headline">Glovo Information</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-text-field v-model="curentCustomer.name" class="my-2" label="3 Digit Code" required clearable></v-text-field>
 
-                                        <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
 
-                                        <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
-                                            <v-radio label="Male" value="male"></v-radio>
-                                            <v-radio label="Female" value="female"></v-radio>
-                                            <v-radio label="None" value="none"></v-radio>
-                                        </v-radio-group>
+                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                      <v-radio label="Male" value="male"></v-radio>
+                      <v-radio label="Female" value="female"></v-radio>
+                      <v-radio label="None" value="none"></v-radio>
+                  </v-radio-group>
 
-                                        <v-row>
-                                            <v-col cols="12" sm="12">
-                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
-                                            </v-col>
-                                        </v-row>
+                  <v-row>
+                      <v-col cols="12" sm="12">
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                      </v-col>
+                  </v-row>
 
-                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
 
-                                        <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                                    </v-form>
-                                </b-container>
-                            </div>
+                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="
-                      (glovoModal = false),
-                        (glovoActive = false),
-                        (walkinActiveVar = true)
-                    ">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="glovoCustomer('cash')">
-                                    Glovo Cash: {{ order.totalPrice }}
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="glovoCustomer('paid')">
-                                    Glovo Order: {{ order.totalPrice }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
+              </v-form>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+           <v-btn
+            color="blue darken-1"
+            class="green"
+            text
+            x-large
+            @click="glovoCustomer('cash')"
+          >
+            Glovo Cash: {{ order.totalPrice }}
+          </v-btn>   
+           <v-btn
+            color="blue darken-1"
+            class="blue"
+            text
+            x-large
+            @click="glovoCustomer('paid')"
+          >
+            Glovo Transfer: {{ order.totalPrice }}
+          </v-btn>   
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
 
     <!-- End Of Glovo Modal -->
 
     <!-- Start Of Wolt Modal -->
 
-    <div v-if="woltModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Delivery Information</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="
-                        (woltModal = false),
-                          (woltActive = false),
-                          (takeoutActiveVar = true)
-                      ">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
+    <v-dialog 
+      v-model="woltModal"
+      max-width="700px"
+    >
+    <v-card :justify="end">
+        <v-card-title>
+          <span class="headline">Wolt Information</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-form ref="form" v-model="valid" lazy-validation>
                                         
-                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-                                        
-                                        <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
-                                        <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
 
-                                        <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
-                                            <v-radio label="Male" value="male"></v-radio>
-                                            <v-radio label="Female" value="female"></v-radio>
-                                            <v-radio label="None" value="none"></v-radio>
-                                        </v-radio-group>
+                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                      <v-radio label="Male" value="male"></v-radio>
+                      <v-radio label="Female" value="female"></v-radio>
+                      <v-radio label="None" value="none"></v-radio>
+                  </v-radio-group>
 
-                                        <v-row>
-                                            <v-col cols="12" sm="12">
-                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable></v-text-field>
-                                            </v-col>
-                                        </v-row>
+                  <v-row>
+                      <v-col cols="12" sm="12">
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable></v-text-field>
+                      </v-col>
+                  </v-row>
 
 
-                                        <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                                    </v-form>
-                                </b-container>
-                            </div>
+                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="
-                      (woltModal = false),
-                        (woltActive = false),
-                        (takeoutActiveVar = true)
-                    ">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="woltCustomer()">
-                                    Pay {{ order.totalPrice }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
+              </v-form>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+           <v-btn
+            color="blue darken-1"
+            class="blue"
+            text
+            x-large
+            @click="woltCustomer()"
+          >
+            Wolt order:  {{ order.totalPrice }}
+          </v-btn>   
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
 
     <!-- End Of Wolt Modal -->
 
@@ -1530,102 +1460,76 @@
     <!-- End Of Future Modal -->
 
     <!-- Start Of Setting Modal -->
+    <div class="float-right">
+      <v-dialog 
+        v-model="settingModal"
+        max-width="600px"
+      >
+      <v-card :justify="end">
+          <v-card-title>
+            <span class="headline">Unpaid Orders</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-data-table
+                  v-model="selected"
+                  :search="search"
+                  :items="filteredOrders"
+                  :headers="settingHeaders"
+                  :items-per-page="itemsPerPage"
+                  item-key="order_id"
+                  :loading="loading"
+                  :single-select="singleSelect"
+                  show-select
+                  class="elevation-1"
+                  @page-count="pageCount = $event"
+                >
+                    <template v-slot:item="row">
+                        <tr @click="onButtonClick(row.item)">
+                          <td>{{row.item.order_data.customer.tel}}</td>
+                          <td>{{row.item.order_data.customer.name}}</td>
+                          <td>{{row.item.order_data.adress}}</td>
+                          <td>{{row.item.order_data.items[0].name}}</td>
+                          <td>{{row.item.order_data.totalPrice}}</td>
 
-    <v-dialog 
-      v-model="settingModal"
-      max-width="600px"
-    >
-    <v-card :justify="end">
-        <v-card-title>
-          <span class="headline">Unpaid Orders</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-data-table
-                v-model="selected"
-                :search="search"
-                :items="filteredOrders"
-                :headers="settingHeaders"
-                :items-per-page="itemsPerPage"
-                item-key="order_id"
-                :loading="loading"
-                :single-select="singleSelect"
-                show-select
-                class="elevation-1"
-                @page-count="pageCount = $event"
-              >
-                  <template v-slot:item="row">
-                      <tr @click="onButtonClick(row.item)">
-                        <td>{{row.item.order_data.customer.tel}}</td>
-                        <td>{{row.item.order_data.customer.name}}</td>
-                        <td>{{row.item.order_data.adress}}</td>
-                        <td>{{row.item.order_data.items[0].name}}</td>
-                        <td>{{row.item.order_data.totalPrice}}</td>
-
-                        <td>
-                          <v-btn class="mx-2" fab dark small color="green" @click="rePrint(row.item)">
-                              <v-icon dark>print</v-icon>
-                          </v-btn>
-                        </td>
-                      </tr>
-                  </template>
-              </v-data-table>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            icon
-            x-large
-            @click="arrowOrder('down')"
-          >
-            <i class="material-icons md-36" style="font-size: 3em" >south</i>
-          </v-btn>
-          <v-btn
-            color="blue darken-1"
-            icon
-            x-large
-            @click="arrowOrder('up')"
-          >
-            <i class="material-icons md-36" style="font-size: 3em" >north</i>
-          </v-btn>
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
+                          <td>
+                            <v-btn class="mx-2" fab dark small color="green" @click="rePrint(row.item)">
+                                <v-icon dark>print</v-icon>
+                            </v-btn>
+                          </td>
+                        </tr>
+                    </template>
+                </v-data-table>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="blue darken-1"
+              icon
+              x-large
+              @click="arrowOrder('down')"
+            >
+              <i class="material-icons md-36" style="font-size: 3em" >south</i>
+            </v-btn>
+            <v-btn
+              color="blue darken-1"
+              icon
+              x-large
+              @click="arrowOrder('up')"
+            >
+              <i class="material-icons md-36" style="font-size: 3em" >north</i>
+            </v-btn>
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
+    </div>
 
     <!-- End Of Setting Modal -->
 
     <!-- Start Of Function Modal -->
-    <!-- <div v-if="functionModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Settings</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="functionModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <v-btn color="red" elevation="1" x-large @click="print()">NO SALE</v-btn>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="functionModal = false">
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div> -->
 
     <v-dialog 
       v-model="functionModal"
@@ -1659,185 +1563,167 @@
 
     <!-- Start Of Diplomat Modal -->
 
-    <div width="50%" v-if="diplomatModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">
-                                    Diplomat Discount
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="diplomatModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
-                                        <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-                                        
-                                        <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+    <v-dialog 
+      v-model="diplomatModal"
+      max-width="700px"
+    >
+    <v-card :justify="end">
+        <v-card-title>
+          <span class="headline">Diplomat Discount</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                  
+                  <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
-                                        <v-radio-group v-model="customer.sex" label="Gender" row>
-                                            <v-radio label="Male" value="male"></v-radio>
-                                            <v-radio label="Female" value="female"></v-radio>
-                                            <v-radio label="None" value="none"></v-radio>
-                                        </v-radio-group>
+                  <v-radio-group v-model="customer.sex" label="Gender" row>
+                      <v-radio label="Male" value="male"></v-radio>
+                      <v-radio label="Female" value="female"></v-radio>
+                      <v-radio label="None" value="none"></v-radio>
+                  </v-radio-group>
 
-                                        <v-text-field v-model="customer.id" class="my-2" label="Diplomat #" ></v-text-field>
-                                        
+                  <v-text-field v-model="customer.id" class="my-2" label="Diplomat #" ></v-text-field>
+                  
 
-                                        <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
-   
-                                        <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
 
-                                        <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+                  <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
 
-                                        <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                  <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
 
-                                    </v-form>
-                                </b-container>
-                            </div>
+                  <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                            <div class="modal-footer">
-                                <v-btn x-large elevation="2" @click="diplomatModal = false">
-                                    Close
-                                </v-btn>
-                                <v-btn x-large elevation="2" color="red" @click="diplomatDisc()">
-                                    Discount: - {{ totalDisc.toFixed(2) }}
-                                </v-btn>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
+              </v-form>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+           <v-btn
+            color="blue darken-1"
+            text
+            x-large
+            @click="diplomatDisc()"
+          >
+            Discount: - {{ ((this.totalNet/100) * this.diplomatDiscount).toFixed(2) }}
+          </v-btn>   
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
 
     <!-- End of diplomat modal -->
 
     <!-- Start of student modal -->
 
-    <div width="50%" v-if="studentModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">
-                                    Student Discount
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="studentModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
-                                        <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-                                        
-                                        <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+    <v-dialog 
+      v-model="studentModal"
+      max-width="700px"
+    >
+    <v-card :justify="end">
+        <v-card-title>
+          <span class="headline">Student Discount</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                  
+                  <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
-                                        <v-radio-group v-model="customer.sex" label="Gender" row>
-                                            <v-radio label="Male" value="male"></v-radio>
-                                            <v-radio label="Female" value="female"></v-radio>
-                                            <v-radio label="None" value="none"></v-radio>
-                                        </v-radio-group>
+                  <v-radio-group v-model="customer.sex" label="Gender" row>
+                      <v-radio label="Male" value="male"></v-radio>
+                      <v-radio label="Female" value="female"></v-radio>
+                      <v-radio label="None" value="none"></v-radio>
+                  </v-radio-group>
 
-                                        <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
-                                        
+                  <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
+                  
 
-                                        <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
-   
-                                        <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
 
-                                        <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+                  <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
 
-                                        <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                  <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
 
-                                    </v-form>
-                                </b-container>
-                            </div>
+                  <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
-                            <div class="modal-footer">
-                                <v-btn x-large elevation="2" @click="studentModal = false">
-                                    Close
-                                </v-btn>
-                                <v-btn x-large elevation="2" color="red" @click="studentDisc()">
-                                    Discount: - {{ totalDisc.toFixed(2) }}
-                                </v-btn>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
+              </v-form>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+           <v-btn
+            color="blue darken-1"
+            text
+            x-large
+            @click="studentDisc()"
+          >
+            Discount:  {{ ((this.totalNet/100) * this.studentDiscount).toFixed(2) }}
+          </v-btn>   
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
 
     <!-- End of student modal -->
 
     <!-- Start of team modal -->
 
-    <div width="50%" v-if="teamModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">
-                                    Student Discount
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="teamModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
-                                        <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-                                        
-                                        <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
-
-                                        <v-radio-group v-model="customer.sex" label="Gender" row>
-                                            <v-radio label="Male" value="male"></v-radio>
-                                            <v-radio label="Female" value="female"></v-radio>
-                                            <v-radio label="None" value="none"></v-radio>
-                                        </v-radio-group>
-
-                                        <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
-                                        
-
-                                        <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
    
-                                        <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
+    <v-dialog 
+      v-model="teamModal"
+      max-width="700px"
+    >
+    <v-card :justify="end">
+        <v-card-title>
+          <span class="headline">Team Discount</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                  
+                  <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
-                                        <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+                  <v-radio-group v-model="customer.sex" label="Gender" row>
+                      <v-radio label="Male" value="male"></v-radio>
+                      <v-radio label="Female" value="female"></v-radio>
+                      <v-radio label="None" value="none"></v-radio>
+                  </v-radio-group>
 
-                                        <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                  <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
+                  
 
-                                    </v-form>
-                                </b-container>
-                            </div>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
 
-                            <div class="modal-footer">
-                                <v-btn x-large elevation="2" @click="teamModal = false">
-                                    Close
-                                </v-btn>
-                                <v-btn x-large elevation="2" color="red" @click="studentDisc()">
-                                    Discount: - {{ totalDisc.toFixed(2) }}
-                                </v-btn>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
+                  <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
 
+                  <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+
+                  <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+              </v-form>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+           <v-btn
+            color="blue darken-1"
+            text
+            x-large
+            @click="employeeDisc()"
+          >
+            Discount:  {{ ((this.totalNet/100) * this.employeeDiscount).toFixed(2) }}
+          </v-btn>   
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
     <!-- End of student modal -->
 
 </div>
@@ -1886,6 +1772,7 @@ export default {
     },
   data() {
     return {
+      restrictEdit: false,
       arrowIndex: -1,
       payLaterActive: false,
       orders: [],
@@ -1973,7 +1860,7 @@ export default {
       crustVar: false,
       deliveryFee: [{id: 0,fee: 1.5, text: "1.5 GEL 0-3.9 Km"}, {id:1,fee:3, text: "3 GEL 4-9.9 Km"}, {id:2,fee:4.5, text: "4.5 GEL 10-15.9 Km"}, {id:3,fee:6, text: "6 GEL 16-19.9 Km"}, {id: 4,fee:7, text: "7 GEL 20-27.9 Km"}, {id: 5,fee:10, text: "10 GEL 28 Km +"}, {id:6,fee:13.5, text: "13.5 GEL Rustavi"} ],
       deliveryType: [{id: 0, type: 'ronnys'}, {id: 1, type: 'glovo'},{id: 2, type: 'wolt'}],
-      promise: [{id: 0, time:15},{id: 1, time:20},{id: 2, time:25}, {id: 3, time:30}, {id: 4, time:40}],
+      promise: [{id: 0, time:15},{id: 1, time:20},{id: 2, time:30}, {id: 3, time:40}, {id: 4, time:50}],
       promiseTime: 15,
       deliveryFeeVar: -1,
       deliveryTypeVar: -1,
@@ -2008,7 +1895,7 @@ export default {
       takeOutModal: false,
       discountOrder: false,
       discountItem: false,
-      diplomatDiscount: 15,
+      diplomatDiscount: 18,
       employeeDiscount: 20,
       studentDiscount: 15,
       couponModal: false,
@@ -2188,7 +2075,7 @@ export default {
         // this.orders.forEach(x => {
         //     x.order_data = JSON.parse(x.order_data);
         // });
-        this.filteredOrders = this.orders;
+        this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4');;
         console.log("orders data: ", this.filteredOrders);
       });
 
@@ -2464,8 +2351,8 @@ export default {
   methods: {
         arrowOrder(way){
           var ordersLength = this.filteredOrders.length;
-          if(this.arrowIndex < ordersLength && this.arrowIndex > 0){
-            alert(this.arrowIndex);
+          var orderPosition = null;
+          if(this.arrowIndex < ordersLength-1 && this.arrowIndex >= 0){
             if(way === 'up'){
               this.arrowIndex = this.arrowIndex -1;
               this.order = this.filteredOrders[this.arrowIndex].order_data;
@@ -2476,13 +2363,20 @@ export default {
             }
           }
           else {
-            this.arrowIndex = 0;
+            if(way === 'up'){
+              this.arrowIndex = ordersLength -1;
+            }
+            else if(way === 'down'){
+              this.arrowIndex = 0;
+            }
             this.order = this.filteredOrders[this.arrowIndex].order_data;
           }
         },
         onButtonClick(item) {
                 this.showOrderComponent = true;
                 this.order = item.order_data;
+                this.order.id = item.id;
+                this.restrictEdit = true;
                 this.lastOrder = item.order_data;
                 this.selectedOrder = item;
                 this.selectedOrderItems = item.order_data.items;
@@ -4728,6 +4622,7 @@ export default {
         this.halfPizzaPart = 0;
       } else if (this.isPizza == 'yes'){
         this.isHalfPizza = 'no';
+        this.smallHalf = false;
         this.wholePizza = false;
         this.wholePizzaPart = 3;
       }
@@ -5071,7 +4966,6 @@ export default {
           this.payOrder();
         }
         else {
-          alert('BLAAAAAa');
         this.order.totalPrice = this.totalNet.toFixed(2);
         this.order.promiseTime = this.promiseTime;
         this.order.pos_id = this.loggedUserFull.pos_id;
@@ -5106,9 +5000,9 @@ export default {
       }
     },
     payOrder(){
-      alert('BLA');
         const TOKEN = localStorage.getItem("TOKEN");
-        
+        //this.order.id = this.selected
+        //this.order = JSON.parse(this.selectedOrder);
         axios.request({
             method: 'post',
             url: 'http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/paid',
@@ -5120,6 +5014,9 @@ export default {
           .then(response => {
             // this.products = response.data;
             console.log(response);
+            if(response.status === 200 && this.paymentType == "card"){
+              this.calcPay();
+            } 
             //this.products = this.products.reverse();
             // console.log("Productd data from API: ", response.data)
           });
@@ -5147,6 +5044,7 @@ export default {
               console.log("Order Response", response);
             }
         });
+        this.settingModal = false;
     },
 
     printOrder(orderID){
@@ -5478,9 +5376,9 @@ export default {
       }
     },
    glovoCustomer(payment){
-     if(this.curentCustomer.adress === '' || this.curentCustomer.tel === '')
+     if(this.curentCustomer.tel === '')
       {
-        alert('Adress and Phone Fields are required!');
+        alert('Phone Field is required!');
       }
 
       this.order.customer = this.curentCustomer;

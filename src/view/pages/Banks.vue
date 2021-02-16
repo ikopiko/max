@@ -8,7 +8,7 @@
 
       <div class="container">
         <div class="row">
-          <div class="col-lg-4 col-md-12">
+          <div class="col-lg-4 col-md-4">
                     <table style="width:100%">
                         <tbody>
                             <tr>
@@ -25,9 +25,9 @@
                         </tbody>
                     </table>
                     <v-card v-for="safe in safes" :key="safe"
-                        class="mx-auto my-3" color="#BAE1BE" light max-width="400">
+                        class="mx-auto my-3" color="#BAE1BE" light max-width="200">
                         <v-card-title>
-                            <span class="title font-weight-bold">{{ safe.amount }} ₾</span>
+                            <span class="title font-weight-bold">{{ safe.amount }} GEL</span>
                         </v-card-title>
 
                         <v-card-actions>
@@ -41,12 +41,12 @@
                                 <v-list-item-content>
                                     <v-list-item-title>{{ safe.branch }}</v-list-item-title>
                                 </v-list-item-content>
-                                <v-row align="center" justify="end">
+                                <!-- <v-row align="center" justify="end">
                                     <i class="material-icons md-36">
                                         alarm
                                     </i>
                                     <span class="subheading mr-2">21:55</span>
-                                </v-row>
+                                </v-row> -->
                             </v-list-item>
                         </v-card-actions>
 
@@ -128,7 +128,7 @@
                     </v-card>
             </div>
             <!-- End of safe -->
-            <div class="col-lg-4 col-md-12">
+            <div class="col-lg-4 col-md-4">
                      <table style="width:100%">
                         <tbody>
                             <tr>
@@ -143,10 +143,10 @@
                     </table>
                     
                     <v-card v-for="till in tills" :key="till.id"  
-                        class="mx-auto my-3" color="#FE9A53" light max-width="400">
+                        class=" my-3 cols" color="#FE9A53" light max-width="200">
                         <v-card-title>
                             <span class="title font-weight-bold" v-if="till.cash < 300">{{ till.cash }} Gel - {{ till.name }}</span>
-                            <span class="title font-weight-bold" v-if="till.cash >= 300"><span style="color: red;" v-if="till.cash >= 300">DROP NEEDED {{ till.cash }} Gel </span>  - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="till.cash >= 300"><span style="color: red;" v-if="till.cash >= 650">DROP NEEDED {{ till.cash }} Gel </span>  - {{ till.name }}</span>
                         </v-card-title>
 
                         <v-card-actions>
@@ -160,12 +160,12 @@
                                 <v-list-item-content>
                                     <v-list-item-title>{{ till.name }} - {{ till.branch_name }}</v-list-item-title>
                                 </v-list-item-content>
-                                <v-row align="center" justify="end">
+                                <!-- <v-row align="center" justify="end">
                                     <i class="material-icons md-36">
                                         alarm
                                     </i>
                                     <span class="subheading mr-2">21:55</span>
-                                </v-row>
+                                </v-row> -->
                             </v-list-item>
                         </v-card-actions>
 
@@ -249,7 +249,7 @@
                     </v-card>
                 </div>
                 <!-- End of Tills -->
-                <div class="col-lg-4 col-md-12">
+                <div class="col-lg-4 col-md-4">
                     <table style="width:100%">
                         <tbody>
                             <tr>
@@ -264,7 +264,7 @@
                     </table>
 
                     <v-card v-for="drv in drivers" :key="drv.id"  
-                        class="mx-auto my-3" color="#46BDF2" light max-width="400">
+                        class="mx-auto my-3" color="#46BDF2" light max-width="200">
                         <v-card-title>
                             <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }} ₾ - {{ drv.username }}</span>
                             <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} ₾</span>  - {{ till.name }}</span>
@@ -279,15 +279,12 @@
                                     </i>
                                 </v-list-item-avatar>
                                
-                                <!-- <v-list-item-content>
-                                    <v-list-item-title>{{ drv.username }}</v-list-item-title>
-                                </v-list-item-content> -->
-                                <v-row align="center" justify="end">
+                                <!-- <v-row align="center" justify="end">
                                     <i class="material-icons md-36">
                                         alarm
                                     </i>
                                     <span class="subheading mr-2">21:55</span>
-                                </v-row>
+                                </v-row> -->
                             </v-list-item>
                         </v-card-actions>
 
@@ -640,8 +637,7 @@
 
       <v-dialog
         v-model="safeCloseDialog"
-        persistent
-        max-width="600px"
+        max-width="700px"
       >
         <v-card>
           <v-card-title>
@@ -650,7 +646,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col cols="3" class="justify-end">{{  safeCash}}</v-col>
+                <v-col cols="3" class="justify-end">{{ safeCash }}</v-col>
                 <v-col cols="3">Cash</v-col>
                 <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
               </v-row>
@@ -670,7 +666,7 @@
                 <v-col cols="3">Glovo</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
-              <v-row>
+              <v-row class="my-5">
                 <v-col cols="3">{{ safeWolt }}</v-col>
                 <v-col cols="3">Wolt</v-col>
                 <v-col cols="6">&nbsp;</v-col>
@@ -740,7 +736,7 @@ export default {
       cashActual: 0,
       cardActual: 0,
       totalActual: 0,
-      posAmount: 0,
+      posAmount: 150,
       driverAmount: 0,
       posComment: '',
       safeAmount: 0,
@@ -1045,7 +1041,7 @@ export default {
       //this.posAmount = -Math.abs(this.posAmount);
       //alert(this.posAmount)
 
-      if(pos.amount < this.posAmount){
+      if(pos.cash < this.posAmount){
           alert('There is not that amount of money in POS');
       }
       else {
@@ -1243,7 +1239,7 @@ export default {
       event.target.classList.add("active");
 
       // set clicked tab index to bootstrap tab
-      return parseInt(event.target.getAttribute("data-tab"));
+      return parseInt(event.target.getAttribute("`data-tab`"));
     },
 
     customFilter (item, queryText, itemText) {

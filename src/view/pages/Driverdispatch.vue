@@ -2,151 +2,98 @@
 /* eslint-disable */
 </script>
 <template>
-  <div id="app" class="container">
+  <v-container data-app>
+        <v-row>
+            <v-card class="col-md-8 col-sm-12">
+                <v-tabs
+                v-model="tab"
+                fixed-tabs
+                background-color="primary"
+                dark      
+                >
+                <v-tab
+                    v-for="item in items"
+                    :key="item.tab"
+                    @click="getTab(item.content)"
+                >
+                    {{ item.tab }}
+                </v-tab>
 
-    <div class="row">
-        <!-- Order List -->
-        <div class="col-9">
-            <v-app id="inspire">      
-                <template>
-                <v-card>
-                    <v-card-title>
-                    Orders
-                    <v-spacer></v-spacer>
-                    <v-text-field
-                        v-model="search"
-                        append-icon="mdi-magnify"
-                        label="Search"
-                        single-line
-                    ></v-text-field>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-data-table
-                      v-model="selectedOrder"
-                      :search="search"
-                      :headers="headers"
-                      :items="filteredOrdersDelivery"
-                      :items-per-page="itemsPerPage"
-                      item-key="order_id"
-                      :single-select="singleSelect"
-                      show-select
-                      :loading = "loading"
-                      class="elevation-1"
-                      @page-count="pageCount = $event"
-                      >             
-                      </v-data-table>
-                    </v-card-text>
-                    
-                </v-card>
-              </template>
+                <v-tabs-items v-model="tab">
+                <v-tab-item
+                    v-for="item in items"
+                    :key="item.tab"
+                >
+                    <v-data-table
+                            v-model="selectedOrders"
+                            :search="search"
+                            :headers="headers"
+                            :items="filteredOrders"
+                            :items-per-page="itemsPerPage"
+                            item-key="order_id"
+                            :loading="loading"
+                            show-select
+                            class="elevation-1"
+                            @page-count="pageCount = $event"
+                            @click:row="onButtonClick"
+                        >
+                            <!-- <template v-slot:item="row">
+                                <tr @click="onButtonClick(row.item)" :class="{ active : activeRow == row.item.id}">
+                                    <td>{{row.item.order_data.deliveryMethod}}</td>
+                                    <td>{{row.item.order_data.adress}}</td>
+                                    <td>{{row.item.order_data.customer.name}}</td>
+                                    <td>{{row.item.order_data.customer.tel}}</td>
+                                    <td>{{row.item.order_data.items[0].name}}</td>
+                                </tr>
+                            </template> -->
+                    </v-data-table>
+                    </v-tab-item>
+            </v-tabs-items>
+            </v-tabs>
+            </v-card>
+            <div class="col-md-2 col-sm-12" >
+              Avialable Drivers
+              <v-card v-for="driver in availableDrivers" :key="driver"
+                class="mx-auto my-3" :class="{ active : activeDriver == driver.id }" color="#46BDF2" light max-width="200" @click="selectDriver(driver)">
+                  <v-card-title class="title font-weight-bold">
+                    {{ driver.username }}
+                  </v-card-title>
+                  <v-card-title> {{ driver.amount }} GEL </v-card-title>
+              </v-card>
+              <v-card 
+                class="mx-auto my-3" color="#46BDF2" light max-width="200">
+                  <v-card-title class="title font-weight-bold">
+                    Irakli Andguladze
+                  </v-card-title>
+                  <v-card-title> 112.3 GEL </v-card-title>
+              </v-card>
+            </div>
+            <div class="col-md-2 col-sm-12" >
+              Drivers Out
+              <v-card v-for="driver in outDrivers" :key="driver" 
+                class="mx-auto my-3" :class="{ active : activeDriver == driver.id }" color="#A6A2B0" light max-width="200" @click="selectDriver(driver)">
+                  <v-card-title class="title font-weight-bold">
+                    {{ driver.username }}
+                  </v-card-title>
+                  <v-card-title> {{ driver.amount }} GEL </v-card-title>
+              </v-card>
+              <v-card 
+                class="mx-auto my-3" color="#A6A2B0" light max-width="200">
+                  <v-card-title class="title font-weight-bold">
+                    Irakli Andguladze
+                  </v-card-title>
+                  <v-card-title> 112.3 GEL </v-card-title>
+              </v-card>
+            </div>
             
-            </v-app>
-        </div>
-        <!-- End of Order List -->
-        <!-- Driver List -->
-        <div class="col-3">
-            <v-list
-                style="max-height: 400px"
-                class="overflow-y-auto"
-                flat
-                subheader
-                three-line
-                >
-                <v-subheader>Avialable Drivers</v-subheader>
-
-                <v-skeleton-loader
-                  v-if="driverLoad"
-                  v-bind="attrs"
-                  type="card-avatar, article, actions"
-                ></v-skeleton-loader>
-                
-                <v-list-item-group
-                    v-if="!driverLoad"
-                    v-model="driverIndex"
-                    single
-                    active-class=""
-                >
-                    <v-list-item v-for="driver in driverList" :key="driver.id">
-                    <template v-slot:default="{ active }">
-                        <v-list-item-action>
-                        <v-checkbox :input-value="active" :label="driver.username" ></v-checkbox>
-                        </v-list-item-action>
-                    </template>
-                    </v-list-item>
-
-                </v-list-item-group>
-            </v-list>
-            <div class="my-2">
-                <v-btn
-                color="error"
-                dark
-                x-large
-                @click="driverOut()"
-                >
-                Out =>
-                </v-btn>
-            </div>
-            <div class="my-2">
-                <v-btn
-                color="error"
-                dark
-                x-large
-                disabled
-                depressed
-                @click="deliveryProcess()"
-                >
-                Deliveries in progress
-                </v-btn>
-            </div>
-        </div>
-        <!-- End of Driver List -->
-        
-    </div>
-
-
-    <!-- Delivery in progress Modal  -->
-        <v-dialog
-          v-model="dialog"
-          fullscreen
-          hide-overlay
-          transition="dialog-bottom-transition"
-          scrollable
-        >
-          <v-card>
-            <v-card-title>
-              <span>Delivery In Progress</span>
-              <v-spacer></v-spacer>
-            </v-card-title>  
-              
-            <v-data-table
-              v-model="selectedDelivery"
-              :search="search"
-              :headers="headersDialog"
-              :items="deliveryOrders"
-              :items-per-page="itemsPerPage"
-              item-key="order_id"
-              :loading="loading"
-              :single-select="singleSelect"
-              show-select
-              class="elevation-1"
-              @page-count="pageCount = $event"
-            ></v-data-table>
-
-            <v-card-actions>
-              <v-btn
-                color="primary"
-                text
-                @click="dialog = false"
-              >
-                Close
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      <!-- End of Delivery in progress Modal  -->
-
-    
-  </div>
+        </v-row>
+        <v-row>
+          <div class="bottomRight">
+            <v-btn large color="red" @click="driverIn()">IN <=</v-btn>
+            <v-btn large color="red" @click="driverOut()">OUT =></v-btn>
+          </div>
+        </v-row>
+    </v-container>
 </template>
 
 <script>
@@ -160,39 +107,48 @@ export default {
   components: {},
   data() {
     return {
+      activeRow: -1,
       loggedUser: {},
+      activeDriver: -1,
       orders: [],
       deliveryOrders: [],
       dialog: false,
       singleSelect: true,
       loading: true,
       driverLoad: true,
+      selectedDriver: null,
       selectedOrder: {},
+      selectedOrders: [],
       selectedDelivery: {},
       driverIndex: -1,
       driverList: [],
       driver: [],
       search: '',
       branch: 'saburtalo',
-      status: 1,
+      status: '1,2,3,4,5,6,7',
       deliveryStatus: 6,
       page: 0,
+      tab: 0,
+      filteredOrders: [],
       pageCount: 0,
       itemsPerPage: 5,
-      headers: [
-        {
-          text: "ORDER ID",
-          align: "start",
-          sortable: false,
-          value: "id",
-        },
-        { text: "Branch", value: "branch" },
-        { text: "Order Type", value: "order_data.deliveryMethod" },
-        { text: "Delivery Adress", value: "order_data.adress" },
-        { text: "Customer Name", value: "order_data.customer.name" },
-        { text: "Customer Phone", value: "order_data.customer.tel" },
-        { text: "Order Items", value: "order_data.items[0].name" },
-      ],  
+      items: [
+            { tab: 'Finished Orders', content: 'finished' },
+            { tab: 'On Delivery', content: 'ongoing' },
+            { tab: 'Pending', content: 'pending' },
+            ],
+            headers: [
+            {
+                text: "ORDER ID",
+                align: "start",
+                sortable: false,
+                value: "order_id",
+            },
+            { text: "Delivery Adress", value: "order_data.adress" },
+            { text: "Customer Name", value: "order_data.customer.name" },
+            { text: "Customer Phone", value: "order_data.customer.tel" },
+            { text: "Order Items", value: "order_data.items[0].name" },
+        ],
       headersDialog: [
         {
           text: "ORDER ID",
@@ -223,35 +179,57 @@ export default {
     this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
     this.loggedUser = this.$store.state.auth.user.data;
 
-    const TOKEN = this.loggedUser.token;
-    var bodyFormData = new FormData();
-    bodyFormData.set("branch", this.branch);
-    bodyFormData.set("status", this.status);
+    this.getOrders();
+    this.getDrivers();
+    
+  },
+  computed: {
+    availableDrivers(){
+      return this.driverList.filter(x => x.in_way === false);
+    },
+    outDrivers(){
+      return this.driverList.filter(x => x.in_way === true);
+    }
 
-    axios
+  },
+  methods: {
+    getOrders(){
+      const TOKEN = this.loggedUser.token;
+      var bodyFormData = new FormData();
+      // bodyFormData.set("branch", this.branch);
+      bodyFormData.set("status_key", this.status);
+
+      axios
       .request({
-        method: "post",
-        url:
-          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-current-orders",
-        headers: {
+          method: "post",
+          url:
+          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/list",
+          headers: {
           Authorization: "Bearer " + TOKEN,
-        },
-        data: bodyFormData,
+          },
+          data: bodyFormData,
       })
       .then((response) => {
-        this.orders = response.data.data;
-        this.loading = false;
-        console.log("orders data: ", response.data.data);
+          console.log("response: ", response);
+          this.orders = response.data.data;
+          this.orders = this.orders.filter((x) =>  x.order_data.deliveryType === "Ronnys" )
+          // this.orders.forEach(x => {
+          //     x.order_data = JSON.parse(x.order_data);
+          // });
+          this.filteredOrders = this.orders.filter((x) => x.status === '5');
+          console.log("orders data: ", response.data.data);
       });
-
+    },
+    getDrivers(){
+      const TOKEN = this.loggedUser.token;
       var bodyFormDriver = new FormData();
-      bodyFormDriver.set("branch", 'saburtalo');
+      bodyFormDriver.set("branch", 'digomi');
 
       axios
         .request({
           method: "post",
           url:
-            "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/driver/clockedin-drivers",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/clockedin-drivers",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -259,57 +237,94 @@ export default {
         })
         .then((response) => {
           this.driverList = response.data.data;
-          this.driverLoad = false;
           console.log("Drivers List: ", this.driverList);
         });
-  },
-  computed: {
+    },
+    selectDriver(driver){
+      this.activeDriver = driver.id;
+      this.selectedDriver = driver;
+    },
+    driverIn(){
+      alert('Driver is in - Order Status Change to Finished (status 7)');
+    },
+        onButtonClick(item) {
+            this.activeRow = item.id;
+            this.order = item;
+            this.selectedOrder = item;
+            this.selectedOrders.push(item);
 
-      filteredOrdersDelivery() {
-      this.orders.forEach( (x) => {
-          x.order_data = JSON.parse(x.order_data);
-      });
-      return this.orders.filter((x) => x.source === "pos" && x.order_data.deliveryMethod === "Delivery");
-    },
-    filteredDriver() {
-        return this.driverList[this.driverIndex];
-    },
-      filteredOrdersLegacy() {
-      return this.orders.filter((x) => x.source === "Legacy");
-    },
-  },
-  methods: {
-    onButtonClick(item) {
-      this.$router.push({name: 'singleorder', params: {orderProp: item} });
-    },
-
+            console.log("Selected Item: ", this.selectedOrder);
+        },
+        getTab(tab){
+            if(tab === 'finished') {
+                this.filteredOrders = this.orders.filter((x) => x.status === '5');
+            }
+            else if(tab === 'ongoing') {
+                this.filteredOrders = this.orders.filter((x) => x.status === '6');
+            }
+            else if(tab === 'pending') {
+                this.filteredOrders = this.orders.filter((x) => x.status === '1' || x.status === '2' || x.status === '3' || x.status === '4');
+            }
+            this.$forceUpdate();
+        },
         driverOut(){
-        const TOKEN = this.loggedUser.token;
-        var bodyFormData = new FormData();
-        this.driver = this.driverList[this.driverIndex];
-        bodyFormData.set("order_id", this.selectedOrder[0].id);
-        bodyFormData.set("driver_id", this.driver.id);
-        alert(this.driver.id);
+          if(this.selectedOrder.status == '5' && this.selectedDriver.in_way === false){
+            const TOKEN = this.loggedUser.token;
+            var bodyFormData = new FormData();
+            bodyFormData.set("order_id", this.selectedOrder.id);
+            bodyFormData.set("driver_id", this.selectedDriver.id);
 
-        axios
-        .request({
-            method: "post",
-            url:
-            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/attach-order-to-driver",
-            //  Combine order and driver LINK HERE!!!!,
-            headers: {
-            Authorization: "Bearer " + TOKEN,
-            },
-            data: bodyFormData,
-        })
-        .then((response) => {
-          if(response.is_error){
-              alert(response.error_message);
+            axios
+            .request({
+                method: "post",
+                url:
+                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/attach-order-to-driver",
+                //  Combine order and driver LINK HERE!!!!,
+                headers: {
+                Authorization: "Bearer " + TOKEN,
+                },
+                data: bodyFormData,
+            })
+            .then((response) => {
+              if(response.is_error){
+                  alert(response.error_message);
+              }
+                this.orders = response.data.data;
+                console.log("orders data: ", response.data.data);
+            });
+
+            this.getOrders();
+            this.getDrivers();
+
+            var statusFormData = new FormData();
+            statusFormData.set("order_status", '6');
+            statusFormData.set("id", this.selectedOrder.id);
+
+            axios
+              .request({
+                method: "post",
+                url:
+                  "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/change-status",
+                headers: {
+                  Authorization: "Bearer " + TOKEN,
+                },
+                data: bodyFormData,
+              })
+              .then((response) => {
+                if(response.data.is_error){
+                  console.log('Status Change Error: ', response.data.is_error);
+                  
+                }
+                else{
+                  console.log("Order Status Changed Correctly: ", response.data);
+                }
+            });
+            this.getOrders();
+            this.getDrivers();
           }
-            this.orders = response.data.data;
-            console.log("orders data: ", response.data.data);
-        });
-        this.$router.go();
+          else{
+            alert('This order is not ready to go or driver is out!');
+          }
     },
 
     deliveryProcess(){

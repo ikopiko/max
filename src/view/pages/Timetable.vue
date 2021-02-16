@@ -4,7 +4,7 @@
 <template>
     <b-container>   
           <b-row>
-              <b-col cols="3">{{ pinUser.first_name  }}  {{ pinUser.role }} </b-col>
+              <b-col cols="3">{{ pinUser.first_name  }} - {{ pinUser.role }} </b-col>
               <b-col cols="3">
                 <ul id="display">
                     <li v-for="num in pinSync" :key="num">{{ num }}</li>
@@ -87,11 +87,11 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('4')">C</div>
+              <div class="numChar" @click="pinChar('clear')">C</div>
               <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('5')">0</div>
+              <div class="numChar" @click="pinChar('0')">0</div>
               <!-- &nbsp -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
@@ -138,6 +138,11 @@ export default {
 
     };
   },
+  mounted() {
+        window.addEventListener("keypress", e=> {
+                this.logKey(e);
+        });
+  },
   computed: {
         pinSync(){
             return this.pinDecon;
@@ -164,6 +169,17 @@ export default {
         });
   },
   methods: {
+        logKey(e) {
+            //alert(e.target);
+            e=e || window.event;
+            var charCode=(e.which) ? e.which: e.keyCode;
+            if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !==46) {
+                evt.preventDefault();
+            }
+            else {
+                return this.pinChar(e.key);
+            }
+        },
         timeFoo(state){
             var shortURL = 'http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/timesheet/';
             if(state === 'in'){

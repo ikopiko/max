@@ -6,6 +6,11 @@
     text-align: right;
     font-size: 16px;
   }
+  .bottomRight {
+    position: fixed;
+    bottom: 0; 
+    right: 0; 
+  }
   .cardClass {
     position: relative;
     opacity: 0.5;
@@ -43,10 +48,12 @@
 
   .red {background: red}
   .blue {background: blue}
-  .yellow {background: yellow}
+  .yellow {background: yellow !important}
   .orange {background: orange}
-  .green {background: #00D881}
-  .purple {background: purple}
+  .green {background: #00D881  !important}
+  .purple {background: purple !important}
+  .aqua {background: aqua !important}
+  .lightGreen {background: chartreuse !important}
   
   .v-input {
     height: 50px !important;
