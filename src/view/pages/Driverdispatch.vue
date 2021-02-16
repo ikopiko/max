@@ -37,6 +37,7 @@
                             @page-count="pageCount = $event"
                             @click:row="onButtonClick"
                         >
+                            <!-- BLA -->
                             <!-- <template v-slot:item="row">
                                 <tr @click="onButtonClick(row.item)" :class="{ active : activeRow == row.item.id}">
                                     <td>{{row.item.order_data.deliveryMethod}}</td>
