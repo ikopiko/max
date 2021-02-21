@@ -143,9 +143,9 @@
                     </table>
                     
                     <v-card v-for="till in tills" :key="till.id"  
-                        class=" my-3 cols" color="#FE9A53" light max-width="200">
+                        class=" my-3 cols" color="#FE9A53" light max-width="250">
                         <v-card-title>
-                            <span class="title font-weight-bold" v-if="till.cash < 300">{{ till.cash }} Gel - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="till.cash < 300">{{ till.cash + till.card }} Gel - {{ till.name }}</span>
                             <span class="title font-weight-bold" v-if="till.cash >= 300"><span style="color: red;" v-if="till.cash >= 650">DROP NEEDED {{ till.cash }} Gel </span>  - {{ till.name }}</span>
                         </v-card-title>
 
@@ -264,7 +264,7 @@
                     </table>
 
                     <v-card v-for="drv in drivers" :key="drv.id"  
-                        class="mx-auto my-3" color="#46BDF2" light max-width="200">
+                        class="mx-auto my-3" color="#46BDF2" light max-width="250">
                         <v-card-title>
                             <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }} ₾ - {{ drv.username }}</span>
                             <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} ₾</span>  - {{ till.name }}</span>
@@ -954,6 +954,11 @@ export default {
         })
         .then((response) => {
           this.tills = response.data.data;
+
+          this.tills.forEach(x => {
+            x.card = Number(x.card);
+            x.cash = Number(x.cash);
+          });
 
           console.log("POS List: ", this.tills);
         });

@@ -14,7 +14,7 @@
           <v-list-item three-line>
             <v-list-item-content>
               <div class="overline mb-4">
-                #{{ order.orderId }}
+                #{{ order.order_id }}
                 <div style="float: right; text-align: right">
                   {{ order.date }}
                 </div>
@@ -363,7 +363,7 @@
             <!-- <b-button variant="success" @click="kitchenDone(order)">Ready</b-button> -->
           </v-card-actions>
 
-          <v-card-actions v-if="order.status == 2">
+          <!-- <v-card-actions v-if="order.status == 2">
             
               Waiting For Baker 1
 
@@ -377,7 +377,6 @@
               Ready
             </v-btn>
             
-            <!-- <b-button variant="success" @click="baker1Done(order)">Ready</b-button> -->
           </v-card-actions>
 
           <v-card-actions v-if="order.status == 3">
@@ -394,12 +393,11 @@
             >
               Ready
             </v-btn>
-            <!-- <b-button variant="success" @click="baker2Done(order)">Ready</b-button> -->
-          </v-card-actions>
+          </v-card-actions> -->
 
-          <v-card-actions v-if="order.status == 4">
+          <v-card-actions v-if="order.status == 2 || order.status == 3 || order.status == 4">
 
-              Pizza In Oven
+              Prepareing Kitchen
 
             <v-spacer></v-spacer>
             <v-btn
@@ -410,7 +408,6 @@
             >
               Ready
             </v-btn>
-            <!-- <b-button variant="success" @click="boxPizza(order)">BOX</b-button> -->
           </v-card-actions>
 
           <v-card-actions v-if="order.status == 5">
@@ -426,7 +423,6 @@
             >
               Ready
             </v-btn>
-            <!-- <b-button variant="success" @click="customerDelivery(order)">Ready</b-button> -->
           </v-card-actions>
         </v-card>
       </span>
@@ -483,30 +479,6 @@ export default {
         this.timer = setInterval(this.getOrderPrep, 500)
     },
   methods: {
-    getOrder() {
-      var bodyFormData = new FormData();
-      bodyFormData.set("branch", this.branch);
-      const TOKEN = this.$store.state.auth.user.data.token;
-      console.log("TOOOOOOOKEN: ",TOKEN);
-      axios
-        .request({
-          method: "post",
-          url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-new-orders",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyFormData,
-        })
-        .then((response) => {
-          //console.log('------', response.data.data);
-          this.order_raw = response.data.data;
-          this.order_raw.legacy[0].order_data = JSON.parse(
-          this.order_raw.legacy[0].order_data
-          );
-          console.log("-------", this.order_raw.legacy[0].order_data);
-        });
-    },
     getOrderPrep() {
       this.prepOrder = this.orders;
     },

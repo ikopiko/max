@@ -47,7 +47,7 @@
                     >
                         <template v-slot:item="row">
                             <tr @click="onButtonClick(row.item)">
-                              <td>{{row.item.id}}</td>
+                              <td>{{row.item.order_id}}</td>
                               <td>{{row.item.branch}}</td>
                               <td>{{row.item.order_data.deliveryMethod}}</td>
                               <td>{{row.item.order_data.adress}}</td>
@@ -71,9 +71,17 @@
           </v-tabs-items>
           </v-tabs>
             <v-row>
-              <v-btn elevation='2' dark large class="mx-2 my-2" v-for="status in orderStatuses" :key="status" @click="changeOrder(status)">
+              <!-- <v-btn elevation='2' dark large class="mx-2 my-2" v-for="status in orderStatuses" :key="status" @click="changeOrder(status)">
                 {{ status.status_name }}
-              </v-btn>
+              </v-btn> -->
+
+              <v-select
+              :items="orderStatuses"
+              v-on:change="changeOrder"
+              item-text="status_name"
+              item-value="id"
+              label="Filter Order"
+            ></v-select>
             </v-row>
         </v-card>
         <v-card class="col-4">
@@ -228,7 +236,6 @@ import axios from 'axios';
           return this.statusObject;
       }
     },
-
     mounted() {
       console.log(this.orderStatuses["Finished bake"]);
       this.loggedUser = this.$store.state.auth.user.data;
@@ -424,7 +431,7 @@ import axios from 'axios';
           this.updateOrders();
         },
         changeOrder(status){
-            this.filteredOrders = this.orders.filter((x) => x.status == status.id);
+            this.filteredOrders = this.orders.filter((x) => x.status == status);
         },
         re_open(order){
             console.log('Reopen order: ', order);

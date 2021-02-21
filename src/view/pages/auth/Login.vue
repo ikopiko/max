@@ -73,7 +73,7 @@
     </div>
 
     <div class="container" style="width: 400px;" v-if="pinAuth">
-        <v-alert dense type="info" v-if="pinError" dismissible>
+        <v-alert dense type="info" v-model="pinError" dismissible>
             The Pin You Entered is Not Correct
         </v-alert>
         <v-alert dense text type="success">
@@ -172,6 +172,7 @@
 </style>
 <script>
 import {mapState} from "vuex";
+import _ from 'lodash';
 
 import {
     LOGIN,
@@ -359,21 +360,9 @@ export default {
         ,
 
         pinChar(char) {
-            if(char==='clear') {
-                this.pinDecon=['-',
-                '-',
-                '-',
-                '-'];
-                this.enteredPin='';
-            }
-
-            else if(char==='enter') {
-                this.login(this.enteredPin);
-            }
-
-            else {
-                if(this.enteredPin.length===4) {
-                    this.login(this.enteredPin);
+            var loggedUser = this.$store.state.auth.user;
+            if(_.isEmpty(loggedUser)){
+                if(char==='clear') {
                     this.pinDecon=['-',
                     '-',
                     '-',
@@ -381,12 +370,30 @@ export default {
                     this.enteredPin='';
                 }
 
+                else if(char==='enter') {
+                    this.login(this.enteredPin);
+                }
+
                 else {
-                    var index=this.pinDecon.indexOf('-');
-                    this.pinDecon[index]=char;
-                    this.enteredPin=this.enteredPin+char;
-                    //alert('Number is: ' + this.enteredPin);
-                    this.$forceUpdate();
+                    if(this.enteredPin.length === 3) {
+                        var index=this.pinDecon.indexOf('-');
+                        this.pinDecon[index]=char;
+                        this.enteredPin=this.enteredPin+char;
+                        this.login(this.enteredPin);
+                        this.pinDecon=['-',
+                        '-',
+                        '-',
+                        '-'];
+                        this.enteredPin='';
+                    }
+
+                    else {
+                        var index=this.pinDecon.indexOf('-');
+                        this.pinDecon[index]=char;
+                        this.enteredPin=this.enteredPin+char;
+                        //alert('Number is: ' + this.enteredPin);
+                        this.$forceUpdate();
+                    }
                 }
             }
         },
@@ -409,7 +416,6 @@ export default {
                         localStorage.setItem("loggedUserData", JSON.stringify(response.data.data));
                         this.onPinSubmit(pin, mac);
                     }
-
                     else {
                         console.log('Login Failed', response);
                         this.pinError=true;

@@ -2,7 +2,10 @@
 /* eslint-disable */
 </script>
 <template>
-    <b-container>   
+    <b-container>  
+      <v-alert v-model="alert" color="pink" dark border="top" transition="scale-transition" dismissible>
+          Login Failed
+      </v-alert> 
           <b-row>
               <b-col cols="3">{{ pinUser.first_name  }} - {{ pinUser.role }} </b-col>
               <b-col cols="3">
@@ -19,15 +22,15 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('1')">1</div>
+              <div class="numChar" @click="pinCharClock('1')">1</div>
               <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('2')">2</div>
+              <div class="numChar" @click="pinCharClock('2')">2</div>
               <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('3')">3</div>
+              <div class="numChar" @click="pinCharClock('3')">3</div>
               <!-- &nbsp; -->
             </b-col>
             
@@ -43,15 +46,15 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('4')">4</div>
+              <div class="numChar" @click="pinCharClock('4')">4</div>
               <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('5')">5</div>
+              <div class="numChar" @click="pinCharClock('5')">5</div>
               <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('6')">6</div>
+              <div class="numChar" @click="pinCharClock('6')">6</div>
               <!-- &nbsp; -->
             </b-col>
             
@@ -65,15 +68,15 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('7')">7</div>
+              <div class="numChar" @click="pinCharClock('7')">7</div>
               <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('8')">8</div>
+              <div class="numChar" @click="pinCharClock('8')">8</div>
               <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('9')">9</div>
+              <div class="numChar" @click="pinCharClock('9')">9</div>
               <!-- &nbsp; -->
             </b-col>
 
@@ -87,15 +90,15 @@
           <b-row>
             <b-col cols="3">&nbsp;</b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('clear')">C</div>
+              <div class="numChar" @click="pinCharClock('clear')">C</div>
               <!-- &nbsp; -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('0')">0</div>
+              <div class="numChar" @click="pinCharClock('0')">0</div>
               <!-- &nbsp -->
             </b-col>
             <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinChar('enter')">E</div>
+              <div class="numChar" @click="pinCharClock('enter')">E</div>
             </b-col>
             
             <b-col cols="2">
@@ -127,6 +130,7 @@ export default {
   data() {
     return {
       loggedUser: {},
+      alert: false,
       enteredPin: '',
       pinDecon: ['-', '-', '-', '-'],
       date: Date().toLocaleString(),
@@ -140,7 +144,7 @@ export default {
   },
   mounted() {
         window.addEventListener("keypress", e=> {
-                this.logKey(e);
+                this.logKeyClock(e);
         });
   },
   computed: {
@@ -165,11 +169,11 @@ export default {
     this.loggedUser = this.$store.state.auth.user.data;
 
     window.addEventListener("keypress", e => {
-        this.logKey(e);
+        this.logKeyClock(e);
         });
   },
   methods: {
-        logKey(e) {
+        logKeyClock(e) {
             //alert(e.target);
             e=e || window.event;
             var charCode=(e.which) ? e.which: e.keyCode;
@@ -177,7 +181,7 @@ export default {
                 evt.preventDefault();
             }
             else {
-                return this.pinChar(e.key);
+                return this.pinCharClock(e.key);
             }
         },
         timeFoo(state){
@@ -227,19 +231,23 @@ export default {
         exitFoo(){
             alert('Exit Function');
         },
-        pinChar(char){
+        pinCharClock(char){
                 if(char === 'clear'){
-                    alert('Input Cleared');
+                    // alert('Input Cleared');
                     this.pinDecon = ['-', '-', '-', '-'];
                     this.enteredPin = '';
+                    this.pinUser = {};
                 }
                 else if(char === 'enter'){
-                    this.login(this.enteredPin);
+                    this.loginClock(this.enteredPin);
                 }
                 else {
-                    if(this.enteredPin.length === 4)
+                    if(this.enteredPin.length === 3)
                     {
-                        this.login(this.enteredPin);
+                        var index = this.pinDecon.indexOf('-');
+                        this.pinDecon[index] = char;
+                        this.enteredPin = this.enteredPin + char;
+                        this.loginClock(this.enteredPin);
                         this.pinDecon = ['-', '-', '-', '-'];
                         this.enteredPin = '';
                     }
@@ -251,7 +259,7 @@ export default {
                     }
                 }
             },
-            login(pin){
+            loginClock(pin){
                 var bodyFormData = new FormData();
                 bodyFormData.set("pin", pin);
                 axios.request({
@@ -268,21 +276,12 @@ export default {
 
                         }
                         else {
-                            alert('Login Failed');
+                            console.log('Login Failed');
+                            this.alert = true;
                         }
                     
                     });    
                 
-            },
-            logKey(e){
-            e = e || window.event;
-            var charCode = (e.which) ? e.which : e.keyCode;
-            if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-                evt.preventDefault();         
-            }
-            else {
-                return this.pinChar(e.key);
-            }
             },
     }
 };

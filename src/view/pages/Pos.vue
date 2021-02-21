@@ -3,10 +3,10 @@
 </script>
 
 <template>
-<div class="container container-12" data-app>
-    <!-- <v-alert :value="alert" color="pink" dark border="top" transition="scale-transition" dismissible>
-        Small Pizza Can't be A/B
-    </v-alert> -->
+<div class="container container-12 posiza" data-app>
+    <v-alert v-model="printError" color="pink" dark border="top" transition="scale-transition" dismissible>
+        Was unable to print!
+    </v-alert>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <div class="row">
@@ -15,19 +15,19 @@
                 <div class="left-1">
                     <div class="row" style="padding:10px 20px">
                         <div class="goBack">
-                            <i class="fa fa-arrow-left fa-3x iconColor " @click="goBack()"></i>
-                        </div>
-                        <div class="addCustomer" @click="telMsg()">
-                            <i class="fa fa-pencil-square-o fa-3x iconColor "></i>
+                            <i class="fa fa-arrow-left fa-4x iconColor " @click="goBack()"></i>
                         </div>
                         <div class="inputNumer">
                             <input class="tel"  v-model="telMessage" @keypress="isNumber($event)" />
                             <br />
                         </div>
+                        <div class="addCustomer" @click="telMsg()">
+                            <i class="fa fa-pencil-square-o fa-4x iconColor "></i>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="copyOrder">
-                            <i class="fa fa-files-o fa-3x iconColor " @click="copyLastOrder()"></i>
+                            <i class="fa fa-files-o fa-4x iconColor mx-2" @click="copyLastOrder()"></i>
                         </div>
                         <div class="adr">
                             <p>
@@ -43,12 +43,6 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-2">
-                            
-                            <!-- <button @click="clearOrder();">Clear</button> -->
-                        </div>
-                    </div>
                 </div>
 
                 <!-- <audio ref="audioElm" src="@assets/beep.wav"></audio> -->
@@ -797,32 +791,37 @@
         </v-card-title>
         <v-card-text>
           <v-container>
-            <v-row>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+              <v-row>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+                  
+                    <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
 
-                  <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" required></v-text-field>
+                    <v-radio-group v-model="customer.sex" label="Gender" row>
+                        <v-radio label="Male" value="male"></v-radio>
+                        <v-radio label="Female" value="female"></v-radio>
+                        <v-radio label="None" value="none"></v-radio>
+                    </v-radio-group>
 
-                  <v-radio-group v-model="customer.sex" label="Gender" row>
-                      <v-radio label="Male" value="male"></v-radio>
-                      <v-radio label="Female" value="female"></v-radio>
-                      <v-radio label="None" value="none"></v-radio>
-                  </v-radio-group>
-
-                  <v-row>
-                      <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
-                      </v-col>
-                  </v-row>
+                    <v-row>
+                        <v-col cols="12" sm="12">
+                            <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable ></v-text-field>
+                        </v-col>
+                    </v-row>
 
 
-                  <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                    <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
 
-                  <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
-                  <v-text-field v-model="customer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                    <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                    <v-text-field v-model="customer.driverDetails" class="my-2" label="Driver Details" clearable></v-text-field>
 
-              </v-form>
-            </v-row>
+                </v-form>
+              </v-row>
+              <v-row>
+                <div class="col" v-for="discount in discountTypes" :key="discount">
+                  <v-btn class="blue" large @click="crmDiscount(discount)">{{ discount.name }}</v-btn>
+                </div>
+              </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
@@ -1487,6 +1486,8 @@
                 >
                     <template v-slot:item="row">
                         <tr @click="onButtonClick(row.item)">
+                          <td>{{row.item.order_id}}</td>
+                          <td>{{row.item.order_data.deliveryMethod}}</td>
                           <td>{{row.item.order_data.customer.tel}}</td>
                           <td>{{row.item.order_data.customer.name}}</td>
                           <td>{{row.item.order_data.adress}}</td>
@@ -1542,7 +1543,8 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-btn color="red" elevation="1" x-large @click="print()">NO SALE</v-btn>
+              <v-btn color="green" elevation="1" x-large @click="print()">NO SALE</v-btn>
+              <v-btn color="blue" elevation="1" x-large >Drivers</v-btn>
             </v-row>
           </v-container>
         </v-card-text>
@@ -1778,7 +1780,16 @@ export default {
       orders: [],
       filteredOrders:[],
       selectedOrder: [],
+      discountTypes: [
+        { id : 0, name: 'Diplomat' },
+        { id : 1, name: 'Student' },
+        { id : 2, name: 'Team' },
+        { id : 3, name: 'Social' },
+        { id : 4, name: 'Corporate' },
+        { id : 5, name: 'Manager' },
+      ],
       settingHeaders: [
+        { text: "Service Type", value: "order_data.deliveryMethod" },
         { text: "Customer Phone", value: "order_data.customer.tel" },
         { text: "Customer Name", value: "order_data.customer.name" },
         { text: "Delivery Adress", value: "order_data.adress" },
@@ -1998,6 +2009,7 @@ export default {
         adress: '',
         tel: '',
         tel2: '',
+        discount: '',
         comment: '',
         comment2: ''
       },
@@ -2349,6 +2361,9 @@ export default {
     },
   },
   methods: {
+        crmDiscount(discount){
+          this.customer.discount = discount.name;
+        },
         arrowOrder(way){
           var ordersLength = this.filteredOrders.length;
           var orderPosition = null;
@@ -5036,7 +5051,6 @@ export default {
           data: bodyFormData,
         }).then((response) => {
             if(response.data.is_error){
-              alert("Error Printing Order");
               this.printError = true;
             }
             else{
@@ -5257,8 +5271,9 @@ export default {
       bodyFormData.set("address", this.customer.adress);
       bodyFormData.set("sex", this.customer.sex);
       bodyFormData.set("phone", this.customer.tel);
+      bodyFormData.set("discount", this.customer.discount);
+      bodyFormData.set("driverDetails", this.customer.driverDetails);
       bodyFormData.set("comment", this.customer.comment);
-      alert(TOKEN);
       axios
         .request({
           method: "post",
@@ -5288,6 +5303,8 @@ export default {
       bodyFormData.set("address", this.customer.adress);
       bodyFormData.set("sex", this.customer.sex);
       bodyFormData.set("phone", this.customer.tel);
+      bodyFormData.set("discount", this.customer.discount);
+      bodyFormData.set("driverDetails", this.customer.driverDetails);
       bodyFormData.set("comment", this.customer.comment);
       axios
         .request({
@@ -5361,9 +5378,11 @@ export default {
       
     },
    deliveryCustomer(){
-      if(this.curentCustomer.adress === '' || this.curentCustomer.tel === '')
-      {
+      if(this.curentCustomer.adress === '' || this.curentCustomer.tel === ''){
         alert('Adress and Phone Fields are required!');
+      }
+      else if(this.deliveryFeeVar == -1){
+        alert("You should select delivery fee!");
       }
       else {
         this.order.customer = this.curentCustomer;

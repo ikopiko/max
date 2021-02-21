@@ -10,7 +10,7 @@
             <v-list-item three-line>
                 <v-list-item-content>
                 <div class="overline mb-4">
-                    # {{ order.orderId }}
+                    # {{ order.order_id }}
                     <div style="float: right; text-align: right">
                     {{ order.date }}
                     </div>
