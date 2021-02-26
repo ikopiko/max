@@ -8,7 +8,11 @@
 
       <div class="container">
         <div class="row">
+          <v-btn @click="banksDetail = true">Banks History</v-btn>
+        </div>
+        <div class="row">
           <div class="col-lg-4 col-md-4">
+                    
                     <table style="width:100%">
                         <tbody>
                             <tr>
@@ -143,7 +147,7 @@
                     </table>
                     
                     <v-card v-for="till in tills" :key="till.id"  
-                        class=" my-3 cols" color="#FE9A53" light max-width="250">
+                        class=" my-3 cols" color="#FE9A53" light max-width="250" @click="tillInfo(till)">
                         <v-card-title>
                             <span class="title font-weight-bold" v-if="till.cash < 300">{{ till.cash + till.card }} Gel - {{ till.name }}</span>
                             <span class="title font-weight-bold" v-if="till.cash >= 300"><span style="color: red;" v-if="till.cash >= 650">DROP NEEDED {{ till.cash }} Gel </span>  - {{ till.name }}</span>
@@ -262,110 +266,212 @@
                             </tr>
                         </tbody>
                     </table>
+                    <span v-for="drv in drivers" :key="drv.id">
+                      <v-card v-if="drv.closed == null" class="mx-auto my-3" color="#46BDF2" light max-width="250" @click="driverInfo(drv)">
+                          <v-card-title>
+                              <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }} ₾ - {{ drv.username }}</span>
+                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} ₾</span>  - {{ till.name }}</span>
+                          </v-card-title>
 
-                    <v-card v-for="drv in drivers" :key="drv.id"  
-                        class="mx-auto my-3" color="#46BDF2" light max-width="250">
-                        <v-card-title>
-                            <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }} ₾ - {{ drv.username }}</span>
-                            <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} ₾</span>  - {{ till.name }}</span>
-                        </v-card-title>
+                          <v-card-actions>
+                              <v-list-item class="grow">
+                                
+                                  <v-list-item-avatar color="grey darken-3">
+                                      <i class="material-icons md-36">
+                                          face
+                                      </i>
+                                  </v-list-item-avatar>
+                                
+                                  <!-- <v-row align="center" justify="end">
+                                      <i class="material-icons md-36">
+                                          alarm
+                                      </i>
+                                      <span class="subheading mr-2">21:55</span>
+                                  </v-row> -->
+                              </v-list-item>
+                          </v-card-actions>
 
-                        <v-card-actions>
-                            <v-list-item class="grow">
-                              
-                                <v-list-item-avatar color="grey darken-3" @click="driverFoo(drv)">
-                                    <i class="material-icons md-36">
-                                        face
-                                    </i>
-                                </v-list-item-avatar>
-                               
-                                <!-- <v-row align="center" justify="end">
-                                    <i class="material-icons md-36">
-                                        alarm
-                                    </i>
-                                    <span class="subheading mr-2">21:55</span>
-                                </v-row> -->
-                            </v-list-item>
-                        </v-card-actions>
+                          <v-expand-transition v-if="driverID === drv.id">
+                              <v-card
+                                v-if="driverFormDialog"
+                                light max-width="400"
+                                class="transition-fast-in-fast-out v-card--reveal"
+                                style="height: 100%;"
+                              >
+                                <v-card-text>
+                                  <v-container>
+                                    <v-row>
+                                      <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                      >
+                                        <v-text-field
+                                          v-model="driverAmount"
+                                          label="Amount"
+                                        ></v-text-field>
+                                      </v-col>
+                                    </v-row>
+                                    <v-row>
+                                      <v-col
+                                        cols="12"
+                                        sm="12"
+                                        md="8"
+                                      >
+                                        <v-text-field
+                                          label="Optional Comment"
+                                        ></v-text-field>
+                                      </v-col>
+                                    </v-row>
+                                    <v-row>
+                                      <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                      >
+                                        <v-btn
+                                          elevation="2"
+                                          x-large
+                                          color="grey"
+                                          class="white--text"
+                                          @click="driverFormDialog = false"
+                                        >Close</v-btn>
+                                      </v-col>
+                                      <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                      >
+                                        <v-btn
+                                          elevation="2"
+                                          x-large
+                                          class="white--text"
+                                          color="green"
+                                          @click="addToDriver()"
+                                        >ADD</v-btn>
+                                      </v-col>
+                                      <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                      >
+                                        <v-btn
+                                          elevation="2"
+                                          color="blue"
+                                          x-large
+                                          class="white--text"
+                                          @click="dropFromDriver()"
+                                        >DROP</v-btn>
+                                      </v-col>
+                                    </v-row>
+                                  </v-container>
+                                </v-card-text>
+                              </v-card>
+                            </v-expand-transition>
+                      </v-card>
+                      <v-card v-if="drv.closed != null" class="mx-auto my-3" color="#EAE4D2" light max-width="250" @click="driverInfo(drv)">
+                          <v-card-title>
+                              <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }} ₾ - {{ drv.username }}</span>
+                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} ₾</span>  - {{ till.name }}</span>
+                          </v-card-title>
 
-                        <v-expand-transition v-if="driverID === drv.id">
-                            <v-card
-                              v-if="driverFormDialog"
-                              light max-width="400"
-                              class="transition-fast-in-fast-out v-card--reveal"
-                              style="height: 100%;"
-                            >
-                              <v-card-text>
-                                <v-container>
-                                  <v-row>
-                                    <v-col
-                                      cols="12"
-                                      sm="6"
-                                      md="4"
-                                    >
-                                      <v-text-field
-                                        v-model="driverAmount"
-                                        label="Amount"
-                                      ></v-text-field>
-                                    </v-col>
-                                  </v-row>
-                                  <v-row>
-                                    <v-col
-                                      cols="12"
-                                      sm="12"
-                                      md="8"
-                                    >
-                                      <v-text-field
-                                        label="Optional Comment"
-                                      ></v-text-field>
-                                    </v-col>
-                                  </v-row>
-                                  <v-row>
-                                    <v-col
-                                      cols="12"
-                                      sm="6"
-                                      md="4"
-                                    >
-                                      <v-btn
-                                        elevation="2"
-                                        x-large
-                                        color="grey"
-                                        class="white--text"
-                                        @click="driverFormDialog = false"
-                                      >Close</v-btn>
-                                    </v-col>
-                                    <v-col
-                                      cols="12"
-                                      sm="6"
-                                      md="4"
-                                    >
-                                      <v-btn
-                                        elevation="2"
-                                        x-large
-                                        class="white--text"
-                                        color="green"
-                                        @click="addToDriver()"
-                                      >ADD</v-btn>
-                                    </v-col>
-                                    <v-col
-                                      cols="12"
-                                      sm="6"
-                                      md="4"
-                                    >
-                                      <v-btn
-                                        elevation="2"
-                                        color="blue"
-                                        x-large
-                                        class="white--text"
-                                        @click="dropFromDriver()"
-                                      >DROP</v-btn>
-                                    </v-col>
-                                  </v-row>
-                                </v-container>
-                              </v-card-text>
-                            </v-card>
-                          </v-expand-transition>
-                    </v-card>
+                          <v-card-actions>
+                              <v-list-item class="grow">
+                                
+                                  <v-list-item-avatar color="grey darken-3">
+                                      <i class="material-icons md-36">
+                                          face
+                                      </i>
+                                  </v-list-item-avatar>
+                                
+                                  <!-- <v-row align="center" justify="end">
+                                      <i class="material-icons md-36">
+                                          alarm
+                                      </i>
+                                      <span class="subheading mr-2">21:55</span>
+                                  </v-row> -->
+                              </v-list-item>
+                          </v-card-actions>
+
+                          <v-expand-transition v-if="driverID === drv.id">
+                              <v-card
+                                v-if="driverFormDialog"
+                                light max-width="400"
+                                class="transition-fast-in-fast-out v-card--reveal"
+                                style="height: 100%;"
+                              >
+                                <v-card-text>
+                                  <v-container>
+                                    <v-row>
+                                      <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                      >
+                                        <v-text-field
+                                          v-model="driverAmount"
+                                          label="Amount"
+                                        ></v-text-field>
+                                      </v-col>
+                                    </v-row>
+                                    <v-row>
+                                      <v-col
+                                        cols="12"
+                                        sm="12"
+                                        md="8"
+                                      >
+                                        <v-text-field
+                                          label="Optional Comment"
+                                        ></v-text-field>
+                                      </v-col>
+                                    </v-row>
+                                    <v-row>
+                                      <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                      >
+                                        <v-btn
+                                          elevation="2"
+                                          x-large
+                                          color="grey"
+                                          class="white--text"
+                                          @click="driverFormDialog = false"
+                                        >Close</v-btn>
+                                      </v-col>
+                                      <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                      >
+                                        <v-btn
+                                          elevation="2"
+                                          x-large
+                                          class="white--text"
+                                          color="green"
+                                          @click="addToDriver()"
+                                        >ADD</v-btn>
+                                      </v-col>
+                                      <v-col
+                                        cols="12"
+                                        sm="6"
+                                        md="4"
+                                      >
+                                        <v-btn
+                                          elevation="2"
+                                          color="blue"
+                                          x-large
+                                          class="white--text"
+                                          @click="dropFromDriver()"
+                                        >DROP</v-btn>
+                                      </v-col>
+                                    </v-row>
+                                  </v-container>
+                                </v-card-text>
+                              </v-card>
+                            </v-expand-transition>
+                      </v-card>
+                    </span>
 
                 </div>
                 <!-- End of Dirvers -->
@@ -709,7 +815,337 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      
+
+      <v-dialog
+        v-model="tillCloseDialog"
+        max-width="700px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Close Day - {{ selectedPos.name }}</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="3" class="justify-end">{{ selectedPos.cash }}</v-col>
+                <v-col cols="3">Cash</v-col>
+                <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="3">{{ selectedPos.card }}</v-col>
+                <v-col cols="3">Card</v-col>
+                <v-col cols="6"><v-text-field label="Cad Amount" v-model="cardActual"></v-text-field></v-col>
+              </v-row>  
+              <v-row>
+                <v-col cols="3">{{ Number(selectedPos.card) + Number(selectedPos.cash) }}</v-col>
+                <v-col cols="3">Total</v-col>
+                <v-col cols="6"><v-text-field label="Total Amount" v-model="totalActual"></v-text-field></v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3">{{ safeGlovo }}</v-col>
+                <v-col cols="3">Glovo</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>
+              <v-row class="my-5">
+                <v-col cols="3">{{ safeWolt }}</v-col>
+                <v-col cols="3">Wolt</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="9">
+                  <v-text-field label="Note if short or over" v-model="safeCloseComment"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-text-field
+                    v-model="posAmount"
+                    label="Amount"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="12"
+                  md="8"
+                >
+                  <v-text-field
+                    label="Optional Comment"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    color="grey"
+                    class="white--text"
+                    @click="reconcilePos()"
+                  >Close</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                    @click="addToPos()"
+                  >ADD</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text"
+                    @click="dropFromPos(till)"
+                  >DROP</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog
+        v-model="driverCloseDialog"
+        max-width="700px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Close Day - {{ selectedDriver.username }}</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="3" class="justify-end">{{ selectedDriver.amount }}</v-col>
+                <v-col cols="3">Cash</v-col>
+                <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="3">{{ selectedDriver.card }}</v-col>
+                <v-col cols="3">Card</v-col>
+                <v-col cols="6"><v-text-field label="Cad Amount" v-model="cardActual"></v-text-field></v-col>
+              </v-row>  
+              <v-row>
+                <v-col cols="3">{{ Number(selectedDriver.amount) + Number(selectedDriver.card) }}</v-col>
+                <v-col cols="3">Total</v-col>
+                <v-col cols="6"><v-text-field label="Total Amount" v-model="totalActual"></v-text-field></v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3">{{ safeGlovo }}</v-col>
+                <v-col cols="3">Glovo</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>
+              <v-row class="my-5">
+                <v-col cols="3">{{ safeWolt }}</v-col>
+                <v-col cols="3">Wolt</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="9">
+                  <v-text-field label="Note if short or over" v-model="driverCloseComment"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-text-field
+                    v-model="driverAmount"
+                    label="Amount"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="12"
+                  md="8"
+                >
+                  <v-text-field
+                    label="Optional Comment"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    v-if="selectedDriver.closed == null"
+                    elevation="2"
+                    x-large
+                    color="grey"
+                    class="white--text"
+                    @click="reconcileDriver()"
+                  >Close</v-btn>
+                  <v-btn
+                    v-if="selectedDriver.closed != null"
+                    elevation="2"
+                    x-large
+                    disabled
+                    color="grey"
+                    class="white--text"
+                    @click="reconcileDriver()"
+                  >Close</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    v-if="selectedDriver.closed == null"
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                    @click="addToDriver()"
+                  >ADD</v-btn>
+                  <v-btn
+                    v-if="selectedDriver.closed != null"
+                    disabled
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                    @click="addToDriver()"
+                  >ADD</v-btn>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    v-if="selectedDriver.closed == null"
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text"
+                    @click="dropFromDriver()"
+                  >DROP</v-btn>
+                  <v-btn
+                    v-if="selectedDriver.closed != null"
+                    disabled
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text"
+                    @click="dropFromDriver()"
+                  >DROP</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog
+        v-model="banksDetail"
+        max-width="800px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Banks Details</span>
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="2">
+                <v-menu
+                  v-model="menu2"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="date"
+                      label="Select Date"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="date"
+                    @input="menu2 = false"
+                  ></v-date-picker>
+                </v-menu>
+              </v-col>
+              <v-col cols="8">
+
+                <template>
+                  <v-simple-table height="300px">
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th class="text-left">
+                            Name
+                          </th>
+                          <th class="text-left">
+                            Difference
+                          </th>
+                          <th class="text-left">
+                            Comment
+                          </th>
+                          <th class="text-left">
+                            Close Time
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="item in detailedInfo"
+                          :key="item"
+                        >
+                          <td v-if="item.driver_id == 0">{{ item.pos_name }}</td>
+                          <td v-if="item.pos_id == null">{{ item.username }}</td>
+                          <td>{{ item.difference }}</td>
+                          <td>{{ item.comment }}</td>
+                          <td>{{ item.created_at }}</td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </template>
+
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
     </v-app>
   </div>
 </template>
@@ -725,46 +1161,40 @@ export default {
   components: {},
   data() {
     return {
+      date: new Date().toISOString().substr(0, 10),
+      detailedInfo: [],
+      menu2: false,
       posID: '',
       driverID: '',
       selectedPos: [],
+      banksDetail: false,
+      pickedDate: null,
+      selectedDriver: {},
       safeCash: 800.6,
       safeCard: 1047.2,
       safeGlovo: 264.1,
       safeWolt: 494.1,
       safeTotal: null,
-      cashActual: 0,
-      cardActual: 0,
-      totalActual: 0,
+      cashActual: null,
+      cardActual: null,
+      totalActual: null,
       posAmount: 150,
-      driverAmount: 0,
+      driverAmount: 40,
       posComment: '',
-      safeAmount: 0,
+      safeAmount: null,
       safeCloseComment: '',
+      driverCloseComment: '',
       safeCloseDialog: false,
       safeFormDialog: false,
+      tillCloseDialog: false,
       tillFormDialog: false,
       driverFormDialog: false,
-      safe: {
-        name : 'Safe 1',
-        manager: 'Irakli Andguladze',
-        balance: 2067,
-      },
+      driverCloseDialog: false,
+      openedTill: {},
       safes: [],
-      till: { 
-        name : 'Till 1',
-        cashier: 'Irakli Andguladze',
-        balance: 458 
-      },
       tills: [],
       allPoses: [],
-      driver: { 
-        name : 'Driver 1',
-        driverName: 'Irakli Andguladze',
-        balance: 87
-      },
       drivers: [],
-      items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
         valid: true,
         name: '',
         amountRules: [
@@ -784,10 +1214,6 @@ export default {
       search: '',
       driverIndex: -1,
       balance: '',
-      // balanceRules: [
-      //   v => !!v || 'Balance is required',
-      //   v => (v && v.length <= 10) || 'Balance must be number',
-      // ],
       selectedItem: -1,
       items1: [
         { text: 'Pos Default Balance', icon: 'fact_check' },
@@ -798,7 +1224,6 @@ export default {
         { balance: 'driver', amount: 40 },
       ],
       driverList: [],
-      //driver: [],
       loading: true,
       options: {},
       branch: 'saburtalo',
@@ -866,6 +1291,8 @@ export default {
 
       this.getDrivers();
 
+      this.updateDetails(this.date);
+
       var bodyFormPosAll = new FormData();
       bodyFormPosAll.set("branch_id", this.branchId);
 
@@ -890,6 +1317,11 @@ export default {
   created () {
         this.timer = setInterval(this.getPoses, 5000)
     },
+  watch: {
+    date(val){
+      this.updateDetails(val);
+    }
+  },
   computed: {
       filteredOrdersPos() {
       this.orders.forEach(x => {
@@ -915,6 +1347,104 @@ export default {
     },
   },
   methods: {
+    updateDetails(date){
+      const TOKEN = this.loggedUser.token;
+      var bodyUpdate = new FormData();
+      bodyUpdate.set("day", date);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-close-day",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyUpdate,
+        })
+        .then((response) => {
+          console.log('Detaileeeeeed: ', response);
+            this.detailedInfo = response.data.data;
+        });
+    },
+    reconcilePos(){
+      var r = confirm("Close POS for a day?");
+      if(r == true){
+        var actualTotal = Number(this.cashActual) + Number(this.cardActual);
+        var posTotal = Number(this.selectedPos.cash) + Number(this.selectedPos.card);
+        if(this.safeCloseComment == '') {
+          this.safeCloseComment = 'Placeholder';
+        }
+        var diff = (posTotal - actualTotal).toFixed(2);
+        const TOKEN = this.loggedUser.token;
+        var reconcilePosForm = new FormData();
+        reconcilePosForm.set("driver_id", 0);
+        reconcilePosForm.set("pos_id", this.selectedPos.poses_id);
+        reconcilePosForm.set("comment", this.safeCloseComment);
+        reconcilePosForm.set("difference", diff);
+
+        axios
+          .request({
+            method: "post",
+            url:
+              "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/close-day",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: reconcilePosForm,
+          })
+          .then((response) => {
+            console.log('Reconcile Pos: ', response);
+            this.safeCloseComment = '';
+            this.cashActual = '';
+            this.cardActual = '';
+            this.totalActual = '';
+            this.tillCloseDialog = false;
+          });
+      }
+      else {
+
+      }
+    },
+    reconcileDriver(){
+      var r = confirm("Close Driver for a day?");
+      if(r == true){
+        var actualTotal = Number(this.cashActual) + Number(this.cardActual);
+        var driverTotal = Number(this.selectedDriver.amount) + Number(this.selectedDriver.card);
+        if(this.driverCloseComment == '') {
+          this.driverCloseComment = 'Placeholder';
+        }
+        var diff = (driverTotal - actualTotal).toFixed(2);
+        const TOKEN = this.loggedUser.token;
+        var reconcileDriverForm = new FormData();
+        reconcileDriverForm.set("driver_id", this.selectedDriver.id);
+        reconcileDriverForm.set("pos_id", 0);
+        reconcileDriverForm.set("comment", this.driverCloseComment);
+        reconcileDriverForm.set("difference", diff);
+
+        axios
+          .request({
+            method: "post",
+            url:
+              "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/close-day",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: reconcileDriverForm,
+          })
+          .then((response) => {
+            console.log('Reconcile Driver: ', response);
+            this.driverCloseComment = '';
+            this.cashActual = '';
+            this.cardActual = '';
+            this.totalActual = '';
+            this.driverCloseDialog = false;
+          });
+      }
+      else {
+
+      }
+    },
     getSafes(){
       const TOKEN = this.loggedUser.token;
       var bodyFormSafe = new FormData();
@@ -1005,6 +1535,7 @@ export default {
           
           console.log("Balance Change Response:  ", response);
           this.tillDialog = false;
+          this.tillCloseDialog = false;
           this.getSafes();
           this.getPoses();
           this.getDrivers();
@@ -1012,9 +1543,6 @@ export default {
         });
     },
     addToPos(){
-
-      
-
       const TOKEN = this.loggedUser.token;
       var bodyAddPosBalance = new FormData();
       bodyAddPosBalance.set("pos_id", this.posID);
@@ -1035,6 +1563,7 @@ export default {
           
           console.log("Balance Change Response:  ", response);
           this.tillFormDialog = false;
+          this.tillCloseDialog = false;
           this.getSafes();
           this.getPoses();
           this.getDrivers();
@@ -1071,6 +1600,7 @@ export default {
               
               console.log("Balance Change Response:  ", response);
               this.tillFormDialog = false;
+              this.tillCloseDialog = false;
               this.getSafes();
               this.getPoses();
               this.getDrivers();
@@ -1142,7 +1672,7 @@ export default {
       const TOKEN = this.loggedUser.token;
       var bodyAddDriverBalance = new FormData();
       bodyAddDriverBalance.set("amount", this.driverAmount);
-      bodyAddDriverBalance.set("driver_id", this.driverID);
+      bodyAddDriverBalance.set("driver_id", this.selectedDriver.id);
 
       axios
         .request({
@@ -1157,7 +1687,7 @@ export default {
         .then((response) => {
           
           console.log("Balance Change Response:  ", response);
-          this.driverFormDialog = false;
+          this.driverCloseDialog = false;
           this.getSafes();
           this.getPoses();
           this.getDrivers();
@@ -1168,7 +1698,7 @@ export default {
       const TOKEN = this.loggedUser.token;
       var bodyAddDriverBalance = new FormData();
       bodyAddDriverBalance.set("amount", - this.driverAmount);
-      bodyAddDriverBalance.set("driver_id", this.driverID);
+      bodyAddDriverBalance.set("driver_id", this.selectedDriver.id);
 
       axios
         .request({
@@ -1189,7 +1719,7 @@ export default {
           this.getDrivers();
           this.driverAmount = 0;
         });
-      this.driverFormDialog = false;
+      this.driverCloseDialog = false;
     },
     addSafe() {
       this.safeDialog = true;
@@ -1213,6 +1743,16 @@ export default {
     tillFoo(pos){
       this.tillFormDialog = true;
       this.posID = pos.poses_id;
+    },
+    tillInfo(pos){
+      this.selectedPos = pos;
+      this.tillCloseDialog = true;
+      this.posID = pos.poses_id;
+    },
+    driverInfo(driver){
+      this.selectedDriver = driver;
+      this.selectedDriver.card = 0;
+      this.driverCloseDialog = true;
     },
     driverFoo(driver){
       this.driverFormDialog = true;

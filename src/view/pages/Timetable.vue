@@ -2,12 +2,15 @@
 /* eslint-disable */
 </script>
 <template>
-    <b-container>  
+    <b-container data-app>  
       <v-alert v-model="alert" color="pink" dark border="top" transition="scale-transition" dismissible>
           Login Failed
-      </v-alert> 
+      </v-alert>
           <b-row>
-              <b-col cols="3">{{ pinUser.first_name  }} - {{ pinUser.role }} </b-col>
+            <v-btn v-if="loggedUser.role == 'admin'" @click="timeClockDetails = true">Timeclock Details</v-btn>
+          </b-row> 
+          <b-row>
+              <b-col cols="3" ><h2>{{ pinUser.first_name  }} - {{ pinUser.role }}</h2></b-col>
               <b-col cols="3">
                 <ul id="display">
                     <li v-for="num in pinSync" :key="num">{{ num }}</li>
@@ -110,7 +113,81 @@
             <b-col cols="2">&nbsp;</b-col>
           </b-row>
 
+      <v-dialog
+        v-model="timeClockDetails"
+        max-width="800px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Timeclock Details</span>
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="2">
+                <v-menu
+                  v-model="menu"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="date"
+                      label="Select Date"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="date"
+                    @input="menu = false"
+                  ></v-date-picker>
+                </v-menu>
+              </v-col>
+              <v-col cols="8">
+
+                <template>
+                  <v-simple-table height="300px">
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th class="text-left">
+                            Name
+                          </th>
+                          <th class="text-left">
+                            IN
+                          </th>
+                          <th class="text-left">
+                            OUT
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="item in filterDetails"
+                          :key="item.id"
+                        >
+                          <td>{{ item.username }}</td>
+                          <td>{{ item.inTime }}</td>
+                          <td>{{ item.outTime }}</td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </template>
+
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
     </b-container>
+    
 
 </template>
 
@@ -129,11 +206,15 @@ export default {
   },
   data() {
     return {
+      menu: false,
+      detailedInfo: [],
+      date: new Date().toISOString().substr(0, 10),
+      timeClockDetails: false,
       loggedUser: {},
+      loginActive: false,
       alert: false,
       enteredPin: '',
       pinDecon: ['-', '-', '-', '-'],
-      date: Date().toLocaleString(),
       loginToken: '',
       pinUser: {
           first_name: '',
@@ -153,6 +234,21 @@ export default {
         },
         timeNow () {
             return this.date;
+        },
+        filterDetails (){
+          this.detailedInfo.forEach(x => {
+              x.inTime = '';
+              x.outTime = '';
+              x.clockedindata.forEach(y => {
+                 if(y.state == "IN"){
+                   x.inTime = y.created_at;
+                 }
+                 else if(y.state == 'FINISH'){
+                   x.outTime = y.created_at;
+                 }
+              })
+          })
+          return this.detailedInfo;
         }
     },
     beforeRouteEnter (to, from, next) {
@@ -164,15 +260,44 @@ export default {
          vm.$router.push({name: "dashboard"});
        }
     });
-  },d() {
+  },mounted() {
     this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
     this.loggedUser = this.$store.state.auth.user.data;
+
+    this.updateData(this.date)
 
     window.addEventListener("keypress", e => {
         this.logKeyClock(e);
         });
   },
+  watch: {
+    date(val){
+      this.updateData(val);
+    },
+  },
   methods: {
+        updateData(date){
+          var dateString = date + " to "+ date;
+          const TOKEN = this.loggedUser.token;
+          var bodyUpdate = new FormData();
+          bodyUpdate.set("day", dateString);
+
+          axios
+            .request({
+              method: "post",
+              url:
+                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/clock-in-users",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+              data: bodyUpdate,
+            })
+            .then((response) => {
+              console.log('Detaileeeeeed: ', response);
+                this.detailedInfo = response.data.data;
+          });  
+          this.$forceUpdate();
+        },
         logKeyClock(e) {
             //alert(e.target);
             e=e || window.event;
@@ -185,26 +310,31 @@ export default {
             }
         },
         timeFoo(state){
-            var shortURL = 'http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/timesheet/';
-            if(state === 'in'){
-                var URL = shortURL + 'start';
-                alert('Work Day Started!');
-                this.sendTimesheet(URL);
+            if(this.loginActive){
+              var shortURL = 'http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/timesheet/';
+              if(state === 'in'){
+                  var URL = shortURL + 'start';
+                  alert('Work Day Started!');
+                  this.sendTimesheet(URL);
+              }
+              else if (state === 'out'){
+                  var URL = shortURL + 'finish';
+                  alert('Work Day Ended!');
+                  this.sendTimesheet(URL);
+              }
+              else if (state === 'br_start'){
+                  var URL = shortURL + 'start-break';
+                  alert('Break Started!');
+                  this.sendTimesheet(URL);
+              }
+              else if (state === 'br_end'){
+                  var URL = shortURL + 'end-break';
+                  alert('End Of Break!');
+                  this.sendTimesheet(URL);
+              }
             }
-            else if (state === 'out'){
-                var URL = shortURL + 'finish';
-                alert('Work Day Ended!');
-                this.sendTimesheet(URL);
-            }
-            else if (state === 'br_start'){
-                var URL = shortURL + 'start-break';
-                alert('Break Started!');
-                this.sendTimesheet(URL);
-            }
-            else if (state === 'br_end'){
-                var URL = shortURL + 'end-break';
-                alert('End Of Break!');
-                this.sendTimesheet(URL);
+            else {
+              alert("User isn't logged in");
             }
         },
         sendTimesheet(URL){
@@ -224,6 +354,7 @@ export default {
                 first_name: '',
                 role: '',
             };
+            this.loginActive = false;
         },
         correctionFoo(){
             alert('Correction Function');
@@ -273,6 +404,7 @@ export default {
                             console.log('------', response);
                             this.loginToken = response.data.data.token;
                             this.pinUser = response.data.data;
+                            this.loginActive = true;
 
                         }
                         else {

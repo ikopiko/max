@@ -14,18 +14,53 @@
             <div class="sidebar-content">
                 <div class="left-1">
                     <div class="row" style="padding:10px 20px">
+                      <v-col class="d-flex" cols="12">
                         <div class="goBack">
                             <i class="fa fa-arrow-left fa-4x iconColor " @click="goBack()"></i>
                         </div>
+                        <template>
+                          <v-autocomplete
+                            v-model="curentCustomer"
+                            :loading="loading"
+                            :items="items"
+                            item-text="name"
+                            item-value="id"
+                            :auto-select-first="true"
+                            :search-input.sync="search"
+                            class="mx-4"
+                            v-on:change="customerChecked = true"
+                            flat
+                            no-filter
+                            hide-no-data 
+                            return-object
+                          ></v-autocomplete>
+                        </template>
+                      </v-col>
                         <div class="inputNumer">
-                            <input class="tel"  v-model="telMessage" @keypress="isNumber($event)" />
+                            <!-- <input class="tel"  v-model="telMessage" @keypress="isNumber($event)" /> -->
+                            <!-- <v-col class="d-flex" cols="4">
+                              <v-autocomplete
+                                v-model="curentCustomer"
+                                :loading="loading"
+                                :items="items"
+                                item-text="name"
+                                item-value="id"
+                                :search-input.sync="search"
+                                class="mx-4"
+                                flat
+                                hide-no-data
+                                hide-details
+                                @keypress="isNumber($event)"
+                                return-object
+                              ></v-autocomplete>
+                            </v-col> -->
                             <br />
-                        </div>
-                        <div class="addCustomer" @click="telMsg()">
-                            <i class="fa fa-pencil-square-o fa-4x iconColor "></i>
                         </div>
                     </div>
                     <div class="row">
+                          <div class="addCustomer" @click="telMsg()">
+                              <i class="fa fa-pencil-square-o fa-4x iconColor "></i>
+                          </div>
                         <div class="copyOrder">
                             <i class="fa fa-files-o fa-4x iconColor mx-2" @click="copyLastOrder()"></i>
                         </div>
@@ -33,9 +68,9 @@
                             <p>
                                 <span>{{ curentCustomer.name }}</span>
                                 <br />
-                                <span>{{ curentCustomer.adress }}</span>
+                                <span>{{ curentCustomer.address }}</span>
                                 <br />
-                                <span>{{ curentCustomer.tel }}</span>
+                                <span>{{ curentCustomer.phone }}</span>
                                 <br />
                                 <span>{{ curentCustomer.comment }}</span>
                             </p>
@@ -368,7 +403,7 @@
                             </div>
                         </div>
                         <div class="row pizza p_binder" v-if="customerOrdersComponent">
-                            <orders :customerPhone="this.curentCustomer.tel" @onSelectedOrder="selectedOrder" />
+                            <orders :customerPhone="this.curentCustomer.phone" @onSelectedOrder="selectedOrder" />
                         </div>
                     </td>
                 </tr>
@@ -489,8 +524,8 @@
                     </div>
                 </div>
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="socialDiscount()">
-                        Social
+                    <div class="col-2 calcBtn blue" @click="managerDisc()">
+                        Manager
                     </div>
                     <div class="col-6 calcBtn red" @click="calcClear()">
                         <i class="material-icons md-36 clearItem">close</i>
@@ -505,7 +540,7 @@
                         Social
                     </div>
                     <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">
-                        PAY {{ totalPrice.toFixed(2) }}
+                        PAY {{ Number(totalPrice).toFixed(2) }}
                     </div>
                     <div class="col-2 calcBtn lightGreen" @click="calcCash(1)">1</div>
                     <div class="col-2">&nbsp;</div>
@@ -793,11 +828,11 @@
           <v-container>
               <v-row>
                 <v-form ref="form" v-model="valid" lazy-validation>
-                    <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+                    <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
                   
-                    <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+                    <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
 
-                    <v-radio-group v-model="customer.sex" label="Gender" row>
+                    <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
                         <v-radio label="Male" value="male"></v-radio>
                         <v-radio label="Female" value="female"></v-radio>
                         <v-radio label="None" value="none"></v-radio>
@@ -805,15 +840,15 @@
 
                     <v-row>
                         <v-col cols="12" sm="12">
-                            <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable ></v-text-field>
+                            <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="curentCustomer.address" clearable ></v-text-field>
                         </v-col>
                     </v-row>
 
 
-                    <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
 
-                    <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
-                    <v-text-field v-model="customer.driverDetails" class="my-2" label="Driver Details" clearable></v-text-field>
+                    <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                    <v-text-field v-model="curentCustomer.driverDetails" class="my-2" label="Driver Details" clearable></v-text-field>
 
                 </v-form>
               </v-row>
@@ -887,11 +922,11 @@
 
                                         <v-row>
                                             <v-col cols="12" sm="12">
-                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
                                             </v-col>
                                         </v-row>
 
-                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                                        <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
 
                                         <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1025,12 +1060,12 @@
 
                                         <v-row>
                                             <v-col cols="12" sm="12">
-                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
                                             </v-col>
                                         </v-row>
                                         <v-text-field v-model="invoice.id" @keypress="isNumber($event)" class="my-2" label="Company ID #" clearable></v-text-field>
 
-                                        <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                                        <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
                                     </v-form>
                                 </b-container>
                             </div>
@@ -1069,12 +1104,12 @@
 
                   <v-row>
                       <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
                       </v-col>
                   </v-row>
                   <v-text-field v-model="invoice.id" @keypress="isNumber($event)" class="my-2" label="Company ID #" clearable></v-text-field>
 
-                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
               </v-form>
             </v-row>
           </v-container>
@@ -1111,7 +1146,7 @@
             <v-row>
               <v-form ref="form" v-model="valid" lazy-validation>
                                         
-                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
                   
                   <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
 
@@ -1125,7 +1160,7 @@
 
                   <v-row>
                       <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
                       </v-col>
                   </v-row>
 
@@ -1169,7 +1204,7 @@
             <v-row>
               <v-form ref="form" v-model="valid" lazy-validation>
 
-                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
                   
                   <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
 
@@ -1183,7 +1218,7 @@
 
                   <v-row>
                       <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable></v-text-field>
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
                       </v-col>
                   </v-row>
 
@@ -1228,7 +1263,7 @@
               <b-container fluid>
                   <v-form ref="form" v-model="valid" lazy-validation>
                       
-                      <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                      <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
                       
                       <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
 
@@ -1242,7 +1277,7 @@
 
                       <v-row>
                           <v-col cols="12" sm="12">
-                              <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                              <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
                           </v-col>
                       </v-row>
 
@@ -1322,11 +1357,11 @@
 
                   <v-row>
                       <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable required></v-text-field>
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
                       </v-col>
                   </v-row>
 
-                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1377,7 +1412,7 @@
             <v-row>
               <v-form ref="form" v-model="valid" lazy-validation>
                                         
-                  <v-text-field v-model="curentCustomer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
                   
                   <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
@@ -1391,7 +1426,7 @@
 
                   <v-row>
                       <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.adress" clearable></v-text-field>
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
                       </v-col>
                   </v-row>
 
@@ -1478,7 +1513,7 @@
                   :headers="settingHeaders"
                   :items-per-page="itemsPerPage"
                   item-key="order_id"
-                  :loading="loading"
+                  :loading="loadingTable"
                   :single-select="singleSelect"
                   show-select
                   class="elevation-1"
@@ -1488,7 +1523,7 @@
                         <tr @click="onButtonClick(row.item)">
                           <td>{{row.item.order_id}}</td>
                           <td>{{row.item.order_data.deliveryMethod}}</td>
-                          <td>{{row.item.order_data.customer.tel}}</td>
+                          <td>{{row.item.order_data.customer.phone}}</td>
                           <td>{{row.item.order_data.customer.name}}</td>
                           <td>{{row.item.order_data.adress}}</td>
                           <td>{{row.item.order_data.items[0].name}}</td>
@@ -1577,7 +1612,7 @@
           <v-container>
             <v-row>
               <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                  <v-text-field v-model="customer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
                   
                   <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
@@ -1590,7 +1625,7 @@
                   <v-text-field v-model="customer.id" class="my-2" label="Diplomat #" ></v-text-field>
                   
 
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
 
                   <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
 
@@ -1632,7 +1667,7 @@
           <v-container>
             <v-row>
               <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                  <v-text-field v-model="customer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
                   
                   <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
@@ -1645,7 +1680,7 @@
                   <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
                   
 
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
+                  <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
 
                   <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
 
@@ -1688,7 +1723,7 @@
           <v-container>
             <v-row>
               <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="customer.tel" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                  <v-text-field v-model="customer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
                   
                   <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
@@ -1701,7 +1736,7 @@
                   <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
                   
 
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.adress" clearable required></v-text-field>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
 
                   <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
 
@@ -1727,6 +1762,33 @@
     </v-card>
     </v-dialog>
     <!-- End of student modal -->
+    <!-- Start of manager modal -->
+    <v-dialog
+        v-model="managerModal"
+        max-width="300px"
+      >
+        <v-card>
+          <v-card-title>
+            Manager Discount
+          </v-card-title>
+          <v-card-text>
+            <v-text-field v-if="managerAmount ==  ''" v-model="managerPercent" label="Manager Discount Percent" class="my-2" ></v-text-field>
+            <v-text-field v-if="managerAmount != ''" v-model="managerPercent" label="Manager Discount Percent" class="my-2" disabled ></v-text-field>
+            <v-text-field v-if="managerPercent == ''" v-model="managerAmount" label="Manager Discount Amount" class="my-2" ></v-text-field>
+            <v-text-field v-if="managerPercent != ''" v-model="managerAmount" label="Manager Discount Amount" class="my-2" disabled ></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="primary"
+              text
+              @click="applyManager()"
+            >
+              Apply Discount
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <!-- End of manager modal -->
 
 </div>
 </template>
@@ -1790,7 +1852,7 @@ export default {
       ],
       settingHeaders: [
         { text: "Service Type", value: "order_data.deliveryMethod" },
-        { text: "Customer Phone", value: "order_data.customer.tel" },
+        { text: "Customer Phone", value: "order_data.customer.phone" },
         { text: "Customer Name", value: "order_data.customer.name" },
         { text: "Delivery Adress", value: "order_data.adress" },
         { text: "Order Items", value: "order_data.items[0].name" },
@@ -1807,15 +1869,18 @@ export default {
           { text: "Source", value: "source" },
           { text: "Delivery Adress", value: "order_data.adress" },
           { text: "Customer Name", value: "order_data.customer.name" },
-          { text: "Customer Phone", value: "order_data.customer.tel" },
+          { text: "Customer Phone", value: "order_data.customer.phone" },
           { text: "Order Items", value: "order_data.items[0].name" },
         ],
       selected: [],
-      search: '',
+      loading: false,
+      search: null,
+      items: [],
+      select: null,
       page: 0,
       pageCount: 0,
       itemsPerPage: 5,
-      loading: true,
+      loadingTable: true,
       singleSelect: true,
       printError: false,
       valid: true,
@@ -1884,6 +1949,7 @@ export default {
       diplomatModal: false,
       studentModal: false,
       teamModal: false,
+      managerModal: false,
       calculatorModal: false,
       calculatorModal1: false,
       crmModal: false,
@@ -1909,6 +1975,10 @@ export default {
       diplomatDiscount: 18,
       employeeDiscount: 20,
       studentDiscount: 15,
+      managerPercent: '',
+      managerAmount: '',
+      managerAmountVar: false,
+      managerPercentVar: false,
       couponModal: false,
       ingProduct: {},
       ingHalfPizza: false,
@@ -2006,8 +2076,8 @@ export default {
         sex: '',
         email: '',
         dob: '',
-        adress: '',
-        tel: '',
+        address: '',
+        phone: '',
         tel2: '',
         discount: '',
         comment: '',
@@ -2020,8 +2090,8 @@ export default {
         sex: '',
         email: '',
         dob: '',
-        adress: '',
-        tel: '',
+        address: '',
+        phone: '',
         tel2: '',
         comment: '',
         comment2: ''
@@ -2193,9 +2263,13 @@ export default {
         var totalDisc = 0;
         
         //var toppingsPrice = 0;
-
-        var disc = (this.totalNet/100) * this.order.discount;
         
+        if(this.order.discountAmount == true){
+          var disc = Number(this.order.discount);          
+        } else {
+          var disc = (this.totalNet/100) * this.order.discount;
+        }
+
         return disc;
       },
     },
@@ -2214,16 +2288,16 @@ export default {
     },
 
     cusAdrsState(){
-         return this.curentCustomer.adress.length > 0 ? true : false;
+         return this.curentCustomer.address.length > 0 ? true : false;
     },
     telState() {
-        return this.customer.tel.length > 8 ? true : false
+        return this.customer.phone.length > 8 ? true : false
     },
     curTelState() {
-        return this.curentCustomer.tel.length > 8 ? true : false
+        return this.curentCustomer.phone.length > 8 ? true : false
     },
     curTel2State() {
-        return this.curentCustomer.tel2.length > 8 ? true : false
+        return this.curentCustomer.phone2.length > 8 ? true : false
     },
     totalTax() {
       return (this.totalNet.toFixed(1) / 100) * this.tax;
@@ -2232,7 +2306,11 @@ export default {
       cache: false,
       get() {
         var totalPrice = 0;
-        var disc = (this.totalNet/100) * this.order.discount;
+        if(this.order.discountAmount == true){
+          var disc = Number(this.order.discount);          
+        } else {
+          var disc = (this.totalNet/100) * this.order.discount;
+        }
         totalPrice = this.totalNet - disc;
         return totalPrice;
       },
@@ -2360,7 +2438,23 @@ export default {
 
     },
   },
+  watch: {
+      search (val) {
+        val && val != this.select && this.querySelections(val)
+      },
+    },
   methods: {
+    querySelections (v) {
+        this.checkUser(v);
+        this.loading = true;
+        console.log('Query: ', v);
+        // Simulated ajax query
+        setTimeout(() => {
+          this.items = this.searchResults;
+          this.loading = false;
+          return this.items;
+        }, 500)
+      },
         crmDiscount(discount){
           this.customer.discount = discount.name;
         },
@@ -2483,10 +2577,10 @@ export default {
             })
             .then((response) => {
               console.log('------', response.data.data);
-            if(this.telMessage.length === 9){
+            if(this.search.length === 9){
                 this.curentCustomer.name = response.data.data[0].name;
-                this.curentCustomer.tel = response.data.data[0].phone;
-                this.curentCustomer.adress = response.data.data[0].address;
+                this.curentCustomer.phone = response.data.data[0].phone;
+                this.curentCustomer.address = response.data.data[0].address;
                 this.lastOrder = response.data.data[0].last_order;
                 console.log('Current user last order: ', this.lastOrder);
                 this.curentCustomer.comment = response.data.data[0].comment;
@@ -2498,7 +2592,7 @@ export default {
             else {
                 this.searchResults = response.data.data;
                 console.log('Search Results: ',this.searchResults);
-                this.customer.tel = this.telMessage;
+                this.customer.phone = this.telMessage;
             }
 
             });
@@ -2528,8 +2622,8 @@ export default {
 
           } else {
 
-              if(this.telMessage.length >= 3){
-                this.checkUser(this.telMessage);
+              if(this.search.length >= 3){
+                this.checkUser(this.search);
               }
 
             return true;
@@ -5108,8 +5202,8 @@ export default {
         sex: '',
         email: '',
         dob: '',
-        adress: '',
-        tel: '',
+        address: '',
+        phone: '',
         tel2: '',
         comment: '',
         comment2: ''
@@ -5137,7 +5231,7 @@ export default {
       console.log('Play Sound!');
     },
     telMsg() {
-      this.customer.tel = this.telMessage;
+      this.customer.phone = this.telMessage;
       this.crmModal = true;
     },
     futureOrder() {
@@ -5152,6 +5246,8 @@ export default {
       }
       else {
         this.order = this.lastOrder;
+        this.order.id = '';
+        this.order.orderId = '';
         if(this.order.deliveryMethod == 'Walk In'){
           this.walkinActive('no');
         } else if(this.order.deliveryMethod == 'Take Out'){
@@ -5259,6 +5355,26 @@ export default {
         this.order.discountInfo = this.discountInfo;
         this.order.discountName = 'Team';
     },
+    managerDisc(){
+      this.managerModal = true;
+    },
+    applyManager(){
+      if(this.managerPercent != ''){
+        this.order.discount = this.managerPercent;
+        this.order.discountName = 'Manager';
+        this.order.discountAmount = false;
+        this.managerPercentVar = true;
+      } else if(this.managerAmount != '') {
+        this.order.discount = this.managerAmount;
+        this.order.discountName = 'Manager';
+        this.order.discountAmount = true;
+        this.managerAmountVar = true;
+        
+      } else if(this.managerAmount == '' && this.managerPercent == ''){
+        alert('No Discount Selected');
+      }
+      this.$forceUpdate();
+    },
     doneDisc(){
         this.order.discount = this.cashInput; 
     },
@@ -5267,13 +5383,13 @@ export default {
 
       const TOKEN = localStorage.getItem("TOKEN");
       var bodyFormData = new FormData();
-      bodyFormData.set("name", this.customer.name);
-      bodyFormData.set("address", this.customer.adress);
-      bodyFormData.set("sex", this.customer.sex);
-      bodyFormData.set("phone", this.customer.tel);
-      bodyFormData.set("discount", this.customer.discount);
-      bodyFormData.set("driverDetails", this.customer.driverDetails);
-      bodyFormData.set("comment", this.customer.comment);
+      bodyFormData.set("name", this.curentCustomer.name);
+      bodyFormData.set("address", this.curentCustomer.address);
+      bodyFormData.set("sex", this.curentCustomer.sex);
+      bodyFormData.set("phone", this.curentCustomer.phone);
+      bodyFormData.set("discount", this.curentCustomer.discount);
+      bodyFormData.set("driverDetails", this.curentCustomer.driverDetails);
+      bodyFormData.set("comment", this.curentCustomer.comment);
       axios
         .request({
           method: "post",
@@ -5287,6 +5403,7 @@ export default {
         })
         .then((response) => {
           console.log('------', response.data);
+          console.log('CUSTOMER: ', this.customer);
 
          this.curentCustomer = this.customer;
          console.log('Current Customer from API: ', this.curentCustomer);
@@ -5299,13 +5416,13 @@ export default {
     editCustomer(){
       const TOKEN = localStorage.getItem("TOKEN");
       var bodyFormData = new FormData();
-      bodyFormData.set("name", this.customer.name);
-      bodyFormData.set("address", this.customer.adress);
-      bodyFormData.set("sex", this.customer.sex);
-      bodyFormData.set("phone", this.customer.tel);
-      bodyFormData.set("discount", this.customer.discount);
-      bodyFormData.set("driverDetails", this.customer.driverDetails);
-      bodyFormData.set("comment", this.customer.comment);
+      bodyFormData.set("name", this.curentCustomer.name);
+      bodyFormData.set("address", this.curentCustomer.address);
+      bodyFormData.set("sex", this.curentCustomer.sex);
+      bodyFormData.set("phone", this.curentCustomer.phone);
+      bodyFormData.set("discount", this.curentCustomer.discount);
+      bodyFormData.set("driverDetails", this.curentCustomer.driverDetails);
+      bodyFormData.set("comment", this.curentCustomer.comment);
       axios
         .request({
           method: "post",
@@ -5333,11 +5450,11 @@ export default {
         this.order.deliveryFee = fee;
         this.deliveryFeeModal = false;
         this.order.customer = this.curentCustomer;
-        this.order.adress = this.curentCustomer.adress;
+        this.order.adress = this.curentCustomer.address;
       }
       else {
         this.order.customer = this.curentCustomer;
-        this.order.adress = this.curentCustomer.adress;
+        this.order.adress = this.curentCustomer.address;
         this.deliveryFeeModal = false;
       }
       
@@ -5350,7 +5467,7 @@ export default {
       else {
         this.order.deliveryFee = 'other';
         this.order.customer = this.curentCustomer;
-        this.order.adress = this.curentCustomer.adress;
+        this.order.adress = this.curentCustomer.address;
         console.log('Order View: ', this.order);
       }
     },
@@ -5363,7 +5480,7 @@ export default {
       
     },
     takeoutCustomer(){
-      if(this.curentCustomer.tel === '')
+      if(this.curentCustomer.phone === '')
       {
         alert('Phone field is empty!');
       }
@@ -5378,7 +5495,7 @@ export default {
       
     },
    deliveryCustomer(){
-      if(this.curentCustomer.adress === '' || this.curentCustomer.tel === ''){
+      if(this.curentCustomer.address === '' || this.curentCustomer.phone === ''){
         alert('Adress and Phone Fields are required!');
       }
       else if(this.deliveryFeeVar == -1){
@@ -5395,7 +5512,7 @@ export default {
       }
     },
    glovoCustomer(payment){
-     if(this.curentCustomer.tel === '')
+     if(this.curentCustomer.phone === '')
       {
         alert('Phone Field is required!');
       }
@@ -5413,7 +5530,7 @@ export default {
       this.payLater();
     },
    woltCustomer(){
-     if(this.curentCustomer.tel === '' || this.curentCustomer.name === '')
+     if(this.curentCustomer.phone === '' || this.curentCustomer.name === '')
       {
         alert('Phone And Name Fields are required!');
       }

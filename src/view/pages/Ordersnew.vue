@@ -59,11 +59,6 @@
                                     <v-icon dark>open_in_new</v-icon>
                                 </v-btn>
                               </td>
-                              <td>
-                                <v-btn class="mx-2" fab dark small color="green" @click="driverSingle(row.item)">
-                                    <v-icon dark>open_in_new</v-icon>
-                                </v-btn>
-                              </td>
                             </tr>
                         </template>
                     </v-data-table>

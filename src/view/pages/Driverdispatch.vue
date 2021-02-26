@@ -61,13 +61,6 @@
                   </v-card-title>
                   <v-card-title> {{ driver.amount }} GEL </v-card-title>
               </v-card>
-              <v-card 
-                class="mx-auto my-3" color="#46BDF2" light max-width="200">
-                  <v-card-title class="title font-weight-bold">
-                    Irakli Andguladze
-                  </v-card-title>
-                  <v-card-title> 112.3 GEL </v-card-title>
-              </v-card>
             </div>
             <div class="col-md-2 col-sm-12" >
               Drivers Out
@@ -77,13 +70,6 @@
                     {{ driver.username }}
                   </v-card-title>
                   <v-card-title> {{ driver.amount }} GEL </v-card-title>
-              </v-card>
-              <v-card 
-                class="mx-auto my-3" color="#A6A2B0" light max-width="200">
-                  <v-card-title class="title font-weight-bold">
-                    Irakli Andguladze
-                  </v-card-title>
-                  <v-card-title> 112.3 GEL </v-card-title>
               </v-card>
             </div>
             
@@ -246,7 +232,29 @@ export default {
       this.selectedDriver = driver;
     },
     driverIn(){
-      alert('Driver is in - Order Status Change to Finished (status 7)');
+      
+      const TOKEN = this.loggedUser.token;
+      var bodyFormData = new FormData();
+      bodyFormData.set("driver_id", this.selectedDriver.id);
+
+      axios
+      .request({
+          method: "post",
+          url:
+          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/finish-order",
+          //  Combine order and driver LINK HERE!!!!,
+          headers: {
+          Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormData,
+      })
+      .then((response) => {
+          console.log("Driver in: ", response.data.data);
+          this.getOrders();
+          this.getDrivers();
+          this.$forceUpdate();
+      });
+      
     },
         onButtonClick(item) {
             this.activeRow = item.id;
