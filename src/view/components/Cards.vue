@@ -485,7 +485,6 @@ export default {
 
     updateStatus(status, orderId){
       var bodyFormData = new FormData();
-      //alert(product.id);
       bodyFormData.set("order_status", status);
       bodyFormData.set("id", orderId);
       axios

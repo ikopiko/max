@@ -23,17 +23,16 @@
           </b-row>
           
           <b-row>
-            <b-col cols="3">&nbsp;</b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('1')">1</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('1')">1</div>
               <!-- &nbsp; -->
             </b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('2')">2</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('2')">2</div>
               <!-- &nbsp; -->
             </b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('3')">3</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('3')">3</div>
               <!-- &nbsp; -->
             </b-col>
             
@@ -47,17 +46,16 @@
           </b-row>
             <br />
           <b-row>
-            <b-col cols="3">&nbsp;</b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('4')">4</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('4')">4</div>
               <!-- &nbsp; -->
             </b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('5')">5</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('5')">5</div>
               <!-- &nbsp; -->
             </b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('6')">6</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('6')">6</div>
               <!-- &nbsp; -->
             </b-col>
             
@@ -69,17 +67,16 @@
           </b-row>
             <br />
           <b-row>
-            <b-col cols="3">&nbsp;</b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('7')">7</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('7')">7</div>
               <!-- &nbsp; -->
             </b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('8')">8</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('8')">8</div>
               <!-- &nbsp; -->
             </b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('9')">9</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('9')">9</div>
               <!-- &nbsp; -->
             </b-col>
 
@@ -91,17 +88,16 @@
           </b-row>
             <br />
           <b-row>
-            <b-col cols="3">&nbsp;</b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('clear')">C</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('clear')">C</div>
               <!-- &nbsp; -->
             </b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('0')">0</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('0')">0</div>
               <!-- &nbsp -->
             </b-col>
-            <b-col cols="1" class="text-center" align-v="center">
-              <div class="numChar" @click="pinCharClock('enter')">E</div>
+            <b-col cols="2" class="text-center" align-v="center">
+              <div class="pinBtn" @click="pinCharClock('enter')">E</div>
             </b-col>
             
             <b-col cols="2">
@@ -294,7 +290,7 @@ export default {
             })
             .then((response) => {
               console.log('Detaileeeeeed: ', response);
-                this.detailedInfo = response.data.data;
+              this.detailedInfo = response.data.data;
           });  
           this.$forceUpdate();
         },

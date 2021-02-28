@@ -2,252 +2,301 @@
 /* eslint-disable */
 </script>
 <template>
-  <div id="app" class="container">
+  <v-container data-app>
+    <template>
+        <v-menu
+            v-model="menu"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+        >
+            <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+                v-model="date"
+                label="Select Date"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+            ></v-text-field>
+            </template>
+            <v-date-picker
+            v-model="date"
+            @input="menu = false"
+            ></v-date-picker>
+        </v-menu>
+        <v-tabs
+              v-model="tab"
+              fixed-tabs
+            background-color="primary"
+              dark      
+            >
+              <v-tab
+                  v-for="content in tabItems"
+                  :key="content.tab"
+                  @click="getTab(content)"
+              >
+                  {{ content.tab }}
+              </v-tab>
 
-    <div class="row">
-        <!-- Order List -->
-        <div class="col-9">    
-                <template>
-                <v-card>
-                    <v-card-title>
-                    Your Orders
-                    <v-spacer></v-spacer>
-                    <v-text-field
-                        v-model="search"
-                        append-icon="mdi-magnify"
-                        label="Search"
-                        single-line
-                    ></v-text-field>
-                    </v-card-title>
-
-                    <v-card-text>
-                      <v-data-table
-                      v-model="selectedOrder"
-                      :search="search"
-                      :headers="headers"
-                      :items="filteredOrdersDelivery"
-                      :items-per-page="itemsPerPage"
-                      item-key="order_id"
-                      :single-select="singleSelect"
-                      show-select
-                      :loading = "loading"
-                      class="elevation-1"
-                      @page-count="pageCount = $event"
-                      >
-                        <template v-slot:item="row">
-                          <tr>
-                            <td>{{row.item.id}}</td>
-                            <td>{{row.item.branch}}</td>
-                            <td>{{row.item.order_data.deliveryMethod}}</td>
-                            <td>{{row.item.order_data.adress}}</td>
-                            <td>{{row.item.order_data.customer.name}}</td>
-                            <td>{{row.item.order_data.customer.tel}}</td>
-                            <td>{{row.item.order_data.items[0].name}}...</td>
-                            <td>
-                                <v-btn class="mx-2" fab dark small color="green" @click="onButtonClick(row.item)">
-                                    <v-icon dark>read_more</v-icon>
-                                </v-btn>
-                            </td>
-                          </tr>
+            <v-tabs-items v-model="tab">
+            <v-tab-item
+                v-for="content in tabItems"
+                :key="content.tab"
+            >
+                    <v-simple-table>
+                        <template v-slot:default>
+                        <thead>
+                            <tr>
+                            <th class="text-left">
+                                Order ID
+                            </th>
+                            <th class="text-left">
+                                Address
+                            </th>
+                            <th class="text-left">
+                                Customer
+                            </th>
+                            <th class="text-left">
+                                Total
+                            </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                            v-for="order in filteredOrders"
+                            :key="order.id"
+                            @click="selectOrder(order)"
+                            >
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.order_data.customer.address }}</td>
+                            <td>{{ order.order_data.customer.name }}</td>
+                            <td>{{ order.order_data.totalPrice }}</td>
+                            </tr>
+                        </tbody>
                         </template>
-                      </v-data-table>
-                    </v-card-text>
-                    
-                </v-card>
-              </template>
-        </div>
-        <!-- End of Order List -->
+                    </v-simple-table>
+          </v-tab-item>
+          </v-tabs-items>
+          </v-tabs>
+    </template>
+    <v-dialog
+      v-model="dialog"
+      width="500"
+      v-if="isOrders"
+    >
+      <v-card>
+        <v-card-title class="headline grey lighten-2">
+          {{ selectedItem.id }} 
+          <br>
+            Total : {{ selectedItem.order_data.totalPrice }}
+        </v-card-title>
 
-        <!-- Driver Info -->
-        <div class="col-3">
-          <v-card>
-            <v-card-title>Driver Information</v-card-title>
-            
-            <v-card-text>
-              <v-row
-                align="center"
-                class="mx-0"
-              >
-                <v-rating
-                  :value="4.5"
-                  color="amber"
-                  dense
-                  half-increments
-                  readonly
-                  size="14"
-                ></v-rating>
+        <v-card-text>
+            {{ selectedItem.order_data.customer.name }}
+            <br>
+            {{ selectedItem.order_data.customer.address }}
+            <br>
+            {{ selectedItem.order_data.customer.phone }}
+            <br>
+          <v-simple-table>
+            <template v-slot:default>
+            <thead>
+                <tr>
+                <th class="text-left">
+                    QTY
+                </th>
+                <th class="text-left">
+                    Name
+                </th>
+                <th class="text-left">
+                    Total Price
+                </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                v-for="item in selectedItem.order_data.items"
+                :key="item"
+                >
+                <td>{{ item.qty }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.totalPrice }}</td>
+                </tr>
+            </tbody>
+            </template>
+        </v-simple-table>
+        </v-card-text>
 
-                <div class="grey--text ml-4">
-                  4.5 (413)
-                </div>
-              </v-row>
+        <v-divider></v-divider>
 
-              <div class="my-4 subtitle-1">
-                Ronny's Saburtalo
-              </div>
-
-              <div>Comments about driver</div>
-            </v-card-text>
-
-          </v-card>
-
-        <!-- End of Driver Info -->
-        <!-- Last Transactions -->
-          <v-card class="my-5">
-            <v-card-title>Last Transaction</v-card-title>
-            
-            <v-card-text>
-              <v-row
-                align="center"
-                class="mx-0"
-                v-for="(last, index) in orders.splice(0,5)" :key="index"
-              >
-                <div class="grey--text ml-4">
-                # {{ last.id }}
-                <br>
-                 + {{ last.order_data.totalPrice }} {{ last.order_data.paymentType }}
-                  <v-btn class="mx-5" fab dark x-small color="green" @click="onButtonClick(last)">
-                      <v-icon dark>read_more</v-icon>
-                  </v-btn>
-                <hr width="200">
-                </div>
-              </v-row>
-            </v-card-text>
-          </v-card>
-          <!-- End of Last Transactions -->
-          
-        </div>
-    </div>
-    
-  </div>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            class="green mx-2"
+            large
+            text
+            @click="payOrder('cash')"
+          >
+            Cash
+          </v-btn>
+          <v-btn
+            class="blue mx-2"
+            large
+            text
+            @click="payOrder('card')"
+          >
+            Card
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-container>
 </template>
 
 <script>
-/* eslint-disable */
-import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
-import axios from "axios";
+import axios from 'axios'
 
 export default {
-  name: "dashboard",
+  name: "Home",
   components: {},
-  data() {
-    return {
-      rating: 0,
-      loggedUser: {},
-      orders: [],
-      lastOrders: [],
-      deliveryOrders: [],
-      dialog: false,
-      singleSelect: true,
-      loading: true,
-      driverLoad: true,
-      selectedOrder: {},
-      selectedDelivery: {},
-      driverIndex: -1,
-      driverList: [],
-      driver: [],
-      search: '',
-      branch: 'saburtalo',
-      status: 6,
-      deliveryStatus: 6,
-      page: 0,
-      pageCount: 0,
-      itemsPerPage: 5,
-      headers: [
-        {
-          text: "ORDER ID",
-          align: "start",
-          sortable: false,
-          value: "order_id",
-        },
-        { text: "Branch", value: "branch" },
-        { text: "Order Type", value: "order_data.deliveryMethod" },
-        { text: "Delivery Adress", value: "order_data.adress" },
-        { text: "Customer Name", value: "order_data.customer.name" },
-        { text: "Customer Phone", value: "order_data.customer.tel" },
-        { text: "Order Items", value: "order_data.items[0].name" },
-      ],  
-    };
-  },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-       if (vm.$store.state.auth.user.data.role !== "admin" || vm.$store.state.auth.user.data.role !== "posaccess") {
-         vm.$router.push({name: "driver"});
-       }
-       else {
-         vm.$router.push({name: "dashboard"});
-       }
-    });
-  },
+  data () {
+      return {
+        menu: false,
+        date: new Date().toISOString().substr(0, 10),
+        customer: {'name': '', 'address' : '', 'phone' : ''},
+        isOrders: false,
+        dialog: false,
+        today: null,
+        selectedItem: {},
+        selectedOrder: {},
+        driverOrders: [],
+        filteredOrders: [],
+        tab: 0,
+        tabItems: [
+          { tab: 'Ongoing Delivery', content: 'delivery' },
+          { tab: 'Finished Orders', content: 'finished' },
+        ],
+      }
+    },
+    computed: {
+        // filteredOrdersComputed() {
+        //     this.driverOrders.forEach(x => {
+        //         x.order_data = JSON.parse(x.order_data);
+        //     });
+        //     this.filteredOrders.forEach(x => {
+        //         x.order_data = JSON.parse(x.order_data);
+        //     });
+        // }
+    },
   mounted() {
-    this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
-    this.loggedUser = this.$store.state.auth.user.data;
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
 
-    const TOKEN = this.loggedUser.token;
-    var bodyFormData = new FormData();
-    bodyFormData.set("branch", this.branch);
-    bodyFormData.set("status", this.status);
-
-    axios
-      .request({
-        method: "post",
-        url:
-          "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
-        headers: {
-          Authorization: "Bearer " + TOKEN,
-        },
-        data: bodyFormData,
-      })
-      .then((response) => {
-        this.orders = response.data.data;
-
-        this.loading = false;
-        console.log("orders data: ", response.data.data);
-      });
-
+        this.today = yyyy + '-' + mm + '-' + dd + ' to '+ yyyy + '-' + mm + '-' + dd;
+        this.updateDriverOrders(this.date);
   },
-  computed: {
-
-      filteredOrdersDelivery() {
-        this.orders.forEach( (x) => {
-            x.order_data = JSON.parse(x.order_data);
-        });
-        return this.orders.filter((x) => x.source === "pos" && x.order_data.deliveryMethod === "Delivery");
-        // return this.orders;
-      },
+  watch: {
+    date(val){
+      this.updateDriverOrders(val);
+    },
   },
   methods: {
-    onButtonClick(item) {
-      this.$router.push({name: 'driversingle', params: {orderProp: item} });
-    },
-    deliveryProcess(){
+    selectOrder(item){
+        this.selectedItem = item;
         this.dialog = true;
-        const TOKEN = this.loggedUser.token;
-        var bodyFormData = new FormData();
-        bodyFormData.set("branch", this.branch);
-        bodyFormData.set("status", this.deliveryStatus);
+    },
+    getTab(tab){
+        if(tab.content === 'delivery') {
+            this.filteredOrders = this.driverOrders.filter((x) => x.status == '6');
+        }
+        else if(tab.content === 'finished') {
+            this.filteredOrders = this.driverOrders.filter((x) => x.status == '7');
+        }
+        this.$forceUpdate();
+    },
+    payOrder(type){
+        
+        this.selectedOrder = this.selectedItem.order_data;
+        this.selectedOrder.id = this.selectedItem.id;
+        this.selectedOrder.paymentType = type;
 
+        const TOKEN = localStorage.getItem("TOKEN");
+        axios.request({
+            method: 'post',
+            url: 'http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/paid',
+            headers: { 
+              'Authorization': 'Bearer '+TOKEN, 
+            },
+            data: { order: this.selectedOrder },
+          })
+          .then(response => {
+            console.log('paid order: ', response);
+            if(response.status === 200 ){
+              this.updateStatus('finished', this.selectedOrder.id);
+            } 
+            
+          });
+    },
+    updateDriverOrders(date) {
+        var dateString = date + ' to '+ date;
+        var bodyFormData=new FormData();
+        bodyFormData.set("driver_id", '23');
+        bodyFormData.set("day", dateString);
+
+        axios.request( {
+                method: "post",
+                url: "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/orders-by-driver",
+                headers: {
+                  Authorization: "Bearer TodKtEjTTqj8HBVGmQPE3gW5TFY",
+                },
+                data: bodyFormData,
+            }
+
+        ) .then((response)=> {
+                if(!response.data.is_error) {
+                  console.log('Driver Data: ', response);
+                  this.driverOrders = response.data.data;
+                  this.driverOrders.forEach(x => {
+                    x.order_data = JSON.parse(x.order_data);
+                });
+                  this.filteredOrders = this.driverOrders.filter((x) => x.status == '6');
+                  this.isOrders = true;
+                }
+                else {
+                    console.log('No driver data: ', response);
+                }
+
+            }
+
+        );
+        this.$forceUpdate();
+    },
+    updateStatus(status, orderId){
+        const TOKEN = localStorage.getItem("TOKEN");
+        var bodyFormData = new FormData();
+        bodyFormData.set("order_status", status);
+        bodyFormData.set("id", orderId);
         axios
-        .request({
+            .request({
             method: "post",
             url:
-            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
+                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/change-status",
             headers: {
-            Authorization: "Bearer " + TOKEN,
+                Authorization: "Bearer " + TOKEN,
             },
             data: bodyFormData,
-        })
-        .then((response) => {
-          if(response.is_error){
-              alert(response.error_message);
-          }
-            this.deliveryOrders = response.data.data;
-            this.deliveryOrders.forEach(x => {
-                x.order_data = JSON.parse(x.order_data);
-            }); 
-
-            console.log("orders data: ", response.data.data);
-        });
+            })
+            .then((response) => {
+            console.log("Order Status Changed!", response);
+            this.updateDriverOrders(this.date);
+            this.$forceUpdate();
+            this.dialog = false;
+            });
     },
   },
 };

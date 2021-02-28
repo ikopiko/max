@@ -49,11 +49,11 @@ const router = new Router({
           name: "driverdispatch",
           component: () => import("@/view/pages/Driverdispatch.vue")
         },
-        {
-          path: "/driver",
-          name: "driver",
-          component: () => import("@/view/pages/Driver.vue")
-        },
+        // {
+        //   path: "/driver",
+        //   name: "driver",
+        //   component: () => import("@/view/pages/Driver.vue")
+        // },
         {
           path: "/banks",
           name: "banks",
@@ -465,6 +465,11 @@ const router = new Router({
       path: "/pos",
       name: "pos",
       component: () => import("@/view/pages/Pos.vue")
+    },
+    {
+      path: "/driver",
+      name: "driver",
+      component: () => import("@/view/pages/Driver.vue")
     },
     {
       path: "/error",
