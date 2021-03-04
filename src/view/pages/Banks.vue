@@ -242,7 +242,7 @@
                                         color="blue"
                                         x-large
                                         class="white--text"
-                                        @click="dropFromPos(till)"
+                                        @click="dropFromPos()"
                                       >DROP</v-btn>
                                     </v-col>
                                   </v-row>
@@ -918,7 +918,7 @@
                     color="blue"
                     x-large
                     class="white--text"
-                    @click="dropFromPos(till)"
+                    @click="dropFromPos()"
                   >DROP</v-btn>
                 </v-col>
               </v-row>
@@ -1570,12 +1570,12 @@ export default {
           this.posAmount = 0;
         });
     },
-    dropFromPos(pos){
+    dropFromPos(){
 
       //this.posAmount = -Math.abs(this.posAmount);
       //alert(this.posAmount)
 
-      if(pos.cash < this.posAmount){
+      if(this.selectedPos.cash < this.posAmount){
           alert('There is not that amount of money in POS');
       }
       else {
@@ -1638,9 +1638,7 @@ export default {
 
     },
     dropFromSafe(){
-      
-      console.log("Tired of this shit, need vacation");
-            
+                  
       const TOKEN = this.loggedUser.token;
       var bodyDropSafeBalance = new FormData();
       bodyDropSafeBalance.set("amount", - this.posAmount);

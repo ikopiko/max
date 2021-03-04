@@ -139,8 +139,8 @@
                                         <span>0.00</span>
                                     </div>
                                     <!-- <strong v-if="item.cuts == 1"> {{ item.cutsCount }} Cut</strong> -->
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'original'">
-                                        <span>{{ item.sauce }} Sauce</span>
+                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'sauce'">
+                                        <span>{{ item.sauce }}</span>
                                         <span>0.00</span>
                                     </div>
 
@@ -287,8 +287,8 @@
                                         <span>{{ item.crust }} Crust</span>
                                         <span>0.00</span>
                                     </div>
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'original'">
-                                        <span>{{ item.sauce }} Sauce</span>
+                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'sauce'">
+                                        <span>{{ item.sauce }}</span>
                                         <span>0.00</span>
                                     </div>
 
@@ -828,6 +828,8 @@
           <v-container>
               <v-row>
                 <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+
                     <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
                   
                     <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
@@ -845,10 +847,11 @@
                     </v-row>
 
 
-                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
 
                     <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
-                    <v-text-field v-model="curentCustomer.driverDetails" class="my-2" label="Driver Details" clearable></v-text-field>
+                    <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                    
+                    <v-text-field v-if="diplomatCrm" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
 
                 </v-form>
               </v-row>
@@ -1288,26 +1291,26 @@
                   </v-form>
               </b-container>
               <div class="row">
-                <div class="col feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 0 }" @click="activateFee(0)">
-                    1.5 GEL 0-3.9 Km
+                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 0 }" @click="activateFee(0)">
+                    1.5 GEL
                 </div>
-                <div class="col feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 1 }" @click="activateFee(1)">
-                    3 GEL 4-9.9 Km
+                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 1 }" @click="activateFee(1)">
+                    3 GEL
                 </div>
-                <div class="col feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 2 }" @click="activateFee(2)">
-                    4.5 GEL 10-15.9 Km
+                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 2 }" @click="activateFee(2)">
+                    4.5 GEL
                 </div>
-                <div class="col feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 3 }" @click="activateFee(3)">
-                    6 GEL 16-19.9 Km
+                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 3 }" @click="activateFee(3)">
+                    6 GEL
                 </div>
-                <div class="col feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 4 }" @click="activateFee(4)">
-                    7 GEL 20-27.9 Km
+                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 4 }" @click="activateFee(4)">
+                    7 GEL
                 </div>
-                <div class="col feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 5 }" @click="activateFee(5)">
-                    10 GEL 28 Km +
+                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 5 }" @click="activateFee(5)">
+                    10 GEL
                 </div>
-                <div class="col feeClass" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 6 }" @click="activateFee(6)">
-                    13.5 GEL Rustavi
+                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 6 }" @click="activateFee(6)">
+                    13.5 GEL
                 </div>
               </div>
             </v-row>
@@ -1578,21 +1581,16 @@
         <v-card-text>
           <v-container>
             <v-row>
+              <v-btn color="blue" elevation="1" x-large  @click="$router.push({path: 'timetable'})">Timeclock</v-btn>
+              <v-btn color="blue" elevation="1" x-large @click="$router.push({path: 'max'})">KDS</v-btn>
+              <v-btn color="blue" elevation="1" x-large @click="$router.push({path: 'orders'})">Orders</v-btn>
+              <v-btn color="blue" elevation="1" x-large @click="$router.push({path: 'driverdispatch'})">Drivers</v-btn>
               <v-btn color="green" elevation="1" x-large @click="print()">NO SALE</v-btn>
-              <v-btn color="blue" elevation="1" x-large >Drivers</v-btn>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            text
-            x-large
-            @click="functionModal = false"
-          >
-            Close
-          </v-btn>
         </v-card-actions>
     </v-card>
     </v-dialog>
@@ -1842,6 +1840,7 @@ export default {
       orders: [],
       filteredOrders:[],
       selectedOrder: [],
+      diplomatCrm: false,
       discountTypes: [
         { id : 0, name: 'Diplomat' },
         { id : 1, name: 'Student' },
@@ -2004,7 +2003,7 @@ export default {
       takeoutActiveVar: false,
       deliveryActiveVar: false,
       promiseActiveVar: false,
-      curSauce: 'original',
+      curSauce: 'sauce',
       activeSmall: false,
       activeMedium: true,
       activeXl: false,
@@ -2062,7 +2061,7 @@ export default {
         price: 0,
         totalPrice: 0,
         crust: "original",
-        sauce: "original",
+        sauce: "sauce",
         custom: "no",
         size: "m",
         defaultToppings: [],
@@ -2442,8 +2441,26 @@ export default {
       search (val) {
         val && val != this.select && this.querySelections(val)
       },
+      curentCustomer(customer) {
+        deep: true,
+
+        this.changeDisc();
+      }
     },
   methods: {
+    changeDisc(){
+      if(this.curentCustomer.discount == 'Diplomat'){
+        this.diplomatDisc();
+      } else if(this.curentCustomer.discount == 'Student'){
+        this.studentDisc();
+      } else if(this.curentCustomer.discount == 'Team'){
+        this.employeeDisc();
+      }
+    },
+    customerPhone(val) {
+      this.curentCustomer.phone = val;
+      alert('123' + val);
+    },
     querySelections (v) {
         this.checkUser(v);
         this.loading = true;
@@ -2456,7 +2473,10 @@ export default {
         }, 500)
       },
         crmDiscount(discount){
-          this.customer.discount = discount.name;
+          if(discount.name == 'Diplomat'){
+            this.diplomatCrm = true;
+          }
+          this.curentCustomer.discount = discount.name;
         },
         arrowOrder(way){
           var ordersLength = this.filteredOrders.length;
@@ -2593,15 +2613,15 @@ export default {
                 this.searchResults = response.data.data;
                 console.log('Search Results: ',this.searchResults);
                 this.customer.phone = this.telMessage;
+                this.lastOrder = response.data.data[0].last_order;
             }
 
             });
           console.log('Curent User Data: ', this.curentCustomer);
+            if(this.searchResults.length === 0){
+              this.curentCustomer.phone = this.search;
+            }
         },
-
-        logout() {
-          alert('Loggout');
-      },
       customerOrders(){
         this.settingModal = false;
         this.customerOrdersComponent = true;
@@ -2670,14 +2690,14 @@ export default {
           console.log(" Product Recipe ", this.getRecipe(product));
           this.customPizza = {
             crust: "original",
-            sauce: "original",
+            sauce: "sauce",
             size: "",
             price: 0,
             name: "",
             custom: "yes",
             toppings: [],
-            half1: { name: "", sauce: "original", defaultToppings: [], toppings: [] },
-            half2: { name: "", sauce: "original", defaultToppings: [], toppings: [] },
+            half1: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
+            half2: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
             toppingChange: 0,
             qty: 0,
           };
@@ -2724,7 +2744,7 @@ export default {
             name: "",
             price: 0,
             crust: "original",
-            sauce: "original",
+            sauce: "sauce",
             size: "m",
             defaultToppings: [],
             toppings: [],
@@ -3381,21 +3401,21 @@ export default {
       console.log("Pizza array: ", this.pizza);
     },
     addSauce(sauce) {
-      if(sauce === 'original'){
-        sauce = 'less';
-        this.curSauce = 'less';
+      if(sauce === 'sauce'){
+        sauce = 'less sauce';
+        this.curSauce = 'less sauce';
       }
-      else if(sauce === 'less'){
-        sauce = 'heavy';
-        this.curSauce = 'heavy';
+      else if(sauce === 'less sauce'){
+        sauce = 'more sauce';
+        this.curSauce = 'more sauce';
       }
-      else if(sauce === 'heavy'){
-        sauce = 'no';
-        this.curSauce = 'no';
+      else if(sauce === 'more sauce'){
+        sauce = 'no sauce';
+        this.curSauce = 'no sauce';
       }
-      else if(sauce === 'no'){
-        sauce = 'original';
-        this.curSauce = 'original';
+      else if(sauce === 'no sauce'){
+        sauce = 'sauce';
+        this.curSauce = 'sauce';
       }
 
       // this.curSauce = sauce;
@@ -4233,7 +4253,7 @@ export default {
                 t.count += 1;
               }
               if (topping.id === 24) {
-                  t.price = 1.8;
+                  t.price = 2.2;
                   this.sticks.totalPrice = this.sticks.price + t.price * t.count;
               } else {
                   t.price = 0.0;
@@ -4244,7 +4264,7 @@ export default {
           });
           if (!matched) {
             if (topping.id === 24) {
-                topping.price = 1.8;
+                topping.price = 2.2;
                 this.sticks.totalPrice = this.sticks.price + topping.price;
             } else {
                 topping.price = 0.0;
@@ -4762,7 +4782,7 @@ export default {
       this.crustVar = false;
       this.halfPizzaCounter = 1;
       this.globalQuantity = 1;
-      this.curSauce = 'original';
+      this.curSauce = 'sauce';
       this.halfPizzaAll = false;
       this.showIngredients = false;
       this.activeMedium = true;
@@ -5390,6 +5410,7 @@ export default {
       bodyFormData.set("discount", this.curentCustomer.discount);
       bodyFormData.set("driverDetails", this.curentCustomer.driverDetails);
       bodyFormData.set("comment", this.curentCustomer.comment);
+      bodyFormData.set("comment2", this.curentCustomer.comment2);
       axios
         .request({
           method: "post",
@@ -5423,6 +5444,7 @@ export default {
       bodyFormData.set("discount", this.curentCustomer.discount);
       bodyFormData.set("driverDetails", this.curentCustomer.driverDetails);
       bodyFormData.set("comment", this.curentCustomer.comment);
+      bodyFormData.set("comment2", this.curentCustomer.comment2);
       axios
         .request({
           method: "post",

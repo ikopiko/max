@@ -4,6 +4,11 @@
 <template>
   <v-container data-app>
     <template>
+      <v-row>
+        <v-col cols="2">Driver</v-col>
+        <v-col cols="8">&nbsp;</v-col>
+        <v-col cols="2"> {{ driverFee }} Fee</v-col>
+      </v-row>
         <v-menu
             v-model="menu"
             :close-on-content-click="false"
@@ -73,7 +78,7 @@
                             <td>{{ order.id }}</td>
                             <td>{{ order.order_data.customer.address }}</td>
                             <td>{{ order.order_data.customer.name }}</td>
-                            <td>{{ order.order_data.totalPrice }}</td>
+                            <td>{{ Number(order.order_data.totalPrice).toFixed(2) }}</td>
                             </tr>
                         </tbody>
                         </template>
@@ -101,6 +106,7 @@
             <br>
             {{ selectedItem.order_data.customer.phone }}
             <br>
+            {{ selectedItem.order_data.comment2 }}
           <v-simple-table>
             <template v-slot:default>
             <thead>
@@ -120,10 +126,11 @@
                 <tr
                 v-for="item in selectedItem.order_data.items"
                 :key="item"
+                
                 >
-                <td>{{ item.qty }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.totalPrice }}</td>
+                <td style="font-size: 18px !important;">{{ item.qty }}</td>
+                <td style="font-size: 18px !important;">{{ item.name }}</td>
+                <td style="font-size: 18px !important;">{{ item.totalPrice }}</td>
                 </tr>
             </tbody>
             </template>
@@ -135,6 +142,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
+            v-if="!finishedVar"
             class="green mx-2"
             large
             text
@@ -143,12 +151,21 @@
             Cash
           </v-btn>
           <v-btn
+            v-if="!finishedVar"
             class="blue mx-2"
             large
             text
             @click="payOrder('card')"
           >
             Card
+          </v-btn>
+          <v-btn
+            v-if="finishedVar"
+            large
+            text
+            @click="dialog = false"
+          >
+            Close
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -169,11 +186,13 @@ export default {
         customer: {'name': '', 'address' : '', 'phone' : ''},
         isOrders: false,
         dialog: false,
+        driverBalance: 0,
         today: null,
         selectedItem: {},
         selectedOrder: {},
         driverOrders: [],
         filteredOrders: [],
+        finishedVar: false,
         tab: 0,
         tabItems: [
           { tab: 'Ongoing Delivery', content: 'delivery' },
@@ -182,14 +201,16 @@ export default {
       }
     },
     computed: {
-        // filteredOrdersComputed() {
-        //     this.driverOrders.forEach(x => {
-        //         x.order_data = JSON.parse(x.order_data);
-        //     });
-        //     this.filteredOrders.forEach(x => {
-        //         x.order_data = JSON.parse(x.order_data);
-        //     });
-        // }
+        driverFee() {
+            var fee = 0;
+            this.driverOrders.forEach(x => {
+              if(x.status == 7){
+                fee = fee + x.order_data.deliveryFee;
+              }
+            });
+            this.driverBalance = fee;
+            return fee;
+        },
     },
   mounted() {
         var today = new Date();
@@ -205,6 +226,9 @@ export default {
       this.updateDriverOrders(val);
     },
   },
+  created () {
+        this.timer = setInterval(this.driverBalance = this.driverFee, 1000)
+    },
   methods: {
     selectOrder(item){
         this.selectedItem = item;
@@ -213,9 +237,11 @@ export default {
     getTab(tab){
         if(tab.content === 'delivery') {
             this.filteredOrders = this.driverOrders.filter((x) => x.status == '6');
+            this.finishedVar = false;
         }
         else if(tab.content === 'finished') {
             this.filteredOrders = this.driverOrders.filter((x) => x.status == '7');
+            this.finishedVar = true;
         }
         this.$forceUpdate();
     },

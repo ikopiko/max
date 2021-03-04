@@ -7,7 +7,7 @@
       <div class="ingredients">
         <div class="row right-2">
 
-            <div class="col-md-2 p-0 paddingClear" > <div class="w-b-1 pink font-weight-bold" @click="sendSauce(sauce)">{{ sauce }} Sauce</div> </div>
+            <div class="col-md-2 p-0 paddingClear" > <div class="w-b-1 pink font-weight-bold" @click="sendSauce(sauce)">{{ sauce }}</div> </div>
 
             <div class="col-md-2 p-0 paddingClear" v-for="ingredient in filteredIngredients" :key="ingredient.id" >
                 <div class="w-b-1 square font-weight-bold" @click="sendIngredient(ingredient)"
@@ -75,7 +75,6 @@ export default {
           })
           .then(response => {
             this.ingredients = response.data;
-            console.log('Hello', this.ingredients);
           });
           
   },

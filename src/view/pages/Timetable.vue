@@ -100,13 +100,13 @@
               <div class="pinBtn" @click="pinCharClock('enter')">E</div>
             </b-col>
             
-            <b-col cols="2">
+            <!-- <b-col cols="2">
                 <div class="correction" @click="correctionFoo()">Correction</div>
             </b-col>
             <b-col cols="2">
                 <div class="exit" @click="exitFoo()">EXIT</div>
-            </b-col>
-            <b-col cols="2">&nbsp;</b-col>
+            </b-col> -->
+            <b-col cols="6">&nbsp;</b-col>
           </b-row>
 
       <v-dialog

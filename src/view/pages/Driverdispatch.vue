@@ -296,14 +296,11 @@ export default {
             })
             .then((response) => {
               if(response.is_error){
-                  alert(response.error_message);
+                  console.log(response.error_message);
               }
                 this.orders = response.data.data;
                 console.log("orders data: ", response.data.data);
             });
-
-            this.getOrders();
-            this.getDrivers();
 
             var statusFormData = new FormData();
             statusFormData.set("order_status", '6');
@@ -328,12 +325,14 @@ export default {
                   console.log("Order Status Changed Correctly: ", response.data);
                 }
             });
-            this.getOrders();
-            this.getDrivers();
+            
           }
           else{
             alert('This order is not ready to go or driver is out!');
           }
+          this.getOrders();
+          this.getDrivers();
+          this.$forceUpdate();
     },
 
     deliveryProcess(){

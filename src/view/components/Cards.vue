@@ -71,9 +71,9 @@
                     </div>
                     <div
                       class="d-flex justify-content-between deletedTopping"
-                      v-if="item.sauce != 'original'"
+                      v-if="item.sauce != 'sauce'"
                     >
-                      <span>{{ item.sauce }} Sauce</span>
+                      <span>{{ item.sauce }}</span>
                       <span>0.00</span>
                     </div>
                     <div
@@ -228,9 +228,9 @@
                   </div>
                   <div
                     class="d-flex justify-content-between deletedTopping"
-                    v-if="item.sauce != 'original'"
+                    v-if="item.sauce != 'sauce'"
                   >
-                    <span>{{ item.sauce }} Sauce</span>
+                    <span>{{ item.sauce }}</span>
                     <span>0.00</span>
                   </div>
 
@@ -247,9 +247,9 @@
                     </div>
                     <div
                       class="d-flex justify-content-between deletedTopping"
-                      v-if="item.half1.sauce != 'original'"
+                      v-if="item.half1.sauce != 'sauce'"
                     >
-                      <span>{{ item.half1.sauce }} Sauce</span>
+                      <span>{{ item.half1.sauce }}</span>
                       <span>0.00</span>
                     </div>
                     <div
@@ -297,9 +297,9 @@
                     </div>
                     <div
                       class="d-flex justify-content-between deletedTopping"
-                      v-if="item.half2.sauce != 'original'"
+                      v-if="item.half2.sauce != 'sauce'"
                     >
-                      <span>{{ item.half2.sauce }} Sauce</span>
+                      <span>{{ item.half2.sauce }}</span>
                       <span>0.00</span>
                     </div>
                     <div
