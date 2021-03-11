@@ -19,16 +19,10 @@
                                 <td style="width:50%">
                                     <h3>Safe</h3>
                                 </td>
-                                <td style="width:50%; text-align:right">
-                                  <i class="material-icons md-36" @click="addSafe()" v-if="safes.length === 0">add</i>
-                                </td>
-                                <td style="width:50%; text-align:right">
-                                  <i class="material-icons md-36" @click="closeSafe()" >flaky</i>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
-                    <v-card v-for="safe in safes" :key="safe"
+                    <v-card v-for="safe in safes" :key="safe" @click="safeCloseDialog = true"
                         class="mx-auto my-3" color="#BAE1BE" light max-width="200">
                         <v-card-title>
                             <span class="title font-weight-bold">{{ safe.amount }} GEL</span>
@@ -37,7 +31,7 @@
                         <v-card-actions>
                             <v-list-item class="grow">
                                 <v-list-item-avatar color="grey darken-3">
-                                    <i class="material-icons md-36" @click="safeFormDialog = true">
+                                    <i class="material-icons md-36" >
                                         face
                                     </i>
                                 </v-list-item-avatar>
@@ -743,73 +737,64 @@
 
       <v-dialog
         v-model="safeCloseDialog"
-        max-width="700px"
+        max-width="500px"
       >
         <v-card>
           <v-card-title>
-            <span class="headline">Close Day - Safe</span>
+            <span class="headline">Close Day - Safe - {{ safes[0].amount }} GEL</span>
           </v-card-title>
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col cols="3" class="justify-end">{{ safeCash }}</v-col>
-                <v-col cols="3">Cash</v-col>
-                <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
-              </v-row>
-
-              <v-row>
-                <v-col cols="3">{{ safeCard }}</v-col>
-                <v-col cols="3">Card</v-col>
-                <v-col cols="6"><v-text-field label="Cad Amount" v-model="cardActual"></v-text-field></v-col>
-              </v-row>  
-              <v-row>
-                <v-col cols="3">{{ safeTotal }}</v-col>
-                <v-col cols="3">Total</v-col>
-                <v-col cols="6"><v-text-field label="Total Amount" v-model="totalActual"></v-text-field></v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="3">{{ safeGlovo }}</v-col>
-                <v-col cols="3">Glovo</v-col>
-                <v-col cols="6">&nbsp;</v-col>
-              </v-row>
-              <v-row class="my-5">
-                <v-col cols="3">{{ safeWolt }}</v-col>
-                <v-col cols="3">Wolt</v-col>
-                <v-col cols="6">&nbsp;</v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="9">
-                  <v-text-field label="Note if short or over" v-model="safeCloseComment"></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-btn
-                    elevation="2"
-                    x-large
-                    color="grey"
-                    class="white--text"
-                    @click="safeCloseDialog = false"
-                  >Close</v-btn>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-btn
-                    elevation="2"
-                    x-large
-                    class="white--text"
-                    color="green"
-                    @click="addPos()"
-                  >ADD</v-btn>
-                </v-col>
+               <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  label="Amount"
+                  v-model="safeAmount"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="12"
+                sm="12"
+                md="8"
+              >
+                <v-text-field
+                  label="Optional Comment"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-btn
+                  elevation="2"
+                  x-large
+                  class="white--text"
+                  color="green"
+                  @click="addToSafe()"
+                >ADD</v-btn>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-btn
+                  elevation="2"
+                  color="blue"
+                  x-large
+                  class="white--text"
+                  @click="dropFromSafe()"
+                >DROP</v-btn>
+              </v-col>
               </v-row>
             </v-container>
           </v-card-text>
@@ -1180,8 +1165,8 @@ export default {
       totalActual: null,
       posAmount: 150,
       driverAmount: 40,
-      posComment: '',
       safeAmount: null,
+      posComment: '',
       safeCloseComment: '',
       driverCloseComment: '',
       safeCloseDialog: false,
@@ -1613,7 +1598,7 @@ export default {
       
       const TOKEN = this.loggedUser.token;
       var bodyAddSafeBalance = new FormData();
-      bodyAddSafeBalance.set("amount", this.posAmount);
+      bodyAddSafeBalance.set("amount", this.safeAmount);
       bodyAddSafeBalance.set("safe_id", this.safes[0].id);
 
       axios
@@ -1629,11 +1614,11 @@ export default {
         .then((response) => {
           
           console.log("Balance Change Response:  ", response);
-          this.safeFormDialog = false;
+          this.safeCloseDialog = false;
           this.getSafes();
           this.getPoses();
           this.getDrivers();
-          this.posAmount = 0;
+          this.safeAmount = null;
         });
 
     },
@@ -1641,7 +1626,7 @@ export default {
                   
       const TOKEN = this.loggedUser.token;
       var bodyDropSafeBalance = new FormData();
-      bodyDropSafeBalance.set("amount", - this.posAmount);
+      bodyDropSafeBalance.set("amount", - this.safeAmount);
       bodyDropSafeBalance.set("safe_id", this.safes[0].id);
 
       axios
@@ -1657,11 +1642,11 @@ export default {
         .then((response) => {
           
           console.log("Balance Change Response:  ", response);
-          this.safeFormDialog = false;
+          this.safeCloseDialog = false;
           this.getSafes();
           this.getPoses();
           this.getDrivers();
-          this.posAmount = 0;
+          this.safeAmount = null;
         });
 
     },

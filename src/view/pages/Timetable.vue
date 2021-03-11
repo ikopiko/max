@@ -160,6 +160,9 @@
                           <th class="text-left">
                             OUT
                           </th>
+                          <th class="text-left">
+                            Hours
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -170,6 +173,7 @@
                           <td>{{ item.username }}</td>
                           <td>{{ item.inTime }}</td>
                           <td>{{ item.outTime }}</td>
+                          <td>{{ item.workHours }}</td>
                         </tr>
                       </tbody>
                     </template>
@@ -235,6 +239,7 @@ export default {
           this.detailedInfo.forEach(x => {
               x.inTime = '';
               x.outTime = '';
+              x.workHours = '';
               x.clockedindata.forEach(y => {
                  if(y.state == "IN"){
                    x.inTime = y.created_at;
@@ -242,6 +247,11 @@ export default {
                  else if(y.state == 'FINISH'){
                    x.outTime = y.created_at;
                  }
+              const inDate = new Date(x.inTime);
+              const outDate = new Date(x.outTime);
+
+              const diffTime = outDate.getTime() - inDate.getTime();
+              x.workHours = (diffTime / 3600000).toFixed(2);
               })
           })
           return this.detailedInfo;

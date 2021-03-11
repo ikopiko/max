@@ -428,7 +428,7 @@
                             <h4>Paid:</h4>
                         </div>
                         <div>
-                            <h4 id="total_price">{{ cashInput }}</h4>
+                            <h4 id="total_price">{{ Number(cashInput).toFixed(2) }}</h4>
                         </div>
                     </div>
                     <div class="col w-3 gray" v-if="cashInput - totalPrice >= 0">
@@ -661,17 +661,17 @@
                     </div>
                 </div>
                 <div class="col cuts paddingClear p-0">
-                    <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: mediumCuts }" @click="cuts(6)">
+                    <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: mediumCuts, active: cutsCount == 6 }" @click="cuts(6)">
                         <span class="topMargin">6 Cut</span>
                     </div>
                 </div>
                 <div class="col cuts paddingClear p-0">
-                    <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: cutActive }" @click="cuts(12)">
+                    <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: cutActive, active: cutsCount == 12 }" @click="cuts(12)">
                         <span class="topMargin">12 Cut</span>
                     </div>
                 </div>
                 <div class="col cuts paddingClear p-0">
-                    <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: cutActive }" @click="cuts(16)">
+                    <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: cutActive, active: cutsCount == 16 }" @click="cuts(16)">
                         <span class="topMargin">16 Cut</span>
                     </div>
                 </div>
@@ -1581,10 +1581,18 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-btn color="blue" elevation="1" x-large  @click="$router.push({path: 'timetable'})">Timeclock</v-btn>
-              <v-btn color="blue" elevation="1" x-large @click="$router.push({path: 'max'})">KDS</v-btn>
-              <v-btn color="blue" elevation="1" x-large @click="$router.push({path: 'orders'})">Orders</v-btn>
-              <v-btn color="blue" elevation="1" x-large @click="$router.push({path: 'driverdispatch'})">Drivers</v-btn>
+              <router-link to="/timetable">
+                <v-btn color="blue" elevation="1" x-large>Timeclock</v-btn>
+              </router-link>
+              <router-link to="/max">
+                <v-btn color="blue" elevation="1" x-large>KDS</v-btn>
+              </router-link>
+              <router-link to="/orders">
+                <v-btn color="blue" elevation="1" x-large>Orders</v-btn>
+              </router-link>
+              <router-link to="/driverdispatch">
+                <v-btn color="blue" elevation="1" x-large>Drivers</v-btn>
+              </router-link>
               <v-btn color="green" elevation="1" x-large @click="print()">NO SALE</v-btn>
             </v-row>
           </v-container>
@@ -1834,6 +1842,7 @@ export default {
     },
   data() {
     return {
+      cutsCount: null,
       restrictEdit: false,
       arrowIndex: -1,
       payLaterActive: false,
@@ -1901,7 +1910,7 @@ export default {
       showProducts: true,
       showIngredients: false,
       cutActive: false,
-      mediumCuts: false,
+      mediumCuts: true,
       smallHalf: false,
       qtyBar: false,
       discountInfo: [],
@@ -3342,6 +3351,7 @@ export default {
       this.order.items.splice(0, this.order.items.length);
       localStorage.removeItem("items");
       localStorage.removeItem("payItem");
+      localStorage.removeItem("reopenItem");
       this.calculatorModal = false;
       this.$router.go();
     },
@@ -3684,10 +3694,13 @@ export default {
     cuts(count) {
       if(this.order.items[this.itemIndex].cutsCount === count){
         this.order.items[this.itemIndex].cuts ^= true;
+        this.order.items[this.itemIndex].cutsCount = null;
+        this.cutsCount = null;
       }
       else {
         this.order.items[this.itemIndex].cuts = true;
         this.order.items[this.itemIndex].cutsCount = count;
+        this.cutsCount = count;
       }
       this.$forceUpdate();
     },
@@ -5405,12 +5418,12 @@ export default {
       var bodyFormData = new FormData();
       bodyFormData.set("name", this.curentCustomer.name);
       bodyFormData.set("address", this.curentCustomer.address);
-      bodyFormData.set("sex", this.curentCustomer.sex);
+      bodyFormData.set("gender", this.curentCustomer.sex);
+      bodyFormData.set("email", this.curentCustomer.email);
       bodyFormData.set("phone", this.curentCustomer.phone);
       bodyFormData.set("discount", this.curentCustomer.discount);
-      bodyFormData.set("driverDetails", this.curentCustomer.driverDetails);
+      bodyFormData.set("comment2", this.curentCustomer.driverDetails);
       bodyFormData.set("comment", this.curentCustomer.comment);
-      bodyFormData.set("comment2", this.curentCustomer.comment2);
       axios
         .request({
           method: "post",
@@ -5426,7 +5439,7 @@ export default {
           console.log('------', response.data);
           console.log('CUSTOMER: ', this.customer);
 
-         this.curentCustomer = this.customer;
+        //  this.curentCustomer = this.customer;
          console.log('Current Customer from API: ', this.curentCustomer);
 
         });
@@ -5442,9 +5455,8 @@ export default {
       bodyFormData.set("sex", this.curentCustomer.sex);
       bodyFormData.set("phone", this.curentCustomer.phone);
       bodyFormData.set("discount", this.curentCustomer.discount);
-      bodyFormData.set("driverDetails", this.curentCustomer.driverDetails);
       bodyFormData.set("comment", this.curentCustomer.comment);
-      bodyFormData.set("comment2", this.curentCustomer.comment2);
+      bodyFormData.set("comment2", this.curentCustomer.driverDetails);
       axios
         .request({
           method: "post",
@@ -5459,7 +5471,6 @@ export default {
         .then((response) => {
           console.log('------', response.data);
 
-         this.curentCustomer = this.customer;
          console.log('Current Customer from API: ', this.curentCustomer);
 
         });

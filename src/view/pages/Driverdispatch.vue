@@ -278,9 +278,14 @@ export default {
         },
         driverOut(){
           if(this.selectedOrder.status == '5' && this.selectedDriver.in_way === false){
+            var orderIDs = [];
+            this.selectedOrders.forEach(x => {
+               orderIDs.push(x.id);
+            })
+            console.log("aaaa: ", orderIDs);
             const TOKEN = this.loggedUser.token;
             var bodyFormData = new FormData();
-            bodyFormData.set("order_id", this.selectedOrder.id);
+            bodyFormData.set("order_id", orderIDs);
             bodyFormData.set("driver_id", this.selectedDriver.id);
 
             axios

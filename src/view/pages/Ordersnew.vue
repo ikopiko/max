@@ -4,7 +4,31 @@
 <template>
   <v-container data-app>
     <v-row>
+        
         <v-card class="col-8">
+          <v-menu
+          v-model="menu"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="date"
+              label="Select Date"
+              prepend-icon="mdi-calendar"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="date"
+            @input="menu = false"
+          ></v-date-picker>
+        </v-menu>
             <v-tabs
               v-model="tab"
               fixed-tabs
@@ -151,6 +175,8 @@ import axios from 'axios';
   export default {
     data () {
       return {
+        date: new Date().toISOString().substr(0, 10),
+        menu:false,
         wasteDialog: false,
         selectedWaste: [],
         orderWaste: [],
@@ -200,18 +226,13 @@ import axios from 'axios';
           { tab: 'Pay Later', content: 'later'},
         ],
         headers: [
-          {
-            text: "ORDER ID",
-            align: "start",
-            sortable: false,
-            value: "order_id",
-          },
           { text: "Branch", value: "branch" },
           { text: "Source", value: "source" },
           { text: "Delivery Adress", value: "order_data.adress" },
           { text: "Customer Name", value: "order_data.customer.name" },
           { text: "Customer Phone", value: "order_data.customer.tel" },
           { text: "Order Items", value: "order_data.items[0].name" },
+          { text: "Re-Open" },
         ],
       }
     },
@@ -277,6 +298,11 @@ import axios from 'axios';
     components: {
         orderList,
     },
+    watch: {
+    date(val){
+      this.updateOrdersDate(val);
+    },
+  },
     methods: {
       updateOrders(){
         this.loggedUser = this.$store.state.auth.user.data;
@@ -285,6 +311,37 @@ import axios from 'axios';
         var bodyFormData = new FormData();
         //bodyFormData.set("branch", this.branch);
         bodyFormData.set("status_key", this.status);
+
+        axios
+          .request({
+            method: "post",
+            url:
+              "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/list",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: bodyFormData,
+          })
+          .then((response) => {
+            this.orders = response.data.data;
+            console.log("response 123: ", this.orders);
+            // this.orders.forEach(x => {
+            //     x.order_data = JSON.parse(x.order_data);
+            // });
+            this.filteredOrders = this.orders;
+            console.log("orders data: ", this.filteredOrders);
+          });
+
+      },
+      updateOrdersDate(date){
+        var dateString = date + ' to '+ date;
+        this.loggedUser = this.$store.state.auth.user.data;
+
+        const TOKEN = this.loggedUser.token;
+        var bodyFormData = new FormData();
+        //bodyFormData.set("branch", this.branch);
+        bodyFormData.set("status_key", this.status);
+        bodyFormData.set("day", dateString);
 
         axios
           .request({

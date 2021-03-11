@@ -2,7 +2,7 @@
 /* eslint-disable */
 </script>
 <template>
-<div>
+<div data-app>
 
     <!-- Begin User & Pass Authorization -->
     <div v-if="userPass" class="position-absolute top-0 right-0 text-right mt-5 mb-15 mb-lg-0 flex-column-auto justify-content-center py-5 px-10">
@@ -73,13 +73,15 @@
     </div>
 
     <div class="container" style="width: 400px;" v-if="pinAuth">
-        <v-alert dense type="info" v-model="pinError" dismissible>
-            The Pin You Entered is Not Correct
-        </v-alert>
-        <v-alert dense text type="success">
-            The Pin You Entered is Correct
-        </v-alert>
+        
         <div class="row">
+            <v-alert dense type="info" v-model="pinError" dismissible>
+                The Pin You Entered is Not Correct
+            </v-alert>
+
+            <v-alert dense dismissible v-if="pinSuccess" type="success">
+                The Pin You Entered is Correct
+            </v-alert>
             <div class="col-12" style="margin: auto">
                 <ul id="display">
                     <li v-for="num in pinSync" :key="num">{{ num }}</li>
@@ -133,33 +135,6 @@
         </div>
     </div>
 
-    <div class="container" v-if="pinAuth1">
-        <div class="row">
-            <div class="col-1">&nbsp;</div>
-            <div id="wrap" class="col-10">
-                <ul id="display">
-                    <li v-for="num in pinSync" :key="num">{{ num }}</li>
-                    <div class="clear"></div>
-                </ul>
-
-                <ul id="numpad">
-                    <li @click="pinChar('1')">1</li>
-                    <li @click="pinChar('2')">2</li>
-                    <li @click="pinChar('3')">3</li>
-                    <li @click="pinChar('4')">4</li>
-                    <li @click="pinChar('5')">5</li>
-                    <li @click="pinChar('6')">6</li>
-                    <li @click="pinChar('7')">7</li>
-                    <li @click="pinChar('8')">8</li>
-                    <li @click="pinChar('9')">9</li>
-                    <li @click="pinChar('clear')">C</li>
-                    <li @click="pinChar('0')">0</li>
-                    <li @click="pinChar('enter')">E</li>
-                </ul>
-            </div>
-            <div class="col-1">&nbsp;</div>
-        </div>
-    </div>
     <!-- End PIN Authorization -->
 
 </div>
@@ -218,6 +193,7 @@ export default {
 
             ,
             pinError: false,
+            pinSuccess: false,
             userPass: false,
             pinAuth: true,
             enteredPin: '',
@@ -399,6 +375,7 @@ export default {
         },
 
         login(pin) {
+            this.pinError = true;
             var mac = 'd4:c9:ef:d5:70:8f';
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
@@ -411,14 +388,18 @@ export default {
                 }
 
             ) .then((response)=> {
+                
                     if(!response.data.is_error) {
                         console.log('Success Login -- ', response);
                         localStorage.setItem("loggedUserData", JSON.stringify(response.data.data));
+                        this.pinError = false;
+                        this.pinSuccess = true;
                         this.onPinSubmit(pin, mac);
                     }
                     else {
+                        alert('BLA');
                         console.log('Login Failed', response);
-                        this.pinError=true;
+                        this.pinError = true;
                     }
 
                 }
