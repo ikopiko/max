@@ -74,7 +74,7 @@
           <v-card
               class="mx-5 col-3 cardClass"
               outlined
-              :class="{ cardClassActive  : managerView || allView }"
+              :class="{ cardClassActive  : driverView || allView }"
             ><router-link class="mx-5" to="/driverdispatch"> 
               <v-list-item three-line>
                 <v-list-item-content>
@@ -106,7 +106,7 @@
           <v-card
               class="mx-5 my-5 col-3 cardClass"
               outlined
-              :class="{ cardClassActive  : managerView || allView }"
+              :class="{ cardClassActive  : maxView || allView }"
             ><router-link class="mx-5 my-5" to="/max"> 
               <v-list-item three-line>
                 <v-list-item-content>
@@ -138,7 +138,7 @@
           <v-card
               class="mx-5 my-5 col-3 cardClass"
               outlined
-              :class="{ cardClassActive  : managerView || allView }"
+              :class="{ cardClassActive  : timeView || allView }"
             >
             <router-link class="mx-5 my-5" to="/timetable"> 
               <v-list-item three-line>
@@ -225,6 +225,8 @@ export default {
       timeView: false,
       managerView: false,
       allView: false,
+      driverView: false,
+      maxView: false,
       dialog: false,
     }
   },
@@ -239,6 +241,13 @@ export default {
     else if(this.loggedUser.role === "posaccess") {
       this.posView = true;
       this.ordersView = true;
+      this.driverView = true;
+      this.timeView = true;
+      this.maxView = true;
+    }
+    else if(this.loggedUser.role === "driver") {
+      this.driverView = true;
+      this.timeView = true;
     }
   },
   methods: {
