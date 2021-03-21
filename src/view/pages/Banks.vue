@@ -891,6 +891,7 @@
         <v-card>
           <v-card-title>
             <span class="headline">Close Day - {{ selectedDriver.username }}</span>
+            <v-btn class="mx-5" @click="driverDetailsModal()"> Driver Details </v-btn>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -1078,6 +1079,14 @@
 
               <v-tabs-items v-model="tab">
                 <v-tab-item>
+                  <export-excel
+                      :data = "detailedInfo"
+                      :name = "'closeDetails.xls'" >
+                      Download Data
+                      <span class="material-icons">
+                        get_app
+                      </span>
+                  </export-excel>
                   <v-simple-table height="300px">
                     <template v-slot:default>
                       <thead>
@@ -1113,6 +1122,14 @@
                 </v-tab-item>
 
                 <v-tab-item>
+                  <export-excel
+                      :data = "detailedInfo"
+                      :name = "'posDetails.xls'" >
+                      Download Data
+                      <span class="material-icons">
+                        get_app
+                      </span>
+                  </export-excel>
                   <v-simple-table height="300px">
                     <template v-slot:default>
                       <thead>
@@ -1147,6 +1164,14 @@
                 </v-tab-item>
 
                 <v-tab-item>
+                  <export-excel
+                      :data = "detailedInfo"
+                      :name = "'safeDetails.xls'" >
+                      Download Data
+                      <span class="material-icons">
+                        get_app
+                      </span>
+                  </export-excel>
                   <v-simple-table height="300px">
                     <template v-slot:default>
                       <thead>
@@ -1181,6 +1206,14 @@
                 </v-tab-item>
 
                 <v-tab-item>
+                  <export-excel
+                      :data = "detailedInfo"
+                      :name = "'driverDetails.xls'" >
+                      Download Data
+                      <span class="material-icons">
+                        get_app
+                      </span>
+                  </export-excel>
                   <v-simple-table height="300px">
                     <template v-slot:default>
                       <thead>
@@ -1221,6 +1254,89 @@
             </v-row>
           </v-card-text>
         </v-card>
+      
+      </v-dialog>
+      <v-dialog
+        v-model="driverDetail"
+        max-width="800px"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">{{ selectedDriver.usenrname }} Details</span>
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="2">
+                <v-menu
+                  v-model="menu2"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="dateDriver"
+                      label="Select Date"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="dateDriver"
+                    @input="menu2 = false"
+                  ></v-date-picker>
+                </v-menu>
+              </v-col>
+              <v-col cols="8">
+                  <export-excel
+                      :data = "detailedInfo"
+                      :name = "'driverDetails.xls'" >
+                      Download Data
+                      <span class="material-icons">
+                        get_app
+                      </span>
+                  </export-excel>
+                  <v-simple-table height="300px">
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th class="text-left">
+                            Name
+                          </th>
+                          <th class="text-left">
+                            Difference
+                          </th>
+                          <th class="text-left">
+                            Comment
+                          </th>
+                          <th class="text-left">
+                            Close Time
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="item in detailedInfo"
+                          :key="item.id"
+                        >
+                          <td v-if="item.driver_id == 0">{{ item.pos_name }}</td>
+                          <td v-if="item.pos_id == null">{{ item.username }}</td>
+                          <td>{{ item.difference }}</td>
+                          <td>{{ item.comment }}</td>
+                          <td>{{ item.created_at }}</td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
       </v-dialog>
 
     </v-app>
@@ -1232,6 +1348,10 @@
 import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
 import orderModal from  "../pages/Modal";
 import axios from "axios";
+import Vue from 'vue'
+import excel from 'vue-excel-export'
+ 
+Vue.use(excel)
 
 export default {
   name: "dashboard",
@@ -1246,12 +1366,14 @@ export default {
       ],
       tab: 0,
       date: new Date().toISOString().substr(0, 10),
+      dateDriver: new Date().toISOString().substr(0, 10),
       detailedInfo: [],
       menu2: false,
       posID: '',
       driverID: '',
       selectedPos: [],
       banksDetail: false,
+      driverDetail: false,
       pickedDate: null,
       selectedDriver: {},
       safeCash: 0,
@@ -1414,9 +1536,9 @@ export default {
       else if(this.tab == 2){
         this.safeDetails(val);
       }
-      else if(this.tab == 3){
-        this.updateDetails(val);
-      }
+    },
+    dateDriver(val) {
+      this.driverDetails(val);
     }
   },
   computed: {
@@ -1530,6 +1652,31 @@ export default {
                   x.payment = 'Add from POS';
                 }
             })
+        });
+    },
+    driverDetailsModal() {
+      this.driverDetail = true;
+      this.driverCloseDialog = false;
+    },
+    driverDetails(date){
+      const TOKEN = this.loggedUser.token;
+      var bodyUpdate = new FormData();
+      bodyUpdate.set("day", date);
+      bodyUpdate.set("driver_id", this.selectedDriver.id);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/detail",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyUpdate,
+        })
+        .then((response) => {
+          console.log('BLA ', response);
+            this.detailedInfo = response.data.data;
         });
     },
     

@@ -1819,6 +1819,7 @@ import Vue from "vue";
 import axios from "axios";
 import _ from "lodash";
 
+
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
