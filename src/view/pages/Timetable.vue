@@ -225,7 +225,7 @@ export default {
   },
   mounted() {
         window.addEventListener("keypress", e=> {
-                this.logKeyClock(e);
+          this.logKeyClock(e);
         });
   },
   computed: {
@@ -338,6 +338,7 @@ export default {
                   alert('End Of Break!');
                   this.sendTimesheet(URL);
               }
+
             }
             else {
               alert("User isn't logged in");
@@ -360,6 +361,7 @@ export default {
                 first_name: '',
                 role: '',
             };
+            this.updateData(this.date);
             this.loginActive = false;
         },
         correctionFoo(){

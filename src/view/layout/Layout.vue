@@ -98,9 +98,10 @@ export default {
       //this.$store.getters.currentUser = this.$store.state.auth.user.data;
     }
     else {
+      console.log('State User Before: ', this.$store.state.auth.user.data);
       this.$store.state.auth.user.data = JSON.parse(localStorage.getItem("loggedUser"));
       //this.$store.getters.currentUser = this.$store.state.auth.user.data;
-      console.log('State User: ', this.$store.state.auth.user.data);
+      console.log('State User111: ', this.$store.state.auth.user.data);
     }
 
     // Simulate the delay page loading

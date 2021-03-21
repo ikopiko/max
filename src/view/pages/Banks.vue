@@ -22,7 +22,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <v-card v-for="safe in safes" :key="safe" @click="safeCloseDialog = true"
+                    <v-card v-for="safe in safes" :key="safe.id" @click="safeCloseDialog = true"
                         class="mx-auto my-3" color="#BAE1BE" light max-width="200">
                         <v-card-title>
                             <span class="title font-weight-bold">{{ safe.amount }} GEL</span>
@@ -263,8 +263,8 @@
                     <span v-for="drv in drivers" :key="drv.id">
                       <v-card v-if="drv.closed == null" class="mx-auto my-3" color="#46BDF2" light max-width="250" @click="driverInfo(drv)">
                           <v-card-title>
-                              <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }} ₾ - {{ drv.username }}</span>
-                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} ₾</span>  - {{ till.name }}</span>
+                              <span class="title font-weight-bold" v-if="drv.amount < 200">{{ Number(drv.amount) + Number(drv.card)  }}  - {{ drv.username }}</span>
+                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} </span>  - {{ till.name }}</span>
                           </v-card-title>
 
                           <v-card-actions>
@@ -365,8 +365,8 @@
                       </v-card>
                       <v-card v-if="drv.closed != null" class="mx-auto my-3" color="#EAE4D2" light max-width="250" @click="driverInfo(drv)">
                           <v-card-title>
-                              <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }} ₾ - {{ drv.username }}</span>
-                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} ₾</span>  - {{ till.name }}</span>
+                              <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }}  - {{ drv.username }}</span>
+                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} </span>  - {{ till.name }}</span>
                           </v-card-title>
 
                           <v-card-actions>
@@ -487,18 +487,6 @@
                 <v-col
                   cols="12"
                   sm="6"
-                  md="4"
-                >
-                  Irakli Andguladze
-                  <br />
-                  127 ₾
-                  <br />
-                  Didid Digomi
-                  <br />
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
                   md="8"
                 >
                 <v-autocomplete
@@ -578,8 +566,6 @@
       
       <v-dialog
         v-model="tillDialog"
-        @keydown.esc="tillDialog = false"
-        persistent
         max-width="600px"
       >
         <v-card>
@@ -604,13 +590,6 @@
                   sm="6"
                   md="4"
                 >
-                  <v-btn
-                    elevation="2"
-                    x-large
-                    color="grey"
-                    class="white--text"
-                    @click="tillDialog = false"
-                  >Close</v-btn>
                 </v-col>
                 <v-col
                   cols="12"
@@ -643,18 +622,6 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  Irakli Andguladze
-                  <br />
-                  127 ₾
-                  <br />
-                  Didi Digomi
-                  <br />
-                </v-col>
                 <v-col
                   cols="12"
                   sm="6"
@@ -825,15 +792,20 @@
               <v-row>
                 <v-col cols="3">{{ Number(selectedPos.card) + Number(selectedPos.cash) }}</v-col>
                 <v-col cols="3">Total</v-col>
-                <v-col cols="6"><v-text-field label="Total Amount" v-model="totalActual"></v-text-field></v-col>
+                <v-col cols="6">{{ Number(cashActual) + Number(cardActual) }}</v-text-field></v-col>
               </v-row>
               <v-row>
-                <v-col cols="3">{{ safeGlovo }}</v-col>
+                <v-col cols="3">{{ Number(selectedPos.glovo_card) + Number(selectedPos.glovo_card) }}</v-col>
                 <v-col cols="3">Glovo</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
+              <v-row>
+                <v-col cols="3">{{ selectedPos.glovo_cash }}</v-col>
+                <v-col cols="3">Glovo Cash</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>
               <v-row class="my-5">
-                <v-col cols="3">{{ safeWolt }}</v-col>
+                <v-col cols="3">{{ selectedPos.wolt_card }}</v-col>
                 <v-col cols="3">Wolt</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
@@ -925,18 +897,18 @@
               <v-row>
                 <v-col cols="3" class="justify-end">{{ selectedDriver.amount }}</v-col>
                 <v-col cols="3">Cash</v-col>
-                <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
+                <v-col cols="6"><v-text-field label="Cash Amount" v-model="driverCashActual"></v-text-field></v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="3">{{ selectedDriver.card }}</v-col>
                 <v-col cols="3">Card</v-col>
-                <v-col cols="6"><v-text-field label="Cad Amount" v-model="cardActual"></v-text-field></v-col>
+                <v-col cols="6"><v-text-field label="Cad Amount" v-model="driverCardActual"></v-text-field></v-col>
               </v-row>  
               <v-row>
                 <v-col cols="3">{{ Number(selectedDriver.amount) + Number(selectedDriver.card) }}</v-col>
                 <v-col cols="3">Total</v-col>
-                <v-col cols="6"><v-text-field label="Total Amount" v-model="totalActual"></v-text-field></v-col>
+                <v-col cols="6">{{ Number(driverCashActual) + Number(driverCardActual) }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="3">{{ safeGlovo }}</v-col>
@@ -1090,7 +1062,22 @@
               </v-col>
               <v-col cols="8">
 
-                <template>
+                <v-tabs
+                  v-model="tab"
+                  fixed-tabs
+                  background-color="primary"
+                  dark      
+                >
+                  <v-tab
+                      v-for="item in items"
+                      :key="item.tab"
+                      @click="getTab(item)"
+                  >
+                      {{ item.tab }}
+                  </v-tab>
+
+              <v-tabs-items v-model="tab">
+                <v-tab-item>
                   <v-simple-table height="300px">
                     <template v-slot:default>
                       <thead>
@@ -1112,7 +1099,7 @@
                       <tbody>
                         <tr
                           v-for="item in detailedInfo"
-                          :key="item"
+                          :key="item.id"
                         >
                           <td v-if="item.driver_id == 0">{{ item.pos_name }}</td>
                           <td v-if="item.pos_id == null">{{ item.username }}</td>
@@ -1123,8 +1110,113 @@
                       </tbody>
                     </template>
                   </v-simple-table>
-                </template>
+                </v-tab-item>
 
+                <v-tab-item>
+                  <v-simple-table height="300px">
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th class="text-left">
+                            POS ID
+                          </th>
+                          <th class="text-left">
+                            Method
+                          </th>
+                          <th class="text-left">
+                            Action
+                          </th>
+                          <th class="text-left">
+                            Amount
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="item in detailedInfo"
+                          :key="item.id"
+                        >
+                          <td>{{ item.pos_id }}</td>
+                          <td>{{ item.payment_method }}</td>
+                          <td>{{ item.action }}</td>
+                          <td>{{ item.amount }}</td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </v-tab-item>
+
+                <v-tab-item>
+                  <v-simple-table height="300px">
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th class="text-left">
+                            POS ID
+                          </th>
+                          <th class="text-left">
+                            Driver ID
+                          </th>
+                          <th class="text-left">
+                            Action
+                          </th>
+                          <th class="text-left">
+                            Amount
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="item in detailedInfo"
+                          :key="item.id"
+                        >
+                          <td>{{ item.pos_id }}</td>
+                          <td>{{ item.driver_id }}</td>
+                          <td>{{ item.payment }}</td>
+                          <td>{{ item.amount }}</td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </v-tab-item>
+
+                <v-tab-item>
+                  <v-simple-table height="300px">
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th class="text-left">
+                            Name
+                          </th>
+                          <th class="text-left">
+                            Difference
+                          </th>
+                          <th class="text-left">
+                            Comment
+                          </th>
+                          <th class="text-left">
+                            Close Time
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="item in detailedInfo"
+                          :key="item.id"
+                        >
+                          <td v-if="item.driver_id == 0">{{ item.pos_name }}</td>
+                          <td v-if="item.pos_id == null">{{ item.username }}</td>
+                          <td>{{ item.difference }}</td>
+                          <td>{{ item.comment }}</td>
+                          <td>{{ item.created_at }}</td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </v-tab-item>
+
+              </v-tabs-items>
+              </v-tabs>
               </v-col>
             </v-row>
           </v-card-text>
@@ -1146,6 +1238,13 @@ export default {
   components: {},
   data() {
     return {
+      items: [
+          { tab: 'Closed', content: 'close' },
+          { tab: 'POS Details', content: 'pos' },
+          { tab: 'Safe Details', content: 'safe' },
+          { tab: 'Driver Details', content: 'driver' },
+      ],
+      tab: 0,
       date: new Date().toISOString().substr(0, 10),
       detailedInfo: [],
       menu2: false,
@@ -1155,13 +1254,15 @@ export default {
       banksDetail: false,
       pickedDate: null,
       selectedDriver: {},
-      safeCash: 800.6,
-      safeCard: 1047.2,
-      safeGlovo: 264.1,
-      safeWolt: 494.1,
+      safeCash: 0,
+      safeCard: 0,
+      safeGlovo: 0,
+      safeWolt: 0,
       safeTotal: null,
       cashActual: null,
       cardActual: null,
+      driverCashActual: null,
+      driverCardActual: null,
       totalActual: null,
       posAmount: 150,
       driverAmount: 40,
@@ -1249,7 +1350,7 @@ export default {
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
-       if (vm.$store.state.auth.user.data.role === "admin") {
+       if (vm.$store.state.auth.user.data.role == "admin") {
          vm.$router.push({name: "banks"});
        }
        else {
@@ -1304,7 +1405,18 @@ export default {
     },
   watch: {
     date(val){
-      this.updateDetails(val);
+      if(this.tab == 0){
+        this.updateDetails(val);
+      }
+      else if(this.tab == 1){
+        this.posDetails(val);
+      }
+      else if(this.tab == 2){
+        this.safeDetails(val);
+      }
+      else if(this.tab == 3){
+        this.updateDetails(val);
+      }
     }
   },
   computed: {
@@ -1332,6 +1444,22 @@ export default {
     },
   },
   methods: {
+    getTab(tab){
+        if(tab.content === 'close') {
+          this.updateDetails(this.date);
+        }
+        else if(tab.content === 'pos') {
+          this.posDetails(this.date);
+        }
+        else if(tab.content === 'safe') {
+          this.safeDetails(this.date);
+        }
+        else if(tab.content === 'driver'){
+          alert('Driver Details');
+          this.updateDetails(this.date);
+        }
+        this.$forceUpdate();
+    },
     updateDetails(date){
       const TOKEN = this.loggedUser.token;
       var bodyUpdate = new FormData();
@@ -1348,10 +1476,63 @@ export default {
           data: bodyUpdate,
         })
         .then((response) => {
-          console.log('Detaileeeeeed: ', response);
             this.detailedInfo = response.data.data;
         });
     },
+    posDetails(date){
+      const TOKEN = this.loggedUser.token;
+      var bodyUpdate = new FormData();
+      bodyUpdate.set("day", date);
+      bodyUpdate.set("pos_id", '1');
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/poses-detail",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyUpdate,
+        })
+        .then((response) => {
+            this.detailedInfo = response.data.data;
+            this.detailedInfo.forEach(x => {
+                if(x.amount < 0 && x.action != 'New order'){
+                  x.payment_method = 'Drop balance';
+                }
+            })
+        });
+    },
+    safeDetails(date){
+      const TOKEN = this.loggedUser.token;
+      var bodyUpdate = new FormData();
+      bodyUpdate.set("day", date);
+      bodyUpdate.set("safe_id", this.safes[0].id);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/safe-detail",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyUpdate,
+        })
+        .then((response) => {
+            this.detailedInfo = response.data.data;
+            this.detailedInfo.forEach(x => {
+                if(x.driver_id == 0 && x.amount < 0) {
+                  x.payment = 'Drop to POS';
+                }
+                else if(x.driver_id == 0 && x.amount >= 0) {
+                  x.payment = 'Add from POS';
+                }
+            })
+        });
+    },
+    
     reconcilePos(){
       var r = confirm("Close POS for a day?");
       if(r == true){
@@ -1394,7 +1575,7 @@ export default {
     reconcileDriver(){
       var r = confirm("Close Driver for a day?");
       if(r == true){
-        var actualTotal = Number(this.cashActual) + Number(this.cardActual);
+        var actualTotal = Number(this.driverCashActual) + Number(this.driverCardActual);
         var driverTotal = Number(this.selectedDriver.amount) + Number(this.selectedDriver.card);
         if(this.driverCloseComment == '') {
           this.driverCloseComment = 'Placeholder';
@@ -1420,8 +1601,8 @@ export default {
           .then((response) => {
             console.log('Reconcile Driver: ', response);
             this.driverCloseComment = '';
-            this.cashActual = '';
-            this.cardActual = '';
+            this.driverCashActual = '';
+            this.driverCardActual = '';
             this.totalActual = '';
             this.driverCloseDialog = false;
           });
@@ -1474,7 +1655,6 @@ export default {
             x.card = Number(x.card);
             x.cash = Number(x.cash);
           });
-
           console.log("POS List: ", this.tills);
         });
     },
@@ -1552,6 +1732,7 @@ export default {
           this.getSafes();
           this.getPoses();
           this.getDrivers();
+          this.posDetails(this.date);
           this.posAmount = 0;
         });
     },
@@ -1589,6 +1770,7 @@ export default {
               this.getSafes();
               this.getPoses();
               this.getDrivers();
+              this.posDetails(this.date);
               this.posAmount = 0;
             });
       }
@@ -1618,6 +1800,7 @@ export default {
           this.getSafes();
           this.getPoses();
           this.getDrivers();
+          this.safeDetails(this.date);
           this.safeAmount = null;
         });
 
@@ -1646,6 +1829,7 @@ export default {
           this.getSafes();
           this.getPoses();
           this.getDrivers();
+          this.safeDetails(this.date);
           this.safeAmount = null;
         });
 
@@ -1734,7 +1918,6 @@ export default {
     },
     driverInfo(driver){
       this.selectedDriver = driver;
-      this.selectedDriver.card = 0;
       this.driverCloseDialog = true;
     },
     driverFoo(driver){

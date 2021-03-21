@@ -1,6 +1,7 @@
 const path = require("path");
 
 module.exports = {
+  transpileDependencies: ['vuex-persist'],
   publicPath:
     process.env.NODE_ENV === "production" ? "/beta/" : "/",
   configureWebpack: {

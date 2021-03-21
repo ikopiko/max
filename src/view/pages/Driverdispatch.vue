@@ -3,6 +3,20 @@
 </script>
 <template>
   <v-container data-app>
+    <v-overlay
+      :absolute="absolute"
+      :opacity="opacity"
+      :value="overlay"
+      :z-index="zIndex"
+    >
+      <v-progress-circular
+        :size="70"
+        :width="7"
+        v-model="overlay"
+        color="purple"
+        indeterminate
+      ></v-progress-circular>
+    </v-overlay>
         <v-row>
             <v-card class="col-md-8 col-sm-12">
                 <v-tabs
@@ -53,7 +67,7 @@
             </v-tabs>
             </v-card>
             <div class="col-md-2 col-sm-12" >
-              Avialable Drivers
+              In Drivers
               <v-card v-for="driver in availableDrivers" :key="driver"
                 class="mx-auto my-3" :class="{ active : activeDriver == driver.id }" color="#46BDF2" light max-width="200" @click="selectDriver(driver)">
                   <v-card-title class="title font-weight-bold">
@@ -63,7 +77,7 @@
               </v-card>
             </div>
             <div class="col-md-2 col-sm-12" >
-              Drivers Out
+              Out Drivers
               <v-card v-for="driver in outDrivers" :key="driver" 
                 class="mx-auto my-3" :class="{ active : activeDriver == driver.id }" color="#A6A2B0" light max-width="200" @click="selectDriver(driver)">
                   <v-card-title class="title font-weight-bold">
@@ -94,6 +108,10 @@ export default {
   components: {},
   data() {
     return {
+      absolute: false,
+      opacity: 0.46,
+      overlay: false,
+      zIndex: 5,
       activeRow: -1,
       loggedUser: {},
       activeDriver: -1,
@@ -154,7 +172,7 @@ export default {
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
-       if (vm.$store.state.auth.user.data.role !== "admin" || vm.$store.state.auth.user.data.role !== "posaccess") {
+       if (vm.$store.state.auth.user.data.role == "admin" || vm.$store.state.auth.user.data.role == "posaccess" || vm.$store.state.auth.user.data.role == "driver") {
          vm.$router.push({name: "driverdispatch"});
        }
        else {
@@ -199,7 +217,7 @@ export default {
       .then((response) => {
           console.log("response: ", response);
           this.orders = response.data.data;
-          this.orders = this.orders.filter((x) =>  x.order_data.deliveryType === "Ronnys" )
+          this.orders = this.orders.filter((x) =>  x.order_data.deliveryType === "delivery" )
           // this.orders.forEach(x => {
           //     x.order_data = JSON.parse(x.order_data);
           // });
@@ -278,6 +296,7 @@ export default {
         },
         driverOut(){
           if(this.selectedOrder.status == '5' && this.selectedDriver.in_way === false){
+            this,this.overlay = true;
             var orderIDs = [];
             this.selectedOrders.forEach(x => {
                orderIDs.push(x.id);
@@ -337,6 +356,9 @@ export default {
           }
           this.getOrders();
           this.getDrivers();
+          setTimeout(() => {
+            this.overlay = false;
+        }, 1500)
           this.$forceUpdate();
     },
 
@@ -351,7 +373,7 @@ export default {
         .request({
             method: "post",
             url:
-            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
+            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-current-orders",
             headers: {
             Authorization: "Bearer " + TOKEN,
             },

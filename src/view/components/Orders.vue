@@ -46,6 +46,16 @@ export default {
       items: [],
     }
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+       if (vm.$store.state.auth.user.data.role == "admin" || vm.$store.state.auth.user.data.role == "posaccess") {
+         vm.$router.push({name: "orders"});
+       }
+       else {
+         vm.$router.push({name: "dashboard"});
+       }
+    });
+  },
   mounted() {
           const TOKEN = localStorage.getItem("TOKEN");
           var bodyFormData = new FormData();

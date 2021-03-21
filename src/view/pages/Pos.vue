@@ -466,8 +466,8 @@
                 </div>
 
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="diplomatModal = true">
-                        Diplomat
+                    <div class="col-2 calcBtn blue" v-bind:class="{ active: futureActive }" @click="futureModal = true">
+                        Future
                     </div>
                     <div class="col-6">&nbsp;</div>
                     <div class="col-2 calcBtn lightGreen" @click="calcCash(100)">
@@ -478,8 +478,11 @@
                     </div>
                 </div>
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="studentModal = true">
+                    <!-- <div class="col-2 calcBtn blue" @click="studentModal = true">
                         Student
+                    </div> -->
+                    <div class="col-2 calcBtn blue">
+                        &nbsp;
                     </div>
                     <div class="col-2 calcBtn" @click="calcInput('7')">7</div>
                     <div class="col-2 calcBtn" @click="calcInput('8')">8</div>
@@ -491,7 +494,8 @@
                 </div>
 
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="teamModal = true">Team</div>
+                    <!-- <div class="col-2 calcBtn blue" @click="teamModal = true">Team</div> -->
+                    <div class="col-2 calcBtn blue">&nbsp;</div>
                     <div class="col-2 calcBtn" @click="calcInput('4')">4</div>
                     <div class="col-2 calcBtn" @click="calcInput('5')">5</div>
                     <div class="col-2 calcBtn" @click="calcInput('6')">6</div>
@@ -501,8 +505,11 @@
                     </div>
                 </div>
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="studentDisc()">
+                    <!-- <div class="col-2 calcBtn blue" @click="studentDisc()">
                         Student
+                    </div> -->
+                    <div class="col-2 calcBtn blue">
+                        &nbsp;
                     </div>
                     <div class="col-2 calcBtn" @click="calcInput('1')">1</div>
                     <div class="col-2 calcBtn" @click="calcInput('2')">2</div>
@@ -513,8 +520,8 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-2 calcBtn blue" @click="socialDiscount()">
-                        Social
+                    <div class="col-2 calcBtn blue">
+                        &nbsp;
                     </div>
                     <div class="col-4 calcBtn" @click="calcInput('0')">0</div>
                     <div class="col-2 calcBtn" @click="calcInput('.')">.</div>
@@ -536,8 +543,11 @@
                     </div>
                 </div>
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="socialDiscount()">
+                    <!-- <div class="col-2 calcBtn blue" @click="socialDiscount()">
                         Social
+                    </div> -->
+                    <div class="col-2 calcBtn blue">
+                        &nbsp;
                     </div>
                     <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">
                         PAY {{ Number(totalPrice).toFixed(2) }}
@@ -857,7 +867,7 @@
               </v-row>
               <v-row>
                 <div class="col" v-for="discount in discountTypes" :key="discount">
-                  <v-btn class="blue" large @click="crmDiscount(discount)">{{ discount.name }}</v-btn>
+                  <v-btn class="blue" :class="{ active : discount.name == curentCustomer.discount }" large @click="crmDiscount(discount)">{{ discount.name }}</v-btn>
                 </div>
               </v-row>
           </v-container>
@@ -1040,53 +1050,6 @@
     <!-- End Of Delivery Type Modal -->
 
     <!-- Start of invoice modal -->
-
-    <!-- <div v-if="invoiceModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Delivery Information</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="invoiceModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
-                                        <v-text-field v-model="invoice.name" class="my-2" label="Name" clearable></v-text-field>
-                                        <v-text-field v-model="invoice.ltd" class="my-2" label="LTD" clearable></v-text-field>
-
-                                        <v-text-field v-model="invoice.email" class="my-2" label="E-mail"></v-text-field>
-
-                                        <v-row>
-                                            <v-col cols="12" sm="12">
-                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
-                                            </v-col>
-                                        </v-row>
-                                        <v-text-field v-model="invoice.id" @keypress="isNumber($event)" class="my-2" label="Company ID #" clearable></v-text-field>
-
-                                        <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-                                    </v-form>
-                                </b-container>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="invoiceModal = false">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="generateInvoice()">
-                                    Generate Invoice
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div> -->
 
     <v-dialog 
       v-model="invoiceModal"
@@ -1462,36 +1425,64 @@
     <!-- Start Of Future Modal -->
 
     <div v-if="futureModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Delivery Information</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="futureModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <date-picker v-model="date" :config="options"></date-picker>
-                                </b-container>
-                            </div>
+        
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="futureModal = false">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="futureOrder()">
-                                    Select Date
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
+        <v-dialog 
+        v-model="futureModal"
+        max-width="600px"
+      >
+      <v-card :justify="end">
+          <v-card-title>
+            <span class="headline">Future Order</span>
+          </v-card-title>
+          <v-card-text>
+              <v-row>
+                <v-menu
+                  v-model="menu"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="date"
+                      label="Select Date"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="date"
+                    @input="menu = false"
+                  ></v-date-picker>
+                </v-menu>
+                <v-text-field v-model="futureTime" label="Enter Time 00:00 format (14:30)"></v-text-field>
+              </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn
+              color="blue darken-1"
+              x-large
+              @click="cancelFuture()"
+            >
+              Cancel Future
+            </v-btn>
+            <v-btn
+              color="green darken-1"
+              x-large
+              @click="futureOrder()"
+            >
+              Select Date
+            </v-btn>
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
     </div>
 
     <!-- End Of Future Modal -->
@@ -1500,7 +1491,7 @@
     <div class="float-right">
       <v-dialog 
         v-model="settingModal"
-        max-width="600px"
+        max-width="800px"
       >
       <v-card :justify="end">
           <v-card-title>
@@ -1842,10 +1833,12 @@ export default {
     },
   data() {
     return {
+      futureTime: null,
       cutsCount: null,
       restrictEdit: false,
       arrowIndex: -1,
       payLaterActive: false,
+      futureActive: false,
       orders: [],
       filteredOrders:[],
       selectedOrder: [],
@@ -1915,7 +1908,7 @@ export default {
       qtyBar: false,
       discountInfo: [],
       telMessage: '',
-      date: new Date(),
+      date: new Date().toISOString().substr(0, 10),
         options: {
           format: 'DD/MM/YYYY hh:mm',
           useCurrent: false,
@@ -1943,7 +1936,7 @@ export default {
       },
       crustVar: false,
       deliveryFee: [{id: 0,fee: 1.5, text: "1.5 GEL 0-3.9 Km"}, {id:1,fee:3, text: "3 GEL 4-9.9 Km"}, {id:2,fee:4.5, text: "4.5 GEL 10-15.9 Km"}, {id:3,fee:6, text: "6 GEL 16-19.9 Km"}, {id: 4,fee:7, text: "7 GEL 20-27.9 Km"}, {id: 5,fee:10, text: "10 GEL 28 Km +"}, {id:6,fee:13.5, text: "13.5 GEL Rustavi"} ],
-      deliveryType: [{id: 0, type: 'ronnys'}, {id: 1, type: 'glovo'},{id: 2, type: 'wolt'}],
+      deliveryType: [{id: 0, type: 'delivery'}, {id: 1, type: 'glovo'},{id: 2, type: 'wolt'}],
       promise: [{id: 0, time:15},{id: 1, time:20},{id: 2, time:30}, {id: 3, time:40}, {id: 4, time:50}],
       promiseTime: 15,
       deliveryFeeVar: -1,
@@ -2213,6 +2206,7 @@ export default {
       try {
         var fooOrder = JSON.parse(localStorage.getItem("reopenItem"));
         this.order = fooOrder.order_data;
+        this.curentCustomer = fooOrder.order_data.customer;
       }
       catch (e){
         localStorage.removeItem("reopenItem");
@@ -2464,6 +2458,8 @@ export default {
         this.studentDisc();
       } else if(this.curentCustomer.discount == 'Team'){
         this.employeeDisc();
+      } else if(this.curentCustomer.discount == ''){
+        this.noDisc();
       }
     },
     customerPhone(val) {
@@ -2471,21 +2467,32 @@ export default {
       alert('123' + val);
     },
     querySelections (v) {
-        this.checkUser(v);
-        this.loading = true;
-        console.log('Query: ', v);
-        // Simulated ajax query
-        setTimeout(() => {
-          this.items = this.searchResults;
-          this.loading = false;
-          return this.items;
+        if (v.length > 4){
+          this.checkUser(v);
+          this.loading = true;
+          console.log('Query: ', v);
+          // Simulated ajax query
+          }
+          setTimeout(() => {
+            this.items = this.searchResults;
+            this.loading = false;
+            return this.items;
         }, 500)
+
       },
         crmDiscount(discount){
           if(discount.name == 'Diplomat'){
-            this.diplomatCrm = true;
+            this.diplomatCrm ^= true;
+          } else {
+            this.diplomatCrm = false;
           }
-          this.curentCustomer.discount = discount.name;
+          if(discount.name == this.curentCustomer.discount){
+            this.curentCustomer.discount = '';
+          }
+          else {
+            this.curentCustomer.discount = discount.name;
+          }
+          this.$forceUpdate();
         },
         arrowOrder(way){
           var ordersLength = this.filteredOrders.length;
@@ -2606,24 +2613,23 @@ export default {
             })
             .then((response) => {
               console.log('------', response.data.data);
-            if(this.search.length === 9){
-                this.curentCustomer.name = response.data.data[0].name;
-                this.curentCustomer.phone = response.data.data[0].phone;
-                this.curentCustomer.address = response.data.data[0].address;
-                this.lastOrder = response.data.data[0].last_order;
-                console.log('Current user last order: ', this.lastOrder);
-                this.curentCustomer.comment = response.data.data[0].comment;
-                console.log('Current Customer from API: ', response.data.data[0]);
-                this.customer = this.curentCustomer;
-                console.log('customeeeeer: ', this.customer);
-                this.customerChecked = true;
-            }
-            else {
+            // if(this.search.length === 9){
+            //     this.curentCustomer.name = response.data.data[0].name;
+            //     this.curentCustomer.phone = response.data.data[0].phone;
+            //     this.curentCustomer.address = response.data.data[0].address;
+            //     this.lastOrder = response.data.data[0].last_order;
+            //     console.log('Current user last order: ', this.lastOrder);
+            //     this.curentCustomer.comment = response.data.data[0].comment;
+            //     console.log('Current Customer from API: ', response.data.data[0]);
+            //     this.customer = this.curentCustomer;
+            //     console.log('customeeeeer: ', this.customer);
+            //     this.customerChecked = true;
+            // }
+            // else {}
                 this.searchResults = response.data.data;
                 console.log('Search Results: ',this.searchResults);
                 this.customer.phone = this.telMessage;
                 this.lastOrder = response.data.data[0].last_order;
-            }
 
             });
           console.log('Curent User Data: ', this.curentCustomer);
@@ -2651,7 +2657,7 @@ export default {
 
           } else {
 
-              if(this.search.length >= 3){
+              if(this.search.length >= 6){
                 this.checkUser(this.search);
               }
 
@@ -4905,6 +4911,7 @@ export default {
       }
       this.order.deliveryFee = 0;
       this.order.deliveryMethod = 'Walk_In';
+      this.order.customer = this.curentCustomer;
       if(ND === 'no'){
         // pass
       }
@@ -5090,6 +5097,7 @@ export default {
     },
     paymentConfirm() {
       this.playSound();
+      this.order.customer = this.curentCustomer;
       if (this.paymentType == "cash") {
         this.confirmModal = false;
         this.order.paymentType = 'Cash';
@@ -5268,8 +5276,17 @@ export default {
       this.crmModal = true;
     },
     futureOrder() {
-      this.order.date = this.date;
+      this.order.date = this.date + ' ' + this.futureTime;
       this.order.isFuture = true;  
+      this.futureActive = true;
+      this.futureModal = false;
+    },
+    cancelFuture() {
+      this.order.date = '';
+      this.date = new Date().toISOString().substr(0, 10),
+      this.futureTime = null;
+      this.order.isFuture = false;  
+      this.futureActive = false;
       this.futureModal = false;
     },
     copyLastOrder() {
@@ -5285,7 +5302,7 @@ export default {
           this.walkinActive('no');
         } else if(this.order.deliveryMethod == 'Take Out'){
           this.takeoutActive('no');
-        } else if(this.order.deliveryMethod == 'Delivery'){
+        } else if(this.order.deliveryMethod == 'delivery'){
           this.ronnysDelivery('no');
         } else if(this.order.deliveryMethod == 'Wolt'){
           this.woltDelivery('no');   
@@ -5369,6 +5386,7 @@ export default {
     },
     noDisc(){
         this.order.discount = 0;
+        this.order.discountName = null;
     },
     diplomatDisc(){
       this.diplomatModal = false;
@@ -5472,6 +5490,7 @@ export default {
           console.log('------', response.data);
 
          console.log('Current Customer from API: ', this.curentCustomer);
+         this.changeDisc();
 
         });
 
@@ -5494,7 +5513,7 @@ export default {
     },
     deliveryStep(){
       this.deliveryModal = false;
-      if(this.order.deliveryType === 'ronnys'){
+      if(this.order.deliveryType === 'delivery'){
         this.deliveryFeeModal = true;
       }
       else {
@@ -5536,8 +5555,8 @@ export default {
       }
       else {
         this.order.customer = this.curentCustomer;
-        this.order.deliveryType = 'Ronnys';
-        this.order.deliveryMethod = 'Ronny';
+        this.order.deliveryType = 'delivery';
+        this.order.deliveryMethod = 'delivery';
         console.log('Ronnys customer : ', this.order.customer);
         this.ronnysModal = false;
         this.payLater();

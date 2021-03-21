@@ -74,7 +74,7 @@ export default {
   
   beforeRouteEnter (to, from, next) {
     next(vm => {
-       if (vm.$store.state.auth.user.data.role !== "admin" || vm.$store.state.auth.user.data.role !== "posaccess") {
+       if (vm.$store.state.auth.user.data.role == "admin" || vm.$store.state.auth.user.data.role == "posaccess") {
          vm.$router.push({name: "max"});
        }
        else {

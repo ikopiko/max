@@ -31,11 +31,11 @@
               >
               <v-list-item-title class="headline mb-1 delivery"
                 >{{ order.order_data.deliveryMethod }} 
-                  <span v-if="order.order_data.deliveryType === 'Ronnys' "> {{ order.order_data.deliveryMethod }} </span>
+                  <span v-if="order.order_data.deliveryType === 'Ronnys' || order.order_data.deliveryType == 'delivery'"> {{ order.order_data.deliveryMethod }} </span>
               </v-list-item-title
               >
               <v-list-item-title class="headline mb-1 h4"
-                v-if="order.order_data.deliveryType === 'Ronnys' "
+                v-if="order.order_data.deliveryType === 'Ronnys' || order.order_data.deliveryType == 'delivery' "
                 >Delivery Fee: {{ order.order_data.deliveryFee }}</v-list-item-title
               >
               <v-list-item-title class="headline mb-1 h4"

@@ -62,7 +62,7 @@
                       :headers="headers"
                       :items="filteredOrders"
                       :items-per-page="itemsPerPage"
-                      item-key="order_id"
+                      item-key="id"
                       :loading="loading"
                       :single-select="singleSelect"
                       show-select
@@ -71,18 +71,14 @@
                     >
                         <template v-slot:item="row">
                             <tr @click="onButtonClick(row.item)">
-                              <td>{{row.item.order_id}}</td>
+                              <td>{{Number(row.item.id)}}</td>
                               <td>{{row.item.branch}}</td>
                               <td>{{row.item.order_data.deliveryMethod}}</td>
                               <td>{{row.item.order_data.adress}}</td>
                               <td>{{row.item.order_data.customer.name}}</td>
-                              <td>{{row.item.order_data.customer.tel}}</td>
+                              <td>{{Number(row.item.order_data.customer.phone)}}</td>
                               <td>{{row.item.order_data.items[0].name}}...</td>
-                              <td>
-                                <v-btn class="mx-2" fab dark small color="green" @click="re_open(row.item)">
-                                    <v-icon dark>open_in_new</v-icon>
-                                </v-btn>
-                              </td>
+
                             </tr>
                         </template>
                     </v-data-table>
@@ -116,6 +112,9 @@
             <v-btn v-if="statusModel != null" @click="updateOrder()">Change Order: {{ statusObject[0].status_name }}</v-btn>
             <v-btn v-if="showOrderComponent && statusModel == null" @click="updateOrder()">Change Order</v-btn>
             <v-btn v-if="selectedOrder.payment_method_id == 4" @click="payOrder(selectedOrder)">Pay Order</v-btn>
+            <v-btn  v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="re_open(selectedOrder)">
+                <v-icon dark>open_in_new</v-icon>
+            </v-btn>
         </v-card>
     </v-row>
 
@@ -175,6 +174,7 @@ import axios from 'axios';
   export default {
     data () {
       return {
+        orderFunctions : ['Reopen'],
         date: new Date().toISOString().substr(0, 10),
         menu:false,
         wasteDialog: false,
@@ -232,7 +232,6 @@ import axios from 'axios';
           { text: "Customer Name", value: "order_data.customer.name" },
           { text: "Customer Phone", value: "order_data.customer.tel" },
           { text: "Order Items", value: "order_data.items[0].name" },
-          { text: "Re-Open" },
         ],
       }
     },
