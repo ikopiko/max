@@ -1,111 +1,111 @@
 .cardStyle {
-    font-size: 18px !important;
-  }
-  .cardPrice {
-    float: right;
-    text-align: right;
-    font-size: 16px;
-  }
-  .bottomRight {
+  font-size: 18px !important;
+}
+.cardPrice {
+  float: right;
+  text-align: right;
+  font-size: 16px;
+}
+.bottomRight {
+  position: fixed;
+  bottom: 0; 
+  right: 0; 
+}
+.cardClass {
+  position: relative;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.cardClassActive {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
+}
+.active_menu{
+  opacity: 1;
+  pointer-events: auto;
+}
+.static_menu{
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+  .bottomleft {
     position: fixed;
-    bottom: 0; 
-    right: 0; 
-  }
-  .cardClass {
-    position: relative;
-    opacity: 0.5;
-    pointer-events: none;
-  }
-  .cardClassActive {
-    position: relative;
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .active_menu{
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .static_menu{
-    opacity: 0.5;
-    pointer-events: none;
-  }
+    bottom: 0px;
+    left: 0px;
+}
 
-    .bottomleft {
-      position: fixed;
-      bottom: 0px;
-      left: 0px;
-  }
-
-  .demo {
-    position: absolute;
-    width: 100%;
-    height: 30px;
-    opacity: 0.5;
-    bottom: 0;
-    margin: 0 0 0 0;
-    
-  }
-
-  .red {background: red}
-  .blue {background: blue}
-  .yellow {background: yellow !important}
-  .orange {background: orange}
-  .green {background: #00D881  !important}
-  .purple {background: purple !important}
-  .aqua {background: aqua !important}
-  .lightGreen {background: chartreuse !important}
+.demo {
+  position: absolute;
+  width: 100%;
+  height: 30px;
+  opacity: 0.5;
+  bottom: 0;
+  margin: 0 0 0 0;
   
-  .v-input {
-    height: 50px !important;
-    /* background-color: red; */
-  }
-  .pinBtn {
-    background: #1D7EA8;
-    height: 70px;
-    color: white;
-    font-size: 200%;
-    text-align: center;
-    vertical-align: middle;
-    padding-top: 15px;
-  }
-  .prepBtn {
-    min-width: 30px !important;
-    background-color: #7a6db3 !important;
-    color: white !important;
-    margin-right: 10px;
-  }
-  .prepBtnCancel {
-    min-width: 30px !important;
-    background-color: #eb516c !important;
-    margin-right: 10px;
-    color: white !important;
-  }
-  .delivery {
-    font-family: "Poppins", sans-serif;
-    font-size: 16px !important;
-    color: #f5b225 !important;
-  }
-  .cardItemTitle {
-    font-size: 1.1rem !important;
-    font-weight: bold !important;
-  }
-  .menu_static {
-    width: 100px;
-    height: 100px;
-    background-color: #cccccc;
-    margin: 10px;
-    opacity: 0.5;
-    pointer-events: none;
-    text-align: center;
-    line-height: 50px;
-  }
-  .menu_active {
-    width: 100px;
-    height: 100px;
-    background-color: #1e1e2d;
-    margin: 10px;
-    opacity: 1;
-    pointer-events: auto;
-    text-align: center;
-    line-height: 50px;
-  }
+}
+
+.red {background: red}
+.blue {background: blue}
+.yellow {background: yellow !important}
+.orange {background: orange}
+.green {background: #00D881  !important}
+.purple {background: purple !important}
+.aqua {background: aqua !important}
+.lightGreen {background: chartreuse !important}
+
+.v-input {
+  height: 50px !important;
+  /* background-color: red; */
+}
+.pinBtn {
+  background: #1D7EA8;
+  height: 70px;
+  color: white;
+  font-size: 200%;
+  text-align: center;
+  vertical-align: middle;
+  padding-top: 15px;
+}
+.prepBtn {
+  min-width: 30px !important;
+  background-color: #7a6db3 !important;
+  color: white !important;
+  margin-right: 10px;
+}
+.prepBtnCancel {
+  min-width: 30px !important;
+  background-color: #eb516c !important;
+  margin-right: 10px;
+  color: white !important;
+}
+.delivery {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px !important;
+  color: #f5b225 !important;
+}
+.cardItemTitle {
+  font-size: 1.1rem !important;
+  font-weight: bold !important;
+}
+.menu_static {
+  width: 100px;
+  height: 100px;
+  background-color: #cccccc;
+  margin: 10px;
+  opacity: 0.5;
+  pointer-events: none;
+  text-align: center;
+  line-height: 50px;
+}
+.menu_active {
+  width: 100px;
+  height: 100px;
+  background-color: #1e1e2d;
+  margin: 10px;
+  opacity: 1;
+  pointer-events: auto;
+  text-align: center;
+  line-height: 50px;
+}

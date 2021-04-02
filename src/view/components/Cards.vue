@@ -29,6 +29,12 @@
                 >{{ order.order_data.customer.tel }}
                 {{ order.order_data.customer.adress }}</v-list-item-title
               >
+              <v-list-item-title v-if="order.order_data.isFuture" class="headline mb-1 delivery">
+                Future Order
+                <br/>
+                Promised: {{ order.order_data.date }} 
+              </v-list-item-title>
+
               <v-list-item-title class="headline mb-1 delivery"
                 >{{ order.order_data.deliveryMethod }} 
                   <span v-if="order.order_data.deliveryType === 'Ronnys' || order.order_data.deliveryType == 'delivery'"> {{ order.order_data.deliveryMethod }} </span>
@@ -491,7 +497,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/change-status",
+            this.$hostname + "orders/change-status",
           headers: {
             Authorization: "Bearer " + this.TOKEN,
           },

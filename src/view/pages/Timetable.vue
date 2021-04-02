@@ -161,6 +161,9 @@
                             OUT
                           </th>
                           <th class="text-left">
+                            Break
+                          </th>
+                          <th class="text-left">
                             Hours
                           </th>
                         </tr>
@@ -173,7 +176,9 @@
                           <td>{{ item.username }}</td>
                           <td>{{ item.inTime }}</td>
                           <td>{{ item.outTime }}</td>
-                          <td>{{ item.workHours }}</td>
+                          <td>{{ item.startBrake }}</td>
+                          <td v-if="item.workHours != 'NaN'">{{ item.workHours }}</td>
+                          <td v-if="item.workHours == 'NaN'">&nbsp;</td>
                         </tr>
                       </tbody>
                     </template>
@@ -241,14 +246,24 @@ export default {
               x.outTime = '';
               x.workHours = '';
               x.clockedindata.forEach(y => {
+                const date = new Date(y.created_at);
+
+                const createdTime = date.getHours() + ":" + date.getMinutes();
+
                  if(y.state == "IN"){
-                   x.inTime = y.created_at;
+                   x.inTime = createdTime;
+                   x.inFull = y.created_at;
                  }
                  else if(y.state == 'FINISH'){
-                   x.outTime = y.created_at;
+                   x.outTime = createdTime;
+                   x.outFull = y.created_at;
                  }
-              const inDate = new Date(x.inTime);
-              const outDate = new Date(x.outTime);
+                 else if(y.state == 'BREAK') {
+                   x.startBrake = createdTime;
+                   x.startFull = y.created_at;
+                 }
+              const inDate = new Date(x.inFull);
+              const outDate = new Date(x.outFull);
 
               const diffTime = outDate.getTime() - inDate.getTime();
               x.workHours = (diffTime / 3600000).toFixed(2);
@@ -292,7 +307,7 @@ export default {
             .request({
               method: "post",
               url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/clock-in-users",
+                this.$hostname + "manager/clock-in-users",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -338,7 +353,7 @@ export default {
                   alert('End Of Break!');
                   this.sendTimesheet(URL);
               }
-
+              this.updateData(this.date);
             }
             else {
               alert("User isn't logged in");
@@ -404,7 +419,7 @@ export default {
                 axios.request({
                     method: "post",
                     url:
-                        "http://188.169.16.186:8082/ronny/rest/web/index.php?r=auth/clocked",
+                        this.$authHostName + "/clocked",
                     data: bodyFormData,
                     })
                     .then((response) => {

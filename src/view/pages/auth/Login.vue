@@ -254,9 +254,7 @@ export default {
                 }
 
             );
-        }
-
-        ,
+        },
         onSubmit() {
             this.$v.form.$touch();
 
@@ -297,9 +295,7 @@ export default {
                 }
 
                 , 2000);
-        }
-
-        ,
+        },
 
         onPinSubmit(sentPin, sentMac) {
             const pin = sentPin;
@@ -383,7 +379,7 @@ export default {
 
             axios.request( {
                     method: "post",
-                    url: "http://188.169.16.186:8082/ronny/rest/web/index.php?r=auth",
+                    url: this.$authHostName,
                     data: bodyFormData,
                 }
 

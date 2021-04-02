@@ -125,7 +125,7 @@ export default {
             axios.request({
                 method: "post",
                 url:
-                    "http://max.ronnyspizza.ge/ronny/rest/web/index.php?r=auth",
+                    this.$authHostName,
                 data: bodyFormData,
                 })
                 .then((response) => {

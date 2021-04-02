@@ -99,7 +99,7 @@
                                 </div>
                             </div>
                             
-                            <div class="row" v-for="item in order.items" :key="item.id">
+                            <div class="row listIem" v-for="item in order.items" :key="item.id">
                                 <div class="col-1" v-if="!restrictEdit">
                                         <i class="material-icons md-24" style="font-size: 3em" @click="deleteProduct(item)">clear</i>
                                 </div>
@@ -112,36 +112,38 @@
                                                 {{ item.name }}</strong>
                                             <!-- <strong v-if="item.cuts == 1"> {{ item.cutsCount }} Cut</strong> -->
                                         </span>
-                                        <span class="itemPrice" >
+                                        <span class="itemPrice">
                                             <strong>{{
                                 (item.totalPrice * item.qty).toFixed(2)
                                 }}</strong>
                                         </span>
                                     </div>
+                                    <div class="deletedToppingInner">
+                                        <div class="d-flex justify-content-between changedSetting" v-if="item.cuts == 1">
+                                            <span>{{ item.cutsCount }} Cuts</span>
+                                            <span class="pading-10">0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between changedSetting" v-if="item.crust == 'thin'">
+                                            <span>{{ item.crust }} Crust</span>
+                                            <span class="pading-10">0.00</span>
+                                        </div>
+                                        <!-- <strong v-if="item.cuts == 1"> {{ item.cutsCount }} Cut</strong> -->
+                                        <div class="d-flex justify-content-between changedSetting" v-if="item.sauce != 'sauce'">
+                                            <span>{{ item.sauce }}</span>
+                                            <span class="pading-10">0.00</span>
+                                        </div>
+                                    </div>
                                     <div class="toppingInner">
                                         <div class="wholeTopping">
-                                            <div class="toppingName" v-for="topping in item.toppings" :key="topping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="topping in item.toppings" :key="topping.id">
                                                 <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                                 <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                                <span  class="toppingPrice" >{{
+                                                <span class="pading-10">{{
                                                         (topping.price * topping.count).toFixed(2)
                                                     }}
                                                 </span>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.cuts == 1">
-                                        <span>{{ item.cutsCount }} Cuts</span>
-                                        <span>0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
-                                        <span>{{ item.crust }} Crust</span>
-                                        <span>0.00</span>
-                                    </div>
-                                    <!-- <strong v-if="item.cuts == 1"> {{ item.cutsCount }} Cut</strong> -->
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'sauce'">
-                                        <span>{{ item.sauce }}</span>
-                                        <span>0.00</span>
                                     </div>
 
                                     <div class="orderDisplay" @click="foobar(item)">
@@ -149,43 +151,9 @@
                                     </div>
                                     <div class="pl-4" style="font-size: 14px">
                                         <div class="wholeDefTopping">
-                                            <div class="toppingName" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
                                                 <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
-                                                <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                                defTopping.isDeleted &&
-                                item.is_special == 0 &&
-                                defTopping.id != 5
-                            ">- {{ defTopping.price }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="aSideDefTopping">
-                                            <div class="toppingName" v-for="defTopping in item.half1.defaultToppings" :key="defTopping.id">
-                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">A - {{ defTopping.name }}</span>
-                                                <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                                defTopping.isDeleted &&
-                                item.is_special == 0 &&
-                                defTopping.id != 5
-                            ">- {{ defTopping.price }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="aSideTopping">
-                                            <div class="toppingName" v-for="topping in item.half1.toppings" :key="topping.id">
-                                                <span v-if="topping.count == 1">A + {{ topping.name }}</span>
-                                                <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
-                                                <span  class="toppingPrice">{{
-                            (topping.price * topping.count).toFixed(2)
-                            }}</span>
-                                            </div> 
-                                        </div>
-                                    </div>
-                                    <div class="orderDisplay" @click="foobar(item)">
-                                        <strong>&nbsp;</strong>
-                                    </div>
-                                    <div class="pl-4" style="font-size: 14px">
-                                        <div class="bSideDefTopping">
-                                            <div  v-for="defTopping in item.half2.defaultToppings" :key="defTopping.id">
-                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">B - {{ defTopping.name }}</span>
-                                                <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                                                <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                                 defTopping.isDeleted &&
                                 item.is_special == 0 &&
                                 defTopping.id != 5
@@ -193,10 +161,44 @@
                                             </div>
                                         </div>
                                         <div class="bSideTopping">
-                                            <div class="toppingName" v-for="topping in item.half2.toppings" :key="topping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="defTopping in item.half1.defaultToppings" :key="defTopping.id">
+                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">A - {{ defTopping.name }}</span>
+                                                <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                                defTopping.isDeleted &&
+                                item.is_special == 0 &&
+                                defTopping.id != 5
+                            ">- {{ defTopping.price }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="bSideTopping">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="topping in item.half1.toppings" :key="topping.id">
+                                                <span v-if="topping.count == 1">A + {{ topping.name }}</span>
+                                                <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
+                                                <span>{{
+                            (topping.price * topping.count).toFixed(2)
+                            }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="orderDisplay" @click="foobar(item)">
+                                        <strong>&nbsp;</strong>
+                                    </div>
+                                    <div class="pl-4" style="font-size: 14px">
+                                        <div class="bSideTopping">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="defTopping in item.half2.defaultToppings" :key="defTopping.id">
+                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">B - {{ defTopping.name }}</span>
+                                                <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                                defTopping.isDeleted &&
+                                item.is_special == 0 &&
+                                defTopping.id != 5
+                            ">- {{ defTopping.price }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="bSideTopping">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="topping in item.half2.toppings" :key="topping.id">
                                                 <span v-if="topping.count == 1">B + {{ topping.name }}</span>
                                                 <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
-                                                <span  class="toppingPrice">{{
+                                                <span class="pading-10">{{
                             (topping.price * topping.count).toFixed(2)
                             }}</span>
                                             </div>
@@ -228,39 +230,42 @@
                                             <strong>{{ item.qty }} {{ item.name }}</strong>
                                             <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                                         </span>
-                                        <span  class="itemPrice">
+                                        <span class="itemPrice">
                                             <strong>{{
                           (item.totalPrice * item.qty).toFixed(2)
                         }}</strong>
                                         </span>
                                     </div>
-                                    
+
                                     <div class="pl-4" style="font-size: 14px">
-                                        <div class="d-flex justify-content-between" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
-                                          
+                                      <div class="sticksTopping">
+                                        <div class="d-flex justify-content-between halfToppings" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
                                             <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
-                                            <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="defTopping.isDeleted">0.00</span>
+                                            <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="defTopping.isDeleted">0.00</span>
                                         </div>
+                                      </div> 
+
                                         <div class="d-flex justify-content-between deletedToppingStick" v-if="item.size == 'thin'">
                                             <span>{{ item.size }} Crust</span>
                                         </div>
-                                        <div class="toppingSticInner">
-                                                
-                                            <div class="toppingName" v-for="topping in item.toppings" :key="topping.id">
-                                                
-                                                <span  v-if="topping.count == 1">+ {{ topping.name }}</span>
+                                        <div class="sticksTopping">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="topping in item.toppings" :key="topping.id">
+
+                                                <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                                 <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                                <span class="toppingSticPrice">{{
+                                                <span >{{
                                                 (topping.price * topping.count).toFixed(2)
                                                 }}</span>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                                 <!-- Half and Half Pizza View -->
 
-                                <div class="col-7" v-if="item.custom == 'yes'" @click="foobar(item)">
-                                    <div class="d-flex justify-content-between">
+                                <div class="col-7 " v-if="item.custom == 'yes'" @click="foobar(item)">
+                                  <div class="halfInner">
+                                    <div class="d-flex justify-content-between halfSett">
                                         <span class="orderDisplay" @click="foobar(item)">
                                             <strong>{{ item.qty }}
                                                 {{ item.size.toUpperCase() }} A/B</strong>
@@ -272,52 +277,51 @@
                         }}</strong>
                                         </span>
                                     </div>
-                                    <div class="d-flex justify-content-between" v-for="topping in item.toppings" :key="topping.id">
+                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.cuts == 1">
+                                        <span>{{ item.cutsCount }} Cuts</span>
+                                        <span class="pading-10">0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
+                                        <span>{{ item.crust }} Crust</span>
+                                        <span class="pading-10">0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'sauce'">
+                                        <span>{{ item.sauce }}</span>
+                                        <span class="pading-10">0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between halfToppings" v-for="topping in item.toppings" :key="topping.id">
                                         <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                         <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
                                         <span>{{
                         (topping.price * topping.count).toFixed(2)
                       }}</span>
                                     </div>
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.cuts == 1">
-                                        <span>{{ item.cutsCount }} Cuts</span>
-                                        <span>0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
-                                        <span>{{ item.crust }} Crust</span>
-                                        <span>0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'sauce'">
-                                        <span>{{ item.sauce }}</span>
-                                        <span>0.00</span>
-                                    </div>
 
-                                    <div class="orderDisplay" @click="foobar(item)">
+                                    <div class="orderDisplay halfName" @click="foobar(item)">
                                         <strong>A {{ item.half1.name }}</strong>
                                     </div>
-                                    <div class="pl-4" style="font-size: 14px">
+                                    <div style="font-size: 14px">
                                         <div class="d-flex justify-content-between" v-for="defTopping in item.half1.defaultToppings" :key="defTopping.id">
                                             <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
-                                            <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                                            <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                             defTopping.isDeleted &&
                             item.half1.is_special == 0 &&
                             defTopping.id != 5
-                          ">- {{ defTopping.price }}</span>
+                          " >- {{ defTopping.price }}</span>
                                         </div>
                                         <div class="d-flex justify-content-between" v-for="topping in item.half1.toppings" :key="topping.id">
                                             <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                             <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                            <span class="toppingPrice">{{ (topping.price * topping.count).toFixed(2) }}
-                                            </span>
+                                            <span>{{ (topping.price * topping.count).toFixed(2) }}</span>
                                         </div>
                                     </div>
-                                    <div class="orderDisplay" @click="foobar(item)">
+                                    <div class="orderDisplay halfName" @click="foobar(item)">
                                         <strong>B {{ item.half2.name }}</strong>
                                     </div>
-                                    <div class="pl-4" style="font-size: 14px">
+                                    <div style="font-size: 14px">
                                         <div class="d-flex justify-content-between" v-for="defTopping in item.half2.defaultToppings" :key="defTopping.id">
                                             <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
-                                            <span :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                                            <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                             defTopping.isDeleted &&
                             item.half2.is_special == 0 &&
                             defTopping.id != 5
@@ -327,11 +331,10 @@
                                         <div class="d-flex justify-content-between" v-for="topping in item.half2.toppings" :key="topping.id">
                                             <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                             <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                            <span  class="toppingPrice">{{
-                          (topping.price * topping.count).toFixed(2)
-                        }}</span>
+                                            <span>{{ (topping.price * topping.count).toFixed(2) }}</span>
                                         </div>
                                     </div>
+                                </div>
                                 </div>
                                 <!-- End Of Half and Half Pizza View -->
 
@@ -769,58 +772,59 @@
 
     <!-- Change Modal -->
 
-    <div v-if="changeModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Change</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="closeChangeModal()">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col w-3 gray">
-                                        <div>
-                                            <h4>Subtotal:</h4>
-                                        </div>
-                                        <div>
-                                            <h4 id="total_price">{{ totalNet.toFixed(2) }}</h4>
-                                        </div>
-                                    </div>
-                                    <div class="col w-3 gray">
-                                        <div>
-                                            <h4>Paid:</h4>
-                                        </div>
-                                        <div>
-                                            <h4 id="total_price">{{ cashInput }}</h4>
-                                        </div>
-                                    </div>
-                                    <div class="col w-3 gray">
-                                        <div>
-                                            <h4>Change:</h4>
-                                        </div>
-                                        <div>
-                                            <h4 id="total_price">{{ (cashInput - totalPrice).toFixed(2) }}</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="closeChangeModal()">
-                                    Close
-                                </button>
-                            </div>
-                        </div>
+    <v-dialog 
+      v-model="changeModal"
+      max-width="500px"
+    >
+    <v-card class="justify-center">
+        <v-card-title>
+          <span class="headline">Change</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <div class="row">
+                <div class="col w-3 gray">
+                    <div>
+                        <h4>Subtotal:</h4>
+                    </div>
+                    <div>
+                        <h4 id="total_price">{{ totalNet.toFixed(2) }}</h4>
+                    </div>
+                </div>
+                <div class="col w-3 gray">
+                    <div>
+                        <h4>Paid:</h4>
+                    </div>
+                    <div>
+                        <h4 id="total_price">{{ cashInput }}</h4>
+                    </div>
+                </div>
+                <div class="col w-3 gray">
+                    <div>
+                        <h4>Change:</h4>
+                    </div>
+                    <div>
+                        <h4 id="total_price">{{ (cashInput - totalPrice).toFixed(2) }}</h4>
                     </div>
                 </div>
             </div>
-        </transition>
-    </div>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>      
+          <v-btn
+            color="blue darken-1"
+            text
+            x-large
+            @click="closeChangeModal()"
+          >
+            Close
+          </v-btn>
+        </v-card-actions>
+    </v-card>
+    </v-dialog>
+
+    
     <!-- End of Change Modal -->
 
     <!-- Start Of CRM Modal -->
@@ -842,7 +846,6 @@
 
                     <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
                   
-                    <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
 
                     <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
                         <v-radio label="Male" value="male"></v-radio>
@@ -850,6 +853,8 @@
                         <v-radio label="None" value="none"></v-radio>
                     </v-radio-group>
 
+                    <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+                    
                     <v-row>
                         <v-col cols="12" sm="12">
                             <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="curentCustomer.address" clearable ></v-text-field>
@@ -858,10 +863,16 @@
 
 
 
-                    <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
                     <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
                     
-                    <v-text-field v-if="diplomatCrm" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+                    <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                                        
+                    <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
+                    
 
                 </v-form>
               </v-row>
@@ -1114,25 +1125,34 @@
                                         
                   <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
                   
-                  <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
-                  <v-text-field v-model="curentCustomer.email" class="my-2" label="E-mail"></v-text-field>
 
+                 
                   <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
                   </v-radio-group>
 
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+
                   <v-row>
                       <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
                       </v-col>
                   </v-row>
 
+
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
+                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
                   <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                    
+                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
               </v-form>
             </v-row>
@@ -1170,17 +1190,19 @@
             <v-row>
               <v-form ref="form" v-model="valid" lazy-validation>
 
-                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
                   
-                  <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
-                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
 
+                 
                   <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
                   </v-radio-group>
+
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
 
                   <v-row>
                       <v-col cols="12" sm="12">
@@ -1188,9 +1210,16 @@
                       </v-col>
                   </v-row>
 
+
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
+                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
                   <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                    
+                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
               </v-form>
             </v-row>
@@ -1229,27 +1258,36 @@
               <b-container fluid>
                   <v-form ref="form" v-model="valid" lazy-validation>
                       
-                      <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-                      
-                      <v-text-field v-model="curentCustomer.name" class="my-2" label="Name" clearable></v-text-field>
+                      <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
-                      <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
 
-                      <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
-                          <v-radio label="Male" value="male"></v-radio>
-                          <v-radio label="Female" value="female"></v-radio>
-                          <v-radio label="None" value="none"></v-radio>
-                      </v-radio-group>
+                 
+                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                      <v-radio label="Male" value="male"></v-radio>
+                      <v-radio label="Female" value="female"></v-radio>
+                      <v-radio label="None" value="none"></v-radio>
+                  </v-radio-group>
 
-                      <v-row>
-                          <v-col cols="12" sm="12">
-                              <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
-                          </v-col>
-                      </v-row>
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
 
-                      <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                  <v-row>
+                      <v-col cols="12" sm="12">
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
+                      </v-col>
+                  </v-row>
 
-                      <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+
+                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
+                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                    
+                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
                   </v-form>
               </b-container>
@@ -1311,9 +1349,12 @@
           <v-container>
             <v-row>
               <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="curentCustomer.name" class="my-2" label="3 Digit Code" required clearable></v-text-field>
 
-                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+                <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
+
+                  <v-text-field v-model="curentCustomer.code" class="my-2" label="3 Digit Code #" required clearable></v-text-field>
 
                   <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
@@ -1321,17 +1362,23 @@
                       <v-radio label="None" value="none"></v-radio>
                   </v-radio-group>
 
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+
                   <v-row>
                       <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
                       </v-col>
                   </v-row>
 
-                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
+                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
                   <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                    
+                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
               </v-form>
             </v-row>
@@ -1380,15 +1427,18 @@
                                         
                   <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
                   
-                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
-                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+                  <v-text-field v-model="curentCustomer.code" class="my-2" label="3 Digit Code #" required clearable></v-text-field>
 
+                 
                   <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
                   </v-radio-group>
+
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
 
                   <v-row>
                       <v-col cols="12" sm="12">
@@ -1399,7 +1449,13 @@
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
+                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
                   <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                    
+                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                  
+                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
               </v-form>
             </v-row>
@@ -1843,7 +1899,8 @@ export default {
       orders: [],
       filteredOrders:[],
       selectedOrder: [],
-      diplomatCrm: false,
+      discountActive: false,
+      corporateActive: false,
       discountTypes: [
         { id : 0, name: 'Diplomat' },
         { id : 1, name: 'Student' },
@@ -2147,7 +2204,7 @@ export default {
       .request({
         method: "post",
         url:
-          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/list",
+          this.$hostname + "orders/list",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -2167,7 +2224,7 @@ export default {
       .request({
         method: "post",
         url:
-          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/get-ingredients-price",
+          this.$hostname + "products/get-ingredients-price",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -2180,7 +2237,7 @@ export default {
       .request({
         method: "get",
         url:
-          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/get-order-id",
+          this.$hostname + "products/get-order-id",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -2449,6 +2506,11 @@ export default {
         deep: true,
 
         this.changeDisc();
+      },
+      changeModal(val){
+        if(!val){
+          this.closeChangeModal();
+        }
       }
     },
   methods: {
@@ -2482,13 +2544,19 @@ export default {
 
       },
         crmDiscount(discount){
-          if(discount.name == 'Diplomat'){
-            this.diplomatCrm ^= true;
-          } else {
-            this.diplomatCrm = false;
+          if(discount.name == 'Diplomat'|| discount.name == 'Team' || discount.name == 'Student' || discount.name == 'Social'){
+            this.discountActive = true;
+          } 
+          else if(discount.name == 'Corporate'){
+            this.corporateActive = true;
+          }
+          else {
+            this.discountActive = false;
+            this.corporateActive = false;
           }
           if(discount.name == this.curentCustomer.discount){
             this.curentCustomer.discount = '';
+            this.discountActive = false;
           }
           else {
             this.curentCustomer.discount = discount.name;
@@ -2605,7 +2673,7 @@ export default {
             .request({
               method: "post",
               url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/customers/get-customer",
+                this.$hostname + "customers/get-customer",
                 // "https://max.ronnyspizza.ge/rest/web/index.php?r=v1/customers/get-customer",
               headers: {
                 Authorization: "Bearer " + TOKEN,
@@ -2680,7 +2748,7 @@ export default {
           axios.request({
               method: "post",
               url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-new-orders",
+                this.$hostname + "manager/get-new-orders",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -3439,11 +3507,11 @@ export default {
       
       if (this.isHalfPizza == "yes") {
           if(this.halfPizzaPart == 1){
-            this.customPizza.sauce = 'custom';
+            this.customPizza.sauce = sauce;
             this.customPizza.half1.sauce = sauce;
           }
           else if(this.halfPizzaPart == 2){
-            this.customPizza.sauce = 'custom';  
+            this.customPizza.sauce = sauce;  
             this.customPizza.half2.sauce = sauce;
           }
           else if(this.halfPizzaPart == 0 || this.halfPizzaPart == 3){
@@ -4633,7 +4701,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/get-reciept-by-product-id",
+            this.$hostname + "products/get-reciept-by-product-id",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -4903,7 +4971,7 @@ export default {
       if(!this.walkinActiveVar){
         this.walkinActiveVar = true;
       }
-      if (this.takeoutActiveVar || this.deliveryActiveVar) {
+      if (this.takeoutActiveVar || this.deliveryActiveVar || this.glovoActive || this.woltActive) {
         this.takeoutActiveVar = false;
         this.deliveryActiveVar = false;
         this.glovoActive = false;
@@ -4923,7 +4991,7 @@ export default {
     takeoutActive(ND) {
       this.playSound();
       this.takeoutActiveVar = true;
-      if (this.walkinActiveVar || this.deliveryActiveVar) {
+      if (this.walkinActiveVar || this.deliveryActiveVar || this.glovoActive || this.woltActive) {
         this.walkinActiveVar = false;
         this.deliveryActiveVar = false;
         this.glovoActive = false;
@@ -5022,6 +5090,12 @@ export default {
     },
     payLater() {
         this.paymentType = 'payLater';
+        this.paymentConfirm();
+    },
+    payGlovo() {
+        this.paymentConfirm();
+    },
+    payWolt() {
         this.paymentConfirm();
     },
     doneCash() {
@@ -5127,7 +5201,7 @@ export default {
           method: "post",
           url:
             //"http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/send-order",
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/create",
+            this.$hostname + "orders/create",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -5156,7 +5230,7 @@ export default {
         //this.order = JSON.parse(this.selectedOrder);
         axios.request({
             method: 'post',
-            url: 'http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/paid',
+            url: this.$hostname + "orders/paid",
             headers: { 
               'Authorization': 'Bearer '+TOKEN, 
             },
@@ -5180,7 +5254,7 @@ export default {
         axios.request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/print",
+            this.$hostname + "orders/print",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -5205,7 +5279,7 @@ export default {
         axios.request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/print",
+            this.$hostname + "orders/print",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -5416,12 +5490,13 @@ export default {
         this.order.discountName = 'Manager';
         this.order.discountAmount = false;
         this.managerPercentVar = true;
+        this.managerModal = false;
       } else if(this.managerAmount != '') {
         this.order.discount = this.managerAmount;
         this.order.discountName = 'Manager';
         this.order.discountAmount = true;
         this.managerAmountVar = true;
-        
+        this.managerModal = false;
       } else if(this.managerAmount == '' && this.managerPercent == ''){
         alert('No Discount Selected');
       }
@@ -5447,7 +5522,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/customers/create-customer",
+            this.$hostname + "customers/create-customer",
             //"http://max.ronnyspizza.ge/rest/web/index.php?r=v1/customers/create-customer",
           headers: {
             Authorization: "Bearer " + TOKEN,
@@ -5480,7 +5555,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/customers/create-customer",
+            this.$hostname + "customers/create-customer",
             //"http://max.ronnyspizza.ge/rest/web/index.php?r=v1/customers/create-customer",
           headers: {
             Authorization: "Bearer " + TOKEN,
@@ -5565,34 +5640,44 @@ export default {
       }
     },
    glovoCustomer(payment){
-     if(this.curentCustomer.phone === '')
+     if(this.curentCustomer.name === '')
       {
-        alert('Phone Field is required!');
+        alert('3 Digit Code is required!');
       }
-
-      this.order.customer = this.curentCustomer;
-      this.order.deliveryType = 'Glovo';
-      if(payment === 'cash'){
-        this.order.deliveryMethod = 'Glovo Cash';
+      else {
+        this.order.customer = this.curentCustomer;
+        this.order.deliveryType = 'Glovo';
+        if(payment === 'cash'){
+          this.order.deliveryMethod = 'Glovo Cash';
+          this.glovoModal = false;
+          this.payLater();
+        }
+        else if(payment === 'paid'){
+          this.order.deliveryMethod = 'Glovo';
+          this.paymentType = 'card';
+          console.log('Glovo customer : ', this.order.customer);
+          this.glovoModal = false;
+          this.payGlovo();
+        }
+        // console.log('Glovo customer : ', this.order.customer);
+        // this.glovoModal = false;
+        // this.payGlovo();
       }
-      else if(payment === 'paid'){
-        this.order.deliveryMethod = 'Glovo';
-      }
-      console.log('Glovo customer : ', this.order.customer);
-      this.glovoModal = false;
-      this.payLater();
     },
    woltCustomer(){
-     if(this.curentCustomer.phone === '' || this.curentCustomer.name === '')
+     if(this.curentCustomer.name === '')
       {
-        alert('Phone And Name Fields are required!');
+        alert('Name Fields is required!');
       }
-      this.order.customer = this.curentCustomer;
-      this.order.deliveryType = 'Wolt';
-      this.order.deliveryMethod = 'Wolt';
-      console.log('Wolt customer : ', this.order.customer);
-      this.woltModal = false;
-      this.payLater();
+      else {
+        this.order.customer = this.curentCustomer;
+        this.order.deliveryType = 'Wolt';
+        this.order.deliveryMethod = 'Wolt';
+        this.paymentType = 'card';
+        console.log('Wolt customer : ', this.order.customer);
+        this.woltModal = false;
+        this.payWolt();
+      }
     },
     closeChangeModal(){
       this.changeModal = false;

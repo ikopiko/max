@@ -68,7 +68,7 @@ export default {
     console.log(this.categoryId)
     axios.request({
             method: 'post',
-            url: 'http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/products/get-ingredients',
+            url: this.$hostname + 'products/get-ingredients',
             headers: { 
               'Authorization': 'Bearer '+TOKEN, 
             }

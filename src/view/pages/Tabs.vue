@@ -119,7 +119,7 @@
       .request({
         method: "get",
         url:
-          "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/products/get-order-id",
+          this.$hostname + "products/get-order-id",
         headers: {
           Authorization: "Bearer " + this.TOKEN,
         },

@@ -167,7 +167,7 @@ export default {
             axios.request({
                 method: "post",
                 url:
-                    "http://188.169.16.186:8082/rest/web/index.php?r=auth",
+                    this.$authHostName,
                 data: bodyFormData,
                 })
                 .then((response) => {

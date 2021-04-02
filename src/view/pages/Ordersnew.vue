@@ -2,172 +2,126 @@
 /* eslint-disable */
 </script>
 <template>
-  <v-container data-app>
-    <v-row>
-        
-        <v-card class="col-8">
-          <v-menu
-          v-model="menu"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="date"
-              label="Select Date"
-              prepend-icon="mdi-calendar"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="date"
-            @input="menu = false"
-          ></v-date-picker>
-        </v-menu>
-            <v-tabs
-              v-model="tab"
-              fixed-tabs
-              background-color="primary"
-              dark      
-            >
-              <v-tab
-                  v-for="item in items"
-                  :key="item.tab"
-                  @click="getTab(item)"
-              >
-                  {{ item.tab }}
-              </v-tab>
+<v-container data-app>
+    <v-row no-gutters>
+        <v-col cols="12" sm="6" md="4"  class="vCard100">
+            <v-card class="pa-2" outlined >
+                <i class="material-icons md-36 topcorner" @click="clearOrder()" v-if="showOrderComponent">close</i>
+                <ul class="inner">
+                    <li>
+                        <orderList :orderProp="order" v-if="showOrderComponent" />
+                    </li>
+                    <li class="selecti">
+                        <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Filter by  "></v-select>
+                    </li>
+                </ul>
+                <ul class="bottomInner">
+                    <li>
+                        <v-btn v-if="statusModel != null" @click="updateOrder()">Change: {{ statusObject[0].status_name }}</v-btn>
+                        <v-btn v-if="showOrderComponent && statusModel == null" @click="updateOrder()">Change </v-btn>
+                    </li>
+                </ul>
+                <ul class="bottomInner">
+                    <li>
+                        <v-btn v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="re_open(selectedOrder)">
+                            <v-icon dark>open_in_new</v-icon>
+                        </v-btn>
+                        <!-- <v-btn v-if="selectedOrder.payment_method_id == 4" @click="payOrder(selectedOrder)">Pay Order</v-btn> -->
+                    </li>
+                </ul>
+ 
+            </v-card>
+        </v-col>
+        <v-col cols="6" md="8" class="vCard100">
+            <v-card class="pa-2" outlined tile>
+                <v-menu v-model="menu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-text-field v-model="date" label="Select Date" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+                    </template>
+                    <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
+                </v-menu>
+                <v-tabs v-model="tab" fixed-tabs background-color="primary" dark>
+                    <v-tab v-for="item in items" :key="item.tab" @click="getTab(item)">
+                        {{ item.tab }}
+                    </v-tab>
 
-            <v-tabs-items v-model="tab">
-            <v-tab-item
-                v-for="item in items"
-                :key="item.tab"
-            >
-                    <v-text-field
-                      v-model="search"
-                      append-icon="mdi-magnify"
-                      label="Search"
-                      single-line
-                      hide-details
-                    ></v-text-field>
+                    <v-tabs-items v-model="tab">
+                        <v-tab-item v-for="item in items" :key="item.tab">
+                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
 
-                    <v-data-table
-                      v-model="selected"
-                      :search="search"
-                      :headers="headers"
-                      :items="filteredOrders"
-                      :items-per-page="itemsPerPage"
-                      item-key="id"
-                      :loading="loading"
-                      :single-select="singleSelect"
-                      show-select
-                      class="elevation-1"
-                      @page-count="pageCount = $event"
-                    >
-                        <template v-slot:item="row">
-                            <tr @click="onButtonClick(row.item)">
-                              <td>{{Number(row.item.id)}}</td>
-                              <td>{{row.item.branch}}</td>
-                              <td>{{row.item.order_data.deliveryMethod}}</td>
-                              <td>{{row.item.order_data.adress}}</td>
-                              <td>{{row.item.order_data.customer.name}}</td>
-                              <td>{{Number(row.item.order_data.customer.phone)}}</td>
-                              <td>{{row.item.order_data.items[0].name}}...</td>
+                            <v-data-table v-model="selected" :search="search" :headers="headers" :items="filteredOrders" :items-per-page="itemsPerPage" item-key="id" show-select class="elevation-1" @page-count="pageCount = $event">
+                                <template v-slot:item="row">
+                                    <tr @click="onButtonClick(row.item)">
+                                        <td>{{Number(row.item.id)}}</td>
+                                        <td>{{row.item.branch}}</td>
+                                        <td>{{row.item.order_data.deliveryMethod}}</td>
+                                        <td>{{row.item.order_data.adress}}</td>
+                                        <td>{{row.item.order_data.customer.name}}</td>
+                                        <td>{{Number(row.item.order_data.totalPrice)}}</td>
+                                        <td>{{row.item.order_data.items[0].name}}...</td>
 
-                            </tr>
-                        </template>
-                    </v-data-table>
-          </v-tab-item>
-          </v-tabs-items>
-          </v-tabs>
-            <v-row>
-              <!-- <v-btn elevation='2' dark large class="mx-2 my-2" v-for="status in orderStatuses" :key="status" @click="changeOrder(status)">
+                                    </tr>
+                                </template>
+                            </v-data-table>
+                        </v-tab-item>
+                    </v-tabs-items>
+                </v-tabs>
+                <v-row>
+                    <!-- <v-btn elevation='2' dark large class="mx-2 my-2" v-for="status in orderStatuses" :key="status" @click="changeOrder(status)">
                 {{ status.status_name }}
               </v-btn> -->
 
-              <v-select
-              :items="orderStatuses"
-              v-on:change="changeOrder"
-              item-text="status_name"
-              item-value="id"
-              label="Filter Order"
-            ></v-select>
-            </v-row>
-        </v-card>
-        <v-card class="col-4">
-            <i class="material-icons md-36 topcorner" @click="clearOrder()" v-if="showOrderComponent">close</i>
-            <orderList :orderProp="order" v-if="showOrderComponent" />
-            <v-select
-              v-if="showOrderComponent"
-              :items="orderStatuses"
-              v-model="statusModel"
-              item-text="status_name"
-              label="Function"
-            ></v-select>
-            <v-btn v-if="statusModel != null" @click="updateOrder()">Change Order: {{ statusObject[0].status_name }}</v-btn>
-            <v-btn v-if="showOrderComponent && statusModel == null" @click="updateOrder()">Change Order</v-btn>
-            <v-btn v-if="selectedOrder.payment_method_id == 4" @click="payOrder(selectedOrder)">Pay Order</v-btn>
-            <v-btn  v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="re_open(selectedOrder)">
-                <v-icon dark>open_in_new</v-icon>
-            </v-btn>
-        </v-card>
+                    <v-select :items="orderStatuses" v-on:change="changeOrder" item-text="status_name" item-value="id" label="Filter Order"></v-select>
+                </v-row>
+            </v-card>
+        </v-col>
     </v-row>
 
-    <v-dialog
-      v-model="wasteDialog"
-      scrollable
-      max-width="500px"
-    >
-      <v-card>
-        <v-card-title>Select Waste Item</v-card-title>
-        <v-divider></v-divider>
-        <v-card-text style="height: 400px;">
-            <v-checkbox
-            v-for="item in selectedOrderItems"
-            :key="item.id"
-            v-model="selectedWaste"
-            :label="item.name+' : '+item.price" 
-            :value="item"
-          ></v-checkbox>
-          <v-divider></v-divider>
-          <v-textarea
-            clearable
-            clear-icon="mdi-close-circle"
-            label="Comment"
-            v-model="wasteComment"
-          ></v-textarea>
-        </v-card-text>
-        <v-divider></v-divider>
-        <v-card-actions>
+    <v-dialog v-model="wasteDialog" scrollable max-width="500px">
+        <v-card>
+            <v-card-title>Select Waste Item</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 400px;">
+                <v-checkbox v-for="item in selectedOrderItems" :key="item.id" v-model="selectedWaste" :label="item.name+' : '+item.price" :value="item"></v-checkbox>
+                <v-divider></v-divider>
+                <v-textarea clearable clear-icon="mdi-close-circle" label="Comment" v-model="wasteComment"></v-textarea>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
 
-          <v-btn
-            color="blue darken-1"
-            text
-            x-large
-            @click="wasteDialog = false"
-          >
-            Close
-          </v-btn>
-          <v-btn
-            color="blue darken-1"
-            x-large
-            text
-            @click="wasteOrder()"
-          >
-            Done
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+                <v-btn color="blue darken-1" text x-large @click="wasteDialog = false">
+                    Close
+                </v-btn>
+                <v-btn color="blue darken-1" x-large text @click="wasteOrder()">
+                    Done
+                </v-btn>
+            </v-card-actions>
+        </v-card>
     </v-dialog>
-
-  </v-container>
-
+</v-container>
 </template>
+
+<style scoped>
+.vCard100 {
+    width: 100%;
+}
+.v-sheet.v-card
+{
+  height: 100%;
+}
+ul.inner li,
+ul.bottomInner li {
+    list-style: none;
+    float: left;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+
+li.selecti {
+    width: 100%;
+}
+</style>
 <script>
 import orderList from '../components/Order';
 import axios from 'axios';
@@ -216,6 +170,7 @@ import axios from 'axios';
           { tab: 'Delivery', content: 'ronnys' },
           { tab: 'Glovo', content: 'glovo' },
           { tab: 'Wolt', content: 'wolt' },
+          { tab: 'Future', content: 'future' },
         ],
         orderTypes: [
           { tab: 'Completed Orders', content: 'complete'},
@@ -230,7 +185,7 @@ import axios from 'axios';
           { text: "Source", value: "source" },
           { text: "Delivery Adress", value: "order_data.adress" },
           { text: "Customer Name", value: "order_data.customer.name" },
-          { text: "Customer Phone", value: "order_data.customer.tel" },
+          { text: "Total Price", value: "order_data.totalPrice" },
           { text: "Order Items", value: "order_data.items[0].name" },
         ],
       }
@@ -264,7 +219,7 @@ import axios from 'axios';
       .request({
         method: "post",
         url:
-          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/list",
+          this.$hostname + "orders/list",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -276,15 +231,17 @@ import axios from 'axios';
         // this.orders.forEach(x => {
         //     x.order_data = JSON.parse(x.order_data);
         // });
-        this.filteredOrders = this.orders;
+        this.filteredOrders = this.orders.filter((x) => x.status != 10);
+        // this.filteredOrders = this.orders;
+        // this.orders.filter((x) => x.payment_method_id === '4')
+        this.filteredOrders.reverse();
         console.log("orders data: ", this.filteredOrders);
       });
-
       axios
       .request({
         method: "post",
         url:
-          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/order-statuses",
+          this.$hostname + "poses/order-statuses",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -315,7 +272,7 @@ import axios from 'axios';
           .request({
             method: "post",
             url:
-              "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/list",
+              this.$hostname + "orders/list",
             headers: {
               Authorization: "Bearer " + TOKEN,
             },
@@ -328,6 +285,7 @@ import axios from 'axios';
             //     x.order_data = JSON.parse(x.order_data);
             // });
             this.filteredOrders = this.orders;
+            this.filteredOrders.reverse();
             console.log("orders data: ", this.filteredOrders);
           });
 
@@ -346,7 +304,7 @@ import axios from 'axios';
           .request({
             method: "post",
             url:
-              "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/list",
+              this.$hostname + "orders/list",
             headers: {
               Authorization: "Bearer " + TOKEN,
             },
@@ -373,7 +331,7 @@ import axios from 'axios';
             .request({
               method: "post",
               url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/change-status",
+                this.$hostname + "orders/change-status",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -403,7 +361,7 @@ import axios from 'axios';
             .request({
               method: "post",
               url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/waste",
+                this.$hostname + "orders/waste",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -428,7 +386,7 @@ import axios from 'axios';
             .request({
               method: "post",
               url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/change-status",
+                this.$hostname + "orders/change-status",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -534,6 +492,9 @@ import axios from 'axios';
             }
             else if(tab.content === 'wolt'){
               this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Wolt");
+            }
+            else if(tab.content === 'future'){
+              this.filteredOrders = this.orders.filter((x) => x.order_data.isFuture);
             }
             else if(tab.content === 'takeout'){
               this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Take Out");

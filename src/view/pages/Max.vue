@@ -119,7 +119,7 @@ export default {
             .request({
               method: "post",
               url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/list",
+                this.$hostname + "orders/list",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },

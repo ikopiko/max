@@ -208,7 +208,7 @@ export default {
       .request({
           method: "post",
           url:
-          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/list",
+          this.$hostname + "orders/list",
           headers: {
           Authorization: "Bearer " + TOKEN,
           },
@@ -234,7 +234,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/clockedin-drivers",
+            this.$hostname + "driver/clockedin-drivers",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -259,7 +259,7 @@ export default {
       .request({
           method: "post",
           url:
-          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/finish-order",
+          this.$hostname + "driver/finish-order",
           //  Combine order and driver LINK HERE!!!!,
           headers: {
           Authorization: "Bearer " + TOKEN,
@@ -311,7 +311,7 @@ export default {
             .request({
                 method: "post",
                 url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/attach-order-to-driver",
+                this.$hostname + "manager/attach-order-to-driver",
                 //  Combine order and driver LINK HERE!!!!,
                 headers: {
                 Authorization: "Bearer " + TOKEN,
@@ -334,7 +334,7 @@ export default {
               .request({
                 method: "post",
                 url:
-                  "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/change-status",
+                  this.$hostname + "orders/change-status",
                 headers: {
                   Authorization: "Bearer " + TOKEN,
                 },
@@ -373,7 +373,7 @@ export default {
         .request({
             method: "post",
             url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-current-orders",
+            this.$hostname + "manager/get-current-orders",
             headers: {
             Authorization: "Bearer " + TOKEN,
             },

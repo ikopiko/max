@@ -170,7 +170,6 @@
 <script>
   import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
   import Vue from "vue";
-  import axios from "axios";
 
   Vue.use(BootstrapVue);
   Vue.use(IconsPlugin);

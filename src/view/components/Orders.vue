@@ -65,7 +65,7 @@ export default {
             .request({
               method: "post",
               url:
-                "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/customers/get-all-orders-by-phone",
+                this.$hostname + "customers/get-all-orders-by-phone",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },

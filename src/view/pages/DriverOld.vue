@@ -192,7 +192,7 @@ export default {
       .request({
         method: "post",
         url:
-          "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
+          this.$hostname + "manager/get-current-orders",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -231,7 +231,7 @@ export default {
         .request({
             method: "post",
             url:
-            "http://188.169.16.186:8082//ronny/rest/web/index.php?r=v1/manager/get-current-orders",
+            this.$hostname + "manager/get-current-orders",
             headers: {
             Authorization: "Bearer " + TOKEN,
             },

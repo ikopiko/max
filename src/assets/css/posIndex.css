@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+.font-noto {font-family: 'Noto Sans', sans-serif;}
+
+
+body{
+    font-family: 'Noto Sans', sans-serif !important;
+}
 .topcorner {
     position: absolute;
     top: 0;
@@ -228,13 +236,24 @@ body .col-12 {
 
 .orderDisplay {
     color: #6C93C8;
-
+    font-size: 24px;
 }
-
+.changedSetting {
+    color: red;
+    position: relative;
+    top: 40px;
+    padding-left: 20px;
+    left: 12px;
+}
+.pading-10 {
+    padding-right: 10px;
+}
+.pading-15 {
+    padding-right: 15px;
+}
 .deletedTopping {
     color: red;
     position: relative;
-    top: 20px;
     left: 12px;
 }
 .deletedToppingStick {
@@ -818,6 +837,11 @@ body .col-12 {
 {
     margin-right: 20px;
 }
+.wholeDefTopping {
+    left: 0px;
+    position: relative;
+    top: 20px;   
+}
 
 .aSideTopping
 {
@@ -831,6 +855,12 @@ body .col-12 {
     position: relative;
     top: 20px;
 }
+.sticksTopping
+{
+    left: 0px;
+    position: relative;
+    top: 40px;
+}
 .aSideTopping.price
 {
     position: absolute; right: 0px;
@@ -839,7 +869,32 @@ body .col-12 {
 {
     overflow: hidden;
 }
+.deletedToppingInner .deletedTopping{
+    margin-top: 20px;
+}
 
+.halfInner
+{
+    padding-left: 20px !important;
+    padding-top: 22px !important;
+}
+.halfInner .half 
+{
+    padding-left: 30px;
+}
+.v-date-picker-table .v-btn.v-btn--active {
+    color: blue !important
+}
+.v-date-picker-title{
+    color: #777777 !important;
+}
+
+
+.theme--light.v-data-table, .theme--light.v-data-table > .v-data-table__wrapper > table > thead > tr > th
+{
+    color: rgba(0, 0, 0, 1) !important;
+    font-weight: normal !important;
+}
 @media (min-width: 960px) {
     .container-12 {
         max-width: 1024px !important;
@@ -847,3 +902,5 @@ body .col-12 {
         margin: 0px !important;
     }
 }
+
+

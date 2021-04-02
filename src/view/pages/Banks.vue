@@ -143,8 +143,8 @@
                     <v-card v-for="till in tills" :key="till.id"  
                         class=" my-3 cols" color="#FE9A53" light max-width="250" @click="tillInfo(till)">
                         <v-card-title>
-                            <span class="title font-weight-bold" v-if="till.cash < 300">{{ till.cash + till.card }} Gel - {{ till.name }}</span>
-                            <span class="title font-weight-bold" v-if="till.cash >= 300"><span style="color: red;" v-if="till.cash >= 650">DROP NEEDED {{ till.cash }} Gel </span>  - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="till.cash < 650">{{ (till.cash + till.card).toFixed(2) }} Gel - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="Number(till.cash) >= 650"><span style="color: red;">DROP NEEDED {{ (till.cash + till.card).toFixed(2) }} Gel </span>  - {{ till.name }}</span>
                         </v-card-title>
 
                         <v-card-actions>
@@ -750,6 +750,8 @@
                 >ADD</v-btn>
               </v-col>
               <v-col
+                v-for="bank in banks"
+                :key="bank.id"
                 cols="12"
                 sm="6"
                 md="4"
@@ -759,8 +761,8 @@
                   color="blue"
                   x-large
                   class="white--text"
-                  @click="dropFromSafe()"
-                >DROP</v-btn>
+                  @click="dropFromSafe(bank)"
+                >DROP TO {{ bank.name }}</v-btn>
               </v-col>
               </v-row>
             </v-container>
@@ -779,34 +781,34 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col cols="3" class="justify-end">{{ selectedPos.cash }}</v-col>
-                <v-col cols="3">Cash</v-col>
+                <v-col cols="3" class="justify-end">&nbsp;</v-col>
+                <v-col cols="3 h4">Cash - {{ selectedPos.cash }}</v-col>
                 <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
               </v-row>
 
               <v-row>
-                <v-col cols="3">{{ selectedPos.card }}</v-col>
-                <v-col cols="3">Card</v-col>
-                <v-col cols="6"><v-text-field label="Cad Amount" v-model="cardActual"></v-text-field></v-col>
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="3 h4">Card - {{ selectedPos.card }}</v-col>
+                <v-col cols="6"><v-text-field label="Card Amount" v-model="cardActual"></v-text-field></v-col>
               </v-row>  
               <v-row>
-                <v-col cols="3">{{ Number(selectedPos.card) + Number(selectedPos.cash) }}</v-col>
-                <v-col cols="3">Total</v-col>
-                <v-col cols="6">{{ Number(cashActual) + Number(cardActual) }}</v-text-field></v-col>
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="3 h4">Total - {{ Number(selectedPos.card) + Number(selectedPos.cash) }}</v-col>
+                <v-col cols="6 h4">{{ Number(cashActual) + Number(cardActual) }}</v-col>
               </v-row>
-              <v-row>
-                <v-col cols="3">{{ Number(selectedPos.glovo_card) + Number(selectedPos.glovo_card) }}</v-col>
-                <v-col cols="3">Glovo</v-col>
+              <v-row class="mt-2">
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="3 h4">Glovo - {{ Number(selectedPos.glovo_card) + Number(selectedPos.glovo_card) }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
               <v-row>
-                <v-col cols="3">{{ selectedPos.glovo_cash }}</v-col>
-                <v-col cols="3">Glovo Cash</v-col>
+                <v-col cols="3"></v-col>
+                <v-col cols="3 h4">Glovo Cash - {{ selectedPos.glovo_cash }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
-              <v-row class="my-5">
-                <v-col cols="3">{{ selectedPos.wolt_card }}</v-col>
-                <v-col cols="3">Wolt</v-col>
+              <v-row>
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="3 h4">Wolt - {{ selectedPos.wolt_card }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
               <v-row>
@@ -896,30 +898,20 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col cols="3" class="justify-end">{{ selectedDriver.amount }}</v-col>
-                <v-col cols="3">Cash</v-col>
+                <v-col cols="3" class="justify-end">&nbsp;</v-col>
+                <v-col cols="3 h4">Cash - {{ selectedDriver.amount }}</v-col>
                 <v-col cols="6"><v-text-field label="Cash Amount" v-model="driverCashActual"></v-text-field></v-col>
               </v-row>
 
               <v-row>
-                <v-col cols="3">{{ selectedDriver.card }}</v-col>
-                <v-col cols="3">Card</v-col>
-                <v-col cols="6"><v-text-field label="Cad Amount" v-model="driverCardActual"></v-text-field></v-col>
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="3 h4">Card - {{ selectedDriver.card }}</v-col>
+                <v-col cols="6"><v-text-field label="Card Amount" v-model="driverCardActual"></v-text-field></v-col>
               </v-row>  
               <v-row>
-                <v-col cols="3">{{ Number(selectedDriver.amount) + Number(selectedDriver.card) }}</v-col>
-                <v-col cols="3">Total</v-col>
-                <v-col cols="6">{{ Number(driverCashActual) + Number(driverCardActual) }}</v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="3">{{ safeGlovo }}</v-col>
-                <v-col cols="3">Glovo</v-col>
-                <v-col cols="6">&nbsp;</v-col>
-              </v-row>
-              <v-row class="my-5">
-                <v-col cols="3">{{ safeWolt }}</v-col>
-                <v-col cols="3">Wolt</v-col>
-                <v-col cols="6">&nbsp;</v-col>
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="3 h4">Total - {{ Number(selectedDriver.amount) + Number(selectedDriver.card) }}</v-col>
+                <v-col cols="6 h4">{{ Number(driverCashActual) + Number(driverCardActual) }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
@@ -1057,7 +1049,7 @@
                   </template>
                   <v-date-picker
                     v-model="date"
-                    @input="menu2 = false"
+                    @input="menu = false"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -1114,7 +1106,7 @@
                           <td v-if="item.pos_id == null">{{ item.username }}</td>
                           <td>{{ item.difference }}</td>
                           <td>{{ item.comment }}</td>
-                          <td>{{ item.created_at }}</td>
+                          <td>{{ item.created_time }}</td>
                         </tr>
                       </tbody>
                     </template>
@@ -1135,7 +1127,7 @@
                       <thead>
                         <tr>
                           <th class="text-left">
-                            POS ID
+                            POS
                           </th>
                           <th class="text-left">
                             Method
@@ -1146,6 +1138,9 @@
                           <th class="text-left">
                             Amount
                           </th>
+                          <th class="text-left">
+                            Time
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1153,10 +1148,11 @@
                           v-for="item in detailedInfo"
                           :key="item.id"
                         >
-                          <td>{{ item.pos_id }}</td>
+                          <td>{{ item.name }}</td>
                           <td>{{ item.payment_method }}</td>
                           <td>{{ item.action }}</td>
                           <td>{{ item.amount }}</td>
+                          <td>{{ item.created_time }}</td>
                         </tr>
                       </tbody>
                     </template>
@@ -1177,16 +1173,13 @@
                       <thead>
                         <tr>
                           <th class="text-left">
-                            POS ID
-                          </th>
-                          <th class="text-left">
-                            Driver ID
-                          </th>
-                          <th class="text-left">
                             Action
                           </th>
                           <th class="text-left">
                             Amount
+                          </th>
+                          <th class="text-left">
+                            Time
                           </th>
                         </tr>
                       </thead>
@@ -1195,17 +1188,16 @@
                           v-for="item in detailedInfo"
                           :key="item.id"
                         >
-                          <td>{{ item.pos_id }}</td>
-                          <td>{{ item.driver_id }}</td>
                           <td>{{ item.payment }}</td>
                           <td>{{ item.amount }}</td>
+                          <td>{{ item.created_time }}</td>
                         </tr>
                       </tbody>
                     </template>
                   </v-simple-table>
                 </v-tab-item>
 
-                <v-tab-item>
+                <!-- <v-tab-item>
                   <export-excel
                       :data = "detailedInfo"
                       :name = "'driverDetails.xls'" >
@@ -1246,7 +1238,7 @@
                       </tbody>
                     </template>
                   </v-simple-table>
-                </v-tab-item>
+                </v-tab-item> -->
 
               </v-tabs-items>
               </v-tabs>
@@ -1308,13 +1300,13 @@
                             Name
                           </th>
                           <th class="text-left">
-                            Difference
+                            Action
                           </th>
                           <th class="text-left">
-                            Comment
+                            Amount
                           </th>
                           <th class="text-left">
-                            Close Time
+                            Time
                           </th>
                         </tr>
                       </thead>
@@ -1323,10 +1315,9 @@
                           v-for="item in detailedInfo"
                           :key="item.id"
                         >
-                          <td v-if="item.driver_id == 0">{{ item.pos_name }}</td>
-                          <td v-if="item.pos_id == null">{{ item.username }}</td>
-                          <td>{{ item.difference }}</td>
-                          <td>{{ item.comment }}</td>
+                          <td>{{ item.name }}</td>
+                          <td>{{ item.action }}</td>
+                          <td>{{ item.amount }}</td>
                           <td>{{ item.created_at }}</td>
                         </tr>
                       </tbody>
@@ -1362,12 +1353,13 @@ export default {
           { tab: 'Closed', content: 'close' },
           { tab: 'POS Details', content: 'pos' },
           { tab: 'Safe Details', content: 'safe' },
-          { tab: 'Driver Details', content: 'driver' },
+          // { tab: 'Driver Details', content: 'driver' },
       ],
       tab: 0,
       date: new Date().toISOString().substr(0, 10),
       dateDriver: new Date().toISOString().substr(0, 10),
       detailedInfo: [],
+      menu: false,
       menu2: false,
       posID: '',
       driverID: '',
@@ -1402,6 +1394,7 @@ export default {
       safes: [],
       tills: [],
       allPoses: [],
+      banks: [],
       drivers: [],
         valid: true,
         name: '',
@@ -1482,6 +1475,7 @@ export default {
   },
   mounted() {
 
+
     var date = new Date();
     var dd = String(date.getDate()).padStart(2, '0');
     var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -1499,6 +1493,8 @@ export default {
 
       this.getDrivers();
 
+      this.getBanks();
+
       this.updateDetails(this.date);
 
       var bodyFormPosAll = new FormData();
@@ -1508,7 +1504,7 @@ export default {
       .request({
         method: "post",
         url:
-          "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/list-by-branch",
+          this.$hostname + "poses/list-by-branch",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -1591,7 +1587,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/get-close-day",
+            this.$hostname + "manager/get-close-day",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1599,6 +1595,11 @@ export default {
         })
         .then((response) => {
             this.detailedInfo = response.data.data;
+
+            this.detailedInfo.forEach(x => {
+              const date = new Date(x.created_at);
+              x.created_time = date.getHours() + ":" + date.getMinutes();
+            })
         });
     },
     posDetails(date){
@@ -1611,7 +1612,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/poses-detail",
+            this.$hostname + "poses/poses-detail",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1620,9 +1621,12 @@ export default {
         .then((response) => {
             this.detailedInfo = response.data.data;
             this.detailedInfo.forEach(x => {
-                if(x.amount < 0 && x.action != 'New order'){
-                  x.payment_method = 'Drop balance';
-                }
+              const date = new Date(x.created_at);
+              x.created_time = date.getHours() + ":" + date.getMinutes();
+
+              if(x.amount < 0 && x.action != 'New order'){
+                x.payment_method = 'Drop balance';
+              }
             })
         });
     },
@@ -1636,7 +1640,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/safe-detail",
+            this.$hostname + "poses/safe-detail",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1645,11 +1649,14 @@ export default {
         .then((response) => {
             this.detailedInfo = response.data.data;
             this.detailedInfo.forEach(x => {
+              const date = new Date(x.created_at);
+              x.created_time = date.getHours() + ":" + date.getMinutes();
+
                 if(x.driver_id == 0 && x.amount < 0) {
-                  x.payment = 'Drop to POS';
+                  x.payment = 'Drop to ' + x.bank_name;
                 }
                 else if(x.driver_id == 0 && x.amount >= 0) {
-                  x.payment = 'Add from POS';
+                  x.payment = 'Add from Bank';
                 }
             })
         });
@@ -1668,7 +1675,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/detail",
+            this.$hostname + "driver/detail",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1700,7 +1707,7 @@ export default {
           .request({
             method: "post",
             url:
-              "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/close-day",
+              this.$hostname + "manager/close-day",
             headers: {
               Authorization: "Bearer " + TOKEN,
             },
@@ -1739,7 +1746,7 @@ export default {
           .request({
             method: "post",
             url:
-              "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/manager/close-day",
+              this.$hostname + "manager/close-day",
             headers: {
               Authorization: "Bearer " + TOKEN,
             },
@@ -1768,7 +1775,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/get-safes",
+            this.$hostname + "poses/get-safes",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1789,7 +1796,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/get-poses",
+            this.$hostname + "poses/get-poses",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1815,7 +1822,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/clockedin-drivers",
+            this.$hostname + "driver/clockedin-drivers",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1824,6 +1831,23 @@ export default {
         .then((response) => {
           this.drivers = response.data.data;
           console.log("Drivers List: ", this.drivers);
+        });
+    },
+    
+    getBanks(){
+      const TOKEN = this.loggedUser.token;
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "poses/bank-list",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+        })
+        .then((response) => {
+          this.banks = response.data.data;
+          console.log("Banks List: ", response);
         });
     },
     addPos(){
@@ -1837,7 +1861,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/edit-balance",
+            this.$hostname + "poses/edit-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1865,7 +1889,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/edit-balance",
+            this.$hostname + "poses/edit-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1903,7 +1927,7 @@ export default {
             .request({
               method: "post",
               url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/edit-balance",
+                this.$hostname + "poses/edit-balance",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -1934,7 +1958,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/drop-safe-balance",
+            this.$hostname + "poses/drop-safe-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1952,18 +1976,19 @@ export default {
         });
 
     },
-    dropFromSafe(){
+    dropFromSafe(bank){
                   
       const TOKEN = this.loggedUser.token;
       var bodyDropSafeBalance = new FormData();
       bodyDropSafeBalance.set("amount", - this.safeAmount);
       bodyDropSafeBalance.set("safe_id", this.safes[0].id);
+      bodyDropSafeBalance.set("bank_id", bank.id);
 
       axios
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/poses/drop-safe-balance",
+            this.$hostname + "poses/drop-safe-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1992,7 +2017,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/edit-balance",
+            this.$hostname + "driver/edit-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -2018,7 +2043,7 @@ export default {
         .request({
           method: "post",
           url:
-            "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/edit-balance",
+            this.$hostname + "driver/edit-balance",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },

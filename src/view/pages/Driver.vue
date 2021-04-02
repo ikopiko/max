@@ -254,7 +254,7 @@ export default {
         const TOKEN = localStorage.getItem("TOKEN");
         axios.request({
             method: 'post',
-            url: 'http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/paid',
+            url: this.$hostname + 'orders/paid',
             headers: { 
               'Authorization': 'Bearer '+TOKEN, 
             },
@@ -276,7 +276,7 @@ export default {
 
         axios.request( {
                 method: "post",
-                url: "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/driver/orders-by-driver",
+                url: this.$hostname + "driver/orders-by-driver",
                 headers: {
                   Authorization: "Bearer TodKtEjTTqj8HBVGmQPE3gW5TFY",
                 },
@@ -311,7 +311,7 @@ export default {
             .request({
             method: "post",
             url:
-                "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/orders/change-status",
+                this.$hostname + "orders/change-status",
             headers: {
                 Authorization: "Bearer " + TOKEN,
             },
