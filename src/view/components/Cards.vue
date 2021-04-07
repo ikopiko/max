@@ -19,12 +19,8 @@
                   {{ order.date }}
                 </div>
               </div>
-              <v-list-item-title class="headline cardStyle mb-1">{{
-                order.order_data.customer.name
-              }}</v-list-item-title>
-              <v-list-item-title class="headline mb-1">{{
-                order.order_data.customer.email
-              }}</v-list-item-title>
+              <v-list-item-title class="headline cardStyle mb-1">{{ order.order_data.customer.name }}</v-list-item-title>
+              <v-list-item-title class="headline mb-1">{{ order.order_data.customer.email }}</v-list-item-title>
               <v-list-item-title class="headline mb-1"
                 >{{ order.order_data.customer.tel }}
                 {{ order.order_data.customer.adress }}</v-list-item-title
@@ -432,8 +428,7 @@
           </v-card-actions>
         </v-card>
       </span>
-
-
+      
     </span>
   </div>
 </template>
@@ -482,7 +477,7 @@ export default {
     },
   },
   created () {
-        this.timer = setInterval(this.getOrderPrep, 500)
+        this.timer = setInterval(this.getOrderPrep, 1500)
     },
   methods: {
     getOrderPrep() {

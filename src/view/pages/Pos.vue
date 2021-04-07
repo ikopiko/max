@@ -1326,7 +1326,7 @@
             x-large
             @click="deliveryCustomer()"
           >
-            Delivery: {{ order.totalPrice }}
+            Delivery: {{ Number(order.totalPrice) + Number(order.deliveryFee) }}
           </v-btn>   
         </v-card-actions>
     </v-card>
@@ -1890,6 +1890,8 @@ export default {
     },
   data() {
     return {
+      isReopen: false,
+      fullOrder: [],
       futureTime: null,
       cutsCount: null,
       restrictEdit: false,
@@ -1980,8 +1982,8 @@ export default {
         safe_id: null,
         orderId: Number,
         items: [],
-        deliveryMethod: "Walk In",
-        deliveryType: "Walk_in",
+        deliveryMethod: "walk_in",
+        deliveryType: "Walk_In",
         deliveryFee: 0,
         payment: 0,
         totalPrice: 0,
@@ -2032,8 +2034,9 @@ export default {
       discountOrder: false,
       discountItem: false,
       diplomatDiscount: 18,
-      employeeDiscount: 20,
+      employeeDiscount: 30,
       studentDiscount: 15,
+      corporateDiscount: 25,
       managerPercent: '',
       managerAmount: '',
       managerAmountVar: false,
@@ -2263,7 +2266,21 @@ export default {
     if(localStorage.getItem("reopenItem")){
       try {
         var fooOrder = JSON.parse(localStorage.getItem("reopenItem"));
+        console.log('FOO: ', fooOrder)
+        this.fullOrder = fooOrder;
         this.order = fooOrder.order_data;
+        this.isReopen = true;
+        if(this.order.deliveryMethod == 'Walk_In'){
+          this.walkinActive('no');
+        } else if(this.order.deliveryMethod == 'Take Out'){
+          this.takeoutActive('no');
+        } else if(this.order.deliveryMethod == 'delivery'){
+          this.ronnysDelivery('no');
+        } else if(this.order.deliveryMethod == 'Wolt'){
+          this.woltDelivery('no');   
+        } else if(this.order.deliveryMethod == 'Glovo' || this.order.deliveryMethod == 'Glovo Cash'){
+          this.glovoDelivery('no');
+        }
         this.curentCustomer = fooOrder.order_data.customer;
       }
       catch (e){
@@ -2281,6 +2298,17 @@ export default {
         this.showProducts = false;
         this.showIngredients = false;
         this.order.totalPrice = this.totalPrice.toFixed(2);
+        if(this.order.deliveryMethod == 'Walk_In'){
+          this.walkinActive('no');
+        } else if(this.order.deliveryMethod == 'Take Out'){
+          this.takeoutActive('no');
+        } else if(this.order.deliveryMethod == 'delivery'){
+          this.ronnysDelivery('no');
+        } else if(this.order.deliveryMethod == 'Wolt'){
+          this.woltDelivery('no');   
+        } else if(this.order.deliveryMethod == 'Glovo' || this.order.deliveryMethod == 'Glovo Cash'){
+          this.glovoDelivery('no');
+        }
         this.calculatorModal = true;
       }
       catch (e){
@@ -2521,6 +2549,8 @@ export default {
         this.studentDisc();
       } else if(this.curentCustomer.discount == 'Team'){
         this.employeeDisc();
+      } else if(this.curentCustomer.discount == 'Corporate'){
+        this.corporateDisc();
       } else if(this.curentCustomer.discount == ''){
         this.noDisc();
       }
@@ -2597,6 +2627,17 @@ export default {
                 this.curentCustomer = item.order_data.customer;
                 this.payLaterActive = true;
                 this.arrowIndex = this.filteredOrders.indexOf(this.selectedOrder);
+                if(this.order.deliveryMethod == 'Walk_In'){
+                  this.walkinActive('no');
+                } else if(this.order.deliveryMethod == 'Take Out'){
+                  this.takeoutActive('no');
+                } else if(this.order.deliveryMethod == 'delivery'){
+                  this.ronnysDelivery('no');
+                } else if(this.order.deliveryMethod == 'Wolt'){
+                  this.woltDelivery('no');   
+                } else if(this.order.deliveryMethod == 'Glovo' || this.order.deliveryMethod == 'Glovo Cash'){
+                  this.glovoDelivery('no');
+                }
                 this.doneOrder();
 
                 console.log("Selected Item: ", this.selectedOrder);
@@ -4979,7 +5020,7 @@ export default {
         this.ronnysActive = false;
       }
       this.order.deliveryFee = 0;
-      this.order.deliveryMethod = 'Walk_In';
+      this.order.deliveryMethod = 'walk_in';
       this.order.customer = this.curentCustomer;
       if(ND === 'no'){
         // pass
@@ -4999,7 +5040,8 @@ export default {
         this.ronnysActive = false;
       }
       this.order.deliveryFee = 0;
-      this.order.deliveryMethod = 'Take_out';
+      this.order.deliveryMethod = 'Take Out';
+      this.order.deliveryType = 'Take_out';
       if(ND === 'no'){
         // pass
       }
@@ -5104,7 +5146,7 @@ export default {
         alert('You Should Select Delivery Fee For Order!');
       }
       else {
-        if(this.order.deliveryMethod === "Walk In" || this.order.deliveryMethod === "Take Out"){
+        if(this.order.deliveryMethod === "Walk_In" || this.order.deliveryMethod === "Take Out"){
           if(this.totalPrice > Number(this.cashInput)){
             alert('Enter Cash Ammount!');
           }
@@ -5190,6 +5232,40 @@ export default {
         if(this.payLaterActive){
           this.payOrder();
         }
+        else if(this.isReopen){
+
+        this.order.totalPrice = this.totalNet.toFixed(2);
+        this.order.promiseTime = this.promiseTime;
+        this.order.id = this.fullOrder.id;
+        this.order.pos_id = this.loggedUserFull.pos_id;
+        this.order.safe_id = this.loggedUserFull.safe_id;
+        console.log('Last order structure: ', this.order);
+        const TOKEN = localStorage.getItem("TOKEN");
+        axios.request({
+          method: "post",
+          url:
+            //"http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/send-order",
+            this.$hostname + "orders/reopen",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: { order: this.order },
+        }).then((response) => {
+            this.printOrder(response.data);
+            
+            localStorage.removeItem("reopenItem");
+            if(this.printError){
+              console.log("Print Error");
+            }
+            else if(response.status === 200 && this.paymentType == "card"){
+              this.calcPay();
+            } else if(response.status === 200 && this.paymentType == "payLater"){
+              this.calcPay();
+            }
+              console.log("Order Response", response);
+          });
+        }
+        
         else {
         this.order.totalPrice = this.totalNet.toFixed(2);
         this.order.promiseTime = this.promiseTime;
@@ -5327,7 +5403,7 @@ export default {
       this.order = {
         orderId: Number,
         items: [],
-        deliveryMethod: "Walk In",
+        deliveryMethod: "Walk_In",
         payment: 0,
         totalPrice: 0,
         isFuture: false,
@@ -5481,6 +5557,12 @@ export default {
         this.order.discountInfo = this.discountInfo;
         this.order.discountName = 'Team';
     },
+    corporateDisc(){
+        this.teamModal = false;
+        this.order.discount = this.corporateDiscount;
+        this.order.discountInfo = this.discountInfo;
+        this.order.discountName = 'Corporate';
+    },
     managerDisc(){
       this.managerModal = true;
     },
@@ -5603,7 +5685,7 @@ export default {
       
       this.order.customer = this.curentCustomer;
       this.order.deliveryType = "Walk_in";
-      this.order.deliveryMethod = "Walk In";
+      this.order.deliveryMethod = "Walk_In";
       this.walkInModal = false;
       
     },

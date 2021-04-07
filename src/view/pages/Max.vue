@@ -32,7 +32,7 @@
     </v-tabs>
     
     <v-tabs-items v-model="tab">
-      <v-tab-item v-for="item in items" :key="item">
+      <v-tab-item v-for="item in items" :key="item.id">
         <v-card
           color="basil"
           flat

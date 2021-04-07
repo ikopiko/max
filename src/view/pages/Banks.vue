@@ -98,6 +98,7 @@
                                   md="4"
                                 >
                                   <v-btn
+
                                     elevation="2"
                                     x-large
                                     class="white--text"
@@ -264,7 +265,7 @@
                       <v-card v-if="drv.closed == null" class="mx-auto my-3" color="#46BDF2" light max-width="250" @click="driverInfo(drv)">
                           <v-card-title>
                               <span class="title font-weight-bold" v-if="drv.amount < 200">{{ Number(drv.amount) + Number(drv.card)  }}  - {{ drv.username }}</span>
-                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} </span>  - {{ till.name }}</span>
+                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} </span>  - {{ drv.username }}</span>
                           </v-card-title>
 
                           <v-card-actions>
@@ -736,34 +737,41 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <v-btn
-                  elevation="2"
-                  x-large
-                  class="white--text"
-                  color="green"
-                  @click="addToSafe()"
-                >ADD</v-btn>
-              </v-col>
-              <v-col
-                v-for="bank in banks"
-                :key="bank.id"
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <v-btn
-                  elevation="2"
-                  color="blue"
-                  x-large
-                  class="white--text"
-                  @click="dropFromSafe(bank)"
-                >DROP TO {{ bank.name }}</v-btn>
-              </v-col>
+              <v-row>
+                <v-col
+                  v-for="bank in banks"
+                  :key="bank.id"
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    x-large
+                    class="white--text mx-5"
+                    color="green"
+                    @click="addToSafe(bank)"
+                  >ADD FROM {{ bank.name }}</v-btn>
+                </v-col>
+              </v-row>
+
+              <v-row class="my-5">
+                <v-col
+                  v-for="bank in banks"
+                  :key="bank.id"
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text mx-5"
+                    @click="dropFromSafe(bank)"
+                  >DROP TO {{ bank.name }}</v-btn>
+                </v-col>
+              </v-row>
               </v-row>
             </v-container>
           </v-card-text>
@@ -1947,12 +1955,13 @@ export default {
       }
 
     },
-    addToSafe(){
+    addToSafe(bank){
       
       const TOKEN = this.loggedUser.token;
       var bodyAddSafeBalance = new FormData();
       bodyAddSafeBalance.set("amount", this.safeAmount);
       bodyAddSafeBalance.set("safe_id", this.safes[0].id);
+      bodyAddSafeBalance.set("bank_id", bank.id)
 
       axios
         .request({

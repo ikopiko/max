@@ -272,6 +272,22 @@ body .col-12 {
     background-color: #B7E5B3;
     color: #000000;
 }
+.juiceClass {
+    background-color: #2cc22c ;
+    color: #000000;
+}
+.beerClass {
+    background-color: #a1ad6a;
+    color: #000000;
+}
+.cokeClass {
+    background-color: #e23030;
+    color: #000000;
+}
+.coffeeClass {
+    background-color: #8d4545;
+    color: #000000;
+}
 
 .extraClass {
     background-color: #E6E6E7;

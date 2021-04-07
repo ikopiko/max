@@ -71,7 +71,7 @@
                 {{ status.status_name }}
               </v-btn> -->
 
-                    <v-select :items="orderStatuses" v-on:change="changeOrder" item-text="status_name" item-value="id" label="Filter Order"></v-select>
+                    <v-select :items="orderStatuses" v-on:change="changeOrder" item-text="status_name" item-value="id" clearable label="Filter Order"></v-select>
                 </v-row>
             </v-card>
         </v-col>
@@ -154,6 +154,7 @@ import axios from 'axios';
         singleSelect: true,
         tab: 0,
         loggedUser: {},
+        loggedUserFull: {},
         selected: [],
         loading: true,
         orders: [],
@@ -209,6 +210,7 @@ import axios from 'axios';
     mounted() {
       console.log(this.orderStatuses["Finished bake"]);
       this.loggedUser = this.$store.state.auth.user.data;
+      this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
 
     const TOKEN = this.loggedUser.token;
     var bodyFormData = new FormData();
@@ -227,6 +229,7 @@ import axios from 'axios';
       })
       .then((response) => {
         this.orders = response.data.data;
+        this.orders.reverse();
         console.log("response 123: ", this.orders);
         // this.orders.forEach(x => {
         //     x.order_data = JSON.parse(x.order_data);
@@ -234,7 +237,6 @@ import axios from 'axios';
         this.filteredOrders = this.orders.filter((x) => x.status != 10);
         // this.filteredOrders = this.orders;
         // this.orders.filter((x) => x.payment_method_id === '4')
-        this.filteredOrders.reverse();
         console.log("orders data: ", this.filteredOrders);
       });
       axios
@@ -280,12 +282,12 @@ import axios from 'axios';
           })
           .then((response) => {
             this.orders = response.data.data;
+            this.orders.reverse();
             console.log("response 123: ", this.orders);
             // this.orders.forEach(x => {
             //     x.order_data = JSON.parse(x.order_data);
             // });
-            this.filteredOrders = this.orders;
-            this.filteredOrders.reverse();
+            this.filteredOrders = this.orders.filter((x) => x.status != 10);
             console.log("orders data: ", this.filteredOrders);
           });
 
@@ -423,7 +425,7 @@ import axios from 'axios';
             this.statusRequest("in_delivery");
           }
           else if(this.selectedStatus[0].id === 7){
-            alert('Change order status to ' + this.selectedStatus[0].status_name);
+            this.statusRequest("Finished");
           }
           else if(this.selectedStatus[0].id === 8){
             this.wasteDialog = true;
@@ -432,7 +434,7 @@ import axios from 'axios';
             this.statusRequest("refund");
           }
           else if(this.selectedStatus[0].id === 10){
-            this.statusRequest("void");
+            this.voidOrder();
           }
           else{
             alert("Update Order: "+ this.selectedOrder.id + ", status changed to: " + this.selectedStatus[0].status_name);
@@ -440,7 +442,42 @@ import axios from 'axios';
           this.updateOrders();
         },
         changeOrder(status){
-            this.filteredOrders = this.orders.filter((x) => x.status == status);
+            console.log('status: ', status);
+            if(status == null){
+              this.filteredOrders = this.orders.filter((x) => x.status != 10);
+            }
+            else{
+              this.filteredOrders = this.orders.filter((x) => x.status == status);
+            }
+        },
+        voidOrder(){
+
+          const TOKEN = this.loggedUser.token;
+          var bodyFormData = new FormData();
+          bodyFormData.set("pos_id", this.loggedUserFull.pos_id);
+          bodyFormData.set("id", this.selectedOrder.id);
+
+          axios
+            .request({
+              method: "post",
+              url:
+                this.$hostname + "orders/change-status",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+              data: bodyFormData,
+            })
+            .then((response) => {
+              if(response.data.data != 0){
+                console.log("Status Change Error");
+              }
+              else{
+                console.log("Order Status Changed Correctly");
+                this.updateOrders();
+              }
+            });
+
+          alert('VOID ORDER: ' + this.selectedOrder.id);
         },
         re_open(order){
             console.log('Reopen order: ', order);
@@ -476,19 +513,19 @@ import axios from 'axios';
         },
         getTab(tab){
             if(tab.content === 'all') {
-              this.filteredOrders = this.orders;
+              this.orders.filter((x) => x.status != 10)
             }
             else if(tab.content === 'unpaid') {
-              this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4');
+              this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4' && x.status <= '6');
             }
             else if(tab.content === 'ronnys') {
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "Ronnys");
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "delivery");
             }
             else if(tab.content === 'walkin'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Walk In");
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Walk_In");
             }
             else if(tab.content === 'glovo'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Glovo");
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "Glovo");
             }
             else if(tab.content === 'wolt'){
               this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Wolt");
