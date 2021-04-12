@@ -22,7 +22,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <v-card v-for="safe in safes" :key="safe.id" @click="safeCloseDialog = true"
+                    <v-card v-for="safe in safes" :key="safe.id" @click="closeSafe()"
                         class="mx-auto my-3" color="#BAE1BE" light max-width="200">
                         <v-card-title>
                             <span class="title font-weight-bold">{{ safe.amount }} GEL</span>
@@ -714,6 +714,9 @@
           <v-card-text>
             <v-container>
               <v-row>
+                <span class="headline">Working Cash - {{ safes[0].default_amount }} GEL</span>
+              </v-row>
+              <v-row>
                <v-col
                 cols="12"
                 sm="6"
@@ -806,7 +809,7 @@
               </v-row>
               <v-row class="mt-2">
                 <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Glovo - {{ Number(selectedPos.glovo_card) + Number(selectedPos.glovo_card) }}</v-col>
+                <v-col cols="3 h4">Glovo - {{ Number(selectedPos.glovo_card) + Number(selectedPos.glovo_cash) }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
               <v-row>
@@ -1986,34 +1989,38 @@ export default {
 
     },
     dropFromSafe(bank){
-                  
-      const TOKEN = this.loggedUser.token;
-      var bodyDropSafeBalance = new FormData();
-      bodyDropSafeBalance.set("amount", - this.safeAmount);
-      bodyDropSafeBalance.set("safe_id", this.safes[0].id);
-      bodyDropSafeBalance.set("bank_id", bank.id);
+      
+      if(this.safeAmount <= Number(this.safes[0].amount) - Number(this.safes[0].default_amount)){
+        const TOKEN = this.loggedUser.token;
+        var bodyDropSafeBalance = new FormData();
+        bodyDropSafeBalance.set("amount", - this.safeAmount);
+        bodyDropSafeBalance.set("safe_id", this.safes[0].id);
+        bodyDropSafeBalance.set("bank_id", bank.id);
 
-      axios
-        .request({
-          method: "post",
-          url:
-            this.$hostname + "poses/drop-safe-balance",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyDropSafeBalance,
-        })
-        .then((response) => {
-          
-          console.log("Balance Change Response:  ", response);
-          this.safeCloseDialog = false;
-          this.getSafes();
-          this.getPoses();
-          this.getDrivers();
-          this.safeDetails(this.date);
-          this.safeAmount = null;
-        });
-
+        axios
+          .request({
+            method: "post",
+            url:
+              this.$hostname + "poses/drop-safe-balance",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: bodyDropSafeBalance,
+          })
+          .then((response) => {
+            
+            console.log("Balance Change Response:  ", response);
+            this.safeCloseDialog = false;
+            this.getSafes();
+            this.getPoses();
+            this.getDrivers();
+            this.safeDetails(this.date);
+            this.safeAmount = null;
+          });
+      }
+      else {
+        alert('Working Cash - ' + this.safes[0].default_amount + ' should stay in safe');
+      }
     },
     addToDriver(){
 
@@ -2043,39 +2050,44 @@ export default {
         });
     },
     dropFromDriver(){
-      const TOKEN = this.loggedUser.token;
-      var bodyAddDriverBalance = new FormData();
-      bodyAddDriverBalance.set("amount", - this.driverAmount);
-      bodyAddDriverBalance.set("driver_id", this.selectedDriver.id);
+      if(this.driverAmount <= this.selectedDriver.amount){
+        const TOKEN = this.loggedUser.token;
+        var bodyAddDriverBalance = new FormData();
+        bodyAddDriverBalance.set("amount", - this.driverAmount);
+        bodyAddDriverBalance.set("driver_id", this.selectedDriver.id);
 
-      axios
-        .request({
-          method: "post",
-          url:
-            this.$hostname + "driver/edit-balance",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyAddDriverBalance,
-        })
-        .then((response) => {
-          
-          console.log("Balance Change Response:  ", response);
-          this.driverFormDialog = false;
-          this.getSafes();
-          this.getPoses();
-          this.getDrivers();
-          this.driverAmount = 0;
-        });
-      this.driverCloseDialog = false;
+        axios
+          .request({
+            method: "post",
+            url:
+              this.$hostname + "driver/edit-balance",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: bodyAddDriverBalance,
+          })
+          .then((response) => {
+            
+            console.log("Balance Change Response:  ", response);
+            this.driverFormDialog = false;
+            this.getSafes();
+            this.getPoses();
+            this.getDrivers();
+            this.driverAmount = 0;
+          });
+        this.driverCloseDialog = false;
+      }
+      else {
+        alert('You Cant drop more than driver cash amount!');
+      }
     },
     addSafe() {
       this.safeDialog = true;
       // this.safes.push(this.safe);
     },
     closeSafe(){
-      
-      this.safeTotal = this.safeCash + this.safeCard + this.safeGlovo + this.safeWolt;
+
+      this.safeAmount = Number(this.safes[0].amount) - Number(this.safes[0].default_amount);
 
       this.safeCloseDialog = true;
       

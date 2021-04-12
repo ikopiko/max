@@ -613,10 +613,12 @@ export default {
           else{
             alert('This order is not ready to go or driver is out!');
           }
-          this.getOrders();
-          this.getDrivers();
+          // this.getOrders();
+          // this.getDrivers();
           setTimeout(() => {
             this.overlay = false;
+            this.getOrders();
+            this.getDrivers();
         }, 1500)
           this.$forceUpdate();
     },

@@ -36,26 +36,6 @@
                           ></v-autocomplete>
                         </template>
                       </v-col>
-                        <div class="inputNumer">
-                            <!-- <input class="tel"  v-model="telMessage" @keypress="isNumber($event)" /> -->
-                            <!-- <v-col class="d-flex" cols="4">
-                              <v-autocomplete
-                                v-model="curentCustomer"
-                                :loading="loading"
-                                :items="items"
-                                item-text="name"
-                                item-value="id"
-                                :search-input.sync="search"
-                                class="mx-4"
-                                flat
-                                hide-no-data
-                                hide-details
-                                @keypress="isNumber($event)"
-                                return-object
-                              ></v-autocomplete>
-                            </v-col> -->
-                            <br />
-                        </div>
                     </div>
                     <div class="row">
                           <div class="addCustomer" @click="telMsg()">
@@ -848,12 +828,12 @@
                   
 
                     <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
-                        <v-radio label="Male" value="male"></v-radio>
-                        <v-radio label="Female" value="female"></v-radio>
-                        <v-radio label="None" value="none"></v-radio>
+                        <v-radio label="Male" value="1"></v-radio>
+                        <v-radio label="Female" value="0"></v-radio>
+                        <v-radio label="None" value="-1"></v-radio>
                     </v-radio-group>
 
-                    <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+                    <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
                     
                     <v-row>
                         <v-col cols="12" sm="12">
@@ -1135,7 +1115,7 @@
                       <v-radio label="None" value="none"></v-radio>
                   </v-radio-group>
 
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
                   <v-row>
                       <v-col cols="12" sm="12">
@@ -1202,7 +1182,7 @@
                       <v-radio label="None" value="none"></v-radio>
                   </v-radio-group>
 
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
                   <v-row>
                       <v-col cols="12" sm="12">
@@ -1270,7 +1250,7 @@
                       <v-radio label="None" value="none"></v-radio>
                   </v-radio-group>
 
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
                   <v-row>
                       <v-col cols="12" sm="12">
@@ -1362,7 +1342,7 @@
                       <v-radio label="None" value="none"></v-radio>
                   </v-radio-group>
 
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
                   <v-row>
                       <v-col cols="12" sm="12">
@@ -1438,7 +1418,7 @@
                       <v-radio label="None" value="none"></v-radio>
                   </v-radio-group>
 
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.id" class="my-2" label="ID #" clearable required></v-text-field>
+                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
                   <v-row>
                       <v-col cols="12" sm="12">
@@ -5251,7 +5231,8 @@ export default {
           },
           data: { order: this.order },
         }).then((response) => {
-            this.printOrder(response.data);
+            this.printOrder(this.order.id);
+            console.log(this.order.id)
             
             localStorage.removeItem("reopenItem");
             if(this.printError){
@@ -5599,7 +5580,10 @@ export default {
       bodyFormData.set("phone", this.curentCustomer.phone);
       bodyFormData.set("discount", this.curentCustomer.discount);
       bodyFormData.set("comment2", this.curentCustomer.driverDetails);
+      bodyFormData.set("personal_id", this.curentCustomer.personal_id);
       bodyFormData.set("comment", this.curentCustomer.comment);
+      bodyFormData.set("ltd_name", this.curentCustomer.ltdName);
+      bodyFormData.set("ltd_id", this.curentCustomer.ltdId);
       axios
         .request({
           method: "post",
@@ -5628,11 +5612,14 @@ export default {
       var bodyFormData = new FormData();
       bodyFormData.set("name", this.curentCustomer.name);
       bodyFormData.set("address", this.curentCustomer.address);
-      bodyFormData.set("sex", this.curentCustomer.sex);
+      bodyFormData.set("gender", this.curentCustomer.sex);
       bodyFormData.set("phone", this.curentCustomer.phone);
       bodyFormData.set("discount", this.curentCustomer.discount);
+      bodyFormData.set("personal_id ", this.curentCustomer.personal_id);
       bodyFormData.set("comment", this.curentCustomer.comment);
       bodyFormData.set("comment2", this.curentCustomer.driverDetails);
+      bodyFormData.set("ltd_name", this.curentCustomer.ltdName);
+      bodyFormData.set("ltd_id", this.curentCustomer.ltdId);
       axios
         .request({
           method: "post",

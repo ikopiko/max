@@ -3,6 +3,9 @@
 </script>
 <template>
 <v-container data-app>
+    <v-alert v-model="printError" color="pink" dark border="top" transition="scale-transition" dismissible>
+        Was unable to print!
+    </v-alert>
     <v-row no-gutters>
         <v-col cols="12" sm="6" md="4"  class="vCard100">
             <v-card class="pa-2" outlined >
@@ -26,6 +29,9 @@
                         <v-btn v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="re_open(selectedOrder)">
                             <v-icon dark>open_in_new</v-icon>
                         </v-btn>
+                        <v-btn v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="rePrint(selectedOrder)">
+                                <v-icon dark>print</v-icon>
+                            </v-btn>
                         <!-- <v-btn v-if="selectedOrder.payment_method_id == 4" @click="payOrder(selectedOrder)">Pay Order</v-btn> -->
                     </li>
                 </ul>
@@ -53,10 +59,10 @@
                                 <template v-slot:item="row">
                                     <tr @click="onButtonClick(row.item)">
                                         <td>{{Number(row.item.id)}}</td>
-                                        <td>{{row.item.branch}}</td>
                                         <td>{{row.item.order_data.deliveryMethod}}</td>
                                         <td>{{row.item.order_data.adress}}</td>
                                         <td>{{row.item.order_data.customer.name}}</td>
+                                        <td>{{row.item.order_data.customer.phone}}</td>
                                         <td>{{Number(row.item.order_data.totalPrice)}}</td>
                                         <td>{{row.item.order_data.items[0].name}}...</td>
 
@@ -150,6 +156,7 @@ import axios from 'axios';
         showOrderComponent: false,
         statusModel: null,
         statusObject: {},
+        printError: false,
         search: '',
         singleSelect: true,
         tab: 0,
@@ -182,10 +189,10 @@ import axios from 'axios';
           { tab: 'Pay Later', content: 'later'},
         ],
         headers: [
-          { text: "Branch", value: "branch" },
           { text: "Source", value: "source" },
-          { text: "Delivery Adress", value: "order_data.adress" },
+          { text: "Delivery Adress", value: "order_data.adress"},
           { text: "Customer Name", value: "order_data.customer.name" },
+          { text: "Customer Name", value: "order_data.customer.phone" },
           { text: "Total Price", value: "order_data.totalPrice" },
           { text: "Order Items", value: "order_data.items[0].name" },
         ],
@@ -262,6 +269,28 @@ import axios from 'axios';
     },
   },
     methods: {
+      rePrint(orderID){
+        const TOKEN = this.loggedUser.token;
+        var bodyFormData = new FormData();
+        bodyFormData.set("id", orderID.id);
+        axios.request({
+          method: "post",
+          url:
+            this.$hostname + "orders/print",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormData,
+        }).then((response) => {
+            if(response.data.is_error){
+              this.printError = true;
+            }
+            else{
+              this.printError = false;
+              console.log("Order Response", response);
+            }
+        });
+    },
       updateOrders(){
         this.loggedUser = this.$store.state.auth.user.data;
 
@@ -290,7 +319,6 @@ import axios from 'axios';
             this.filteredOrders = this.orders.filter((x) => x.status != 10);
             console.log("orders data: ", this.filteredOrders);
           });
-
       },
       updateOrdersDate(date){
         var dateString = date + ' to '+ date;
@@ -321,7 +349,6 @@ import axios from 'axios';
             this.filteredOrders = this.orders;
             console.log("orders data: ", this.filteredOrders);
           });
-
       },
         statusRequest(status){
           const TOKEN = this.loggedUser.token;
@@ -461,7 +488,7 @@ import axios from 'axios';
             .request({
               method: "post",
               url:
-                this.$hostname + "orders/change-status",
+                this.$hostname + "orders/void",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
@@ -477,7 +504,6 @@ import axios from 'axios';
               }
             });
 
-          alert('VOID ORDER: ' + this.selectedOrder.id);
         },
         re_open(order){
             console.log('Reopen order: ', order);
