@@ -1809,6 +1809,7 @@
             <v-text-field v-if="managerAmount != ''" v-model="managerPercent" label="Manager Discount Percent" class="my-2" disabled ></v-text-field>
             <v-text-field v-if="managerPercent == ''" v-model="managerAmount" label="Manager Discount Amount" class="my-2" ></v-text-field>
             <v-text-field v-if="managerPercent != ''" v-model="managerAmount" label="Manager Discount Amount" class="my-2" disabled ></v-text-field>
+            <v-text-field v-model="managerComment" label="Manager Comment" class="my-2"></v-text-field>
           </v-card-text>
           <v-card-actions>
             <v-btn
@@ -2019,6 +2020,7 @@ export default {
       corporateDiscount: 25,
       managerPercent: '',
       managerAmount: '',
+      managerComment: '',
       managerAmountVar: false,
       managerPercentVar: false,
       couponModal: false,
@@ -5550,12 +5552,14 @@ export default {
     applyManager(){
       if(this.managerPercent != ''){
         this.order.discount = this.managerPercent;
+        this.order.managerComment = this.managerComment;
         this.order.discountName = 'Manager';
         this.order.discountAmount = false;
         this.managerPercentVar = true;
         this.managerModal = false;
       } else if(this.managerAmount != '') {
         this.order.discount = this.managerAmount;
+        this.order.managerComment = this.managerComment;
         this.order.discountName = 'Manager';
         this.order.discountAmount = true;
         this.managerAmountVar = true;

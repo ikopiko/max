@@ -170,8 +170,11 @@
         >
           <v-card>
             <v-card-title class="headline grey lighten-2">
-              {{ selectedItem.id }} 
-              <br>
+               {{ selectedItem.id }} 
+                <br>
+                Delivery Fee: {{ selectedItem.order_data.deliveryFee }}
+                <br>
+                Total : {{ selectedItem.order_data.totalPrice }}
             </v-card-title>
 
             <v-card-text>
