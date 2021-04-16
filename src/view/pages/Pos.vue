@@ -456,8 +456,11 @@
                     <div class="col-2 calcBtn lightGreen" @click="calcCash(100)">
                         100
                     </div>
-                    <div class="col-2 calcBtn blue" @click="invoiceActive()">
+                    <!-- <div class="col-2 calcBtn blue" @click="invoiceActive()">
                         Invoice
+                    </div> -->
+                    <div class="col-2 calcBtn blue">
+                        &nbsp;
                     </div>
                 </div>
                 <div class="row my-1">
@@ -526,12 +529,7 @@
                     </div>
                 </div>
                 <div class="row my-1">
-                    <!-- <div class="col-2 calcBtn blue" @click="socialDiscount()">
-                        Social
-                    </div> -->
-                    <div class="col-2 calcBtn blue">
-                        &nbsp;
-                    </div>
+                    <div class="col-2 calcBtn blue" @click="changeDisc()">CRM DISC</div>
                     <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">
                         PAY {{ Number(totalPrice).toFixed(2) }}
                     </div>
@@ -674,7 +672,6 @@
                     </div>
                 </div>
             </div>
-
             <hr />
         </div>
     </div>
@@ -834,14 +831,16 @@
                     </v-radio-group>
 
                     <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
-                    
-                    <v-row>
-                        <v-col cols="12" sm="12">
-                            <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="curentCustomer.address" clearable ></v-text-field>
-                        </v-col>
-                    </v-row>
 
+                    <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="curentCustomer.address" clearable ></v-text-field>
 
+                    <v-combobox
+                      v-model="curentCustomer.address"
+                      label="Address"
+                      multiple
+                      chips
+                      dense
+                    ></v-combobox>
 
                     <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
                     
@@ -857,8 +856,8 @@
                 </v-form>
               </v-row>
               <v-row>
-                <div class="col" v-for="discount in discountTypes" :key="discount">
-                  <v-btn class="blue" :class="{ active : discount.name == curentCustomer.discount }" large @click="crmDiscount(discount)">{{ discount.name }}</v-btn>
+                <div class="col" v-for="discount in discountTypes" :key="discount.id">
+                  <v-btn class="blue" v-if="discount.name != 'Manager'" :class="{ active : discount.name == curentCustomer.discount }" large @click="crmDiscount(discount)">{{ discount.name }}</v-btn>
                 </div>
               </v-row>
           </v-container>
@@ -881,16 +880,8 @@
             x-large
             @click="editCustomer()"
           >
-            Edit Customer
+            Save
           </v-btn>      
-          <v-btn
-            color="blue darken-1"
-            text
-            x-large
-            @click="crmModal = false"
-          >
-            Close
-          </v-btn>
         </v-card-actions>
     </v-card>
     </v-dialog>
@@ -924,12 +915,16 @@
                                             <v-radio label="None" value="none"></v-radio>
                                         </v-radio-group>
 
-                                        <v-row>
-                                            <v-col cols="12" sm="12">
-                                                <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
-                                            </v-col>
-                                        </v-row>
+                                        <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
 
+                                        <v-combobox
+                                          v-model="curentCustomer.address"
+                                          label="Address"
+                                          multiple
+                                          chips
+                                          dense
+                                        ></v-combobox>
+                                        
                                         <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
 
                                         <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
@@ -1117,12 +1112,15 @@
 
                   <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
-                  <v-row>
-                      <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-                      </v-col>
-                  </v-row>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
+                  <v-combobox
+                    v-model="curentCustomer.address"
+                    label="Address"
+                    multiple
+                    chips
+                    dense
+                  ></v-combobox>
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1174,8 +1172,6 @@
                   
                   <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
-
-                 
                   <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
@@ -1184,12 +1180,15 @@
 
                   <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
-                  <v-row>
-                      <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-                      </v-col>
-                  </v-row>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
+                  <v-combobox
+                    v-model="curentCustomer.address"
+                    label="Address"
+                    multiple
+                    chips
+                    dense
+                  ></v-combobox>
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1252,12 +1251,15 @@
 
                   <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
-                  <v-row>
-                      <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-                      </v-col>
-                  </v-row>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
+                  <v-combobox
+                    v-model="curentCustomer.address"
+                    label="Address"
+                    multiple
+                    chips
+                    dense
+                  ></v-combobox>
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1344,11 +1346,15 @@
 
                   <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
-                  <v-row>
-                      <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-                      </v-col>
-                  </v-row>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
+
+                  <v-combobox
+                    v-model="curentCustomer.address"
+                    label="Address"
+                    multiple
+                    chips
+                    dense
+                  ></v-combobox>
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1373,14 +1379,14 @@
             x-large
             @click="glovoCustomer('cash')"
           >
-            Glovo Cash: {{ order.totalPrice }}
-          </v-btn>   
+            Glovo Pya later : {{ order.totalPrice }}
+          </v-btn>     
            <v-btn
             color="blue darken-1"
             class="blue"
             text
             x-large
-            @click="glovoCustomer('paid')"
+            @click="glovoCustomer('transfer')"
           >
             Glovo Transfer: {{ order.totalPrice }}
           </v-btn>   
@@ -1420,12 +1426,15 @@
 
                   <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
-                  <v-row>
-                      <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-                      </v-col>
-                  </v-row>
+                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
+                  <v-combobox
+                    v-model="curentCustomer.address"
+                    label="Address"
+                    multiple
+                    chips
+                    dense
+                  ></v-combobox>
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1660,6 +1669,14 @@
 
                   <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
 
+                  <v-combobox
+                    v-model="curentCustomer.address"
+                    label="Address"
+                    multiple
+                    chips
+                    dense
+                  ></v-combobox>
+
                   <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
 
                   <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
@@ -1871,6 +1888,7 @@ export default {
     },
   data() {
     return {
+      addressList: [],
       isReopen: false,
       fullOrder: [],
       futureTime: null,
@@ -2704,27 +2722,15 @@ export default {
               data: bodyFormData,
             })
             .then((response) => {
-              console.log('------', response.data.data);
-            // if(this.search.length === 9){
-            //     this.curentCustomer.name = response.data.data[0].name;
-            //     this.curentCustomer.phone = response.data.data[0].phone;
-            //     this.curentCustomer.address = response.data.data[0].address;
-            //     this.lastOrder = response.data.data[0].last_order;
-            //     console.log('Current user last order: ', this.lastOrder);
-            //     this.curentCustomer.comment = response.data.data[0].comment;
-            //     console.log('Current Customer from API: ', response.data.data[0]);
-            //     this.customer = this.curentCustomer;
-            //     console.log('customeeeeer: ', this.customer);
-            //     this.customerChecked = true;
-            // }
-            // else {}
                 this.searchResults = response.data.data;
+                this.searchResults.reverse();
                 console.log('Search Results: ',this.searchResults);
                 this.customer.phone = this.telMessage;
                 this.lastOrder = response.data.data[0].last_order;
 
             });
           console.log('Curent User Data: ', this.curentCustomer);
+          this.curentCustomer.address = this.curentCustomer.address.split(',');
             if(this.searchResults.length === 0){
               this.curentCustomer.phone = this.search;
             }
@@ -2749,7 +2755,7 @@ export default {
 
           } else {
 
-              if(this.search.length >= 6){
+              if(this.search.length >= 5){
                 this.checkUser(this.search);
               }
 
@@ -3012,8 +3018,6 @@ export default {
                         this.order.items[this.itemIndex].totalPrice;
                     }
                     else {
-                        // this.order.items[this.itemIndex].totalPrice = 
-                        // this.order.items[this.itemIndex].totalPrice - t.price;
                         this.order.items[this.itemIndex].totalPrice = 
                         this.order.items[this.itemIndex].totalPrice;
                     }
@@ -5207,10 +5211,13 @@ export default {
         this.confirmModal = false;
       } else if (this.paymentType == 'payLater'){
         this.order.paymentType = 'payLater';
+      } 
+      else if (this.paymentType == 'transfer'){
+        this.order.paymentType = 'transfer';
       }
 
 
-      if (this.paymentType == "cash" || this.paymentType == "card"  || this.paymentType == "payLater" ) {
+      if (this.paymentType == "cash" || this.paymentType == "card"  || this.paymentType == "payLater" || this.paymentType == 'transfer') {
         if(this.payLaterActive){
           this.payOrder();
         }
@@ -5276,6 +5283,8 @@ export default {
           else if(response.status === 200 && this.paymentType == "card"){
             this.calcPay();
           } else if(response.status === 200 && this.paymentType == "payLater"){
+            this.calcPay();
+          } else if(response.status === 200 && this.paymentType == "transfer"){
             this.calcPay();
           }
             console.log("Order Response", response);
@@ -5453,6 +5462,7 @@ export default {
         this.showProductsComponent();
     },
     glovoDelivery(ND){
+      this.noDisc();
       this.order.deliveryFee = 0;
       this.walkinActiveVar = false;
       this.deliveryActiveVar = false
@@ -5468,6 +5478,7 @@ export default {
       }
     },
     woltDelivery(ND){
+      this.noDisc();
       this.order.deliveryFee = 0;
       this.walkinActiveVar = false;
       this.takeoutActiveVar = false;
@@ -5713,7 +5724,7 @@ export default {
       }
     },
    glovoCustomer(payment){
-     if(this.curentCustomer.name === '')
+     if(this.curentCustomer.code === '')
       {
         alert('3 Digit Code is required!');
       }
@@ -5721,13 +5732,22 @@ export default {
         this.order.customer = this.curentCustomer;
         this.order.deliveryType = 'Glovo';
         if(payment === 'cash'){
-          this.order.deliveryMethod = 'Glovo Cash';
+          // this.order.deliveryMethod = 'Glovo Cash';
+          this.order.deliveryMethod = 'Glovo';
+          this.paymentType = 'cash';
           this.glovoModal = false;
           this.payLater();
         }
-        else if(payment === 'paid'){
+        else if(payment === 'card'){
           this.order.deliveryMethod = 'Glovo';
           this.paymentType = 'card';
+          console.log('Glovo customer : ', this.order.customer);
+          this.glovoModal = false;
+          this.payLater();
+        }
+        else if(payment === 'transfer'){
+          this.order.deliveryMethod = 'Glovo';
+          this.paymentType = 'transfer';
           console.log('Glovo customer : ', this.order.customer);
           this.glovoModal = false;
           this.payGlovo();

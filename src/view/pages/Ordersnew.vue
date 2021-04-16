@@ -60,12 +60,11 @@
                                     <tr @click="onButtonClick(row.item)">
                                         <td>{{Number(row.item.id)}}</td>
                                         <td>{{row.item.order_data.deliveryMethod}}</td>
+                                        <td>{{row.item.order_data.customer.code}}</td>
                                         <td>{{row.item.order_data.adress}}</td>
                                         <td>{{row.item.order_data.customer.name}}</td>
                                         <td>{{row.item.order_data.customer.phone}}</td>
                                         <td>{{Number(row.item.order_data.totalPrice)}}</td>
-                                        <td>{{row.item.order_data.items[0].name}}...</td>
-
                                     </tr>
                                 </template>
                             </v-data-table>
@@ -190,6 +189,7 @@ import axios from 'axios';
         ],
         headers: [
           { text: "Source", value: "source" },
+          { text: "Glovo/Wolt #", value: "order_data.customer.code" },
           { text: "Delivery Adress", value: "order_data.adress"},
           { text: "Customer Name", value: "order_data.customer.name" },
           { text: "Customer Name", value: "order_data.customer.phone" },
@@ -377,7 +377,10 @@ import axios from 'axios';
         },
         wasteOrder(){
 
-          this.orderWaste = { items: this.selectedWaste };
+          this.orderWaste = this.selectedOrder.order_data;
+          this.orderWaste.items = this.selectedWaste;
+
+
           //this.orderWaste.order_data.items = this.selectedWaste;
 
           console.log('orderWaste: ', this.orderWaste);
@@ -394,7 +397,7 @@ import axios from 'axios';
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },
-              data: this.orderWaste,
+              data: { order: this.orderWaste },
             })
             .then((response) => {
               if(response.data.is_error){
@@ -402,6 +405,7 @@ import axios from 'axios';
               }
               else{
                 console.log("Waste Successful: ",response);
+                this.wasteDialog = false;
               }
             });
         },

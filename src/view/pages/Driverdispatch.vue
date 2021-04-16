@@ -206,7 +206,7 @@
                     :key="item.id"
                     >
                     <td style="font-size: 18px !important;">{{ item.qty }}</td>
-                    <td style="font-size: 18px !important;">{{ item.name }}</td>
+                    <td style="font-size: 18px !important;"> {{ item.size.toUpperCase() }} {{ item.name }}</td>
                     <td style="font-size: 18px !important;">{{ item.totalPrice }}</td>
                     </tr>
                 </tbody>

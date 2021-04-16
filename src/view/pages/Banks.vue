@@ -134,18 +134,18 @@
                                 <td style="width:50%">
                                     <h3>POS</h3>
                                 </td>
-                                <td style="width:50%; text-align:right">
+                                <td style="width:50%; text-align:right" v-if="tillsCount == 0">
                                   <i class="material-icons md-36" @click="addTill()">add</i>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                     
-                    <v-card v-for="till in tills" :key="till.id"  
+                    <v-card v-for="till in tills.current" :key="till.id"  
                         class=" my-3 cols" color="#FE9A53" light max-width="250" @click="tillInfo(till)">
                         <v-card-title>
-                            <span class="title font-weight-bold" v-if="till.cash < 650">{{ (till.cash + till.card).toFixed(2) }} Gel - {{ till.name }}</span>
-                            <span class="title font-weight-bold" v-if="Number(till.cash) >= 650"><span style="color: red;">DROP NEEDED {{ (till.cash + till.card).toFixed(2) }} Gel </span>  - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="Number(till.cash) + Number(till.glovo_cash) < 650">{{ (Number(till.cash) + Number(till.card) + Number(till.glovo_cash)).toFixed(2) }} Gel - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="Number(till.cash) + Number(till.glovo_cash) >= 650"><span style="color: red;">DROP NEEDED {{ (Number(till.cash) + Number(till.card) + Number(till.glovo_cash)).toFixed(2) }} Gel </span>  - {{ till.name }}</span>
                         </v-card-title>
 
                         <v-card-actions>
@@ -159,92 +159,30 @@
                                 <v-list-item-content>
                                     <v-list-item-title>{{ till.name }} - {{ till.branch_name }}</v-list-item-title>
                                 </v-list-item-content>
-                                <!-- <v-row align="center" justify="end">
-                                    <i class="material-icons md-36">
-                                        alarm
-                                    </i>
-                                    <span class="subheading mr-2">21:55</span>
-                                </v-row> -->
                             </v-list-item>
                         </v-card-actions>
+                    </v-card>
 
-                        <v-expand-transition v-if="posID === till.poses_id">
-                            <v-card
-                              v-if="tillFormDialog"
-                              light max-width="400"
-                              class="transition-fast-in-fast-out v-card--reveal"
-                              style="height: 100%;"
-                            >
-                              <v-card-text>
-                                <v-container>
-                                  <v-row>
-                                    <v-col
-                                      cols="12"
-                                      sm="6"
-                                      md="4"
-                                    >
-                                      <v-text-field
-                                        v-model="posAmount"
-                                        label="Amount"
-                                      ></v-text-field>
-                                    </v-col>
-                                  </v-row>
-                                  <v-row>
-                                    <v-col
-                                      cols="12"
-                                      sm="12"
-                                      md="8"
-                                    >
-                                      <v-text-field
-                                        label="Optional Comment"
-                                      ></v-text-field>
-                                    </v-col>
-                                  </v-row>
-                                  <v-row>
-                                    <v-col
-                                      cols="12"
-                                      sm="6"
-                                      md="4"
-                                    >
-                                      <v-btn
-                                        elevation="2"
-                                        x-large
-                                        color="grey"
-                                        class="white--text"
-                                        @click="tillFormDialog = false"
-                                      >Close</v-btn>
-                                    </v-col>
-                                    <v-col
-                                      cols="12"
-                                      sm="6"
-                                      md="4"
-                                    >
-                                      <v-btn
-                                        elevation="2"
-                                        x-large
-                                        class="white--text"
-                                        color="green"
-                                        @click="addToPos()"
-                                      >ADD</v-btn>
-                                    </v-col>
-                                    <v-col
-                                      cols="12"
-                                      sm="6"
-                                      md="4"
-                                    >
-                                      <v-btn
-                                        elevation="2"
-                                        color="blue"
-                                        x-large
-                                        class="white--text"
-                                        @click="dropFromPos()"
-                                      >DROP</v-btn>
-                                    </v-col>
-                                  </v-row>
-                                </v-container>
-                              </v-card-text>
-                            </v-card>
-                          </v-expand-transition>
+                    <v-card v-for="till in tills.unclose" :key="till.id"  
+                        class=" my-3 cols" color="#FE3853" light max-width="250" @click="tillInfo(till)">
+                        <v-card-title>
+                            <span class="title font-weight-bold" v-if="Number(till.cash) + Number(till.glovo_cash) < 650">{{ (Number(till.cash) + Number(till.card) + Number(till.glovo_cash)).toFixed(2) }} Gel - {{ till.name }}</span>
+                            <span class="title font-weight-bold" v-if="Number(till.cash) + Number(till.glovo_cash) >= 650"><span style="color: red;">DROP NEEDED {{ (Number(till.cash) + Number(till.card) + Number(till.glovo_cash)).toFixed(2) }} Gel </span>  - {{ till.name }}</span>
+                        </v-card-title>
+
+                        <v-card-actions>
+                            <v-list-item class="grow">
+                                <v-list-item-avatar color="grey darken-3" @click="tillFoo(till)">
+                                    <i class="material-icons md-36">
+                                        face
+                                    </i>
+                                </v-list-item-avatar>
+                               
+                                <v-list-item-content>
+                                    <v-list-item-title>{{ till.name }} - {{ till.branch_name }}</v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-card-actions>
                     </v-card>
                 </div>
                 <!-- End of Tills -->
@@ -571,7 +509,7 @@
       >
         <v-card>
           <v-card-title>
-            <span class="headline">Till -> Cashier</span>
+            <span class="headline">ADD POS</span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -793,7 +731,7 @@
             <v-container>
               <v-row>
                 <v-col cols="3" class="justify-end">&nbsp;</v-col>
-                <v-col cols="3 h4">Cash - {{ selectedPos.cash }}</v-col>
+                <v-col cols="3 h4">Cash - {{ Number(selectedPos.cash) + Number(selectedPos.glovo_cash) }}</v-col>
                 <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
               </v-row>
 
@@ -809,12 +747,17 @@
               </v-row>
               <v-row class="mt-2">
                 <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Glovo - {{ Number(selectedPos.glovo_card) + Number(selectedPos.glovo_cash) }}</v-col>
+                <v-col cols="3 h4">Glovo - {{ selectedPos.glovo }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
               <v-row>
                 <v-col cols="3"></v-col>
                 <v-col cols="3 h4">Glovo Cash - {{ selectedPos.glovo_cash }}</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3"></v-col>
+                <v-col cols="3 h4">Glovo Card - {{ selectedPos.glovo_card }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
               <v-row>
@@ -1404,6 +1347,7 @@ export default {
       openedTill: {},
       safes: [],
       tills: [],
+      tillsCount: null,
       allPoses: [],
       banks: [],
       drivers: [],
@@ -1525,9 +1469,6 @@ export default {
         this.allPoses = response.data.data;
         console.log("All POS List: ", this.allPoses);
       });
-
-      
-
   },
   created () {
         this.timer = setInterval(this.getPoses, 5000)
@@ -1673,6 +1614,7 @@ export default {
         });
     },
     driverDetailsModal() {
+      this.driverDetails(this.dateDriver);
       this.driverDetail = true;
       this.driverCloseDialog = false;
     },
@@ -1816,10 +1758,19 @@ export default {
         .then((response) => {
           this.tills = response.data.data;
 
-          this.tills.forEach(x => {
+          this.tills.unclose.forEach(x => {
             x.card = Number(x.card);
             x.cash = Number(x.cash);
           });
+          this.tills.current.forEach(x => {
+            x.card = Number(x.card);
+            x.cash = Number(x.cash);
+          });
+
+          this.tillsCount = this.tills.unclose.length;
+          // this.tillsCount = 1;
+
+
           console.log("POS List: ", this.tills);
         });
     },
@@ -1920,10 +1871,7 @@ export default {
     },
     dropFromPos(){
 
-      //this.posAmount = -Math.abs(this.posAmount);
-      //alert(this.posAmount)
-
-      if(this.selectedPos.cash < this.posAmount){
+      if(Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_cash) < this.posAmount){
           alert('There is not that amount of money in POS');
       }
       else {
