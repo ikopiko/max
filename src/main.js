@@ -44,6 +44,8 @@ Vue.prototype.$hostname = "http://188.169.16.186:8082/ronny/rest/web/index.php?r
 // Vue.prototype.$authHostName = "http://192.168.1.124/ronny/rest/web/index.php?r=auth";
 Vue.prototype.$authHostName = "http://188.169.16.186:8082/ronny/rest/web/index.php?r=auth";
 
+// Change It to API.SERVICE.JS ALSO
+
 router.beforeEach((to, from, next) => {
   // Ensure we checked auth before each page load.
   Promise.all([store.dispatch(VERIFY_AUTH)]).then(next);

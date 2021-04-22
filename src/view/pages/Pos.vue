@@ -21,7 +21,6 @@
                         <template>
                           <v-autocomplete
                             v-model="curentCustomer"
-                            :loading="loading"
                             :items="items"
                             item-text="name"
                             item-value="id"
@@ -1379,7 +1378,7 @@
             x-large
             @click="glovoCustomer('cash')"
           >
-            Glovo Pya later : {{ order.totalPrice }}
+            Glovo Pay later : {{ order.totalPrice }}
           </v-btn>     
            <v-btn
             color="blue darken-1"
@@ -2183,16 +2182,25 @@ export default {
     };
   },
 
-  // beforeRouteEnter (to, from, next) {
-  //   next(vm => {
-  //      if (vm.$store.state.auth.user.data.role !== "admin" || vm.$store.state.auth.user.data.role !== "posaccess") {
-  //        vm.$router.push({name: "pos"}).catch(()=>{});
-  //      }
-  //      else {
-  //        vm.$router.push({name: "dashboard"}).catch(()=>{});
-  //      }
-  //   });
-  // },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+       if (vm.$store.state.auth.user.data.role.toLowerCase() == "admin"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "vicemanager"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "globalmanager"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "branchmanager"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "weiser" 
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "cashier"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "courier" 
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "posaccess" 
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "cook" 
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "driver") {
+         vm.$router.push({name: "pos"}).catch(()=>{});
+       }
+       else {
+         vm.$router.push({name: "dashboard"}).catch(()=>{});
+       }
+    });
+  },
 
   mounted() {
     this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
@@ -2534,6 +2542,14 @@ export default {
         deep: true,
 
         this.changeDisc();
+      },
+      searchResults(val){
+        if(val.length == 0){
+          this.items = [];
+        }
+        else {
+          this.items = this.searchResults;
+        }
       },
       changeModal(val){
         if(!val){
@@ -5296,6 +5312,7 @@ export default {
         const TOKEN = localStorage.getItem("TOKEN");
         //this.order.id = this.selected
         //this.order = JSON.parse(this.selectedOrder);
+        this.order.pos_id = this.loggedUserFull.pos_id;
         axios.request({
             method: 'post',
             url: this.$hostname + "orders/paid",
@@ -5561,22 +5578,27 @@ export default {
       this.managerModal = true;
     },
     applyManager(){
-      if(this.managerPercent != ''){
-        this.order.discount = this.managerPercent;
-        this.order.managerComment = this.managerComment;
-        this.order.discountName = 'Manager';
-        this.order.discountAmount = false;
-        this.managerPercentVar = true;
-        this.managerModal = false;
-      } else if(this.managerAmount != '') {
-        this.order.discount = this.managerAmount;
-        this.order.managerComment = this.managerComment;
-        this.order.discountName = 'Manager';
-        this.order.discountAmount = true;
-        this.managerAmountVar = true;
-        this.managerModal = false;
-      } else if(this.managerAmount == '' && this.managerPercent == ''){
-        alert('No Discount Selected');
+      if(this.managerComment == ''){
+        alert('Manager comment is required!');
+      } 
+      else{
+          if(this.managerPercent != ''){
+            this.order.discount = this.managerPercent;
+            this.order.managerComment = this.managerComment;
+            this.order.discountName = 'Manager';
+            this.order.discountAmount = false;
+            this.managerPercentVar = true;
+            this.managerModal = false;
+          } else if(this.managerAmount != '') {
+            this.order.discount = this.managerAmount;
+            this.order.managerComment = this.managerComment;
+            this.order.discountName = 'Manager';
+            this.order.discountAmount = true;
+            this.managerAmountVar = true;
+            this.managerModal = false;
+          } else if(this.managerAmount == '' && this.managerPercent == ''){
+            alert('No Discount Selected');
+          }
       }
       this.$forceUpdate();
     },

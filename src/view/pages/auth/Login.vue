@@ -370,18 +370,7 @@ export default {
         },
 
         login(pin) {
-
-            // axios
-            // .request({
-            //   method: "post",
-            //   url:
-            //     "http://localhost/pos/index.php",
-            // })
-            // .then((response) => {
-            //   console.log('POS Localhost Response: ', response);
-            //   this.localPosData = response.data;
-            // });
-
+            
             this.pinError = true;
             var mac = 'd4:c9:ef:d5:70:8f';
             var bodyFormData=new FormData();

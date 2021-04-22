@@ -235,18 +235,52 @@ export default {
     console.log("Fullll", this.loggedUserFull);
     this.loggedUser = this.$store.state.auth.user.data;;
 
-    if(this.loggedUser.role === "admin"){
+    if(this.loggedUser.role.toLowerCase() == "admin"){
       this.allView = true;
     }
-    else if(this.loggedUser.role === "posaccess") {
+    else if(this.loggedUser.role.toLowerCase() == "globalmanager"){
+      this.allView = true;
+    }
+    else if(this.loggedUser.role.toLowerCase() == "vicemanager"){
+      this.allView = true;
+    }
+    else if(this.loggedUser.role.toLowerCase() == "branchmanager"){
+      this.allView = true;
+    }
+    else if(this.loggedUser.role.toLowerCase() == "weiser"){
+      this.allView = true;
+    }
+    else if(this.loggedUser.role.toLowerCase() === "posaccess") {
       this.posView = true;
       this.ordersView = true;
       this.driverView = true;
       this.timeView = true;
       this.maxView = true;
     }
-    else if(this.loggedUser.role === "driver") {
+    else if(this.loggedUser.role.toLowerCase() == "cashier") {
+      this.posView = true;
+      this.ordersView = true;
       this.driverView = true;
+      this.timeView = true;
+      this.maxView = true;
+    }
+    else if(this.loggedUser.role.toLowerCase() == "driver") {
+      this.driverView = true;
+      this.timeView = true;
+    }
+    else if(this.loggedUser.role.toLowerCase() == "courier") {
+      this.driverView = true;
+      this.timeView = true;
+    }
+    else if(this.loggedUser.role.toLowerCase() == "cook") {
+      this.posView = true;
+      this.maxView = true;
+      this.timeView = true;
+    }
+    else if(this.loggedUser.role.toLowerCase() == "thermometer") {
+      this.timeView = true;
+    }
+    else if(this.loggedUser.role.toLowerCase() == "housekeeper") {
       this.timeView = true;
     }
   },

@@ -324,7 +324,15 @@ export default {
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
-       if (vm.$store.state.auth.user.data.role == "admin" || vm.$store.state.auth.user.data.role == "posaccess" || vm.$store.state.auth.user.data.role == "driver") {
+       if (vm.$store.state.auth.user.data.role.toLowerCase() == "admin"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "vicemanager"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "globalmanager"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "branchmanager"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "weiser" 
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "cashier"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "courier" 
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "posaccess" 
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "driver") {
          vm.$router.push({name: "driverdispatch"});
        }
        else {

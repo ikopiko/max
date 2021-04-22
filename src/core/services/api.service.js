@@ -10,7 +10,7 @@ const ApiService = {
   init() {
     Vue.use(VueAxios, axios);
     Vue.axios.defaults.baseURL =
-      "https://max.ronnyspizza.ge/rest/web/index.php?r=";
+      "http://188.169.16.186:8082/ronny/rest/web/index.php?r=";
   },
 
   /**

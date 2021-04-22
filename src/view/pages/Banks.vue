@@ -731,18 +731,18 @@
             <v-container>
               <v-row>
                 <v-col cols="3" class="justify-end">&nbsp;</v-col>
-                <v-col cols="3 h4">Cash - {{ Number(selectedPos.cash) + Number(selectedPos.glovo_cash) }}</v-col>
+                <v-col cols="3 h4">Cash - {{ (Number(selectedPos.cash) + Number(selectedPos.glovo_cash)).toFixed(2) }}</v-col>
                 <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Card - {{ selectedPos.card }}</v-col>
+                <v-col cols="3 h4">Card - {{ (Number(selectedPos.card) + Number(selectedPos.glovo_card)).toFixed(2) }}</v-col>
                 <v-col cols="6"><v-text-field label="Card Amount" v-model="cardActual"></v-text-field></v-col>
               </v-row>  
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Total - {{ Number(selectedPos.card) + Number(selectedPos.cash) }}</v-col>
+                <v-col cols="3 h4">Total - {{ (Number(selectedPos.card) + Number(selectedPos.cash) + Number(selectedPos.glovo_card) + Number(selectedPos.glovo_cash)).toFixed(2) }}</v-col>
                 <v-col cols="6 h4">{{ Number(cashActual) + Number(cardActual) }}</v-col>
               </v-row>
               <v-row class="mt-2">
@@ -1420,7 +1420,11 @@ export default {
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
-       if (vm.$store.state.auth.user.data.role == "admin") {
+       if (vm.$store.state.auth.user.data.role.toLowerCase() == "admin" 
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "vicemanager"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "globalmanager"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "branchmanager"
+            || vm.$store.state.auth.user.data.role.toLowerCase() == "weiser") {
          vm.$router.push({name: "banks"});
        }
        else {
@@ -1644,7 +1648,7 @@ export default {
       var r = confirm("Close POS for a day?");
       if(r == true){
         var actualTotal = Number(this.cashActual) + Number(this.cardActual);
-        var posTotal = Number(this.selectedPos.cash) + Number(this.selectedPos.card);
+        var posTotal = Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_cash) + Number(this.selectedPos.card);
         if(this.safeCloseComment == '') {
           this.safeCloseComment = 'Placeholder';
         }
@@ -1673,6 +1677,7 @@ export default {
             this.cardActual = '';
             this.totalActual = '';
             this.tillCloseDialog = false;
+            this.getSafes();
           });
       }
       else {
@@ -1712,6 +1717,7 @@ export default {
             this.driverCardActual = '';
             this.totalActual = '';
             this.driverCloseDialog = false;
+            this.getSafes();
           });
       }
       else {
