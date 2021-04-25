@@ -8,7 +8,7 @@
 
       <div class="container">
         <div class="row">
-          <v-btn @click="banksDetail = true">Banks History</v-btn>
+          <v-btn @click="banksDetail = true, updateDetails(date)">Banks History</v-btn>
         </div>
         <div class="row">
           <div class="col-lg-4 col-md-4">
@@ -732,13 +732,13 @@
               <v-row>
                 <v-col cols="3" class="justify-end">&nbsp;</v-col>
                 <v-col cols="3 h4">Cash - {{ (Number(selectedPos.cash) + Number(selectedPos.glovo_cash)).toFixed(2) }}</v-col>
-                <v-col cols="6"><v-text-field label="Cash Amount" v-model="cashActual"></v-text-field></v-col>
+                <v-col cols="6"><v-text-field label="Cash Amount * " v-model="cashActual"></v-text-field></v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
                 <v-col cols="3 h4">Card - {{ (Number(selectedPos.card) + Number(selectedPos.glovo_card)).toFixed(2) }}</v-col>
-                <v-col cols="6"><v-text-field label="Card Amount" v-model="cardActual"></v-text-field></v-col>
+                <v-col cols="6"><v-text-field label="Card Amount * " v-model="cardActual"></v-text-field></v-col>
               </v-row>  
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
@@ -814,6 +814,16 @@
                   md="4"
                 >
                   <v-btn
+                    v-if="tillsCount == 0"
+                    elevation="2"
+                    x-large
+                    class="white--text"
+                    color="green"
+                    @click="addToPos()"
+                  >ADD</v-btn>
+                  <v-btn
+                    v-if="tillsCount != 0"
+                    disabled
                     elevation="2"
                     x-large
                     class="white--text"
@@ -827,6 +837,16 @@
                   md="4"
                 >
                   <v-btn
+                    v-if="tillsCount == 0"
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text"
+                    @click="dropFromPos()"
+                  >DROP</v-btn>
+                  <v-btn
+                    v-if="tillsCount != 0"
+                    disabled
                     elevation="2"
                     color="blue"
                     x-large
@@ -1609,7 +1629,8 @@ export default {
               x.created_time = date.getHours() + ":" + date.getMinutes();
 
                 if(x.driver_id == 0 && x.amount < 0) {
-                  x.payment = 'Drop to ' + x.bank_name;
+                  // x.payment = 'Drop to ' + x.bank_name;
+                  x.payment = 'Add from Bank';
                 }
                 else if(x.driver_id == 0 && x.amount >= 0) {
                   x.payment = 'Add from Bank';
@@ -1645,43 +1666,50 @@ export default {
     },
     
     reconcilePos(){
-      var r = confirm("Close POS for a day?");
-      if(r == true){
-        var actualTotal = Number(this.cashActual) + Number(this.cardActual);
-        var posTotal = Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_cash) + Number(this.selectedPos.card);
-        if(this.safeCloseComment == '') {
-          this.safeCloseComment = 'Placeholder';
-        }
-        var diff = (posTotal - actualTotal).toFixed(2);
-        const TOKEN = this.loggedUser.token;
-        var reconcilePosForm = new FormData();
-        reconcilePosForm.set("driver_id", 0);
-        reconcilePosForm.set("pos_id", this.selectedPos.poses_id);
-        reconcilePosForm.set("comment", this.safeCloseComment);
-        reconcilePosForm.set("difference", diff);
-
-        axios
-          .request({
-            method: "post",
-            url:
-              this.$hostname + "manager/close-day",
-            headers: {
-              Authorization: "Bearer " + TOKEN,
-            },
-            data: reconcilePosForm,
-          })
-          .then((response) => {
-            console.log('Reconcile Pos: ', response);
-            this.safeCloseComment = '';
-            this.cashActual = '';
-            this.cardActual = '';
-            this.totalActual = '';
-            this.tillCloseDialog = false;
-            this.getSafes();
-          });
+      var totalPos = (Number(this.selectedPos.card) + Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_card) + Number(this.selectedPos.glovo_cash));
+      var totalPosActual = Number(this.cashActual) + Number(this.cardActual);
+      if(this.cashActual == null || this.cardActual == null){
+        alert('Enter Cash actual and Card actual before closing POS!');
+      }
+      else if(totalPosActual != totalPos && this.safeCloseComment == ''){
+        alert('POS Total and POS actual are not equal, please enter comment!');
       }
       else {
+        var r = confirm("Close POS for a day?");
+        if(r == true){
+          var actualTotal = Number(this.cashActual) + Number(this.cardActual);
+          var posTotal = Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_cash) + Number(this.selectedPos.card);
+          if(this.safeCloseComment == '') {
+            this.safeCloseComment = 'Placeholder';
+          }
+          var diff = (posTotal - actualTotal).toFixed(2);
+          const TOKEN = this.loggedUser.token;
+          var reconcilePosForm = new FormData();
+          reconcilePosForm.set("driver_id", 0);
+          reconcilePosForm.set("pos_id", this.selectedPos.poses_id);
+          reconcilePosForm.set("comment", this.safeCloseComment);
+          reconcilePosForm.set("difference", diff);
 
+          axios
+            .request({
+              method: "post",
+              url:
+                this.$hostname + "manager/close-day",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+              data: reconcilePosForm,
+            })
+            .then((response) => {
+              console.log('Reconcile Pos: ', response);
+              this.safeCloseComment = '';
+              this.cashActual = '';
+              this.cardActual = '';
+              this.totalActual = '';
+              this.tillCloseDialog = false;
+              this.getSafes();
+            });
+        }
       }
     },
     reconcileDriver(){
@@ -1847,41 +1875,45 @@ export default {
         });
     },
     addToPos(){
-      const TOKEN = this.loggedUser.token;
-      var bodyAddPosBalance = new FormData();
-      bodyAddPosBalance.set("pos_id", this.posID);
-      bodyAddPosBalance.set("amount", this.posAmount);
-      bodyAddPosBalance.set("safe_id", this.safes[0].id);
+      var r = confirm("Add to POS?");
+      if(r == true){
+        const TOKEN = this.loggedUser.token;
+        var bodyAddPosBalance = new FormData();
+        bodyAddPosBalance.set("pos_id", this.posID);
+        bodyAddPosBalance.set("amount", this.posAmount);
+        bodyAddPosBalance.set("safe_id", this.safes[0].id);
 
-      axios
-        .request({
-          method: "post",
-          url:
-            this.$hostname + "poses/edit-balance",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyAddPosBalance,
-        })
-        .then((response) => {
-          
-          console.log("Balance Change Response:  ", response);
-          this.tillFormDialog = false;
-          this.tillCloseDialog = false;
-          this.getSafes();
-          this.getPoses();
-          this.getDrivers();
-          this.posDetails(this.date);
-          this.posAmount = 0;
-        });
+        axios
+          .request({
+            method: "post",
+            url:
+              this.$hostname + "poses/edit-balance",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: bodyAddPosBalance,
+          })
+          .then((response) => {
+            
+            console.log("Balance Change Response:  ", response);
+            this.tillFormDialog = false;
+            this.tillCloseDialog = false;
+            this.getSafes();
+            this.getPoses();
+            this.getDrivers();
+            this.posDetails(this.date);
+            this.posAmount = 0;
+          });
+      }
     },
     dropFromPos(){
-
+      
       if(Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_cash) < this.posAmount){
           alert('There is not that amount of money in POS');
       }
       else {
-
+        var r = confirm("Drop from POS?");
+        if(r == true){
           const TOKEN = this.loggedUser.token;
           var bodyDropSafe = new FormData();
           bodyDropSafe.set("pos_id", this.posID);
@@ -1909,6 +1941,7 @@ export default {
               this.posDetails(this.date);
               this.posAmount = 0;
             });
+        }
       }
 
     },
@@ -1977,37 +2010,11 @@ export default {
       }
     },
     addToDriver(){
-
-      const TOKEN = this.loggedUser.token;
-      var bodyAddDriverBalance = new FormData();
-      bodyAddDriverBalance.set("amount", this.driverAmount);
-      bodyAddDriverBalance.set("driver_id", this.selectedDriver.id);
-
-      axios
-        .request({
-          method: "post",
-          url:
-            this.$hostname + "driver/edit-balance",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyAddDriverBalance,
-        })
-        .then((response) => {
-          
-          console.log("Balance Change Response:  ", response);
-          this.driverCloseDialog = false;
-          this.getSafes();
-          this.getPoses();
-          this.getDrivers();
-          this.driverAmount = 0;
-        });
-    },
-    dropFromDriver(){
-      if(this.driverAmount <= this.selectedDriver.amount){
+      var r = confirm("Add To "+this.selectedDriver.username+"?");
+      if(r == true){
         const TOKEN = this.loggedUser.token;
         var bodyAddDriverBalance = new FormData();
-        bodyAddDriverBalance.set("amount", - this.driverAmount);
+        bodyAddDriverBalance.set("amount", this.driverAmount);
         bodyAddDriverBalance.set("driver_id", this.selectedDriver.id);
 
         axios
@@ -2023,13 +2030,45 @@ export default {
           .then((response) => {
             
             console.log("Balance Change Response:  ", response);
-            this.driverFormDialog = false;
+            this.driverCloseDialog = false;
             this.getSafes();
             this.getPoses();
             this.getDrivers();
             this.driverAmount = 0;
           });
-        this.driverCloseDialog = false;
+      }
+    },
+    dropFromDriver(){
+      
+      if(this.driverAmount <= this.selectedDriver.amount){
+        var r = confirm("Drop From "+this.selectedDriver.username+"?");
+        if(r == true){
+          const TOKEN = this.loggedUser.token;
+          var bodyAddDriverBalance = new FormData();
+          bodyAddDriverBalance.set("amount", - this.driverAmount);
+          bodyAddDriverBalance.set("driver_id", this.selectedDriver.id);
+
+          axios
+            .request({
+              method: "post",
+              url:
+                this.$hostname + "driver/edit-balance",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+              data: bodyAddDriverBalance,
+            })
+            .then((response) => {
+              
+              console.log("Balance Change Response:  ", response);
+              this.driverFormDialog = false;
+              this.getSafes();
+              this.getPoses();
+              this.getDrivers();
+              this.driverAmount = 0;
+            });
+          this.driverCloseDialog = false;
+        }
       }
       else {
         alert('You Cant drop more than driver cash amount!');
@@ -2041,7 +2080,7 @@ export default {
     },
     closeSafe(){
 
-      this.safeAmount = Number(this.safes[0].amount) - Number(this.safes[0].default_amount);
+      this.safeAmount = (Number(this.safes[0].amount) - Number(this.safes[0].default_amount)).toFixed(2);
 
       this.safeCloseDialog = true;
       

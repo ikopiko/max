@@ -2542,6 +2542,7 @@ export default {
         deep: true,
 
         this.changeDisc();
+        this.changeGender();
       },
       searchResults(val){
         if(val.length == 0){
@@ -2571,6 +2572,9 @@ export default {
         this.noDisc();
       }
     },
+    changeGender(){
+
+    },
     customerPhone(val) {
       this.curentCustomer.phone = val;
       alert('123' + val);
@@ -2579,8 +2583,6 @@ export default {
         if (v.length > 4){
           this.checkUser(v);
           this.loading = true;
-          console.log('Query: ', v);
-          // Simulated ajax query
           }
           setTimeout(() => {
             this.items = this.searchResults;
@@ -5552,24 +5554,28 @@ export default {
     },
     diplomatDisc(){
       this.diplomatModal = false;
+      this.discountActive = true;
       this.order.discount = this.diplomatDiscount;
       this.order.discountInfo = this.discountInfo;
       this.order.discountName = 'Diplomat';
     },
     studentDisc(){
       this.studentModal = false;
+      this.discountActive = true;
       this.order.discount = this.studentDiscount;
       this.order.discountInfo = this.discountInfo;
       this.order.discountName = 'Student';
     },
     employeeDisc(){
         this.teamModal = false;
+        this.discountActive = true;
         this.order.discount = this.employeeDiscount;
         this.order.discountInfo = this.discountInfo;
         this.order.discountName = 'Team';
     },
     corporateDisc(){
         this.teamModal = false;
+        this.corporateActive = true;
         this.order.discount = this.corporateDiscount;
         this.order.discountInfo = this.discountInfo;
         this.order.discountName = 'Corporate';
