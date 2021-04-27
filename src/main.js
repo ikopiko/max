@@ -39,10 +39,11 @@ ApiService.init();
 
 // Global URL Variable
 
-Vue.prototype.$hostname = "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/";
+Vue.prototype.$hostname = "http://192.168.1.124/ronny/rest/web/index.php?r=v1/";
+// Vue.prototype.$hostname = "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/";
 
-// Vue.prototype.$authHostName = "http://192.168.1.124/ronny/rest/web/index.php?r=auth";
-Vue.prototype.$authHostName = "http://188.169.16.186:8082/ronny/rest/web/index.php?r=auth";
+Vue.prototype.$authHostName = "http://192.168.1.124/ronny/rest/web/index.php?r=auth";
+// Vue.prototype.$authHostName = "http://188.169.16.186:8082/ronny/rest/web/index.php?r=auth";
 
 // Change It to API.SERVICE.JS ALSO
 

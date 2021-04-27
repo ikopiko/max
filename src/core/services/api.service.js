@@ -10,7 +10,8 @@ const ApiService = {
   init() {
     Vue.use(VueAxios, axios);
     Vue.axios.defaults.baseURL =
-      "http://188.169.16.186:8082/ronny/rest/web/index.php?r=";
+      // "http://188.169.16.186:8082/ronny/rest/web/index.php?r=";
+    "http://192.168.1.124/ronny/rest/web/index.php?r=";
   },
 
   /**

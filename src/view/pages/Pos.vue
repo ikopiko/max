@@ -2151,7 +2151,7 @@ export default {
         sex: '',
         email: '',
         dob: '',
-        address: '',
+        address: [],
         phone: '',
         tel2: '',
         comment: '',
@@ -2536,6 +2536,9 @@ export default {
   },
   watch: {
       search (val) {
+        if(this.checkNumber(val)){
+          this.curentCustomer.phone = val;
+        }
         val && val != this.select && this.querySelections(val)
       },
       curentCustomer(customer) {
@@ -2559,6 +2562,9 @@ export default {
       }
     },
   methods: {
+    checkNumber(n) { 
+      return !isNaN(parseFloat(n)) && !isNaN(n - 0) 
+    },
     changeDisc(){
       if(this.curentCustomer.discount == 'Diplomat'){
         this.diplomatDisc();
@@ -2743,7 +2749,7 @@ export default {
                 this.searchResults = response.data.data;
                 this.searchResults.reverse();
                 console.log('Search Results: ',this.searchResults);
-                this.customer.phone = this.telMessage;
+                //this.curentCustomer.phone = this.telMessage;
                 this.lastOrder = response.data.data[0].last_order;
 
             });
@@ -3481,25 +3487,14 @@ export default {
         sex: '',
         email: '',
         dob: '',
-        adress: '', 
-        tel: '',
-        tel2: '',
-        comment: '',
-        comment2: ''
-      };
-      this.customer = {
-        name: '',
-        sex: '',
-        email: '',
-        dob: '',
-        adress: '',
-        tel: '',
-        tel2: '',
+        address: [], 
+        phone: '',
         comment: '',
         comment2: ''
       };
       this.telMessage = '';
       this.customerChecked = false;
+      this.$forceUpdate();
     },
 
     doneOrder() {
@@ -5226,6 +5221,7 @@ export default {
         this.changeModal = true;
       } else if (this.paymentType == "card") {
         this.order.paymentType = 'Card';
+        this.print();
         this.confirmModal = false;
       } else if (this.paymentType == 'payLater'){
         this.order.paymentType = 'payLater';
@@ -5275,38 +5271,37 @@ export default {
         }
         
         else {
-        this.order.totalPrice = this.totalNet.toFixed(2);
-        this.order.promiseTime = this.promiseTime;
-        this.order.pos_id = this.loggedUserFull.pos_id;
-        this.order.safe_id = this.loggedUserFull.safe_id;
-        console.log('Last order structure: ', this.order);
-        const TOKEN = localStorage.getItem("TOKEN");
-        axios.request({
-          method: "post",
-          url:
-            //"http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/send-order",
-            this.$hostname + "orders/create",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: { order: this.order },
-        }).then((response) => {
-          
-          this.printOrder(response.data);
-          // alert(this);
-          localStorage.removeItem("reopenItem");
-          if(this.printError){
-            console.log("Print Error");
-          }
-          else if(response.status === 200 && this.paymentType == "card"){
-            this.calcPay();
-          } else if(response.status === 200 && this.paymentType == "payLater"){
-            this.calcPay();
-          } else if(response.status === 200 && this.paymentType == "transfer"){
-            this.calcPay();
-          }
-            console.log("Order Response", response);
-        });
+           this.order.totalPrice = this.totalNet.toFixed(2);
+          this.order.promiseTime = this.promiseTime;
+          this.order.pos_id = this.loggedUserFull.pos_id;
+          this.order.safe_id = this.loggedUserFull.safe_id;
+          console.log('Last order structure: ', this.order);
+          const TOKEN = localStorage.getItem("TOKEN");
+          axios.request({
+            method: "post",
+            url:
+              this.$hostname + "orders/create",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: { order: this.order },
+          }).then((response) => {
+            
+            this.printOrder(response.data);
+            // alert(this);
+            localStorage.removeItem("reopenItem");
+            if(this.printError){
+              console.log("Print Error");
+            }
+            else if(response.status === 200 && this.paymentType == "card"){
+              this.calcPay();
+            } else if(response.status === 200 && this.paymentType == "payLater"){
+              this.calcPay();
+            } else if(response.status === 200 && this.paymentType == "transfer"){
+              this.calcPay();
+            }
+              console.log("Order Response", response);
+          });
         }
       }
     },
@@ -5386,7 +5381,6 @@ export default {
       this.cashInput = '';
     },
     calcPay() {
-
       this.calculatorModal = false;
       this.showProducts = true;
       this.curentCustomer = {
@@ -5394,7 +5388,7 @@ export default {
         sex: '',
         email: '',
         dob: '',
-        adress: '',
+        adress: [],
         tel: '',
         tel2: '',
         comment: '',

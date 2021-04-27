@@ -64,7 +64,7 @@
                                         <td>{{row.item.order_data.adress}}</td>
                                         <td>{{row.item.order_data.customer.name}}</td>
                                         <td>{{row.item.order_data.customer.phone}}</td>
-                                        <td>{{Number(row.item.order_data.totalPrice)}}</td>
+                                        <td>{{ (Number(row.item.order_data.totalPrice) - (Number(row.item.order_data.totalPrice)/ 100 * Number(row.item.order_data.discount))).toFixed(2) }}</td>
                                     </tr>
                                 </template>
                             </v-data-table>

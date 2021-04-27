@@ -202,8 +202,8 @@
                     <span v-for="drv in drivers" :key="drv.id">
                       <v-card v-if="drv.closed == null" class="mx-auto my-3" color="#46BDF2" light max-width="250" @click="driverInfo(drv)">
                           <v-card-title>
-                              <span class="title font-weight-bold" v-if="drv.amount < 200">{{ Number(drv.amount) + Number(drv.card)  }}  - {{ drv.username }}</span>
-                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} </span>  - {{ drv.username }}</span>
+                              <span class="title font-weight-bold" v-if="drv.amount < 200">{{ (Number(drv.amount) + Number(drv.card)).toFixed(2)  }}  - {{ drv.username }}</span>
+                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ (Number(drv.amount) + Number(drv.card)).toFixed(2) }} </span>  - {{ drv.username }}</span>
                           </v-card-title>
 
                           <v-card-actions>
@@ -884,7 +884,7 @@
               </v-row>  
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Total - {{ Number(selectedDriver.amount) + Number(selectedDriver.card) }}</v-col>
+                <v-col cols="3 h4">Total - {{ (Number(selectedDriver.amount) + Number(selectedDriver.card)).toFixed(2) }}</v-col>
                 <v-col cols="6 h4">{{ Number(driverCashActual) + Number(driverCardActual) }}</v-col>
               </v-row>
               <v-row>
@@ -1582,7 +1582,7 @@ export default {
       const TOKEN = this.loggedUser.token;
       var bodyUpdate = new FormData();
       bodyUpdate.set("day", date);
-      bodyUpdate.set("pos_id", '1');
+      bodyUpdate.set("pos_id", '2');
 
       axios
         .request({

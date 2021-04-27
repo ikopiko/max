@@ -7,7 +7,12 @@
           Login Failed
       </v-alert>
           <b-row>
-            <v-btn v-if="loggedUser.role == 'admin'" @click="timeClockDetails = true">Timeclock Details</v-btn>
+            <v-btn v-if="loggedUser.role == 'admin' || 
+                         loggedUser.role == 'globalManager' || 
+                         loggedUser.role == 'viceManager' || 
+                         loggedUser.role == 'branchManager' || 
+                         loggedUser.role == 'weiser'" 
+              @click="timeClockDetails = true">Timeclock Details</v-btn>
           </b-row> 
           <b-row>
               <b-col cols="3" ><h2>{{ pinUser.first_name  }} - {{ pinUser.role }}</h2></b-col>
