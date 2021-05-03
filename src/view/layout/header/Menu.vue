@@ -54,7 +54,7 @@
         ]"
       >
         <a :href="href" class="menu-link" @click="navigate">
-          <span class="menu-text"> MAX </span>
+          <span class="menu-text"> KDS </span>
         </a>
       </li>
     </router-link>

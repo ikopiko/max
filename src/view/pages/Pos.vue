@@ -1986,6 +1986,7 @@ export default {
         payment: 0,
         totalPrice: 0,
         isFuture: false,
+        discountAmount: false,
         date: '00-00-000 00:00',
         customer: '',
         discount: 0,
@@ -2034,7 +2035,7 @@ export default {
       diplomatDiscount: 18,
       employeeDiscount: 30,
       studentDiscount: 15,
-      corporateDiscount: 25,
+      corporateDiscount: 0,
       managerPercent: '',
       managerAmount: '',
       managerComment: '',
@@ -4476,6 +4477,7 @@ export default {
     },
     countTotalPrice() {
       for (var i = 0; i < this.order.items.length; i++) {
+        this.changeToppingPrice(this.order.items[i].size);
         var toppingTotal = 0;
 
         if (this.order.items[i].custom == "other") {
@@ -4573,8 +4575,6 @@ export default {
                 }
             
           } else {
-
-            
             let defCount = 0;
             this.order.items[i].defaultToppings.forEach(t => {
                 if(t.isDeleted){
@@ -4637,10 +4637,9 @@ export default {
                 this.order.items[i].toppings[k].price *
                   this.order.items[i].toppings[k].count;
 
+                  // alert('BLA' + this.order.items[i+1].toppings[k].price);
                     this.order.items[i].totalPrice =
                       this.order.items[i].price + toppingTotal - this.order.items[i].defCount;
-
-              
             }
 
             if(this.order.items[i].toppings.length == 0 
@@ -4651,12 +4650,12 @@ export default {
             
           }
         }
-        this.changeToppingPrice(this.order.items[i].size);
+        // this.changeToppingPrice(this.order.items[i].size);
       }
 
       this.$forceUpdate();
       this.totalPriceCounter();
-      this.changeToppingPrice(this.order.items[i]);
+      //this.changeToppingPrice(this.order.items[i]);
     },
 
     plusTopQty(topping) {
@@ -5271,8 +5270,9 @@ export default {
         }
         
         else {
-           this.order.totalPrice = this.totalNet.toFixed(2);
+          this.order.totalPrice = this.totalNet.toFixed(2);
           this.order.promiseTime = this.promiseTime;
+          
           this.order.pos_id = this.loggedUserFull.pos_id;
           this.order.safe_id = this.loggedUserFull.safe_id;
           console.log('Last order structure: ', this.order);
@@ -5549,6 +5549,7 @@ export default {
     diplomatDisc(){
       this.diplomatModal = false;
       this.discountActive = true;
+      this.order.discountAmount = false;
       this.order.discount = this.diplomatDiscount;
       this.order.discountInfo = this.discountInfo;
       this.order.discountName = 'Diplomat';
@@ -5556,6 +5557,7 @@ export default {
     studentDisc(){
       this.studentModal = false;
       this.discountActive = true;
+      this.order.discountAmount = false;
       this.order.discount = this.studentDiscount;
       this.order.discountInfo = this.discountInfo;
       this.order.discountName = 'Student';
@@ -5563,6 +5565,7 @@ export default {
     employeeDisc(){
         this.teamModal = false;
         this.discountActive = true;
+        this.order.discountAmount = false;
         this.order.discount = this.employeeDiscount;
         this.order.discountInfo = this.discountInfo;
         this.order.discountName = 'Team';
@@ -5570,6 +5573,7 @@ export default {
     corporateDisc(){
         this.teamModal = false;
         this.corporateActive = true;
+        this.order.discountAmount = false;
         this.order.discount = this.corporateDiscount;
         this.order.discountInfo = this.discountInfo;
         this.order.discountName = 'Corporate';

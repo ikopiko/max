@@ -114,7 +114,7 @@ export default {
       this.isHighlated = false;
     },
     sendIngredient(ingredient){
-      console.log('Product Category: ',this.product.custom);
+      console.log('Product ingredient: ',ingredient);
       this.$emit('onAddTopping', ingredient);
     },
     sendSauce(sauce){

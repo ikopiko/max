@@ -565,7 +565,7 @@ export default {
             this.$forceUpdate();
         },
         driverOut(){
-          if(this.selectedOrder.status == '5' && this.selectedDriver.in_way === false){
+          if(this.selectedOrder.status == '5' && this.selectedDriver.in_way == false){
             this,this.overlay = true;
             var orderIDs = [];
             this.selectedOrders.forEach(x => {

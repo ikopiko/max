@@ -340,7 +340,11 @@
                 <!-- End Of Half and Half Pizza View -->
               </div>
               <div class="cardPrice">
-                <strong>{{ order.order_data.totalPrice }}</strong>
+                <strong>Total Price: {{ order.order_data.totalPrice }}</strong>
+              </div>
+              <div class="cardPrice">
+                <strong v-if="!order.order_data.discountAmount">Total Due: {{ order.order_data.totalPrice - ((order.order_data.totalPrice / 100) * order.order_data.discount) }}</strong>
+                <strong v-if="order.order_data.discountAmount">Total Due: {{ order.order_data.totalPrice - order.order_data.discount }}</strong>
               </div>
               <v-list-item-title class="headline cardStyle mb-1">{{
                 order.order_data.customer.adress

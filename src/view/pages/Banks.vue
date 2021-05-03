@@ -730,44 +730,49 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col cols="3" class="justify-end">&nbsp;</v-col>
-                <v-col cols="3 h4">Cash - {{ (Number(selectedPos.cash) + Number(selectedPos.glovo_cash)).toFixed(2) }}</v-col>
+                <v-col cols="2" class="justify-end">&nbsp;</v-col>
+                <v-col cols="4 h4">Cash: {{ (Number(selectedPos.cash) + Number(selectedPos.glovo_cash)).toFixed(2) }}</v-col>
                 <v-col cols="6"><v-text-field label="Cash Amount * " v-model="cashActual"></v-text-field></v-col>
               </v-row>
 
               <v-row>
-                <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Card - {{ (Number(selectedPos.card) + Number(selectedPos.glovo_card)).toFixed(2) }}</v-col>
+                <v-col cols="2">&nbsp;</v-col>
+                <v-col cols="4 h4">Card: {{ (Number(selectedPos.card) + Number(selectedPos.glovo_card)).toFixed(2) }}</v-col>
                 <v-col cols="6"><v-text-field label="Card Amount * " v-model="cardActual"></v-text-field></v-col>
               </v-row>  
               <v-row>
-                <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Total - {{ (Number(selectedPos.card) + Number(selectedPos.cash) + Number(selectedPos.glovo_card) + Number(selectedPos.glovo_cash)).toFixed(2) }}</v-col>
+                <v-col cols="2">&nbsp;</v-col>
+                <v-col cols="4 h4">Total: {{ (Number(selectedPos.card) + Number(selectedPos.cash) + Number(selectedPos.glovo_card) + Number(selectedPos.glovo_cash)).toFixed(2) }}</v-col>
                 <v-col cols="6 h4">{{ Number(cashActual) + Number(cardActual) }}</v-col>
               </v-row>
               <v-row class="mt-2">
-                <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Glovo - {{ selectedPos.glovo }}</v-col>
+                <v-col cols="2">&nbsp;</v-col>
+                <v-col cols="4 h4">Glovo: {{ selectedPos.glovo }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
               <v-row>
-                <v-col cols="3"></v-col>
-                <v-col cols="3 h4">Glovo Cash - {{ selectedPos.glovo_cash }}</v-col>
+                <v-col cols="2"></v-col>
+                <v-col cols="4 h4">Glovo Cash: {{ selectedPos.glovo_cash }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
               <v-row>
-                <v-col cols="3"></v-col>
-                <v-col cols="3 h4">Glovo Card - {{ selectedPos.glovo_card }}</v-col>
+                <v-col cols="2"></v-col>
+                <v-col cols="4 h4">Glovo Card: {{ selectedPos.glovo_card }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
               <v-row>
-                <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Wolt - {{ selectedPos.wolt_card }}</v-col>
+                <v-col cols="2">&nbsp;</v-col>
+                <v-col cols="4 h4">Wolt: {{ selectedPos.wolt_card }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>
               <v-row>
-                <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="9">
+                <v-col cols="2">&nbsp;</v-col>
+                <v-col cols="4 h4">Daily Sales: {{ (Number(selectedPos.card) + Number(selectedPos.cash) + Number(selectedPos.glovo_card) + Number(selectedPos.glovo) + Number(selectedPos.wolt_card) + Number(selectedPos.glovo_cash)).toFixed(2) }}</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="2">&nbsp;</v-col>
+                <v-col cols="10">
                   <v-text-field label="Note if short or over" v-model="safeCloseComment"></v-text-field>
                 </v-col>
               </v-row>
@@ -873,18 +878,18 @@
             <v-container>
               <v-row>
                 <v-col cols="3" class="justify-end">&nbsp;</v-col>
-                <v-col cols="3 h4">Cash - {{ selectedDriver.amount }}</v-col>
+                <v-col cols="3 h4">Cash: {{ selectedDriver.amount }}</v-col>
                 <v-col cols="6"><v-text-field label="Cash Amount" v-model="driverCashActual"></v-text-field></v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Card - {{ selectedDriver.card }}</v-col>
+                <v-col cols="3 h4">Card: {{ selectedDriver.card }}</v-col>
                 <v-col cols="6"><v-text-field label="Card Amount" v-model="driverCardActual"></v-text-field></v-col>
               </v-row>  
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Total - {{ (Number(selectedDriver.amount) + Number(selectedDriver.card)).toFixed(2) }}</v-col>
+                <v-col cols="3 h4">Total: {{ (Number(selectedDriver.amount) + Number(selectedDriver.card)).toFixed(2) }}</v-col>
                 <v-col cols="6 h4">{{ Number(driverCashActual) + Number(driverCardActual) }}</v-col>
               </v-row>
               <v-row>
@@ -1004,7 +1009,7 @@
             <v-row>
               <v-col cols="2">
                 <v-menu
-                  v-model="menu2"
+                  v-model="menu"
                   :close-on-content-click="false"
                   :nudge-right="40"
                   transition="scale-transition"
@@ -1032,7 +1037,7 @@
                 <v-tabs
                   v-model="tab"
                   fixed-tabs
-                  background-color="primary"
+                  background-color="black"
                   dark      
                 >
                   <v-tab
@@ -1170,50 +1175,6 @@
                     </template>
                   </v-simple-table>
                 </v-tab-item>
-
-                <!-- <v-tab-item>
-                  <export-excel
-                      :data = "detailedInfo"
-                      :name = "'driverDetails.xls'" >
-                      Download Data
-                      <span class="material-icons">
-                        get_app
-                      </span>
-                  </export-excel>
-                  <v-simple-table height="300px">
-                    <template v-slot:default>
-                      <thead>
-                        <tr>
-                          <th class="text-left">
-                            Name
-                          </th>
-                          <th class="text-left">
-                            Difference
-                          </th>
-                          <th class="text-left">
-                            Comment
-                          </th>
-                          <th class="text-left">
-                            Close Time
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr
-                          v-for="item in detailedInfo"
-                          :key="item.id"
-                        >
-                          <td v-if="item.driver_id == 0">{{ item.pos_name }}</td>
-                          <td v-if="item.pos_id == null">{{ item.username }}</td>
-                          <td>{{ item.difference }}</td>
-                          <td>{{ item.comment }}</td>
-                          <td>{{ item.created_at }}</td>
-                        </tr>
-                      </tbody>
-                    </template>
-                  </v-simple-table>
-                </v-tab-item> -->
-
               </v-tabs-items>
               </v-tabs>
               </v-col>
@@ -1353,7 +1314,7 @@ export default {
       driverCardActual: null,
       totalActual: null,
       posAmount: 150,
-      driverAmount: 40,
+      driverAmount: 85,
       safeAmount: null,
       posComment: '',
       safeCloseComment: '',
@@ -1666,29 +1627,26 @@ export default {
     },
     
     reconcilePos(){
-      var totalPos = (Number(this.selectedPos.card) + Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_card) + Number(this.selectedPos.glovo_cash));
-      var totalPosActual = Number(this.cashActual) + Number(this.cardActual);
+      var totalPosCash = (Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_cash));
+      var totalPosCard = (Number(this.selectedPos.card) + Number(this.selectedPos.glovo_card));
       if(this.cashActual == null || this.cardActual == null){
         alert('Enter Cash actual and Card actual before closing POS!');
       }
-      else if(totalPosActual != totalPos && this.safeCloseComment == ''){
-        alert('POS Total and POS actual are not equal, please enter comment!');
-      }
+      // else if(totalPosCash != this.cashActual || totalPosCard != this.cardActual && this.safeCloseComment == ''){
+      //   alert('POS Total and POS actual are not equal, please enter comment!');
+      // }
       else {
         var r = confirm("Close POS for a day?");
         if(r == true){
-          var actualTotal = Number(this.cashActual) + Number(this.cardActual);
-          var posTotal = Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_cash) + Number(this.selectedPos.card);
-          if(this.safeCloseComment == '') {
-            this.safeCloseComment = 'Placeholder';
-          }
-          var diff = (posTotal - actualTotal).toFixed(2);
+          var diff_cash = (this.cashActual- totalPosCash).toFixed(2);
+          var diff_card = (this.cardActual -totalPosCard).toFixed(2);
           const TOKEN = this.loggedUser.token;
           var reconcilePosForm = new FormData();
           reconcilePosForm.set("driver_id", 0);
           reconcilePosForm.set("pos_id", this.selectedPos.poses_id);
           reconcilePosForm.set("comment", this.safeCloseComment);
-          reconcilePosForm.set("difference", diff);
+          reconcilePosForm.set("diff_cash", diff_cash);
+          reconcilePosForm.set("diff_card", diff_card);
 
           axios
             .request({
@@ -1715,18 +1673,15 @@ export default {
     reconcileDriver(){
       var r = confirm("Close Driver for a day?");
       if(r == true){
-        var actualTotal = Number(this.driverCashActual) + Number(this.driverCardActual);
-        var driverTotal = Number(this.selectedDriver.amount) + Number(this.selectedDriver.card);
-        if(this.driverCloseComment == '') {
-          this.driverCloseComment = 'Placeholder';
-        }
-        var diff = (driverTotal - actualTotal).toFixed(2);
+        var diff_card = (this.driverCardActual - this.selectedDriver.card).toFixed(2);
+        var diff_cash = (this.driverCashActual - this.selectedDriver.amount).toFixed(2);
         const TOKEN = this.loggedUser.token;
         var reconcileDriverForm = new FormData();
         reconcileDriverForm.set("driver_id", this.selectedDriver.id);
         reconcileDriverForm.set("pos_id", 0);
         reconcileDriverForm.set("comment", this.driverCloseComment);
-        reconcileDriverForm.set("difference", diff);
+        reconcileDriverForm.set("diff_card", diff_card);
+        reconcileDriverForm.set("diff_cash", diff_cash);
 
         axios
           .request({

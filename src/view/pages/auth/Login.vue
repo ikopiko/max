@@ -296,10 +296,10 @@ export default {
                 , 2000);
         },
 
-        // onPinSubmit(sentPin, sentMac) {
-        onPinSubmit(sentPin) {
+        onPinSubmit(sentPin, sentMac) {
+        // onPinSubmit(sentPin) {
             const pin = sentPin;
-            // const mac = sentMac;
+            const mac = sentMac;
 
             // clear existing errors
             this.$store.dispatch(LOGOUT);
@@ -313,7 +313,7 @@ export default {
                     // send login request
                     this.$store.dispatch(LOGIN, {
                             pin,
-                            // mac
+                            mac
                         }
 
                     ) // go to which page after successfully login
@@ -326,7 +326,7 @@ export default {
 
                 }
 
-                , 2000);
+                , 100);
         }
 
         ,
@@ -374,10 +374,10 @@ export default {
             
             this.pinError = true;
             // var mac = 'd4:c9:ef:d5:70:8f';
-            // var mac = 'ec:b1:d7:6e:01:3b'; POS 2
+            var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
-            // bodyFormData.set("mac", mac);
+            bodyFormData.set("mac", mac);
 
             axios.request( {
                     method: "post",
@@ -392,11 +392,10 @@ export default {
                         localStorage.setItem("loggedUserData", JSON.stringify(response.data.data));
                         this.pinError = false;
                         this.pinSuccess = true;
-                        // this.onPinSubmit(pin, mac);
-                        this.onPinSubmit(pin);
+                        this.onPinSubmit(pin, mac);
+                        // this.onPinSubmit(pin);
                     }
                     else {
-                        alert('BLA');
                         console.log('Login Failed', response);
                         this.pinError = true;
                     }
