@@ -65,8 +65,9 @@
                                         <td>{{row.item.order_data.customer.name}}</td>
                                         <td>{{row.item.order_data.customer.phone}}</td>
 
-                                        <td v-if="row.item.order_data.discountAmount">{{ (Number(row.item.order_data.totalPrice) - Number(row.item.order_data.discount)).toFixed(2) }}</td>
-                                        <td v-if="!row.item.order_data.discountAmount">{{ (Number(row.item.order_data.totalPrice) - (Number(row.item.order_data.totalPrice)/ 100 * Number(row.item.order_data.discount))).toFixed(2) }}</td>
+                                        <!-- <td>{{ Number(row.item.order_data.discPrice).toFixed(2) }}</td> -->
+                                        <td>{{ (Number(row.item.order_data.totalPrice) - Number(row.item.order_data.discPrice)).toFixed(2) }}</td>
+                                        <!-- <td v-if="!row.item.order_data.discountAmount">{{ (Number(row.item.order_data.totalPrice) - (Number(row.item.order_data.discPrice)/ 100 * Number(row.item.order_data.discount))).toFixed(2) }}</td> -->
                                     </tr>
                                 </template>
                             </v-data-table>
@@ -195,8 +196,7 @@ import axios from 'axios';
           { text: "Delivery Adress", value: "order_data.adress"},
           { text: "Customer Name", value: "order_data.customer.name" },
           { text: "Customer Name", value: "order_data.customer.phone" },
-          { text: "Total Price", value: "order_data.totalPrice" },
-          { text: "Order Items", value: "order_data.items[0].name" },
+          { text: "Total Due", value: "order_data.totalPrice" },
         ],
       }
     },
@@ -207,6 +207,15 @@ import axios from 'axios';
       filteredOrdersComputed() {
         this.orders.forEach(x => {
             x.order_data = JSON.parse(x.order_data);
+            if(x.order_data.discount == 'Diplomat'){
+              x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+            }
+            else if(x.order_data.discount == 'Manager' && x.order_data.discountAmount == true){
+              x.order_data.discPrice = x.order_data.discount;
+            }
+            else {
+              x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+            }
         });
         return this.orders.filter((x) => x.source === "pos");
       },
@@ -239,10 +248,12 @@ import axios from 'axios';
       this.loggedUser = this.$store.state.auth.user.data;
       this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
 
-    const TOKEN = this.loggedUser.token;
-    var bodyFormData = new FormData();
-    //bodyFormData.set("branch", this.branch);
-    bodyFormData.set("status_key", this.status);
+        var dateString = this.date + ' to '+ this.date;
+        const TOKEN = this.loggedUser.token;
+        var bodyFormData = new FormData();
+        //bodyFormData.set("branch", this.branch);
+        bodyFormData.set("status_key", this.status);
+        bodyFormData.set("day", dateString);
 
     axios
       .request({
@@ -261,6 +272,17 @@ import axios from 'axios';
         // this.orders.forEach(x => {
         //     x.order_data = JSON.parse(x.order_data);
         // });
+        this.orders.forEach(x => {
+          if(x.order_data.discountName == 'Diplomat'){
+              x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+            }
+            else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+              x.order_data.discPrice = x.order_data.discount;
+            }
+            else {
+              x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+            }
+        });
         this.filteredOrders = this.orders.filter((x) => x.status != 10);
         // this.filteredOrders = this.orders;
         // this.orders.filter((x) => x.payment_method_id === '4')
@@ -314,10 +336,12 @@ import axios from 'axios';
       updateOrders(){
         this.loggedUser = this.$store.state.auth.user.data;
 
+        var dateString = this.date + ' to '+ this.date;
         const TOKEN = this.loggedUser.token;
         var bodyFormData = new FormData();
         //bodyFormData.set("branch", this.branch);
         bodyFormData.set("status_key", this.status);
+        bodyFormData.set("day", dateString);
 
         axios
           .request({
@@ -366,6 +390,17 @@ import axios from 'axios';
             // this.orders.forEach(x => {
             //     x.order_data = JSON.parse(x.order_data);
             // });
+            this.orders.forEach(x => {
+              if(x.order_data.discountname == 'Diplomat'){
+                  x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+                }
+                else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+                  x.order_data.discPrice = x.order_data.discount;
+                }
+                else {
+                  x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+                }
+            });
             this.filteredOrders = this.orders;
             console.log("orders data: ", this.filteredOrders);
           });

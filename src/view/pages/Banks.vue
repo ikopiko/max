@@ -6,7 +6,7 @@
     <v-app id="inspire">
       
 
-      <div class="container">
+      <div class="container" data-app>
         <div class="row">
           <v-btn @click="banksDetail = true, updateDetails(date)">Banks History</v-btn>
         </div>
@@ -743,7 +743,7 @@
               <v-row>
                 <v-col cols="2">&nbsp;</v-col>
                 <v-col cols="4 h4">Total: {{ (Number(selectedPos.card) + Number(selectedPos.cash) + Number(selectedPos.glovo_card) + Number(selectedPos.glovo_cash)).toFixed(2) }}</v-col>
-                <v-col cols="6 h4">{{ Number(cashActual) + Number(cardActual) }}</v-col>
+                <v-col cols="6 h4">{{ (Number(cashActual) + Number(cardActual)).toFixed(2) }}</v-col>
               </v-row>
               <v-row class="mt-2">
                 <v-col cols="2">&nbsp;</v-col>
@@ -1265,6 +1265,8 @@
         </v-card>
       </v-dialog>
 
+      
+
     </v-app>
   </div>
 </template>
@@ -1327,7 +1329,8 @@ export default {
       driverCloseDialog: false,
       openedTill: {},
       safes: [],
-      tills: [],
+      tills: { unclose: [], current: [] },
+      posList: {},
       tillsCount: null,
       allPoses: [],
       banks: [],
@@ -1745,22 +1748,16 @@ export default {
           data: bodyFormPos,
         })
         .then((response) => {
+          console.log('POS RESPONSE: ', response);
           this.tills = response.data.data;
 
-          this.tills.unclose.forEach(x => {
-            x.card = Number(x.card);
-            x.cash = Number(x.cash);
-          });
-          this.tills.current.forEach(x => {
-            x.card = Number(x.card);
-            x.cash = Number(x.cash);
-          });
+          
 
           this.tillsCount = this.tills.unclose.length;
           // this.tillsCount = 1;
 
 
-          console.log("POS List: ", this.tills);
+          //console.log("POS List: ", this.tills);
         });
     },
 
@@ -1830,7 +1827,7 @@ export default {
         });
     },
     addToPos(){
-      var r = confirm("Add to POS?");
+      var r = confirm("Add "+ this.posAmount + " to POS?");
       if(r == true){
         const TOKEN = this.loggedUser.token;
         var bodyAddPosBalance = new FormData();
@@ -1862,82 +1859,55 @@ export default {
       }
     },
     dropFromPos(){
-      
-      if(Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_cash) < this.posAmount){
-          alert('There is not that amount of money in POS');
-      }
-      else {
-        var r = confirm("Drop from POS?");
-        if(r == true){
-          const TOKEN = this.loggedUser.token;
-          var bodyDropSafe = new FormData();
-          bodyDropSafe.set("pos_id", this.posID);
-          bodyDropSafe.set("amount", -this.posAmount);
-          bodyDropSafe.set("safe_id", this.safes[0].id);
+      var r = confirm("Drop "+ this.posAmount + " From POS?");
+      if(r == true){
 
-          axios
-            .request({
-              method: "post",
-              url:
-                this.$hostname + "poses/edit-balance",
-              headers: {
-                Authorization: "Bearer " + TOKEN,
-              },
-              data: bodyDropSafe,
-            })
-            .then((response) => {
-              
-              console.log("Balance Change Response:  ", response);
-              this.tillFormDialog = false;
-              this.tillCloseDialog = false;
-              this.getSafes();
-              this.getPoses();
-              this.getDrivers();
-              this.posDetails(this.date);
-              this.posAmount = 0;
-            });
+        if(Number(this.selectedPos.cash) + Number(this.selectedPos.glovo_cash) < this.posAmount){
+            alert('There is not that amount of money in POS');
+        }
+        else {
+          var r = confirm("Drop from POS?");
+          if(r == true){
+            const TOKEN = this.loggedUser.token;
+            var bodyDropSafe = new FormData();
+            bodyDropSafe.set("pos_id", this.posID);
+            bodyDropSafe.set("amount", -this.posAmount);
+            bodyDropSafe.set("safe_id", this.safes[0].id);
+
+            axios
+              .request({
+                method: "post",
+                url:
+                  this.$hostname + "poses/edit-balance",
+                headers: {
+                  Authorization: "Bearer " + TOKEN,
+                },
+                data: bodyDropSafe,
+              })
+              .then((response) => {
+                
+                console.log("Balance Change Response:  ", response);
+                this.tillFormDialog = false;
+                this.tillCloseDialog = false;
+                this.getSafes();
+                this.getPoses();
+                this.getDrivers();
+                this.posDetails(this.date);
+                this.posAmount = 0;
+              });
+          }
         }
       }
-
     },
     addToSafe(bank){
+      var r = confirm("Add "+ this.safeAmount +" To Safe?");
+      if(r == true){
       
-      const TOKEN = this.loggedUser.token;
-      var bodyAddSafeBalance = new FormData();
-      bodyAddSafeBalance.set("amount", this.safeAmount);
-      bodyAddSafeBalance.set("safe_id", this.safes[0].id);
-      bodyAddSafeBalance.set("bank_id", bank.id)
-
-      axios
-        .request({
-          method: "post",
-          url:
-            this.$hostname + "poses/drop-safe-balance",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyAddSafeBalance,
-        })
-        .then((response) => {
-          
-          console.log("Balance Change Response:  ", response);
-          this.safeCloseDialog = false;
-          this.getSafes();
-          this.getPoses();
-          this.getDrivers();
-          this.safeDetails(this.date);
-          this.safeAmount = null;
-        });
-
-    },
-    dropFromSafe(bank){
-      
-      if(this.safeAmount <= Number(this.safes[0].amount) - Number(this.safes[0].default_amount)){
         const TOKEN = this.loggedUser.token;
-        var bodyDropSafeBalance = new FormData();
-        bodyDropSafeBalance.set("amount", - this.safeAmount);
-        bodyDropSafeBalance.set("safe_id", this.safes[0].id);
-        bodyDropSafeBalance.set("bank_id", bank.id);
+        var bodyAddSafeBalance = new FormData();
+        bodyAddSafeBalance.set("amount", this.safeAmount);
+        bodyAddSafeBalance.set("safe_id", this.safes[0].id);
+        bodyAddSafeBalance.set("bank_id", bank.id)
 
         axios
           .request({
@@ -1947,7 +1917,7 @@ export default {
             headers: {
               Authorization: "Bearer " + TOKEN,
             },
-            data: bodyDropSafeBalance,
+            data: bodyAddSafeBalance,
           })
           .then((response) => {
             
@@ -1960,8 +1930,42 @@ export default {
             this.safeAmount = null;
           });
       }
-      else {
-        alert('Working Cash - ' + this.safes[0].default_amount + ' should stay in safe');
+    },
+    dropFromSafe(bank){
+      var r = confirm("Drop "+ this.safeAmount +" From Safe?");
+      if(r == true){
+
+        if(this.safeAmount <= Number(this.safes[0].amount) - Number(this.safes[0].default_amount)){
+          const TOKEN = this.loggedUser.token;
+          var bodyDropSafeBalance = new FormData();
+          bodyDropSafeBalance.set("amount", - this.safeAmount);
+          bodyDropSafeBalance.set("safe_id", this.safes[0].id);
+          bodyDropSafeBalance.set("bank_id", bank.id);
+
+          axios
+            .request({
+              method: "post",
+              url:
+                this.$hostname + "poses/drop-safe-balance",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+              data: bodyDropSafeBalance,
+            })
+            .then((response) => {
+              
+              console.log("Balance Change Response:  ", response);
+              this.safeCloseDialog = false;
+              this.getSafes();
+              this.getPoses();
+              this.getDrivers();
+              this.safeDetails(this.date);
+              this.safeAmount = null;
+            });
+        }
+        else {
+          alert('Working Cash - ' + this.safes[0].default_amount + ' should stay in safe');
+        }
       }
     },
     addToDriver(){

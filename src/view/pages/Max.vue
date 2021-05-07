@@ -64,6 +64,7 @@ export default {
       orders: [],
       filteredOrders: [],
       tab: 1,
+      date: new Date().toISOString().substr(0, 10),
       items: [
         {id: 0, name: "Pending Orders", content: null, color: 'red'},
         {id: 1, name: "Preparing in Kitchen", content: null, color: 'green'},
@@ -117,9 +118,12 @@ export default {
             this.$forceUpdate();
         },
         updateOrders(){
-          const TOKEN = localStorage.getItem("TOKEN");
+          const TOKEN = this.$store.state.auth.user.data.token;
 
+          var dateString = this.date + ' to '+ this.date;
           var bodyFormData = new FormData();
+          //bodyFormData.set("branch", this.branch);
+          bodyFormData.set("day", dateString);
           bodyFormData.set("status_key", '1,2,3,4,5');
 
           axios

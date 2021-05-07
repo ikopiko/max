@@ -348,7 +348,7 @@ export default {
         },
         timeFoo(state){
             if(this.loginActive){
-              var shortURL = 'http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/timesheet/';
+              var shortURL = this.$hostname + 'timesheet/';
               if(state === 'in'){
                   var URL = shortURL + 'start';
                   alert('Work Day Started!');

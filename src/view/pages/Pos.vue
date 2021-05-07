@@ -505,9 +505,12 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-2 calcBtn blue">
-                        &nbsp;
+                    <div class="col-2 calcBtn blue" @click="splitModal = true">
+                        Split
                     </div>
+                    <!-- <div class="col-2 calcBtn blue">
+                        &nbsp;
+                    </div> -->
                     <div class="col-4 calcBtn" @click="calcInput('0')">0</div>
                     <div class="col-2 calcBtn" @click="calcInput('.')">.</div>
                     <div class="col-2 calcBtn lightGreen" @click="calcCash(5)">5</div>
@@ -823,10 +826,10 @@
                     <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
                   
 
-                    <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
-                        <v-radio label="Male" value="1"></v-radio>
-                        <v-radio label="Female" value="0"></v-radio>
-                        <v-radio label="None" value="-1"></v-radio>
+                    <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
+                        <v-radio label="Male" value="male"></v-radio>
+                        <v-radio label="Female" value="female"></v-radio>
+                        <v-radio label="None" value="none"></v-radio>
                     </v-radio-group>
 
                     <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
@@ -908,7 +911,7 @@
 
                                         <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail" required></v-text-field>
 
-                                        <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                                        <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
                                             <v-radio label="Male" value="male"></v-radio>
                                             <v-radio label="Female" value="female"></v-radio>
                                             <v-radio label="None" value="none"></v-radio>
@@ -1103,7 +1106,7 @@
 
 
                  
-                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
@@ -1171,7 +1174,7 @@
                   
                   <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
-                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
@@ -1242,7 +1245,7 @@
 
 
                  
-                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
@@ -1337,7 +1340,7 @@
 
                   <v-text-field v-model="curentCustomer.code" class="my-2" label="3 Digit Code #" required clearable></v-text-field>
 
-                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
@@ -1417,7 +1420,7 @@
                   <v-text-field v-model="curentCustomer.code" class="my-2" label="3 Digit Code #" required clearable></v-text-field>
 
                  
-                  <v-radio-group v-model="curentCustomer.sex" label="Gender" row>
+                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
@@ -1657,7 +1660,7 @@
                   
                   <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
-                  <v-radio-group v-model="customer.sex" label="Gender" row>
+                  <v-radio-group v-model="customer.gender" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
@@ -1720,7 +1723,7 @@
                   
                   <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
-                  <v-radio-group v-model="customer.sex" label="Gender" row>
+                  <v-radio-group v-model="customer.gender" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
@@ -1776,7 +1779,7 @@
                   
                   <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
 
-                  <v-radio-group v-model="customer.sex" label="Gender" row>
+                  <v-radio-group v-model="customer.gender" label="Gender" row>
                       <v-radio label="Male" value="male"></v-radio>
                       <v-radio label="Female" value="female"></v-radio>
                       <v-radio label="None" value="none"></v-radio>
@@ -1839,6 +1842,31 @@
         </v-card>
       </v-dialog>
       <!-- End of manager modal -->
+      <!-- Start of split modal -->
+      <v-dialog
+        v-model="splitModal"
+        max-width="500px"
+      >
+        <v-card>
+          <v-card-title>
+            Total Due: {{ totalNet.toFixed(2) }}
+          </v-card-title>
+          <v-card-text>
+            <v-text-field v-model="splitCash" label="Split Cash" class="my-2" ></v-text-field>
+            <v-text-field v-model="splitCard" label="Split Card" class="my-2"  ></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              color="primary"
+              text
+              @click="applySplit()"
+            >
+              Pay Split
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <!-- End of split modal -->
 
 </div>
 </template>
@@ -2010,6 +2038,7 @@ export default {
       studentModal: false,
       teamModal: false,
       managerModal: false,
+      splitModal: false,
       calculatorModal: false,
       calculatorModal1: false,
       crmModal: false,
@@ -2071,9 +2100,9 @@ export default {
       activeMedium: true,
       activeXl: false,
       cashInput: '',
-      splitInput: 0,
-      splitInput1: 0,
-      splitInput2: 0,
+      splitCash: null,
+      splitCard: null,
+      splitChange: false,
       split: {
         split1: {
           input: 0,
@@ -2135,7 +2164,7 @@ export default {
       },
       customer: {
         name: '',
-        sex: '',
+        gender: '',
         email: '',
         dob: '',
         address: '',
@@ -2149,7 +2178,7 @@ export default {
       lastOrder: {},
       curentCustomer: {
         name: '',
-        sex: '',
+        gender: '',
         email: '',
         dob: '',
         address: [],
@@ -2363,6 +2392,8 @@ export default {
         
         if(this.order.discountAmount == true){
           var disc = Number(this.order.discount);          
+        } else if(this.order.discountName == 'Diplomat') {
+          var disc = this.totalNet - this.totalNet / 1.18;
         } else {
           var disc = (this.totalNet/100) * this.order.discount;
         }
@@ -2405,6 +2436,8 @@ export default {
         var totalPrice = 0;
         if(this.order.discountAmount == true){
           var disc = Number(this.order.discount);          
+        } else if(this.order.discountName == 'Diplomat') {
+          var disc = this.totalNet - this.totalNet / 1.18;
         } else {
           var disc = (this.totalNet/100) * this.order.discount;
         }
@@ -2560,7 +2593,10 @@ export default {
         if(!val){
           this.closeChangeModal();
         }
-      }
+      },
+      splitCash(val){
+        this.splitCard = String((this.totalPrice - Number(val)).toFixed(2));
+      },
     },
   methods: {
     checkNumber(n) { 
@@ -2580,6 +2616,31 @@ export default {
       }
     },
     changeGender(){
+      if(this.curentCustomer.gender == 1){
+        this.curentCustomer.gender = 'male';
+      }
+      else if(this.curentCustomer.gender == 0){
+        this.curentCustomer.gender = 'female';
+      }
+      else {
+        this.curentCustomer.gender = 'none';
+      }
+
+      // this.curentCustomer.gender = String(this.curentCustomer.gender)
+
+    },
+    reverseGender(){
+      if(this.curentCustomer.gender == 'male'){
+        this.curentCustomer.gender = 1;
+      }
+      else if(this.curentCustomer.gender == 'female'){
+        this.curentCustomer.gender = 0;
+      }
+      else {
+        this.curentCustomer.gender = -1;
+      }
+
+      // this.curentCustomer.gender = String(this.curentCustomer.gender)
 
     },
     customerPhone(val) {
@@ -3485,7 +3546,7 @@ export default {
     clearCustomer(){
       this.curentCustomer = {
         name: '',
-        sex: '',
+        gender: '',
         email: '',
         dob: '',
         address: [], 
@@ -5385,7 +5446,7 @@ export default {
       this.showProducts = true;
       this.curentCustomer = {
         name: '',
-        sex: '',
+        gender: '',
         email: '',
         dob: '',
         adress: [],
@@ -5396,7 +5457,7 @@ export default {
       };
       this.customer = {
         name: '',
-        sex: '',
+        gender: '',
         email: '',
         dob: '',
         address: '',
@@ -5581,6 +5642,9 @@ export default {
     managerDisc(){
       this.managerModal = true;
     },
+    applySplit(){
+      alert('Split Payment: Cash - '+ this.splitCash+ ' Card - ' + this.splitCard);
+    },
     applyManager(){
       if(this.managerComment == ''){
         alert('Manager comment is required!');
@@ -5611,12 +5675,13 @@ export default {
     },
     addCustomer(){
       console.log('Customer info: ',this.customer);
+      this.reverseGender();
 
       const TOKEN = localStorage.getItem("TOKEN");
       var bodyFormData = new FormData();
       bodyFormData.set("name", this.curentCustomer.name);
       bodyFormData.set("address", this.curentCustomer.address);
-      bodyFormData.set("gender", this.curentCustomer.sex);
+      bodyFormData.set("gender", this.curentCustomer.gender);
       bodyFormData.set("email", this.curentCustomer.email);
       bodyFormData.set("phone", this.curentCustomer.phone);
       bodyFormData.set("discount", this.curentCustomer.discount);
@@ -5650,13 +5715,14 @@ export default {
     },
     editCustomer(){
       const TOKEN = localStorage.getItem("TOKEN");
+      this.reverseGender();
       var bodyFormData = new FormData();
       bodyFormData.set("name", this.curentCustomer.name);
       bodyFormData.set("address", this.curentCustomer.address);
-      bodyFormData.set("gender", this.curentCustomer.sex);
+      bodyFormData.set("gender", this.curentCustomer.gender);
       bodyFormData.set("phone", this.curentCustomer.phone);
       bodyFormData.set("discount", this.curentCustomer.discount);
-      bodyFormData.set("personal_id ", this.curentCustomer.personal_id);
+      bodyFormData.set("personal_id", this.curentCustomer.personal_id);
       bodyFormData.set("comment", this.curentCustomer.comment);
       bodyFormData.set("comment2", this.curentCustomer.driverDetails);
       bodyFormData.set("ltd_name", this.curentCustomer.ltdName);
