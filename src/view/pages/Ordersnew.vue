@@ -15,7 +15,7 @@
                         <orderList :orderProp="order" v-if="showOrderComponent" />
                     </li>
                     <li class="selecti">
-                        <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Filter by  "></v-select>
+                        <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Change status"></v-select>
                     </li>
                 </ul>
                 <ul class="bottomInner">
@@ -195,7 +195,7 @@ import axios from 'axios';
           { text: "Glovo/Wolt #", value: "order_data.customer.code" },
           { text: "Delivery Adress", value: "order_data.adress"},
           { text: "Customer Name", value: "order_data.customer.name" },
-          { text: "Customer Name", value: "order_data.customer.phone" },
+          { text: "Customer Phone", value: "order_data.customer.phone" },
           { text: "Total Due", value: "order_data.totalPrice" },
         ],
       }
@@ -601,25 +601,25 @@ import axios from 'axios';
               this.orders.filter((x) => x.status != 10)
             }
             else if(tab.content === 'unpaid') {
-              this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4' && x.status <= '6');
+              this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4' && x.status <= '6' && x.status != 10);
             }
             else if(tab.content === 'ronnys') {
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "delivery");
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "delivery" && x.status != 10);
             }
             else if(tab.content === 'walkin'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Walk_In");
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Walk_In" && x.status != 10);
             }
             else if(tab.content === 'glovo'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "Glovo");
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "Glovo" && x.status != 10);
             }
             else if(tab.content === 'wolt'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Wolt");
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Wolt" && x.status != 10);
             }
             else if(tab.content === 'future'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.isFuture);
+              this.filteredOrders = this.orders.filter((x) => x.order_data.isFuture && x.status != 10);
             }
             else if(tab.content === 'takeout'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Take Out");
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Take Out" && x.status != 10);
             }
             this.$forceUpdate();
         },

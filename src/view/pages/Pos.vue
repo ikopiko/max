@@ -455,16 +455,19 @@
                     <div class="col-2 calcBtn lightGreen" @click="calcCash(100)">
                         100
                     </div>
-                    <!-- <div class="col-2 calcBtn blue" @click="invoiceActive()">
+                    <div class="col-2 calcBtn blue" @click="invoiceActive()">
                         Invoice
-                    </div> -->
-                    <div class="col-2 calcBtn blue">
-                        &nbsp;
                     </div>
+                    <!-- <div class="col-2 calcBtn blue">
+                        &nbsp;
+                    </div> -->
                 </div>
                 <div class="row my-1">
                     <!-- <div class="col-2 calcBtn blue" @click="studentModal = true">
                         Student
+                    </div> -->
+                    <!-- <div class="col-2 calcBtn blue" @click="changeDefPrice()">
+                        DEF
                     </div> -->
                     <div class="col-2 calcBtn blue">
                         &nbsp;
@@ -1058,12 +1061,12 @@
 
                   <v-row>
                       <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
+                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="invoice.address" clearable required></v-text-field>
                       </v-col>
                   </v-row>
                   <v-text-field v-model="invoice.id" @keypress="isNumber($event)" class="my-2" label="Company ID #" clearable></v-text-field>
 
-                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                  <v-text-field v-model="invoice.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
               </v-form>
             </v-row>
           </v-container>
@@ -1076,7 +1079,7 @@
             x-large
             @click="generateInvoice()"
           >
-            Generate Invoice}
+            Generate Invoice
           </v-btn>   
         </v-card-actions>
     </v-card>
@@ -1381,7 +1384,7 @@
             x-large
             @click="glovoCustomer('cash')"
           >
-            Glovo Pay later : {{ order.totalPrice }}
+            Glovo Pay later : {{ Number(totalPrice).toFixed(2) }}
           </v-btn>     
            <v-btn
             color="blue darken-1"
@@ -1390,7 +1393,7 @@
             x-large
             @click="glovoCustomer('transfer')"
           >
-            Glovo Transfer: {{ order.totalPrice }}
+            Glovo Transfer: {{ Number(totalPrice).toFixed(2) }}
           </v-btn>   
         </v-card-actions>
     </v-card>
@@ -1849,7 +1852,7 @@
       >
         <v-card>
           <v-card-title>
-            Total Due: {{ totalNet.toFixed(2) }}
+            Total Due: {{ Number(totalPrice).toFixed(2) }}
           </v-card-title>
           <v-card-text>
             <v-text-field v-model="splitCash" label="Split Cash" class="my-2" ></v-text-field>
@@ -2045,12 +2048,14 @@ export default {
       glovoModal: false,
       woltModal: false,
       ronnysModal: false,
+      activeInvoice: false,
       invoice: {
         tel: null,
         name: '',
         ltd: '',
         id: null,
         address: '',
+        phone: '',
         email: ''
       },
       deliveryModal: false,
@@ -2208,6 +2213,7 @@ export default {
       globalQuantity: 1,
       globalQuantityClick: 0,
       globalCalcClick: 0,
+      orderDefTotal: 0,
       //pizza: {crust: 'original', sauce: 'original', size: 'm', defaultTopping:[], toppings: [], qty: 0}
     };
   },
@@ -2602,6 +2608,16 @@ export default {
     checkNumber(n) { 
       return !isNaN(parseFloat(n)) && !isNaN(n - 0) 
     },
+    changeDefPrice(){
+      this.order.items.forEach((x) => {
+        if(x.custom == 'yes' || x.custom == 'no'){
+          x.totalPrice = x.totalPrice + x.defCount;
+        }
+          // x.totalPrice = x.totalPrice + x.defCount;
+      });
+      this.order.totalPrice = this.totalNet;
+      this.$forceUpdate();
+    },
     changeDisc(){
       if(this.curentCustomer.discount == 'Diplomat'){
         this.diplomatDisc();
@@ -2812,7 +2828,7 @@ export default {
                 this.searchResults.reverse();
                 console.log('Search Results: ',this.searchResults);
                 //this.curentCustomer.phone = this.telMessage;
-                this.lastOrder = response.data.data[0].last_order;
+                //this.lastOrder = response.data.data[0].last_order;
 
             });
           console.log('Curent User Data: ', this.curentCustomer);
@@ -5064,7 +5080,10 @@ export default {
       this.invoiceModal = true;
     },
     generateInvoice(){
-      alert("Invoice is created! (Not now but wiil be :))");
+      this.order.invoice = this.invoice;
+      this.activeInvoice = true;
+      this.paymentType = 'invoice';
+      this.invoiceModal = false;
     },
     walkinActive(ND) {
       this.playSound();
@@ -5268,6 +5287,10 @@ export default {
       this.playSound();
       this.splitActive = !this.splitActive;
     },
+    applySplit(){
+      this.paymentType = 'split';
+      this.paymentConfirm();
+    },
     drinkProducts(){
       this.drinkCat = !this.drinkCat;
     },
@@ -5289,9 +5312,17 @@ export default {
       else if (this.paymentType == 'transfer'){
         this.order.paymentType = 'transfer';
       }
+      else if (this.paymentType == 'invoice'){
+        this.order.paymentType = 'invoice';
+      }
+      else if (this.paymentType == 'split'){
+        this.order.paymentType = 'split';
+        this.order.splitCard = this.splitCard;
+        this.order.splitCash = this.splitCash;
+      }
 
 
-      if (this.paymentType == "cash" || this.paymentType == "card"  || this.paymentType == "payLater" || this.paymentType == 'transfer') {
+      if (this.paymentType == "cash" || this.paymentType == "card"  || this.paymentType == "payLater" || this.paymentType == 'transfer' || this.paymentType == 'split' || this.paymentType == 'invoice') {
         if(this.payLaterActive){
           this.payOrder();
         }
@@ -5360,6 +5391,11 @@ export default {
               this.calcPay();
             } else if(response.status === 200 && this.paymentType == "transfer"){
               this.calcPay();
+            } else if(response.status === 200 && this.order.paymentType == "split"){
+              this.splitModal = false;
+              this.calcPay();
+            } else if(response.status === 200 && this.paymentType == "invoice"){
+              this.calcPay();
             }
               console.log("Order Response", response);
           });
@@ -5382,7 +5418,7 @@ export default {
           .then(response => {
             // this.products = response.data;
             console.log(response);
-            if(response.status === 200 && this.paymentType == "card"){
+            if(response.status === 200 && this.paymentType == "card" || this.paymentType == "split"){
               this.calcPay();
             } 
             //this.products = this.products.reverse();
@@ -5508,11 +5544,11 @@ export default {
     },
     copyLastOrder() {
       //Get user's last order here
-      if(Object.keys(this.lastOrder).length === 0) {
-        alert("User Is Empty!");
+      if(this.curentCustomer.last_order == null) {
+        alert("No Past Order!");
       }
       else {
-        this.order = this.lastOrder;
+        this.order = this.curentCustomer.last_order;
         this.order.id = '';
         this.order.orderId = '';
         if(this.order.deliveryMethod == 'Walk In'){
@@ -5642,9 +5678,6 @@ export default {
     managerDisc(){
       this.managerModal = true;
     },
-    applySplit(){
-      alert('Split Payment: Cash - '+ this.splitCash+ ' Card - ' + this.splitCard);
-    },
     applyManager(){
       if(this.managerComment == ''){
         alert('Manager comment is required!');
@@ -5679,6 +5712,7 @@ export default {
 
       const TOKEN = localStorage.getItem("TOKEN");
       var bodyFormData = new FormData();
+      bodyFormData.set("id", -1);
       bodyFormData.set("name", this.curentCustomer.name);
       bodyFormData.set("address", this.curentCustomer.address);
       bodyFormData.set("gender", this.curentCustomer.gender);
@@ -5717,6 +5751,7 @@ export default {
       const TOKEN = localStorage.getItem("TOKEN");
       this.reverseGender();
       var bodyFormData = new FormData();
+      bodyFormData.set("id", this.curentCustomer.id);
       bodyFormData.set("name", this.curentCustomer.name);
       bodyFormData.set("address", this.curentCustomer.address);
       bodyFormData.set("gender", this.curentCustomer.gender);
@@ -5794,7 +5829,12 @@ export default {
         this.order.deliveryMethod = "Take Out";
         console.log('take out customer : ', this.order.customer);
         this.takeOutModal = false;
-        this.payLater();
+        if(this.activeInvoice){
+          this.paymentConfirm();
+        }
+        else {
+          this.payLater();
+        }
       }
       
     },
@@ -5811,7 +5851,13 @@ export default {
         this.order.deliveryMethod = 'delivery';
         console.log('Ronnys customer : ', this.order.customer);
         this.ronnysModal = false;
-        this.payLater();
+        
+        if(this.activeInvoice){
+          this.paymentConfirm();
+        }
+        else {
+          this.payLater();
+        }
         //this.deliveryFeeModal = true;
       }
     },
@@ -5821,6 +5867,7 @@ export default {
         alert('3 Digit Code is required!');
       }
       else {
+        this.changeDefPrice();
         this.order.customer = this.curentCustomer;
         this.order.deliveryType = 'Glovo';
         if(payment === 'cash'){
@@ -5855,6 +5902,7 @@ export default {
         alert('Name Fields is required!');
       }
       else {
+        this.changeDefPrice();
         this.order.customer = this.curentCustomer;
         this.order.deliveryType = 'Wolt';
         this.order.deliveryMethod = 'Wolt';

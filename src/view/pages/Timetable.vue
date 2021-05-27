@@ -45,7 +45,8 @@
                 <div class="inOut" @click="timeFoo('in')">IN</div>
             </b-col>
             <b-col cols="2">
-                <div class="inOut" @click="timeFoo('out')">OUT</div>
+                <div class="inOut" v-if="pinUser.clocked" @click="timeFoo('out')">OUT</div>
+                <div class="inOut inactive" v-if="!pinUser.clocked" @click="timeFoo('out')">OUT</div>
             </b-col>
             <b-col cols="2">&nbsp;</b-col>
           </b-row>
@@ -65,7 +66,8 @@
             </b-col>
             
             <b-col cols="4">
-                <div class="break" @click="timeFoo('br_start')">Start Break</div>
+                <div class="break" v-if="pinUser.clocked" @click="timeFoo('br_start')">Start Break</div>
+                <div class="break inactive" v-if="!pinUser.clocked" @click="timeFoo('br_start')">Start Break</div>
             </b-col>
 
             <b-col cols="2">&nbsp;</b-col>
@@ -86,7 +88,8 @@
             </b-col>
 
             <b-col cols="4">
-                <div class="break" @click="timeFoo('br_end')">End break</div>
+                <div class="break" v-if="pinUser.clocked" @click="timeFoo('br_end')">End break</div>
+                <div class="break inactive" v-if="!pinUser.clocked" @click="timeFoo('br_end')">End break</div>
             </b-col>
 
             <b-col cols="2">&nbsp;</b-col>
@@ -146,6 +149,7 @@
                   <v-date-picker
                     v-model="date"
                     @input="menu = false"
+                    range
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -314,7 +318,15 @@ export default {
   },
   methods: {
         updateData(date){
-          var dateString = date + " to "+ date;
+          if(date.length == 2){
+            var dateString = date[0] + " to "+ date[1];
+          }
+          else if(date.length == 1) {
+            var dateString = date[0] + " to "+ date[0];
+          }
+          else {
+            var dateString = date + " to "+ date;
+          }
           const TOKEN = this.loggedUser.token;
           var bodyUpdate = new FormData();
           bodyUpdate.set("day", dateString);
@@ -494,6 +506,11 @@ export default {
     margin: 5px;
     cursor: pointer;
     }
+
+    .inactive {
+      opacity: 0.5;
+      pointer-events: none;
+    } 
     
     .exit {
     font-family: monospace;

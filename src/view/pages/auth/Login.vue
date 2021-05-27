@@ -375,6 +375,10 @@ export default {
             this.pinError = true;
             // var mac = 'd4:c9:ef:d5:70:8f';
             var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
+            // var mac = 'ec:b1:d7:6e:01:3r';  // POS 3
+            
+            // var mac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
+            
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
             bodyFormData.set("mac", mac);
@@ -437,6 +441,7 @@ export default {
 
 ;
 </script>
+<style>
 /* .otp-input {
     width: 40px;
     height: 40px;

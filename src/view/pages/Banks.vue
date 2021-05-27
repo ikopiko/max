@@ -214,13 +214,6 @@
                                           face
                                       </i>
                                   </v-list-item-avatar>
-                                
-                                  <!-- <v-row align="center" justify="end">
-                                      <i class="material-icons md-36">
-                                          alarm
-                                      </i>
-                                      <span class="subheading mr-2">21:55</span>
-                                  </v-row> -->
                               </v-list-item>
                           </v-card-actions>
 
@@ -302,10 +295,10 @@
                               </v-card>
                             </v-expand-transition>
                       </v-card>
+                      
                       <v-card v-if="drv.closed != null" class="mx-auto my-3" color="#EAE4D2" light max-width="250" @click="driverInfo(drv)">
                           <v-card-title>
-                              <span class="title font-weight-bold" v-if="drv.amount < 200">{{ drv.amount }}  - {{ drv.username }}</span>
-                              <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ drv.amount }} </span>  - {{ till.name }}</span>
+                              <span class="title font-weight-bold">{{ drv.amount }}  - {{ drv.username }}</span>
                           </v-card-title>
 
                           <v-card-actions>
@@ -316,17 +309,10 @@
                                           face
                                       </i>
                                   </v-list-item-avatar>
-                                
-                                  <!-- <v-row align="center" justify="end">
-                                      <i class="material-icons md-36">
-                                          alarm
-                                      </i>
-                                      <span class="subheading mr-2">21:55</span>
-                                  </v-row> -->
                               </v-list-item>
                           </v-card-actions>
 
-                          <v-expand-transition v-if="driverID === drv.id">
+                          <v-expand-transition>
                               <v-card
                                 v-if="driverFormDialog"
                                 light max-width="400"
@@ -407,7 +393,6 @@
                     </span>
 
                 </div>
-                <!-- End of Dirvers -->
         </div>
       </div>
       
@@ -673,6 +658,7 @@
                 md="8"
               >
                 <v-text-field
+                  v-model="safeCloseComment"
                   label="Optional Comment"
                 ></v-text-field>
               </v-col>
@@ -711,6 +697,36 @@
                     class="white--text mx-5"
                     @click="dropFromSafe(bank)"
                   >DROP TO {{ bank.name }}</v-btn>
+                </v-col>
+              </v-row>
+              <v-row class="my-5">
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text mx-5"
+                    @click="safeExpense('expense')"
+                  >Expense</v-btn>
+                  
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="4"
+                >
+                  <v-btn
+                    elevation="2"
+                    color="blue"
+                    x-large
+                    class="white--text mx-5"
+                    @click="safeExpense('taxi')"
+                  >Taxi</v-btn>
+                  
                 </v-col>
               </v-row>
               </v-row>
@@ -999,7 +1015,7 @@
 
       <v-dialog
         v-model="banksDetail"
-        max-width="800px"
+        max-width="1000px"
       >
         <v-card>
           <v-card-title>
@@ -1007,7 +1023,7 @@
           </v-card-title>
           <v-card-text>
             <v-row>
-              <v-col cols="2">
+              <v-col cols="4">
                 <v-menu
                   v-model="menu"
                   :close-on-content-click="false"
@@ -1029,10 +1045,13 @@
                   <v-date-picker
                     v-model="date"
                     @input="menu = false"
+                    range
                   ></v-date-picker>
                 </v-menu>
               </v-col>
-              <v-col cols="8">
+            </v-row>
+            <v-row>
+              <v-col cols="12">
 
                 <v-tabs
                   v-model="tab"
@@ -1085,7 +1104,7 @@
                           <td v-if="item.pos_id == null">{{ item.username }}</td>
                           <td>{{ item.difference }}</td>
                           <td>{{ item.comment }}</td>
-                          <td>{{ item.created_time }}</td>
+                          <td>{{ item.created_at }}</td>
                         </tr>
                       </tbody>
                     </template>
@@ -1131,7 +1150,7 @@
                           <td>{{ item.payment_method }}</td>
                           <td>{{ item.action }}</td>
                           <td>{{ item.amount }}</td>
-                          <td>{{ item.created_time }}</td>
+                          <td>{{ item.created_at }}</td>
                         </tr>
                       </tbody>
                     </template>
@@ -1158,6 +1177,9 @@
                             Amount
                           </th>
                           <th class="text-left">
+                            Comment
+                          </th>
+                          <th class="text-left">
                             Time
                           </th>
                         </tr>
@@ -1169,7 +1191,71 @@
                         >
                           <td>{{ item.payment }}</td>
                           <td>{{ item.amount }}</td>
-                          <td>{{ item.created_time }}</td>
+                          <td>{{ item.comment }}</td>
+                          <td>{{ item.created_at }}</td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </v-tab-item>
+
+                <v-tab-item>
+                  <export-excel
+                      :data = "detailedInfo"
+                      :name = "'safeDetails.xls'" >
+                      Download Data
+                      <span class="material-icons">
+                        get_app
+                      </span>
+                  </export-excel>
+                  <v-simple-table height="300px">
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th class="text-left">
+                            Date
+                          </th>
+                          <th class="text-left">
+                            Cash
+                          </th>
+                          <th class="text-left">
+                            Card
+                          </th>
+                          <th class="text-left">
+                            Delivery cash
+                          </th>
+                          <th class="text-left">
+                            Delivery card
+                          </th>
+                          <th class="text-left">
+                            Glovo cransfer
+                          </th>
+                          <th class="text-left">
+                            Glovo cash
+                          </th>
+                          <th class="text-left">
+                            Glovo card
+                          </th>
+                          <th class="text-left">
+                            Wolt
+                          </th>
+                          <th class="text-left">
+                            Total
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="total in groupDetails" :key="total.id">
+                          <td>{{ total.date }}</td>
+                          <td>{{ total.cashTotal.toFixed(2) }}</td>
+                          <td>{{ total.cardTotal.toFixed(2) }}</td>
+                          <td>{{ total.deliveryCashTotal.toFixed(2) }}</td>
+                          <td>{{ total.deliveryCardTotal.toFixed(2) }}</td>
+                          <td>{{ total.glovoTransferTotal.toFixed(2) }}</td>
+                          <td>{{ total.glovoCashTotal.toFixed(2) }}</td>
+                          <td>{{ total.glovoCardTotal.toFixed(2) }}</td>
+                          <td>{{ total.woltTotal.toFixed(2) }}</td>
+                          <td>{{ total.allTotal.toFixed(2) }}</td>
                         </tr>
                       </tbody>
                     </template>
@@ -1215,6 +1301,7 @@
                   <v-date-picker
                     v-model="dateDriver"
                     @input="menu2 = false"
+                    range
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -1290,6 +1377,7 @@ export default {
           { tab: 'Closed', content: 'close' },
           { tab: 'POS Details', content: 'pos' },
           { tab: 'Safe Details', content: 'safe' },
+          { tab: 'POS Total', content: 'total' },
           // { tab: 'Driver Details', content: 'driver' },
       ],
       tab: 0,
@@ -1348,6 +1436,8 @@ export default {
       e6: 1,
       loggedUser: {},
       orders: [],
+      orderDetails: [],
+      groupDetails: [],
       old: false,
       singleSelect: true,
       selected: [],
@@ -1367,8 +1457,8 @@ export default {
       loading: true,
       options: {},
       branch: 'saburtalo',
-      branchId: 1,
-      status: 4,
+      // branchId: 2,
+      status: '1,2,3,4,5,6,7,8,9',
       today: '', 
       safeDate: '2020-12-22',
       driverLoad: true,
@@ -1428,6 +1518,7 @@ export default {
     this.today = yyyy + '-' + mm + '-' + dd;
 
     this.loggedUser = JSON.parse(localStorage.getItem("loggedUserData"));
+    this.branchId = this.$store.state.auth.user.data.branch_id;
 
       const TOKEN = this.loggedUser.token;
       this.getSafes();
@@ -1459,7 +1550,7 @@ export default {
       });
   },
   created () {
-        this.timer = setInterval(this.getPoses, 5000)
+        // this.timer = setInterval(this.getPoses, 5000)
     },
   watch: {
     date(val){
@@ -1471,6 +1562,17 @@ export default {
       }
       else if(this.tab == 2){
         this.safeDetails(val);
+      }
+      else if(this.tab == 3){
+        this.cardTotal = 0;
+        this.cashTotal = 0;
+        this.deliveryCashTotal = 0;
+        this.deliveryCardTotal = 0;
+        this.woltTotal = 0;
+        this.glovoTransferTotal = 0;
+        this.glovoCashTotal = 0;
+        this.glovoCardTotal = 0;
+        this.totalDetails(val);
       }
     },
     dateDriver(val) {
@@ -1513,15 +1615,26 @@ export default {
           this.safeDetails(this.date);
         }
         else if(tab.content === 'driver'){
-          alert('Driver Details');
           this.updateDetails(this.date);
+        }
+        else if(tab.content === 'total'){
+          this.totalDetails(this.date);
         }
         this.$forceUpdate();
     },
     updateDetails(date){
       const TOKEN = this.loggedUser.token;
+      if(date.length == 2){
+        var dateString = date[0] + " to "+ date[1];
+      }
+      else if(date.length == 1) {
+        var dateString = date[0] + " to "+ date[0];
+      }
+      else {
+        var dateString = date + " to "+ date;
+      }
       var bodyUpdate = new FormData();
-      bodyUpdate.set("day", date);
+      bodyUpdate.set("day", dateString);
 
       axios
         .request({
@@ -1538,15 +1651,24 @@ export default {
 
             this.detailedInfo.forEach(x => {
               const date = new Date(x.created_at);
-              x.created_time = date.getHours() + ":" + date.getMinutes();
+              //x.created_time = date.getHours() + ":" + date.getMinutes();
             })
         });
     },
     posDetails(date){
       const TOKEN = this.loggedUser.token;
+      // var dateString = date + ' to '+ date;
+      if(date.length == 2){
+        var dateString = date[0] + " to "+ date[1];
+      }
+      else if(date.length == 1) {
+        var dateString = date[0] + " to "+ date[0];
+      }
+      else {
+        var dateString = date + " to "+ date;
+      }
       var bodyUpdate = new FormData();
-      bodyUpdate.set("day", date);
-      bodyUpdate.set("pos_id", '2');
+      bodyUpdate.set("day", dateString);
 
       axios
         .request({
@@ -1562,7 +1684,7 @@ export default {
             this.detailedInfo = response.data.data;
             this.detailedInfo.forEach(x => {
               const date = new Date(x.created_at);
-              x.created_time = date.getHours() + ":" + date.getMinutes();
+              //x.created_time = date.getUTCFullYear() + "-" + date.getHours() + ":" + date.getMinutes();
 
               if(x.amount < 0 && x.action != 'New order'){
                 x.payment_method = 'Drop balance';
@@ -1570,11 +1692,146 @@ export default {
             })
         });
     },
+    totalDetails(date){
+      
+      const TOKEN = this.loggedUser.token;
+      // var dateString = date + ' to '+ date;
+      if(date.length == 2){
+        var dateString = date[0] + " to "+ date[1];
+      }
+      else if(date.length == 1) {
+        var dateString = date[0] + " to "+ date[0];
+      }
+      else {
+        var dateString = date + " to "+ date;
+      }
+      var bodyFormData = new FormData();
+      //bodyFormData.set("branch", this.branch);
+      bodyFormData.set("status_key", this.status);
+      bodyFormData.set("day", dateString);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "orders/list",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormData,
+        })
+        .then((response) => {
+          this.orderDetails = response.data.data;
+
+          var array = this.orderDetails;
+
+          array.forEach(x =>{
+            //var newDate = new Date(x.created_at);
+            //x.created_date = newDate.getUTCFullYear() + '-' + newDate.getMonth() + '-' + newDate.getDate();
+            x.created_date = x.created_at.slice(0,10);
+          });
+          console.log('created at array: ', array);
+          //var temp_arr = this.orderDetails;
+          const result = [];
+          const map = new Map();
+          for (const item of array) {
+              if(!map.has(item.created_date)){
+                  map.set(item.created_date, true);    // set any value to Map
+                  result.push({
+                      date: item.created_date,
+                      woltTotal: 0,
+                      glovoCashTotal: 0,
+                      glovoCardTotal: 0,
+                      glovoTransferTotal: 0,
+                      deliveryCardTotal: 0,
+                      deliveryCashTotal: 0,
+                      cashTotal: 0,
+                      cardTotal: 0,
+                      allTotal: 0
+                  });
+              }
+          }
+          console.log('Unique Date: ',result);
+
+          this.orderDetails.forEach((x, index) => {
+
+            if(x.order_data.discountName == 'Diplomat'){
+              x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+            }
+            else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+              x.order_data.discPrice = x.order_data.discount;
+            }
+            else {
+              x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+            }
+            for(var i = 0; i < result.length; i++){
+
+              if(x.created_date == result[i].date)
+              {
+                if(x.order_data.deliveryMethod == 'Wolt'){
+                  result[i].woltTotal = result[i].woltTotal + Number(x.order_data.totalPrice);
+                  // this.woltTotal = this.woltTotal + Number(x.order_data.totalPrice)
+                } 
+                else if (x.order_data.deliveryMethod == 'Glovo'){
+                  if(x.order_data.paymentType == 'Cash'){
+                    result[i].glovoCashTotal = result[i].glovoCashTotal + Number(x.order_data.totalPrice);
+                    // this.glovoCashTotal = this.glovoCashTotal + Number(x.order_data.totalPrice);
+                  }
+                  else if(x.order_data.paymentType == 'Card'){
+                    result[i].glovoCardTotal = result[i].glovoCardTotal + Number(x.order_data.totalPrice);
+                    // this.glovoCardTotal = this.glovoCardTotal + Number(x.order_data.totalPrice)
+                  }
+                  else if(x.order_data.paymentType == 'transfer'){
+                    result[i].glovoTransferTotal = result[i].glovoTransferTotal + Number(x.order_data.totalPrice);
+                    // this.glovoTransferTotal = this.glovoTransferTotal + Number(x.order_data.totalPrice)
+                  }
+                }
+                else if(x.order_data.deliveryMethod == 'delivery'){
+                  if(x.order_data.paymentType == 'card'){
+                    result[i].deliveryCardTotal = result[i].deliveryCardTotal + Number(x.order_data.totalPrice) - Number(x.order_data.discPrice);
+                    // this.deliveryCardTotal = this.deliveryCardTotal + (Number(x.order_data.totalPrice) - Number(x.order_data.discPrice));
+                  }
+                  else if(x.order_data.paymentType == 'cash'){
+                    result[i].deliveryCashTotal = result[i].deliveryCashTotal + Number(x.order_data.totalPrice) - Number(x.order_data.discPrice);
+                    // this.deliveryCashTotal = this.deliveryCashTotal + (Number(x.order_data.totalPrice) - Number(x.order_data.discPrice));
+                  }
+                }
+                else if(x.order_data.deliveryMethod == 'Walk_In' || x.order_data.deliveryMethod == 'walk_in' || x.order_data.deliveryMethod == 'Take Out'){
+                  if(x.order_data.paymentType == 'Cash'){
+                    result[i].cashTotal = result[i].cashTotal + Number(x.order_data.totalPrice) - Number(x.order_data.discPrice);
+                    
+                    // this.cashTotal = this.cashTotal + Number(x.order_data.totalPrice);
+                  }
+                  else if(x.order_data.paymentType == 'Card'){
+                    result[i].cardTotal = result[i].cardTotal + Number(x.order_data.totalPrice) - Number(x.order_data.discPrice);
+                    // this.cardTotal = this.cardTotal + Number(x.order_data.totalPrice);
+                  }
+                }
+              }
+              result[i].allTotal = result[i].woltTotal + result[i].glovoCashTotal + result[i].glovoCardTotal + result[i].glovoTransferTotal + result[i].deliveryCardTotal + result[i].deliveryCashTotal + result[i].cashTotal + result[i].cardTotal;
+              this.groupDetails = result
+            }
+          });
+
+        console.log('Counted Result: ', result);
+        this.groupDetails = result;
+        });
+
+    },
     safeDetails(date){
       const TOKEN = this.loggedUser.token;
+      //var dateString = date + ' to '+ date;
+      if(date.length == 2){
+        var dateString = date[0] + " to "+ date[1];
+      }
+      else if(date.length == 1) {
+        var dateString = date[0] + " to "+ date[0];
+      }
+      else {
+        var dateString = date + " to "+ date;
+      }
       var bodyUpdate = new FormData();
-      bodyUpdate.set("day", date);
-      bodyUpdate.set("safe_id", this.safes[0].id);
+      bodyUpdate.set("day", dateString);
 
       axios
         .request({
@@ -1590,15 +1847,15 @@ export default {
             this.detailedInfo = response.data.data;
             this.detailedInfo.forEach(x => {
               const date = new Date(x.created_at);
-              x.created_time = date.getHours() + ":" + date.getMinutes();
+              //x.created_time = date.getHours() + ":" + date.getMinutes();
 
-                if(x.driver_id == 0 && x.amount < 0) {
-                  // x.payment = 'Drop to ' + x.bank_name;
-                  x.payment = 'Add from Bank';
-                }
-                else if(x.driver_id == 0 && x.amount >= 0) {
-                  x.payment = 'Add from Bank';
-                }
+                // if(x.driver_id == 0 && x.amount < 0) {
+                //   // x.payment = 'Drop to ' + x.bank_name;
+                //   x.payment = 'Add from Bank';
+                // }
+                // else if(x.driver_id == 0 && x.amount >= 0) {
+                //   x.payment = 'Add from Bank';
+                // }
             })
         });
     },
@@ -1609,9 +1866,19 @@ export default {
     },
     driverDetails(date){
       const TOKEN = this.loggedUser.token;
+      // var dateString = date + ' to '+ date;
+      if(date.length == 2){
+        var dateString = date[0] + " to "+ date[1];
+      }
+      else if(date.length == 1) {
+        var dateString = date[0] + " to "+ date[0];
+      }
+      else {
+        var dateString = date + " to "+ date;
+      }
       var bodyUpdate = new FormData();
-      bodyUpdate.set("day", date);
-      bodyUpdate.set("driver_id", this.selectedDriver.id);
+      bodyUpdate.set("day", dateString);
+      // bodyUpdate.set("driver_id", this.selectedDriver.id);
 
       axios
         .request({
@@ -1758,6 +2025,8 @@ export default {
 
 
           //console.log("POS List: ", this.tills);
+        }).catch((error) => {
+          console.log("getPosses error: ", error);
         });
     },
 
@@ -1779,6 +2048,8 @@ export default {
         .then((response) => {
           this.drivers = response.data.data;
           console.log("Drivers List: ", this.drivers);
+        }).catch((error) => {
+          console.log('getDrivers error: ', error);
         });
     },
     
@@ -1966,6 +2237,37 @@ export default {
         else {
           alert('Working Cash - ' + this.safes[0].default_amount + ' should stay in safe');
         }
+      }
+    },
+    safeExpense(type){
+      var r = confirm( this.safeAmount +" Expense From Safe?");
+      if(r == true){
+
+        const TOKEN = this.loggedUser.token;
+        var bodyExpemseSafe = new FormData();
+        bodyExpemseSafe.set("amount", this.safeAmount);
+        bodyExpemseSafe.set("comment", type + " - " + this.safeCloseComment);
+
+        axios
+          .request({
+            method: "post",
+            url:
+              this.$hostname + "poses/expenses",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: bodyExpemseSafe,
+          })
+          .then((response) => {
+            
+            console.log("Expense:  ", response);
+            this.safeCloseDialog = false;
+            this.getSafes();
+            this.getPoses();
+            this.getDrivers();
+            this.safeDetails(this.date);
+            this.safeAmount = null;
+          });
       }
     },
     addToDriver(){

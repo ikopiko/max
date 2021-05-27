@@ -11,11 +11,13 @@ const ApiService = {
   init() {
     Vue.use(VueAxios, axios);
     Vue.axios.defaults.baseURL =
-      "https://api.ronnys.info/rest/web/index.php?r=";  // TEST
+      // "https://api.ronnys.info/rest/web/index.php?r=";  // TEST
 
-      // "http://188.169.16.186:8082/ronny/rest/web/index.php?r=";  // DIGOMI OUT
+      "http://188.169.16.186:8082/ronny/rest/web/index.php?r=";  // DIGOMI OUT
       
-      // "http://192.168.1.124/ronny/rest/web/index.php?r=";  // DIGOMI IN
+      // "http://178.134.12.106:8082/ronny/rest/web/index.php?r=";  // SABURTALO OUT
+      
+      // "http://192.168.1.124/ronny/rest/web/index.php?r=";  // LOCAL
   },
 
   /**

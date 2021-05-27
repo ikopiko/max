@@ -151,7 +151,7 @@
                         <td>{{ order.id }}</td>
                         <td>{{ order.order_data.customer.address }}</td>
                         <td>{{ order.order_data.customer.name }}</td>
-                        <td>{{ Number(order.order_data.totalPrice).toFixed(2) }}</td>
+                        <td>{{ (Number(selectedItem.order_data.totalPrice) - Number(selectedItem.order_data.discPrice)).toFixed(2) }}</td>
                         </tr>
                     </tbody>
                     </template>
@@ -175,6 +175,8 @@
                 Delivery Fee: {{ selectedItem.order_data.deliveryFee }}
                 <br>
                 Total : {{ selectedItem.order_data.totalPrice }}
+                 <br>
+                Total Due : {{ (Number(selectedItem.order_data.totalPrice) - Number(selectedItem.order_data.discPrice)).toFixed(2) }} 
             </v-card-title>
 
             <v-card-text>
@@ -273,6 +275,7 @@ export default {
       loading: true,
       driverLoad: true,
       selectedDriver: null,
+      date: new Date().toISOString().substr(0, 10),
       selectedOrder: {},
       selectedOrders: [],
       selectedDelivery: {},
@@ -436,8 +439,17 @@ export default {
                 if(!response.data.is_error) {
                   console.log('Driver Data: ', response);
                   this.driverOrders = response.data.data;
-                  this.driverOrders.forEach(x => {
+                this.driverOrders.forEach(x => {
                     x.order_data = JSON.parse(x.order_data);
+                    if(x.order_data.discount == 'Diplomat'){
+                      x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+                    }
+                    else if(x.order_data.discount == 'Manager' && x.order_data.discountAmount == true){
+                      x.order_data.discPrice = x.order_data.discount;
+                    }
+                    else {
+                      x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+                    }
                 });
                   this.filteredDriverOrders = this.driverOrders.filter((x) => x.status == '6');
                   this.isOrders = true;
@@ -465,9 +477,11 @@ export default {
     },
     getOrders(){
       const TOKEN = this.loggedUser.token;
+      var dateString = this.date + ' to '+ this.date;
       var bodyFormData = new FormData();
       // bodyFormData.set("branch", this.branch);
       bodyFormData.set("status_key", this.status);
+      bodyFormData.set("day", dateString);
 
       axios
       .request({
