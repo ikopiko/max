@@ -61,6 +61,7 @@
                                         <td>{{Number(row.item.id)}}</td>
                                         <td>{{row.item.order_data.deliveryMethod}}</td>
                                         <td>{{row.item.order_data.customer.code}}</td>
+                                        <td>{{row.item.order_data.paymentType}}</td>
                                         <td>{{row.item.order_data.adress}}</td>
                                         <td>{{row.item.order_data.customer.name}}</td>
                                         <td>{{row.item.order_data.customer.phone}}</td>
@@ -193,6 +194,7 @@ import axios from 'axios';
         headers: [
           { text: "Source", value: "source" },
           { text: "Glovo/Wolt #", value: "order_data.customer.code" },
+          { text: "Payment Type", value: "order_data.paymentType" },
           { text: "Delivery Adress", value: "order_data.adress"},
           { text: "Customer Name", value: "order_data.customer.name" },
           { text: "Customer Phone", value: "order_data.customer.phone" },

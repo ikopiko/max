@@ -906,7 +906,7 @@
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
                 <v-col cols="3 h4">Total: {{ (Number(selectedDriver.amount) + Number(selectedDriver.card)).toFixed(2) }}</v-col>
-                <v-col cols="6 h4">{{ Number(driverCashActual) + Number(driverCardActual) }}</v-col>
+                <v-col cols="6 h4">{{ (Number(driverCashActual) + Number(driverCardActual)).toFixed(2) }}</v-col>
               </v-row>
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
@@ -1404,7 +1404,7 @@ export default {
       driverCardActual: null,
       totalActual: null,
       posAmount: 150,
-      driverAmount: 85,
+      driverAmount: 40,
       safeAmount: null,
       posComment: '',
       safeCloseComment: '',
@@ -1936,6 +1936,7 @@ export default {
               this.totalActual = '';
               this.tillCloseDialog = false;
               this.getSafes();
+              this.getPoses();
             });
         }
       }

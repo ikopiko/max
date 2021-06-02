@@ -22,7 +22,7 @@
                           <v-autocomplete
                             v-model="curentCustomer"
                             :items="items"
-                            item-text="name"
+                            item-text="address"
                             item-value="id"
                             :auto-select-first="true"
                             :search-input.sync="search"
@@ -1543,7 +1543,7 @@
         v-model="settingModal"
         max-width="800px"
       >
-      <v-card :justify="end">
+      <v-card :justify="end" height="100vh">
           <v-card-title>
             <span class="headline">Unpaid Orders</span>
           </v-card-title>
@@ -1565,14 +1565,14 @@
                 >
                     <template v-slot:item="row">
                         <tr @click="onButtonClick(row.item)">
-                          <td>{{row.item.order_id}}</td>
+                          <td>{{row.item.id}}</td>
                           <td>{{row.item.order_data.deliveryMethod}}</td>
+                          <td>{{row.item.order_data.customer.code}}</td>
                           <td>{{row.item.order_data.customer.phone}}</td>
                           <td>{{row.item.order_data.customer.name}}</td>
                           <td>{{row.item.order_data.adress}}</td>
                           <td>{{row.item.order_data.items[0].name}}</td>
                           <td>{{row.item.order_data.totalPrice}}</td>
-
                           <td>
                             <v-btn class="mx-2" fab dark small color="green" @click="rePrint(row.item)">
                                 <v-icon dark>print</v-icon>
@@ -1942,6 +1942,7 @@ export default {
       ],
       settingHeaders: [
         { text: "Service Type", value: "order_data.deliveryMethod" },
+        { text: "Glovo/Wolt #", value: "order_data.customer.code" },
         { text: "Customer Phone", value: "order_data.customer.phone" },
         { text: "Customer Name", value: "order_data.customer.name" },
         { text: "Delivery Adress", value: "order_data.adress" },
@@ -1969,7 +1970,7 @@ export default {
       select: null,
       page: 0,
       pageCount: 0,
-      itemsPerPage: 5,
+      itemsPerPage: -1,
       loadingTable: true,
       singleSelect: true,
       printError: false,

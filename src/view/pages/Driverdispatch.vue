@@ -44,7 +44,7 @@
                             :headers="headers"
                             :items="filteredOrders"
                             :items-per-page="itemsPerPage"
-                            item-key="order_id"
+                            item-key="id"
                             :loading="loading"
                             show-select
                             class="elevation-1"
@@ -302,7 +302,7 @@ export default {
                 text: "ORDER ID",
                 align: "start",
                 sortable: false,
-                value: "order_id",
+                value: "id",
             },
             { text: "Delivery Adress", value: "order_data.adress" },
             { text: "Customer Name", value: "order_data.customer.name" },
@@ -641,11 +641,12 @@ export default {
           // this.getOrders();
           // this.getDrivers();
           setTimeout(() => {
-            this.overlay = false;
             this.getOrders();
             this.getDrivers();
-        }, 1500)
-          this.$forceUpdate();
+            this.overlay = false;
+            this.$forceUpdate();
+            this.selectedDriver = null;
+        }, 500);
     },
 
     deliveryProcess(){
