@@ -64,7 +64,17 @@ body{
     opacity: 0.5;
     pointer-events: none;
 }
-
+.totalTitle{
+    color: #ffffff;
+    font-size: 26px;
+    margin: auto;
+    /* margin-left: 50%; */
+}
+.buttonTitle{
+    color: #ffffff !important;
+    font-size: 22px !important;
+    /* margin-left: 50%; */
+}
 
 
 .app {
@@ -498,6 +508,10 @@ body .col-12 {
 
 .green {
     background-color: #49B25D !important;
+}
+
+.blue {
+    background-color: #4d2db9 !important;
 }
 
 .yellow {

@@ -15,13 +15,13 @@
                         <orderList :orderProp="order" v-if="showOrderComponent" />
                     </li>
                     <li class="selecti">
-                        <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Change status"></v-select>
+                        <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Change Status"></v-select>
                     </li>
                 </ul>
                 <ul class="bottomInner">
                     <li>
-                        <v-btn v-if="statusModel != null" @click="updateOrder()">Change: {{ statusObject[0].status_name }}</v-btn>
-                        <v-btn v-if="showOrderComponent && statusModel == null" @click="updateOrder()">Change </v-btn>
+                        <!-- <v-btn v-if="statusModel != null" @click="updateOrder()">Change: {{ statusObject[0].status_name }}</v-btn> -->
+                        <v-btn v-if="showOrderComponent " @click="updateOrder()">Change </v-btn>
                     </li>
                 </ul>
                 <ul class="bottomInner">
@@ -86,6 +86,45 @@
         </v-col>
     </v-row>
 
+    <v-bottom-sheet v-model="sheet">
+      <v-sheet
+        class="text-center"
+        height="200px"
+      >
+        <v-btn
+          class="mt-6"
+          text
+          color="red"
+          @click="sheet = !sheet"
+        >
+          close
+        </v-btn>
+        <div class="py-3">
+          <h1>
+            {{ errorText }}
+          </h1>
+        </div>
+      </v-sheet>
+    </v-bottom-sheet>
+
+    <v-alert
+      v-model="alertSuccess"
+      dense
+      text
+      type="success"
+    >
+      <!-- <h1>{{ errorText }}</h1> -->
+      {{ errorText }}
+    </v-alert>
+    <v-alert
+      v-model="alertError"
+      dense
+      border="left"
+      type="warning"
+    >
+      {{ errorText }}
+    </v-alert>
+
     <v-dialog v-model="wasteDialog" scrollable max-width="500px">
         <v-card>
             <v-card-title>Select Waste Item</v-card-title>
@@ -138,13 +177,17 @@ import axios from 'axios';
     data () {
       return {
         orderFunctions : ['Reopen'],
-        date: new Date().toISOString().substr(0, 10),
+        date: new Date(),
         menu:false,
         wasteDialog: false,
         selectedWaste: [],
         orderWaste: [],
         wasteComment: '',
         promisedTime: 15,
+        sheet: false,
+        alertSuccess: false,
+        alertError: false,
+        errorText: '',
         ticksLabels: [
           5,10,15,20,25,30,40,50,60,70,80,90
         ],
@@ -158,6 +201,7 @@ import axios from 'axios';
         statusSelected: false,
         showOrderComponent: false,
         statusModel: null,
+        statusName: "",
         statusObject: {},
         printError: false,
         search: '',
@@ -223,6 +267,7 @@ import axios from 'axios';
       },
       selectedStatus(){
           this.statusObject = this.orderStatuses.filter((x) => x.status_name === this.statusModel);
+          console.log("COMPUTED: ", this.statusObject);
 
           return this.statusObject;
       }
@@ -285,11 +330,17 @@ import axios from 'axios';
               x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
             }
         });
+        // this.filteredOrders = this.orders.filter((x) => !(x.status == 10 || x.status == 9) );
         this.filteredOrders = this.orders.filter((x) => x.status != 10);
+        this.filteredOrders.forEach((y) => {
+          console.log('asdasdasd: ',y.status);
+          alert(y.status);
+        });
         // this.filteredOrders = this.orders;
         // this.orders.filter((x) => x.payment_method_id === '4')
         console.log("orders data: ", this.filteredOrders);
       });
+
       axios
       .request({
         method: "post",
@@ -302,6 +353,7 @@ import axios from 'axios';
       .then((response) => {
         this.orderStatuses = response.data.data
       });
+      this.date = this.formatDate(this.date);
 
     },
     components: {
@@ -311,8 +363,26 @@ import axios from 'axios';
     date(val){
       this.updateOrdersDate(val);
     },
+    statusModel(val){
+      this.statusObject = this.orderStatuses.filter((x) => x.status_name === this.statusModel);
+      console.log('NEW VAL', this.statusObject);
+    },
   },
     methods: {
+      formatDate(date) {
+          var d = new Date(date),
+              month = '' + (d.getMonth() + 1),
+              day = '' + d.getDate(),
+              year = d.getFullYear();
+
+          if (month.length < 2) 
+              month = '0' + month;
+          if (day.length < 2) 
+              day = '0' + day;
+
+          return [year, month, day].join('-');
+      },
+
       rePrint(orderID){
         const TOKEN = this.loggedUser.token;
         var bodyFormData = new FormData();
@@ -337,6 +407,7 @@ import axios from 'axios';
     },
       updateOrders(){
         this.loggedUser = this.$store.state.auth.user.data;
+        this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
 
         var dateString = this.date + ' to '+ this.date;
         const TOKEN = this.loggedUser.token;
@@ -345,26 +416,40 @@ import axios from 'axios';
         bodyFormData.set("status_key", this.status);
         bodyFormData.set("day", dateString);
 
-        axios
-          .request({
-            method: "post",
-            url:
-              this.$hostname + "orders/list",
-            headers: {
-              Authorization: "Bearer " + TOKEN,
-            },
-            data: bodyFormData,
-          })
-          .then((response) => {
-            this.orders = response.data.data;
-            this.orders.reverse();
-            console.log("response 123: ", this.orders);
-            // this.orders.forEach(x => {
-            //     x.order_data = JSON.parse(x.order_data);
-            // });
-            this.filteredOrders = this.orders.filter((x) => x.status != 10);
-            console.log("orders data: ", this.filteredOrders);
-          });
+    axios
+      .request({
+        method: "post",
+        url:
+          this.$hostname + "orders/list",
+        headers: {
+          Authorization: "Bearer " + TOKEN,
+        },
+        data: bodyFormData,
+      })
+      .then((response) => {
+        this.orders = response.data.data;
+        this.orders.reverse();
+        console.log("response 123: ", this.orders);
+        // this.orders.forEach(x => {
+        //     x.order_data = JSON.parse(x.order_data);
+        // });
+        this.orders.forEach(x => {
+          if(x.order_data.discountName == 'Diplomat'){
+              x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+            }
+            else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+              x.order_data.discPrice = x.order_data.discount;
+            }
+            else {
+              x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+            }
+        });
+        this.filteredOrders = this.orders.filter((x) => !(x.status == 10 || x.status == 9) );
+        // this.filteredOrders = this.orders;
+        // this.orders.filter((x) => x.payment_method_id === '4')
+        console.log("orders data: ", this.filteredOrders);
+        this.statusObject = {};
+      });
       },
       updateOrdersDate(date){
         var dateString = date + ' to '+ date;
@@ -393,7 +478,7 @@ import axios from 'axios';
             //     x.order_data = JSON.parse(x.order_data);
             // });
             this.orders.forEach(x => {
-              if(x.order_data.discountname == 'Diplomat'){
+              if(x.order_data.discountName == 'Diplomat'){
                   x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
                 }
                 else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
@@ -407,31 +492,6 @@ import axios from 'axios';
             console.log("orders data: ", this.filteredOrders);
           });
       },
-        statusRequest(status){
-          const TOKEN = this.loggedUser.token;
-          var bodyFormData = new FormData();
-          bodyFormData.set("order_status", status);
-          bodyFormData.set("id", this.selectedOrder.id);
-
-          axios
-            .request({
-              method: "post",
-              url:
-                this.$hostname + "orders/change-status",
-              headers: {
-                Authorization: "Bearer " + TOKEN,
-              },
-              data: bodyFormData,
-            })
-            .then((response) => {
-              if(response.data.is_error){
-                alert("Status Change Error");
-              }
-              else{
-                alert("Order Status Changed Correctly");
-              }
-            });
-        },
         wasteOrder(){
 
           this.orderWaste = this.selectedOrder.order_data;
@@ -484,48 +544,54 @@ import axios from 'axios';
             })
             .then((response) => {
               if(response.data.is_error){
-                console.log("Status Change Error");
+                console.log("Status Change Error",  response);
+                this.sheet = true;
+                //this.alertError = true;
+                this.errorText = response.data.error_message;
               }
               else{
                 console.log("Order Status Changed Correctly");
+                this.sheet = true;
+                //this.alertSuccess = true;
+                this.errorText = 'Order Status Changed Correctly!';
                 this.updateOrders();
               }
             });
         },
         updateOrder(){
-          
-          if(this.selectedStatus[0].id === 1){
+          console.log('SELECTED STATUS: ', this.statusObject[0]);
+          if(this.statusObject[0].id === 1){
             this.statusRequest("pending");
           }
-          else if(this.selectedStatus[0].id === 2){
+          else if(this.statusObject[0].id === 2){
             this.statusRequest("in_kitchen");
           }
-          else if(this.selectedStatus[0].id === 3){
+          else if(this.statusObject[0].id === 3){
             this.statusRequest("prepearing");
           }
-          else if(this.selectedStatus[0].id === 4){
+          else if(this.statusObject[0].id === 4){
             this.statusRequest("finished_bake");
           }
-          else if(this.selectedStatus[0].id === 5){
+          else if(this.statusObject[0].id === 5){
             this.statusRequest("ready");
           }
-          else if(this.selectedStatus[0].id === 6){
+          else if(this.statusObject[0].id === 6){
             this.statusRequest("in_delivery");
           }
-          else if(this.selectedStatus[0].id === 7){
+          else if(this.statusObject[0].id === 7){
             this.statusRequest("Finished");
           }
-          else if(this.selectedStatus[0].id === 8){
+          else if(this.statusObject[0].id === 8){
             this.wasteDialog = true;
           }
-          else if(this.selectedStatus[0].id === 9){
-            this.statusRequest("refund");
+          else if(this.statusObject[0].id === 9){
+            this.refundOrder();
           }
-          else if(this.selectedStatus[0].id === 10){
+          else if(this.statusObject[0].id === 10){
             this.voidOrder();
           }
           else{
-            alert("Update Order: "+ this.selectedOrder.id + ", status changed to: " + this.selectedStatus[0].status_name);
+            alert("Update Order: "+ this.selectedOrder.id + ", status changed to: " + this.statusObject[0].status_name);
           }
           this.updateOrders();
         },
@@ -557,13 +623,54 @@ import axios from 'axios';
             })
             .then((response) => {
               if(response.data.data != 0){
-                console.log("Status Change Error");
+                console.log("Status Change Error", response);
+                this.sheet = true;
+                //this.alertError = true;
+                this.errorText = response.data.data;
+              }
+              else{
+                console.log("Order Status Changed Correctly", response);
+                this.updateOrders();
+                this.sheet = true;
+                //this.alertError = true;
+                this.errorText = "Order Voided";
+              }
+            });
+
+        },
+        refundOrder(){
+
+          const TOKEN = this.loggedUser.token;
+          var bodyFormData = new FormData();
+          bodyFormData.set("pos_id", this.loggedUserFull.pos_id);
+          bodyFormData.set("id", this.selectedOrder.id);
+
+          axios
+            .request({
+              method: "post",
+              url:
+                this.$hostname + "orders/refund",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+              data: bodyFormData,
+            })
+            .then((response) => {
+              console.log('refund response: ', response);
+              if(response.data.is_error){
+                console.log("Status Change Error",  response);
+                this.sheet = true;
+                //this.alertError = true;
+                this.errorText = response.data.error_message;
               }
               else{
                 console.log("Order Status Changed Correctly");
+                this.sheet = true;
+                //this.alertSuccess = true;
+                this.errorText = 'Order Status Changed Correctly!';
                 this.updateOrders();
               }
-            });
+          });
 
         },
         re_open(order){
@@ -577,7 +684,6 @@ import axios from 'axios';
             this.$router.push({ path: 'pos'});
         },
         driverSingle(order){
-          //this.$store.state.user.data.driverSingle = order;  
           this.$router.push({ name: 'driversingle', params: {orderProp: order}});
         },
         foobar(item){
@@ -595,8 +701,19 @@ import axios from 'axios';
             this.lastOrder = item;
             this.selectedOrder = item;
             this.selectedOrderItems = item.order_data.items;
+            // console.log("orderstatuses: ",this.orderStatuses);
+            for(var i = 0; i <= this.orderStatuses.length; i++){
+                if(i == item.status){
+                  console.log(this.orderStatuses[i-1])
+                  this.statusModel = this.orderStatuses[i-1].status_name;
+                  this.statusObject = this.orderStatuses[i-1];
+                }
+            }
+            // console.log("STATUSOBJECT: ",this.statusObject);
+            // console.log("Status Model: ", this.statusModel);
 
-            console.log("Selected Item: ", this.selectedOrder);
+
+            // console.log("Selected Item: ", this.selectedOrder);
         },
         getTab(tab){
             if(tab.content === 'all') {

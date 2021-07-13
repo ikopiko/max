@@ -352,14 +352,7 @@
 
                         <!-- Display Total Price and Tax  -->
                         <div class="col-6 w-1 gray">
-                            <div class="row">
-                                <div>
-                                    <h4>Total:</h4>
-                                </div>
-                                <div>
-                                    <h4 id="total_price">{{ totalNet.toFixed(2) }}</h4>
-                                </div>
-                            </div>
+                            <h4 class=" text-md-center">TOTAL: {{ totalNet.toFixed(2) }}</h4>
                         </div>
                     </div>
                 </div>
@@ -560,9 +553,10 @@
                             <i class="fa fa-home fa-4x iconColor home"></i>
                         </div>
                     </div>
-                    <div class="col-2 calcBtn green" @click="doneCash()" v-b-modal.confirmModal>Cash</div>
-                    <div class="col-2 calcBtn green" @click="payCard()" v-b-modal.confirmModal>Card</div>
-                    <div class="col-2 calcBtn green" @click="payLater()" v-b-modal.confirmModal>Pay Later</div>
+                    <div class="col-4">&nbsp;</div>
+                    <div class="col-2 calcBtn green " @click="payLater()" v-b-modal.confirmModal>Pay Later</div>
+                    <div class="col-2 calcBtn blue buttonTitle" @click="payCard()" v-b-modal.confirmModal>Card</div>
+                    <div class="col-2 calcBtn green buttonTitle" @click="doneCash()" v-b-modal.confirmModal>Cash</div>
                 </div>
             </div>
             <!-- End of UX Change -->
@@ -1046,7 +1040,7 @@
       v-model="invoiceModal"
       max-width="700px"
     >
-    <v-card :justify="end">
+    <v-card>
         <v-card-title>
           <span class="headline">Invoice Information</span>
         </v-card-title>
@@ -1094,7 +1088,7 @@
       v-model="walkInModal"
       max-width="700px"
     >
-    <v-card :justify="end">
+    <v-card>
         <v-card-title>
           <span class="headline">Walk In Information</span>
         </v-card-title>
@@ -1164,7 +1158,7 @@
       v-model="takeOutModal"
       max-width="700px"
     >
-    <v-card :justify="end">
+    <v-card>
         <v-card-title>
           <span class="headline">Take Out Information</span>
         </v-card-title>
@@ -1328,7 +1322,7 @@
       v-model="glovoModal"
       max-width="700px"
     >
-    <v-card :justify="end">
+    <v-card>
         <v-card-title>
           <span class="headline">Glovo Information</span>
         </v-card-title>
@@ -1407,7 +1401,7 @@
       v-model="woltModal"
       max-width="700px"
     >
-    <v-card :justify="end">
+    <v-card>
         <v-card-title>
           <span class="headline">Wolt Information</span>
         </v-card-title>
@@ -1475,13 +1469,11 @@
     <!-- Start Of Future Modal -->
 
     <div v-if="futureModal">
-        
-
         <v-dialog 
         v-model="futureModal"
         max-width="600px"
       >
-      <v-card :justify="end">
+      <v-card>
           <v-card-title>
             <span class="headline">Future Order</span>
           </v-card-title>
@@ -1510,7 +1502,13 @@
                     @input="menu = false"
                   ></v-date-picker>
                 </v-menu>
-                <v-text-field v-model="futureTime" label="Enter Time 00:00 format (14:30)"></v-text-field>
+                <v-time-picker
+                  format="24hr"
+                  dark
+                  v-model="futureTime"
+                  scrollable
+                ></v-time-picker>
+                <v-text-field readonly v-model="futureTime" label="Enter Time 00:00 format (14:30)"></v-text-field>
               </v-row>
           </v-card-text>
           <v-card-actions>
@@ -1543,7 +1541,7 @@
         v-model="settingModal"
         max-width="800px"
       >
-      <v-card :justify="end" height="100vh">
+      <v-card height="100vh">
           <v-card-title>
             <span class="headline">Unpaid Orders</span>
           </v-card-title>
@@ -1651,7 +1649,7 @@
       v-model="diplomatModal"
       max-width="700px"
     >
-    <v-card :justify="end">
+    <v-card>
         <v-card-title>
           <span class="headline">Diplomat Discount</span>
         </v-card-title>
@@ -1714,7 +1712,7 @@
       v-model="studentModal"
       max-width="700px"
     >
-    <v-card :justify="end">
+    <v-card>
         <v-card-title>
           <span class="headline">Student Discount</span>
         </v-card-title>
@@ -1770,7 +1768,7 @@
       v-model="teamModal"
       max-width="700px"
     >
-    <v-card :justify="end">
+    <v-card>
         <v-card-title>
           <span class="headline">Team Discount</span>
         </v-card-title>
@@ -1998,12 +1996,12 @@ export default {
       qtyBar: false,
       discountInfo: [],
       telMessage: '',
-      date: new Date().toISOString().substr(0, 10),
+      date: new Date(),
         options: {
           format: 'DD/MM/YYYY hh:mm',
           useCurrent: false,
       },
-      dateCrm: new Date().toISOString().substr(0, 10),
+      dateCrm: new Date(),
       menu: false,   
       telMessageActive: false,
       order: {
@@ -2240,6 +2238,9 @@ export default {
   },
 
   mounted() {
+    this.date = this.formatDate(this.date);
+    this.dateCrm = this.formatDate(this.dateCrm);
+
     this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
 
     const TOKEN = localStorage.getItem("TOKEN");
@@ -2247,6 +2248,7 @@ export default {
     var bodyFormData = new FormData();
     //bodyFormData.set("branch", this.branch);
     bodyFormData.set("status_key", '1,2,3,4,5,6');
+    // bodyFormData.set("day", '2021-07-02');
 
     axios
       .request({
@@ -2260,12 +2262,10 @@ export default {
       })
       .then((response) => {
         this.orders = response.data.data;
-        console.log("response 123: ", this.orders);
         // this.orders.forEach(x => {
         //     x.order_data = JSON.parse(x.order_data);
         // });
         this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4');;
-        console.log("orders data: ", this.filteredOrders);
       });
 
     axios
@@ -2292,7 +2292,6 @@ export default {
       })
       .then((response) => {
         this.order.orderId = response.data;
-
       });
       
 
@@ -2315,6 +2314,11 @@ export default {
         this.fullOrder = fooOrder;
         this.order = fooOrder.order_data;
         this.isReopen = true;
+        // alert(this.order.paymentType);
+        if(this.order.paymentType == "invoice"){
+          // alert("invoice");
+          this.invoice = this.order.invoice;
+        }
         if(this.order.deliveryMethod == 'Walk_In'){
           this.walkinActive('no');
         } else if(this.order.deliveryMethod == 'Take Out'){
@@ -2606,6 +2610,19 @@ export default {
       },
     },
   methods: {
+    formatDate(date) {
+          var d = new Date(date),
+              month = '' + (d.getMonth() + 1),
+              day = '' + d.getDate(),
+              year = d.getFullYear();
+
+          if (month.length < 2) 
+              month = '0' + month;
+          if (day.length < 2) 
+              day = '0' + day;
+
+          return [year, month, day].join('-');
+      },
     checkNumber(n) { 
       return !isNaN(parseFloat(n)) && !isNaN(n - 0) 
     },
@@ -2766,7 +2783,6 @@ export default {
         goBack(){
           this.$router.push({path: 'dashboard'});
         },
-
         print(){
           axios
             .request({
@@ -2778,7 +2794,6 @@ export default {
               console.log('------', response.data.data);
             });
         },
-
         selectedOrder(items){
           this.order = items;
         },
@@ -2902,20 +2917,20 @@ export default {
         }
 
         if (this.isHalfPizza == "yes" && this.halfPizzaCounter == 1) {
-          this.smallHalf = true;
-          console.log(" Product Recipe ", this.getRecipe(product));
-          this.customPizza = {
-            crust: "original",
-            sauce: "sauce",
-            size: "",
-            price: 0,
-            name: "",
-            custom: "yes",
-            toppings: [],
-            half1: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
-            half2: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
-            toppingChange: 0,
-            qty: 0,
+            this.smallHalf = true;
+            console.log(" Product Recipe ", this.getRecipe(product));
+            this.customPizza = {
+              crust: "original",
+              sauce: "sauce",
+              size: "",
+              price: 0,
+              name: "",
+              custom: "yes",
+              toppings: [],
+              half1: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
+              half2: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
+              toppingChange: 0,
+              qty: 0,
           };
           //this.customPizza.half1.defaultToppings = this.getRecipe(product);
           if (this.customPizza.qty === 0) {
@@ -4715,7 +4730,6 @@ export default {
                 this.order.items[i].toppings[k].price *
                   this.order.items[i].toppings[k].count;
 
-                  // alert('BLA' + this.order.items[i+1].toppings[k].price);
                     this.order.items[i].totalPrice =
                       this.order.items[i].price + toppingTotal - this.order.items[i].defCount;
             }
@@ -5214,9 +5228,11 @@ export default {
         this.paymentConfirm();
     },
     payGlovo() {
-        this.paymentConfirm();
+      this.noDisc();
+      this.paymentConfirm();
     },
     payWolt() {
+        this.noDisc();
         this.paymentConfirm();
     },
     doneCash() {
@@ -5303,11 +5319,15 @@ export default {
         this.order.paymentType = 'Cash';
         this.print();
         this.changeModal = true;
-      } else if (this.paymentType == "card") {
+      } else if (this.paymentType == "card" && this.order.deliveryMethod == 'Wolt') {
+        this.order.paymentType = 'Card';
+        this.confirmModal = false;
+      } else if (this.paymentType == "card" && this.order.deliveryMethod != 'Wolt') {
         this.order.paymentType = 'Card';
         this.print();
         this.confirmModal = false;
-      } else if (this.paymentType == 'payLater'){
+      }
+      else if (this.paymentType == 'payLater'){
         this.order.paymentType = 'payLater';
       } 
       else if (this.paymentType == 'transfer'){
@@ -5340,7 +5360,8 @@ export default {
           method: "post",
           url:
             //"http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/products/send-order",
-            this.$hostname + "orders/reopen",
+            // this.$hostname + "orders/reopen",
+            this.$hostname + "orders/edit",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -5350,12 +5371,11 @@ export default {
             console.log(this.order.id)
             
             localStorage.removeItem("reopenItem");
-            if(this.printError){
-              console.log("Print Error");
-            }
-            else if(response.status === 200 && this.paymentType == "card"){
-              this.calcPay();
-            } else if(response.status === 200 && this.paymentType == "payLater"){
+            // if(this.printError){
+            //   console.log("Print Error");
+            // }
+            // else
+            if(response.status === 200){
               this.calcPay();
             }
               console.log("Order Response", response);
@@ -5407,6 +5427,7 @@ export default {
         const TOKEN = localStorage.getItem("TOKEN");
         //this.order.id = this.selected
         //this.order = JSON.parse(this.selectedOrder);
+        this.order.totalPrice = this.totalNet.toFixed(2);
         this.order.pos_id = this.loggedUserFull.pos_id;
         axios.request({
             method: 'post',
@@ -5530,6 +5551,9 @@ export default {
       this.crmModal = true;
     },
     futureOrder() {
+      if(this.futureTime.split(":")[0].length == 1){
+        alert('0'+this.futureTime);
+      }
       this.order.date = this.date + ' ' + this.futureTime;
       this.order.isFuture = true;  
       this.futureActive = true;
@@ -5544,25 +5568,12 @@ export default {
       this.futureModal = false;
     },
     copyLastOrder() {
-      //Get user's last order here
       if(this.curentCustomer.last_order == null) {
         alert("No Past Order!");
       }
       else {
-        this.order = this.curentCustomer.last_order;
-        this.order.id = '';
-        this.order.orderId = '';
-        if(this.order.deliveryMethod == 'Walk In'){
-          this.walkinActive('no');
-        } else if(this.order.deliveryMethod == 'Take Out'){
-          this.takeoutActive('no');
-        } else if(this.order.deliveryMethod == 'delivery'){
-          this.ronnysDelivery('no');
-        } else if(this.order.deliveryMethod == 'Wolt'){
-          this.woltDelivery('no');   
-        } else if(this.order.deliveryMethod == 'Glovo'){
-          this.glovoDelivery('no');
-        }
+        this.order.items = this.curentCustomer.last_order.items;
+        console.log(this.order);
       }
     },
     closeCalc(){
@@ -5641,8 +5652,10 @@ export default {
         this.discountItem = true;
     },
     noDisc(){
-        this.order.discount = 0;
-        this.order.discountName = null;
+      this.order.discount = 0;
+      this.order.discountName = '';
+      this.order.discountAmount = false;
+      this.order.discInfo = '';
     },
     diplomatDisc(){
       this.diplomatModal = false;

@@ -358,7 +358,6 @@ export default {
                         '-'];
                         this.enteredPin='';
                     }
-
                     else {
                         var index=this.pinDecon.indexOf('-');
                         this.pinDecon[index]=char;
@@ -374,10 +373,14 @@ export default {
             
             this.pinError = true;
             // var mac = 'd4:c9:ef:d5:70:8f';
-            // var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
+            var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
             // var mac = 'ec:b1:d7:6e:01:3r';  // POS 3
             
-            var mac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
+            // var mac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
+
+            // var mac = 'd4:c9:ef:dc:4c:a5';  // VAKE 1
+
+            // var mac = 'e8:39:35:5d:a9:17';  // GLDANI 1
             
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
@@ -442,37 +445,15 @@ export default {
 ;
 </script>
 <style>
-/* .otp-input {
-    width: 40px;
-    height: 40px;
-    padding: 5px;
-    margin: 0 10px;
-    font-size: 20px;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    text-align: center;
-
-  }
-  .otp-input::-webkit-inner-spin-button,
-  .otp-input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  } */
-
 ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-/* Reset */
 
 #wrap {
     position: relative;
-    /* top: 50%;
-  left: 50%;
-  width: 260px;
-  margin-top: -150px; */
     margin-left: 50px;
 }
 
@@ -499,21 +480,12 @@ ul {
 }
 
 #numpad li {
-    /* font-family: monospace; */
-    /* font-size: 200%; */
-    /* border-radius: 51%; */
     float: left;
-    /* width: 70px; */
     padding: 13px 50px;
     background: #00D881;
     color: black;
     margin: 5px;
     cursor: pointer;
-    /* -webkit-transition: box-shadow 0.3s ease-in-out;
-  -moz-transition: box-shadow 0.3s ease-in-out;
-  -o-transition: box-shadow 0.3s ease-in-out;
-  -ms-transition: box-shadow 0.3s ease-in-out;
-  transition: box-shadow 0.3s ease-in-out;  */
 }
 
 .numChar {

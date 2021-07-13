@@ -42,11 +42,12 @@
             </b-col>
             
             <b-col cols="2">
-                <div class="inOut" @click="timeFoo('in')">IN</div>
+                <div class="inOut" v-if="pinUser.state == 'FINISH'" @click="timeFoo('in')">IN</div>
+                <div class="inOut inactive" v-else @click="timeFoo('in')">IN</div>
             </b-col>
             <b-col cols="2">
-                <div class="inOut" v-if="pinUser.clocked" @click="timeFoo('out')">OUT</div>
-                <div class="inOut inactive" v-if="!pinUser.clocked" @click="timeFoo('out')">OUT</div>
+                <div class="inOut" v-if="pinUser.state == 'IN'" @click="timeFoo('out')">OUT</div>
+                <div class="inOut inactive" v-else @click="timeFoo('out')">OUT</div>
             </b-col>
             <b-col cols="2">&nbsp;</b-col>
           </b-row>
@@ -66,8 +67,8 @@
             </b-col>
             
             <b-col cols="4">
-                <div class="break" v-if="pinUser.clocked" @click="timeFoo('br_start')">Start Break</div>
-                <div class="break inactive" v-if="!pinUser.clocked" @click="timeFoo('br_start')">Start Break</div>
+                <div class="break" v-if="pinUser.state == 'IN'" @click="timeFoo('br_start')">Start Break</div>
+                <div class="break inactive" v-else @click="timeFoo('br_start')">Start Break</div>
             </b-col>
 
             <b-col cols="2">&nbsp;</b-col>
@@ -88,8 +89,8 @@
             </b-col>
 
             <b-col cols="4">
-                <div class="break" v-if="pinUser.clocked" @click="timeFoo('br_end')">End break</div>
-                <div class="break inactive" v-if="!pinUser.clocked" @click="timeFoo('br_end')">End break</div>
+                <div class="break" v-if="pinUser.state == 'BREAK'" @click="timeFoo('br_end')">End break</div>
+                <div class="break inactive" v-else @click="timeFoo('br_end')">End break</div>
             </b-col>
 
             <b-col cols="2">&nbsp;</b-col>
@@ -107,13 +108,6 @@
             <b-col cols="2" class="text-center" align-v="center">
               <div class="pinBtn" @click="pinCharClock('enter')">E</div>
             </b-col>
-            
-            <!-- <b-col cols="2">
-                <div class="correction" @click="correctionFoo()">Correction</div>
-            </b-col>
-            <b-col cols="2">
-                <div class="exit" @click="exitFoo()">EXIT</div>
-            </b-col> -->
             <b-col cols="6">&nbsp;</b-col>
           </b-row>
 
@@ -222,7 +216,7 @@ export default {
     return {
       menu: false,
       detailedInfo: [],
-      date: new Date().toISOString().substr(0, 10),
+      date: new Date(),
       timeClockDetails: false,
       loggedUser: {},
       loginActive: false,
@@ -302,6 +296,7 @@ export default {
        }
     });
   },mounted() {
+    this.date = this.formatDate(this.date);
     this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
     this.loggedUser = this.$store.state.auth.user.data;
 
@@ -317,6 +312,19 @@ export default {
     },
   },
   methods: {
+        formatDate(date) {
+              var d = new Date(date),
+                  month = '' + (d.getMonth() + 1),
+                  day = '' + d.getDate(),
+                  year = d.getFullYear();
+
+              if (month.length < 2) 
+                  month = '0' + month;
+              if (day.length < 2) 
+                  day = '0' + day;
+
+              return [year, month, day].join('-');
+          },
         updateData(date){
           if(date.length == 2){
             var dateString = date[0] + " to "+ date[1];
@@ -342,13 +350,11 @@ export default {
               data: bodyUpdate,
             })
             .then((response) => {
-              console.log('Detaileeeeeed: ', response);
               this.detailedInfo = response.data.data;
           });  
           this.$forceUpdate();
         },
         logKeyClock(e) {
-            //alert(e.target);
             e=e || window.event;
             var charCode=(e.which) ? e.which: e.keyCode;
             if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !==46) {
@@ -421,7 +427,7 @@ export default {
                     this.pinUser = {};
                 }
                 else if(char === 'enter'){
-                    this.loginClock(this.enteredPin);
+                  this.loginClock(this.enteredPin);
                 }
                 else {
                     if(this.enteredPin.length === 3)
@@ -441,31 +447,29 @@ export default {
                     }
                 }
             },
-            loginClock(pin){
-                var bodyFormData = new FormData();
-                bodyFormData.set("pin", pin);
-                axios.request({
-                    method: "post",
-                    url:
-                        this.$authHostName + "/clocked",
-                    data: bodyFormData,
-                    })
-                    .then((response) => {
-                        if(response.status === 200 && !response.data.is_error){
-                            console.log('------', response);
-                            this.loginToken = response.data.data.token;
-                            this.pinUser = response.data.data;
-                            this.loginActive = true;
+          loginClock(pin){
+              var bodyFormData = new FormData();
+              bodyFormData.set("pin", pin);
+              axios.request({
+                  method: "post",
+                  url:
+                      this.$authHostName + "/clocked",
+                  data: bodyFormData,
+                  })
+                  .then((response) => {
+                      if(response.status === 200 && !response.data.is_error){
+                          console.log('------', response);
+                          this.loginToken = response.data.data.token;
+                          this.pinUser = response.data.data;
+                          this.loginActive = true;
 
-                        }
-                        else {
-                            console.log('Login Failed');
-                            this.alert = true;
-                        }
-                    
-                    });    
-                
-            },
+                      }
+                      else {
+                          console.log('Login Failed');
+                          this.alert = true;
+                      }
+                  });    
+        },
     }
 };
 </script>

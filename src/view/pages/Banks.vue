@@ -199,8 +199,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <span v-for="drv in drivers" :key="drv.id">
-                      <v-card v-if="drv.closed == null" class="mx-auto my-3" color="#46BDF2" light max-width="250" @click="driverInfo(drv)">
+                      <v-card v-for="drv in drivers" :key="drv.id" class="mx-auto my-3" color="#46BDF2" light max-width="250" @click="driverInfo(drv)">
                           <v-card-title>
                               <span class="title font-weight-bold" v-if="drv.amount < 200">{{ (Number(drv.amount) + Number(drv.card)).toFixed(2)  }}  - {{ drv.username }}</span>
                               <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ (Number(drv.amount) + Number(drv.card)).toFixed(2) }} </span>  - {{ drv.username }}</span>
@@ -296,7 +295,7 @@
                             </v-expand-transition>
                       </v-card>
                       
-                      <v-card v-if="drv.closed != null" class="mx-auto my-3" color="#EAE4D2" light max-width="250" @click="driverInfo(drv)">
+                      <v-card v-for="drv in uncloseDrivers" :key="drv.id" class="mx-auto my-3" color="#EAE4D2" light max-width="250" @click="driverInfo(drv)">
                           <v-card-title>
                               <span class="title font-weight-bold">{{ drv.amount }}  - {{ drv.username }}</span>
                           </v-card-title>
@@ -390,7 +389,6 @@
                               </v-card>
                             </v-expand-transition>
                       </v-card>
-                    </span>
 
                 </div>
         </div>
@@ -1200,21 +1198,18 @@
                 </v-tab-item>
 
                 <v-tab-item>
-                  <export-excel
-                      :data = "detailedInfo"
-                      :name = "'safeDetails.xls'" >
+                  <!-- <export-excel
+                      :data = "groupDetails"
+                      :name = "'totalSales.xls'" >
                       Download Data
                       <span class="material-icons">
                         get_app
                       </span>
-                  </export-excel>
+                  </export-excel> -->
                   <v-simple-table height="300px">
                     <template v-slot:default>
                       <thead>
                         <tr>
-                          <th class="text-left">
-                            Date
-                          </th>
                           <th class="text-left">
                             Cash
                           </th>
@@ -1222,13 +1217,13 @@
                             Card
                           </th>
                           <th class="text-left">
-                            Delivery cash
-                          </th>
-                          <th class="text-left">
                             Delivery card
                           </th>
                           <th class="text-left">
-                            Glovo cransfer
+                            Delivery cash
+                          </th>
+                          <th class="text-left">
+                            Glovo transfer
                           </th>
                           <th class="text-left">
                             Glovo cash
@@ -1239,23 +1234,18 @@
                           <th class="text-left">
                             Wolt
                           </th>
-                          <th class="text-left">
-                            Total
-                          </th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="total in groupDetails" :key="total.id">
-                          <td>{{ total.date }}</td>
-                          <td>{{ total.cashTotal.toFixed(2) }}</td>
-                          <td>{{ total.cardTotal.toFixed(2) }}</td>
-                          <td>{{ total.deliveryCashTotal.toFixed(2) }}</td>
-                          <td>{{ total.deliveryCardTotal.toFixed(2) }}</td>
-                          <td>{{ total.glovoTransferTotal.toFixed(2) }}</td>
-                          <td>{{ total.glovoCashTotal.toFixed(2) }}</td>
-                          <td>{{ total.glovoCardTotal.toFixed(2) }}</td>
-                          <td>{{ total.woltTotal.toFixed(2) }}</td>
-                          <td>{{ total.allTotal.toFixed(2) }}</td>
+                        <tr>
+                          <td>{{ orderDetails.cash }}</td>
+                          <td>{{ orderDetails.card }}</td>
+                          <td>{{ driverTotals.card }}</td>
+                          <td>{{ driverTotals.cash }}</td>
+                          <td>{{ orderDetails.glovo }}</td>
+                          <td>{{ orderDetails.glovo_cash }}</td>
+                          <td>{{ orderDetails.glovo_card }}</td>
+                          <td>{{ orderDetails.wolt }}</td>
                         </tr>
                       </tbody>
                     </template>
@@ -1381,8 +1371,8 @@ export default {
           // { tab: 'Driver Details', content: 'driver' },
       ],
       tab: 0,
-      date: new Date().toISOString().substr(0, 10),
-      dateDriver: new Date().toISOString().substr(0, 10),
+      date: new Date(),
+      dateDriver: new Date(),
       detailedInfo: [],
       menu: false,
       menu2: false,
@@ -1423,21 +1413,23 @@ export default {
       allPoses: [],
       banks: [],
       drivers: [],
-        valid: true,
-        name: '',
-        amountRules: [
-            v => !!v || 'Emount not entered',
-        ],
-        exampleRules: [
-            v => !!v || "Emount can't be blank",
-            v => (v && v >= 0) || "Loan should be above 0",
-            v => (v && v <= 500) || "Max should not be above 500",
-        ],
+      uncloseDrivers: [],
+      valid: true,
+      name: '',
+      amountRules: [
+          v => !!v || 'Emount not entered',
+      ],
+      exampleRules: [
+          v => !!v || "Emount can't be blank",
+          v => (v && v >= 0) || "Loan should be above 0",
+          v => (v && v <= 500) || "Max should not be above 500",
+      ],
       e6: 1,
       loggedUser: {},
       orders: [],
       orderDetails: [],
-      groupDetails: [],
+      driverTotals: {},
+      groupDetails: {},
       old: false,
       singleSelect: true,
       selected: [],
@@ -1445,6 +1437,7 @@ export default {
       driverIndex: -1,
       balance: '',
       selectedItem: -1,
+      loggedUserFull: [],
       items1: [
         { text: 'Pos Default Balance', icon: 'fact_check' },
         { text: 'Driver Default Balance', icon: 'moped' },
@@ -1507,7 +1500,11 @@ export default {
     });
   },
   mounted() {
+    this.date = this.formatDate(this.date);
+    this.dateDriver = this.formatDate(this.dateDriver);
+    this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
 
+    console.log('Logged User Full: ', this.loggedUserFull);
 
     var date = new Date();
     var dd = String(date.getDate()).padStart(2, '0');
@@ -1604,6 +1601,19 @@ export default {
     },
   },
   methods: {
+    formatDate(date) {
+          var d = new Date(date),
+              month = '' + (d.getMonth() + 1),
+              day = '' + d.getDate(),
+              year = d.getFullYear();
+
+          if (month.length < 2) 
+              month = '0' + month;
+          if (day.length < 2) 
+              day = '0' + day;
+
+          return [year, month, day].join('-');
+      },
     getTab(tab){
         if(tab.content === 'close') {
           this.updateDetails(this.date);
@@ -1707,14 +1717,14 @@ export default {
       }
       var bodyFormData = new FormData();
       //bodyFormData.set("branch", this.branch);
-      bodyFormData.set("status_key", this.status);
+      bodyFormData.set("branch_id", this.loggedUserFull.branch_id);
       bodyFormData.set("day", dateString);
-
+      
       axios
         .request({
           method: "post",
           url:
-            this.$hostname + "orders/list",
+            this.$hostname + "poses/sales",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -1723,99 +1733,38 @@ export default {
         .then((response) => {
           this.orderDetails = response.data.data;
 
-          var array = this.orderDetails;
 
-          array.forEach(x =>{
-            //var newDate = new Date(x.created_at);
-            //x.created_date = newDate.getUTCFullYear() + '-' + newDate.getMonth() + '-' + newDate.getDate();
-            x.created_date = x.created_at.slice(0,10);
+          this.groupDetails.woltTotal = this.orderDetails.wolt;
+          this.groupDetails.glovoCashTotal = this.orderDetails.glovo_cash;
+          this.groupDetails.glovoCardTotal = this.orderDetails.glovo_card;
+          this.groupDetails.glovoTransferTotal = this.orderDetails.glovo;
+          this.groupDetails.cashTotal = this.orderDetails.cash;
+          this.groupDetails.cardTotal = this.orderDetails.card;
+          
+          console.log('POS SALES: ', this.orderDetails);
           });
-          console.log('created at array: ', array);
-          //var temp_arr = this.orderDetails;
-          const result = [];
-          const map = new Map();
-          for (const item of array) {
-              if(!map.has(item.created_date)){
-                  map.set(item.created_date, true);    // set any value to Map
-                  result.push({
-                      date: item.created_date,
-                      woltTotal: 0,
-                      glovoCashTotal: 0,
-                      glovoCardTotal: 0,
-                      glovoTransferTotal: 0,
-                      deliveryCardTotal: 0,
-                      deliveryCashTotal: 0,
-                      cashTotal: 0,
-                      cardTotal: 0,
-                      allTotal: 0
-                  });
-              }
-          }
-          console.log('Unique Date: ',result);
+      
+      var bodyFormDataDrv = new FormData();
+      //bodyFormData.set("branch", this.branch);
+      bodyFormDataDrv.set("branch_id", this.loggedUserFull.branch_id);
+      bodyFormDataDrv.set("day", dateString);
+      
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "driver/sales",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormDataDrv,
+        })
+        .then((response) => {
+          this.driverTotals = response.data.data;
 
-          this.orderDetails.forEach((x, index) => {
+          console.log('DRIVER SALES: ', this.driverTotals);
 
-            if(x.order_data.discountName == 'Diplomat'){
-              x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
-            }
-            else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
-              x.order_data.discPrice = x.order_data.discount;
-            }
-            else {
-              x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
-            }
-            for(var i = 0; i < result.length; i++){
-
-              if(x.created_date == result[i].date)
-              {
-                if(x.order_data.deliveryMethod == 'Wolt'){
-                  result[i].woltTotal = result[i].woltTotal + Number(x.order_data.totalPrice);
-                  // this.woltTotal = this.woltTotal + Number(x.order_data.totalPrice)
-                } 
-                else if (x.order_data.deliveryMethod == 'Glovo'){
-                  if(x.order_data.paymentType == 'Cash'){
-                    result[i].glovoCashTotal = result[i].glovoCashTotal + Number(x.order_data.totalPrice);
-                    // this.glovoCashTotal = this.glovoCashTotal + Number(x.order_data.totalPrice);
-                  }
-                  else if(x.order_data.paymentType == 'Card'){
-                    result[i].glovoCardTotal = result[i].glovoCardTotal + Number(x.order_data.totalPrice);
-                    // this.glovoCardTotal = this.glovoCardTotal + Number(x.order_data.totalPrice)
-                  }
-                  else if(x.order_data.paymentType == 'transfer'){
-                    result[i].glovoTransferTotal = result[i].glovoTransferTotal + Number(x.order_data.totalPrice);
-                    // this.glovoTransferTotal = this.glovoTransferTotal + Number(x.order_data.totalPrice)
-                  }
-                }
-                else if(x.order_data.deliveryMethod == 'delivery'){
-                  if(x.order_data.paymentType == 'card'){
-                    result[i].deliveryCardTotal = result[i].deliveryCardTotal + Number(x.order_data.totalPrice) - Number(x.order_data.discPrice);
-                    // this.deliveryCardTotal = this.deliveryCardTotal + (Number(x.order_data.totalPrice) - Number(x.order_data.discPrice));
-                  }
-                  else if(x.order_data.paymentType == 'cash'){
-                    result[i].deliveryCashTotal = result[i].deliveryCashTotal + Number(x.order_data.totalPrice) - Number(x.order_data.discPrice);
-                    // this.deliveryCashTotal = this.deliveryCashTotal + (Number(x.order_data.totalPrice) - Number(x.order_data.discPrice));
-                  }
-                }
-                else if(x.order_data.deliveryMethod == 'Walk_In' || x.order_data.deliveryMethod == 'walk_in' || x.order_data.deliveryMethod == 'Take Out'){
-                  if(x.order_data.paymentType == 'Cash'){
-                    result[i].cashTotal = result[i].cashTotal + Number(x.order_data.totalPrice) - Number(x.order_data.discPrice);
-                    
-                    // this.cashTotal = this.cashTotal + Number(x.order_data.totalPrice);
-                  }
-                  else if(x.order_data.paymentType == 'Card'){
-                    result[i].cardTotal = result[i].cardTotal + Number(x.order_data.totalPrice) - Number(x.order_data.discPrice);
-                    // this.cardTotal = this.cardTotal + Number(x.order_data.totalPrice);
-                  }
-                }
-              }
-              result[i].allTotal = result[i].woltTotal + result[i].glovoCashTotal + result[i].glovoCardTotal + result[i].glovoTransferTotal + result[i].deliveryCardTotal + result[i].deliveryCashTotal + result[i].cashTotal + result[i].cardTotal;
-              this.groupDetails = result
-            }
           });
-
-        console.log('Counted Result: ', result);
-        this.groupDetails = result;
-        });
 
     },
     safeDetails(date){
@@ -1936,7 +1885,12 @@ export default {
               this.totalActual = '';
               this.tillCloseDialog = false;
               this.getSafes();
+
               this.getPoses();
+
+              this.getDrivers();
+
+              this.getBanks();
             });
         }
       }
@@ -1971,7 +1925,14 @@ export default {
             this.driverCardActual = '';
             this.totalActual = '';
             this.driverCloseDialog = false;
+
             this.getSafes();
+
+            this.getPoses();
+
+            this.getDrivers();
+
+            this.getBanks();
           });
       }
       else {
@@ -1983,7 +1944,6 @@ export default {
       var bodyFormSafe = new FormData();
       bodyFormSafe.set("branch_id", this.branchId);
       bodyFormSafe.set("day", this.today);
-
       axios
         .request({
           method: "post",
@@ -2049,6 +2009,23 @@ export default {
         .then((response) => {
           this.drivers = response.data.data;
           console.log("Drivers List: ", this.drivers);
+        }).catch((error) => {
+          console.log('getDrivers error: ', error);
+        });
+
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "driver/unclose-drivers",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormDriver,
+        })
+        .then((response) => {
+          this.uncloseDrivers = response.data.data;
+          console.log("Drivers List: ", this.uncloseDrivers);
         }).catch((error) => {
           console.log('getDrivers error: ', error);
         });

@@ -51,7 +51,6 @@
                             @page-count="pageCount = $event"
                             @click:row="onButtonClick"
                         >
-                            <!-- BLA -->
                             <!-- <template v-slot:item="row">
                                 <tr @click="onButtonClick(row.item)" :class="{ active : activeRow == row.item.id}">
                                     <td>{{row.item.order_data.deliveryMethod}}</td>
@@ -254,8 +253,8 @@ export default {
   data() {
     return {
       menu: false,
-      driverDate: new Date().toISOString().substr(0, 10),
-      date: new Date().toISOString().substr(0, 10),
+      driverDate: new Date(),
+      date: new Date(),
       isOrders: false,
       driverOrders: [],
       selectedItem: {order_data: {customer: {}}},
@@ -275,7 +274,6 @@ export default {
       loading: true,
       driverLoad: true,
       selectedDriver: null,
-      date: new Date().toISOString().substr(0, 10),
       selectedOrder: {},
       selectedOrders: [],
       selectedDelivery: {},
@@ -347,6 +345,8 @@ export default {
     this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
     this.loggedUser = this.$store.state.auth.user.data;
 
+    this.date = this.formatDate(this.date);
+    this.driverDate = this.formatDate(this.driverDate);
     this.getOrders();
     this.getDrivers();
     
@@ -366,6 +366,19 @@ export default {
       },
   },
   methods: {
+    formatDate(date) {
+          var d = new Date(date),
+              month = '' + (d.getMonth() + 1),
+              day = '' + d.getDate(),
+              year = d.getFullYear();
+
+          if (month.length < 2) 
+              month = '0' + month;
+          if (day.length < 2) 
+              day = '0' + day;
+
+          return [year, month, day].join('-');
+      },
     payOrder(type){
         
         this.selectedOrder = this.selectedItem.order_data;
@@ -391,6 +404,8 @@ export default {
             console.log('paid order: ', response);
             if(response.status === 200 ){
               this.updateStatus('finished', this.selectedOrder.id);
+              this.activeDriver = -1;
+              this.selectedDriver = null;
             } 
             
         });
@@ -559,6 +574,7 @@ export default {
       
     },
         onButtonClick(item) {
+          console.log('ITEM ITEM: ',item);
             this.activeRow = item.id;
             this.order = item;
             this.selectedOrder = item;
@@ -579,13 +595,12 @@ export default {
             this.$forceUpdate();
         },
         driverOut(){
-          if(this.selectedOrder.status == '5' && this.selectedDriver.in_way == false){
+          if(this.selectedOrders[0].status == '5' && this.selectedDriver.in_way == false){
             this,this.overlay = true;
             var orderIDs = [];
             this.selectedOrders.forEach(x => {
                orderIDs.push(x.id);
-            })
-            console.log("aaaa: ", orderIDs);
+            });
             const TOKEN = this.loggedUser.token;
             var bodyFormData = new FormData();
             bodyFormData.set("order_id", orderIDs);
@@ -596,7 +611,6 @@ export default {
                 method: "post",
                 url:
                 this.$hostname + "manager/attach-order-to-driver",
-                //  Combine order and driver LINK HERE!!!!,
                 headers: {
                 Authorization: "Bearer " + TOKEN,
                 },

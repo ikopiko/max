@@ -64,7 +64,7 @@ export default {
       orders: [],
       filteredOrders: [],
       tab: 1,
-      date: new Date().toISOString().substr(0, 10),
+      date: new Date(),
       items: [
         {id: 0, name: "Pending Orders", content: null, color: 'red'},
         {id: 1, name: "Preparing in Kitchen", content: null, color: 'green'},
@@ -92,15 +92,28 @@ export default {
   },
   mounted() {
     this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
-    // this.loggedUser = this.$store.state.auth.user.data;
     this.updateOrders();
 
     this.filteredOrders = this.orders.filter((x) => x.status == 2 || x.status == 3 || x.status == 4);
+    this.date = this.formatDate(this.date);
   },
   created () {
       this.timer = setInterval(this.updateOrders, 500)
     },
   methods: {
+    formatDate(date) {
+          var d = new Date(date),
+              month = '' + (d.getMonth() + 1),
+              day = '' + d.getDate(),
+              year = d.getFullYear();
+
+          if (month.length < 2) 
+              month = '0' + month;
+          if (day.length < 2) 
+              day = '0' + day;
+
+          return [year, month, day].join('-');
+      },
     /**
      * Set current active on click
      * @param event
@@ -138,8 +151,6 @@ export default {
             })
             .then((response) => {
               this.orders = response.data.data;
-              console.log("response 123: ", this.orders);
-
               this.items[0].content = this.orders.filter((x) => x.status == 1).length;
               this.items[1].content = this.orders.filter((x) => x.status == 2 || x.status == 3 || x.status == 4).length;
               this.items[2].content = this.orders.filter((x) => x.status == 5).length;
