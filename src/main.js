@@ -41,7 +41,7 @@ ApiService.init();
 
 // Vue.prototype.$hostname = "http://192.168.1.124/ronny/rest/web/index.php?r=v1/";  // LOCAL
 
-// Vue.prototype.$hostname = "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/";  // DIGOMI OUT
+Vue.prototype.$hostname = "http://188.169.16.186:8082/ronny/rest/web/index.php?r=v1/";  // DIGOMI OUT
 
 // Vue.prototype.$hostname = "http://178.134.12.106:8082/ronny/rest/web/index.php?r=v1/";  // SABURTALO OUT
 
@@ -49,11 +49,11 @@ ApiService.init();
 
 // Vue.prototype.$hostname = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=v1/";  // GLDANI OUT
 
-Vue.prototype.$hostname = "https://api.ronnys.info/rest/web/index.php?r=v1/";  // TEST
+// Vue.prototype.$hostname = "https://api.ronnys.info/rest/web/index.php?r=v1/";  // TEST
 
 // Vue.prototype.$authHostName = "http://192.168.1.124/ronny/rest/web/index.php?r=auth";  // LOCAL
 
-// Vue.prototype.$authHostName = "http://188.169.16.186:8082/ronny/rest/web/index.php?r=auth";  // DIGOMI OUT
+Vue.prototype.$authHostName = "http://188.169.16.186:8082/ronny/rest/web/index.php?r=auth";  // DIGOMI OUT
 
 // Vue.prototype.$authHostName = "http://178.134.12.106:8082/ronny/rest/web/index.php?r=auth";  // SABURTALO OUT
 
@@ -61,7 +61,7 @@ Vue.prototype.$hostname = "https://api.ronnys.info/rest/web/index.php?r=v1/";  /
 
 // Vue.prototype.$authHostName = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=auth";  // GLDANI OUT
 
-Vue.prototype.$authHostName = "https://api.ronnys.info/rest/web/index.php?r=auth";  // TEST
+// Vue.prototype.$authHostName = "https://api.ronnys.info/rest/web/index.php?r=auth";  // TEST
 
 // Change It to API.SERVICE.JS ALSO
 

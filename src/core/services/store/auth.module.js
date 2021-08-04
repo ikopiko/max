@@ -63,20 +63,20 @@ const actions = {
         });
     });
   },
-  // [VERIFY_AUTH](context) {
-  //   if (JwtService.getToken()) {
-  //     ApiService.setHeader();
-  //     ApiService.get("verify")
-  //       .then(({ data }) => {
-  //         context.commit(SET_AUTH, data);
-  //       })
-  //       .catch(({ response }) => {
-  //         context.commit(SET_ERROR, response.data.errors);
-  //       });
-  //   } else {
-  //     context.commit(PURGE_AUTH);
-  //   }
-  // },
+  [VERIFY_AUTH](context) {
+    // if (JwtService.getToken()) {
+    //   ApiService.setHeader();
+    //   ApiService.get("verify")
+    //     .then(({ data }) => {
+    //       context.commit(SET_AUTH, data);
+    //     })
+    //     .catch(({ response }) => {
+    //       context.commit(SET_ERROR, response.data.errors);
+    //     });
+    // } else {
+    //   context.commit(PURGE_AUTH);
+    // }
+  },
   [UPDATE_USER](context, payload) {
     const { email, username, password, image, bio } = payload;
     const user = { email, username, bio, image };

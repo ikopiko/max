@@ -78,7 +78,7 @@
                                 </div>
                             </div>
                             
-                            <div class="row listIem" v-for="item in order.items" :key="item.id">
+                            <div class="row listIem" v-for="(item, index) in order.items" :key="index">
                                 <div class="col-1" v-if="!restrictEdit">
                                         <i class="material-icons md-24" style="font-size: 3em" @click="deleteProduct(item)">clear</i>
                                 </div>
@@ -114,7 +114,7 @@
                                     </div>
                                     <div class="toppingInner">
                                         <div class="wholeTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="topping in item.toppings" :key="topping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
                                                 <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                                 <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
                                                 <span class="pading-10">{{
@@ -130,7 +130,7 @@
                                     </div>
                                     <div class="pl-4" style="font-size: 14px">
                                         <div class="wholeDefTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.defaultToppings" :key="index">
                                                 <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
                                                 <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                                 defTopping.isDeleted &&
@@ -140,7 +140,7 @@
                                             </div>
                                         </div>
                                         <div class="bSideTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="defTopping in item.half1.defaultToppings" :key="defTopping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.half1.defaultToppings" :key="index">
                                                 <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">A - {{ defTopping.name }}</span>
                                                 <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                                 defTopping.isDeleted &&
@@ -150,7 +150,7 @@
                                             </div>
                                         </div>
                                         <div class="bSideTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="topping in item.half1.toppings" :key="topping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.half1.toppings" :key="index">
                                                 <span v-if="topping.count == 1">A + {{ topping.name }}</span>
                                                 <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
                                                 <span>{{
@@ -164,7 +164,7 @@
                                     </div>
                                     <div class="pl-4" style="font-size: 14px">
                                         <div class="bSideTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="defTopping in item.half2.defaultToppings" :key="defTopping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.half2.defaultToppings" :key="index">
                                                 <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">B - {{ defTopping.name }}</span>
                                                 <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                                 defTopping.isDeleted &&
@@ -174,7 +174,7 @@
                                             </div>
                                         </div>
                                         <div class="bSideTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="topping in item.half2.toppings" :key="topping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.half2.toppings" :key="index">
                                                 <span v-if="topping.count == 1">B + {{ topping.name }}</span>
                                                 <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
                                                 <span class="pading-10">{{
@@ -218,7 +218,7 @@
 
                                     <div class="pl-4" style="font-size: 14px">
                                       <div class="sticksTopping">
-                                        <div class="d-flex justify-content-between halfToppings" v-for="defTopping in item.defaultToppings" :key="defTopping.id">
+                                        <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.defaultToppings" :key="index">
                                             <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
                                             <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="defTopping.isDeleted">0.00</span>
                                         </div>
@@ -228,7 +228,7 @@
                                             <span>{{ item.size }} Crust</span>
                                         </div>
                                         <div class="sticksTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="topping in item.toppings" :key="topping.id">
+                                            <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
 
                                                 <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                                 <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
@@ -268,7 +268,7 @@
                                         <span>{{ item.sauce }}</span>
                                         <span class="pading-10">0.00</span>
                                     </div>
-                                    <div class="d-flex justify-content-between halfToppings" v-for="topping in item.toppings" :key="topping.id">
+                                    <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
                                         <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                         <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
                                         <span>{{
@@ -280,7 +280,7 @@
                                         <strong>A {{ item.half1.name }}</strong>
                                     </div>
                                     <div style="font-size: 14px">
-                                        <div class="d-flex justify-content-between" v-for="defTopping in item.half1.defaultToppings" :key="defTopping.id">
+                                        <div class="d-flex justify-content-between" v-for="(defTopping, index) in item.half1.defaultToppings" :key="index">
                                             <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
                                             <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                             defTopping.isDeleted &&
@@ -288,7 +288,7 @@
                             defTopping.id != 5
                           " >- {{ defTopping.price }}</span>
                                         </div>
-                                        <div class="d-flex justify-content-between" v-for="topping in item.half1.toppings" :key="topping.id">
+                                        <div class="d-flex justify-content-between" v-for="(topping, index) in item.half1.toppings" :key="index">
                                             <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                             <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
                                             <span>{{ (topping.price * topping.count).toFixed(2) }}</span>
@@ -298,7 +298,7 @@
                                         <strong>B {{ item.half2.name }}</strong>
                                     </div>
                                     <div style="font-size: 14px">
-                                        <div class="d-flex justify-content-between" v-for="defTopping in item.half2.defaultToppings" :key="defTopping.id">
+                                        <div class="d-flex justify-content-between" v-for="(defTopping, index) in item.half2.defaultToppings" :key="index">
                                             <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
                                             <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
                             defTopping.isDeleted &&
@@ -307,7 +307,7 @@
                           ">- {{ defTopping.price }}
                                             </span>
                                         </div>
-                                        <div class="d-flex justify-content-between" v-for="topping in item.half2.toppings" :key="topping.id">
+                                        <div class="d-flex justify-content-between" v-for="(topping, index) in item.half2.toppings" :key="index">
                                             <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                                             <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
                                             <span>{{ (topping.price * topping.count).toFixed(2) }}</span>
@@ -378,7 +378,7 @@
                             </div>
                         </div>
                         <div class="row pizza p_binder" v-if="customerOrdersComponent">
-                            <orders :customerPhone="this.curentCustomer.phone" @onSelectedOrder="selectedOrder" />
+                            <orders :customerPhone="this.curentCustomer.phone" @onSelectedOrder="selectOrder" />
                         </div>
                     </td>
                 </tr>
@@ -833,13 +833,13 @@
 
                     <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="curentCustomer.address" clearable ></v-text-field>
 
-                    <v-combobox
+                    <!-- <v-combobox
                       v-model="curentCustomer.address"
                       label="Address"
                       multiple
                       chips
                       dense
-                    ></v-combobox>
+                    ></v-combobox> -->
 
                     <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
                     
@@ -855,7 +855,7 @@
                 </v-form>
               </v-row>
               <v-row>
-                <div class="col" v-for="discount in discountTypes" :key="discount.id">
+                <div class="col" v-for="(discount, index) in discountTypes" :key="index">
                   <v-btn class="blue" v-if="discount.name != 'Manager'" :class="{ active : discount.name == curentCustomer.discount }" large @click="crmDiscount(discount)">{{ discount.name }}</v-btn>
                 </div>
               </v-row>
@@ -916,13 +916,13 @@
 
                                         <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
 
-                                        <v-combobox
+                                        <!-- <v-combobox
                                           v-model="curentCustomer.address"
                                           label="Address"
                                           multiple
                                           chips
                                           dense
-                                        ></v-combobox>
+                                        ></v-combobox> -->
                                         
                                         <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
 
@@ -965,7 +965,7 @@
                             </div>
                             <div class="modal-body">
                                 <b-container fluid>
-                                    <div class="row" @click="activateFee(fee.id)" v-for="fee in deliveryFee" :key="fee.id">
+                                    <div class="row" @click="activateFee(fee.id)" v-for="(fee, index) in deliveryFee" :key="index">
                                         <div class="col feeClass" :class="{ active: activeFee_el == fee.id }">
                                             {{ fee.text }}
                                         </div>
@@ -1005,7 +1005,7 @@
                             </div>
                             <div class="modal-body">
                                 <b-container fluid>
-                                    <div class="row" @click="activate(type.id)" v-for="type in deliveryType" :key="type.id">
+                                    <div class="row" @click="activate(type.id)" v-for="(type, index) in deliveryType" :key="index">
                                         <div class="col feeClass" :class="{ active: active_el == type.id }">
                                             {{ type.type }}
                                         </div>
@@ -1113,13 +1113,13 @@
 
                   <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
-                  <v-combobox
+                  <!-- <v-combobox
                     v-model="curentCustomer.address"
                     label="Address"
                     multiple
                     chips
                     dense
-                  ></v-combobox>
+                  ></v-combobox> -->
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1181,13 +1181,13 @@
 
                   <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
-                  <v-combobox
+                  <!-- <v-combobox
                     v-model="curentCustomer.address"
                     label="Address"
                     multiple
                     chips
                     dense
-                  ></v-combobox>
+                  ></v-combobox> -->
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1252,13 +1252,13 @@
 
                   <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
-                  <v-combobox
+                  <!-- <v-combobox
                     v-model="curentCustomer.address"
                     label="Address"
                     multiple
                     chips
                     dense
-                  ></v-combobox>
+                  ></v-combobox> -->
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1347,13 +1347,13 @@
 
                   <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
-                  <v-combobox
+                  <!-- <v-combobox
                     v-model="curentCustomer.address"
                     label="Address"
                     multiple
                     chips
                     dense
-                  ></v-combobox>
+                  ></v-combobox> -->
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1427,13 +1427,13 @@
 
                   <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
-                  <v-combobox
+                  <!-- <v-combobox
                     v-model="curentCustomer.address"
                     label="Address"
                     multiple
                     chips
                     dense
-                  ></v-combobox>
+                  ></v-combobox> -->
 
                   <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
 
@@ -1672,13 +1672,13 @@
 
                   <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
 
-                  <v-combobox
+                  <!-- <v-combobox
                     v-model="curentCustomer.address"
                     label="Address"
                     multiple
                     chips
                     dense
-                  ></v-combobox>
+                  ></v-combobox> -->
 
                   <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
 
@@ -2794,7 +2794,7 @@ export default {
               console.log('------', response.data.data);
             });
         },
-        selectedOrder(items){
+        selectOrder(items){
           this.order = items;
         },
         activate(el){
@@ -2848,7 +2848,7 @@ export default {
 
             });
           console.log('Curent User Data: ', this.curentCustomer);
-          this.curentCustomer.address = this.curentCustomer.address.split(',');
+          // this.curentCustomer.address = this.curentCustomer.address.split(',');
             if(this.searchResults.length === 0){
               this.curentCustomer.phone = this.search;
             }
@@ -3592,7 +3592,7 @@ export default {
     },
 
     doneOrder() {
-      if(this.totalPrice == 0){
+      if(this.totalNet == 0){
         alert('Order Is Empty');
       } else{
         this.showProducts = false;

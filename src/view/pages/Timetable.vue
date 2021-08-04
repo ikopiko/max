@@ -18,7 +18,7 @@
               <b-col cols="3" ><h2>{{ pinUser.first_name  }} - {{ pinUser.role }}</h2></b-col>
               <b-col cols="3">
                 <ul id="display">
-                    <li v-for="num in pinSync" :key="num">{{ num }}</li>
+                    <li v-for="(num, index) in pinSync" :key="index">{{ num }}</li>
                     <div class="clear"></div>
                 </ul>
               </b-col>
@@ -173,8 +173,8 @@
                       </thead>
                       <tbody>
                         <tr
-                          v-for="item in filterDetails"
-                          :key="item.id"
+                          v-for="(item, index) in filterDetails"
+                          :key="index"
                         >
                           <td>{{ item.username }}</td>
                           <td>{{ item.inTime }}</td>
@@ -289,10 +289,10 @@ export default {
             || vm.$store.state.auth.user.data.role.toLowerCase() == "thermometer" 
             || vm.$store.state.auth.user.data.role.toLowerCase() == "housekeeper" 
             || vm.$store.state.auth.user.data.role.toLowerCase() == "driver") {
-         vm.$router.push({name: "timetable"});
+         vm.$router.push({name: "timetable"}).catch(()=>{});
        }
        else {
-         vm.$router.push({name: "dashboard"});
+         vm.$router.push({name: "dashboard"}).catch(()=>{});
        }
     });
   },mounted() {

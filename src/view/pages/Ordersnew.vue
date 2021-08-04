@@ -47,12 +47,12 @@
                     <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
                 </v-menu>
                 <v-tabs v-model="tab" fixed-tabs background-color="primary" dark>
-                    <v-tab v-for="item in items" :key="item.tab" @click="getTab(item)">
+                    <v-tab v-for="(item, index) in items" :key="index" @click="getTab(item)">
                         {{ item.tab }}
                     </v-tab>
 
                     <v-tabs-items v-model="tab">
-                        <v-tab-item v-for="item in items" :key="item.tab">
+                        <v-tab-item v-for="(item, index) in items" :key="index">
                             <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
 
                             <v-data-table v-model="selected" :search="search" :headers="headers" :items="filteredOrders" :items-per-page="itemsPerPage" item-key="id" show-select class="elevation-1" @page-count="pageCount = $event">
@@ -130,7 +130,7 @@
             <v-card-title>Select Waste Item</v-card-title>
             <v-divider></v-divider>
             <v-card-text style="height: 400px;">
-                <v-checkbox v-for="item in selectedOrderItems" :key="item.id" v-model="selectedWaste" :label="item.name+' : '+item.price" :value="item"></v-checkbox>
+                <v-checkbox v-for="(item, index) in selectedOrderItems" :key="index" v-model="selectedWaste" :label="item.name+' : '+item.price" :value="item"></v-checkbox>
                 <v-divider></v-divider>
                 <v-textarea clearable clear-icon="mdi-close-circle" label="Comment" v-model="wasteComment"></v-textarea>
             </v-card-text>
@@ -193,7 +193,7 @@ import axios from 'axios';
         ],
         itemIndex: -1,
         filteredOrders: [],
-        order: [],
+        order: {},
         lastOrder: [],
         orderStatuses: [],
         selectedOrder: [],
@@ -283,15 +283,16 @@ import axios from 'axios';
             || vm.$store.state.auth.user.data.role.toLowerCase() == "courier" 
             || vm.$store.state.auth.user.data.role.toLowerCase() == "posaccess" 
             || vm.$store.state.auth.user.data.role.toLowerCase() == "driver") {
-         vm.$router.push({name: "orders"});
+         vm.$router.push({name: "orders"}).catch(()=>{});
        }
        else {
-         vm.$router.push({name: "dashboard"});
+         vm.$router.push({name: "dashboard"}).catch(()=>{});
        }
     });
   },
     mounted() {
       console.log(this.orderStatuses["Finished bake"]);
+      this.date = this.formatDate(this.date);
       this.loggedUser = this.$store.state.auth.user.data;
       this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
 
@@ -334,7 +335,6 @@ import axios from 'axios';
         this.filteredOrders = this.orders.filter((x) => x.status != 10);
         this.filteredOrders.forEach((y) => {
           console.log('asdasdasd: ',y.status);
-          alert(y.status);
         });
         // this.filteredOrders = this.orders;
         // this.orders.filter((x) => x.payment_method_id === '4')
@@ -353,7 +353,7 @@ import axios from 'axios';
       .then((response) => {
         this.orderStatuses = response.data.data
       });
-      this.date = this.formatDate(this.date);
+      
 
     },
     components: {
@@ -365,7 +365,6 @@ import axios from 'axios';
     },
     statusModel(val){
       this.statusObject = this.orderStatuses.filter((x) => x.status_name === this.statusModel);
-      console.log('NEW VAL', this.statusObject);
     },
   },
     methods: {
@@ -401,7 +400,6 @@ import axios from 'axios';
             }
             else{
               this.printError = false;
-              console.log("Order Response", response);
             }
         });
     },
@@ -429,7 +427,6 @@ import axios from 'axios';
       .then((response) => {
         this.orders = response.data.data;
         this.orders.reverse();
-        console.log("response 123: ", this.orders);
         // this.orders.forEach(x => {
         //     x.order_data = JSON.parse(x.order_data);
         // });
@@ -445,9 +442,6 @@ import axios from 'axios';
             }
         });
         this.filteredOrders = this.orders.filter((x) => !(x.status == 10 || x.status == 9) );
-        // this.filteredOrders = this.orders;
-        // this.orders.filter((x) => x.payment_method_id === '4')
-        console.log("orders data: ", this.filteredOrders);
         this.statusObject = {};
       });
       },
@@ -457,7 +451,6 @@ import axios from 'axios';
 
         const TOKEN = this.loggedUser.token;
         var bodyFormData = new FormData();
-        //bodyFormData.set("branch", this.branch);
         bodyFormData.set("status_key", this.status);
         bodyFormData.set("day", dateString);
 
@@ -473,7 +466,6 @@ import axios from 'axios';
           })
           .then((response) => {
             this.orders = response.data.data;
-            console.log("response 123: ", this.orders);
             // this.orders.forEach(x => {
             //     x.order_data = JSON.parse(x.order_data);
             // });
@@ -489,7 +481,6 @@ import axios from 'axios';
                 }
             });
             this.filteredOrders = this.orders;
-            console.log("orders data: ", this.filteredOrders);
           });
       },
         wasteOrder(){
@@ -497,10 +488,6 @@ import axios from 'axios';
           this.orderWaste = this.selectedOrder.order_data;
           this.orderWaste.items = this.selectedWaste;
 
-
-          //this.orderWaste.order_data.items = this.selectedWaste;
-
-          console.log('orderWaste: ', this.orderWaste);
 
           const TOKEN = this.loggedUser.token;
           var bodyFormData = new FormData();
@@ -635,8 +622,7 @@ import axios from 'axios';
                 //this.alertError = true;
                 this.errorText = "Order Voided";
               }
-            });
-
+          });
         },
         refundOrder(){
 
@@ -671,20 +657,19 @@ import axios from 'axios';
                 this.updateOrders();
               }
           });
-
         },
         re_open(order){
             console.log('Reopen order: ', order);
             localStorage.setItem("reopenItem", JSON.stringify(order));
-            this.$router.push({ path: 'pos'});
+            this.$router.push({ path: 'pos'}).catch(()=>{});
         },
         payOrder(order){
             console.log('Reopen order: ', order);
             localStorage.setItem("payItem", JSON.stringify(order));
-            this.$router.push({ path: 'pos'});
+            this.$router.push({ path: 'pos'}).catch(()=>{});
         },
         driverSingle(order){
-          this.$router.push({ name: 'driversingle', params: {orderProp: order}});
+          this.$router.push({ name: 'driversingle', params: {orderProp: order}}).catch(()=>{});
         },
         foobar(item){
             this.itemIndex = this.orders.indexOf(item);
@@ -712,12 +697,12 @@ import axios from 'axios';
             // console.log("STATUSOBJECT: ",this.statusObject);
             // console.log("Status Model: ", this.statusModel);
 
-
             // console.log("Selected Item: ", this.selectedOrder);
         },
         getTab(tab){
             if(tab.content === 'all') {
-              this.orders.filter((x) => x.status != 10)
+              this.filteredOrders = this.orders.filter((x) => x.status != 10)
+              // this.orders.filter((x) => x.status != 10)
             }
             else if(tab.content === 'unpaid') {
               this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4' && x.status <= '6' && x.status != 10);

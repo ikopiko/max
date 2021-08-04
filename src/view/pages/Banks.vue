@@ -22,7 +22,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <v-card v-for="safe in safes" :key="safe.id" @click="closeSafe()"
+                    <v-card v-for="(safe, index) in safes" :key="index" @click="closeSafe()"
                         class="mx-auto my-3" color="#BAE1BE" light max-width="200">
                         <v-card-title>
                             <span class="title font-weight-bold">{{ safe.amount }} GEL</span>
@@ -141,7 +141,7 @@
                         </tbody>
                     </table>
                     
-                    <v-card v-for="till in tills.current" :key="till.id"  
+                    <v-card v-for="(till, index) in tills.current" :key="index"  
                         class=" my-3 cols" color="#FE9A53" light max-width="250" @click="tillInfo(till)">
                         <v-card-title>
                             <span class="title font-weight-bold" v-if="Number(till.cash) + Number(till.glovo_cash) < 650">{{ (Number(till.cash) + Number(till.card) + Number(till.glovo_cash)).toFixed(2) }} Gel - {{ till.name }}</span>
@@ -163,7 +163,7 @@
                         </v-card-actions>
                     </v-card>
 
-                    <v-card v-for="till in tills.unclose" :key="till.id"  
+                    <v-card v-for="(till, index) in tills.unclose" :key="index"  
                         class=" my-3 cols" color="#FE3853" light max-width="250" @click="tillInfo(till)">
                         <v-card-title>
                             <span class="title font-weight-bold" v-if="Number(till.cash) + Number(till.glovo_cash) < 650">{{ (Number(till.cash) + Number(till.card) + Number(till.glovo_cash)).toFixed(2) }} Gel - {{ till.name }}</span>
@@ -199,7 +199,7 @@
                             </tr>
                         </tbody>
                     </table>
-                      <v-card v-for="drv in drivers" :key="drv.id" class="mx-auto my-3" color="#46BDF2" light max-width="250" @click="driverInfo(drv)">
+                      <v-card v-for="(drv, index) in drivers" :key="index" class="mx-auto my-3" color="#46BDF2" light max-width="250" @click="driverInfo(drv)">
                           <v-card-title>
                               <span class="title font-weight-bold" v-if="drv.amount < 200">{{ (Number(drv.amount) + Number(drv.card)).toFixed(2)  }}  - {{ drv.username }}</span>
                               <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ (Number(drv.amount) + Number(drv.card)).toFixed(2) }} </span>  - {{ drv.username }}</span>
@@ -295,7 +295,7 @@
                             </v-expand-transition>
                       </v-card>
                       
-                      <v-card v-for="drv in uncloseDrivers" :key="drv.id" class="mx-auto my-3" color="#EAE4D2" light max-width="250" @click="driverInfo(drv)">
+                      <v-card v-for="(drv, index) in uncloseDrivers" :key="index" class="mx-auto my-3" color="#EAE4D2" light max-width="250" @click="driverInfo(drv)">
                           <v-card-title>
                               <span class="title font-weight-bold">{{ drv.amount }}  - {{ drv.username }}</span>
                           </v-card-title>
@@ -664,8 +664,8 @@
             <v-row>
               <v-row>
                 <v-col
-                  v-for="bank in banks"
-                  :key="bank.id"
+                  v-for="(bank, index) in banks"
+                  :key="index"
                   cols="12"
                   sm="6"
                   md="4"
@@ -682,8 +682,8 @@
 
               <v-row class="my-5">
                 <v-col
-                  v-for="bank in banks"
-                  :key="bank.id"
+                  v-for="(bank, index) in banks"
+                  :key="index"
                   cols="12"
                   sm="6"
                   md="4"
@@ -1058,8 +1058,8 @@
                   dark      
                 >
                   <v-tab
-                      v-for="item in items"
-                      :key="item.tab"
+                      v-for="(item, index) in items"
+                      :key="index"
                       @click="getTab(item)"
                   >
                       {{ item.tab }}
@@ -1095,8 +1095,8 @@
                       </thead>
                       <tbody>
                         <tr
-                          v-for="item in detailedInfo"
-                          :key="item.id"
+                          v-for="(item, index) in detailedInfo"
+                          :key="index"
                         >
                           <td v-if="item.driver_id == 0">{{ item.pos_name }}</td>
                           <td v-if="item.pos_id == null">{{ item.username }}</td>
@@ -1141,8 +1141,8 @@
                       </thead>
                       <tbody>
                         <tr
-                          v-for="item in detailedInfo"
-                          :key="item.id"
+                          v-for="(item, index) in detailedInfo"
+                          :key="index"
                         >
                           <td>{{ item.name }}</td>
                           <td>{{ item.payment_method }}</td>
@@ -1184,8 +1184,8 @@
                       </thead>
                       <tbody>
                         <tr
-                          v-for="item in detailedInfo"
-                          :key="item.id"
+                          v-for="(item, index) in detailedInfo"
+                          :key="index"
                         >
                           <td>{{ item.payment }}</td>
                           <td>{{ item.amount }}</td>
@@ -1324,8 +1324,8 @@
                       </thead>
                       <tbody>
                         <tr
-                          v-for="item in detailedInfo"
-                          :key="item.id"
+                          v-for="(item, index) in detailedInfo"
+                          :key="index"
                         >
                           <td>{{ item.name }}</td>
                           <td>{{ item.action }}</td>
@@ -1492,10 +1492,10 @@ export default {
             || vm.$store.state.auth.user.data.role.toLowerCase() == "globalmanager"
             || vm.$store.state.auth.user.data.role.toLowerCase() == "branchmanager"
             || vm.$store.state.auth.user.data.role.toLowerCase() == "weiser") {
-         vm.$router.push({name: "banks"});
+         vm.$router.push({name: "banks"}).catch(()=>{});
        }
        else {
-         vm.$router.push({name: "dashboard"});
+         vm.$router.push({name: "dashboard"}).catch(()=>{});
        }
     });
   },

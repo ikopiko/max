@@ -68,7 +68,7 @@
             <div class="col-md-2 col-sm-12" >
               In Drivers
               <v-card v-for="driver in availableDrivers" :key="driver.id"
-                class="mx-auto my-3" :class="{ active : activeDriver == driver.id }" color="#46BDF2" light max-width="200" @click="selectDriver(driver)">
+                class="mx-auto my-3" :class="{ active : activeDriver == driver.id }" color="#46BDF2" light max-width="200" @click="selectDriver(driver)" @dblclick="double()">
                   <v-card-title class="title font-weight-bold">
                     {{ driver.username }}
                   </v-card-title>
@@ -119,7 +119,7 @@
                   ></v-text-field>
                   </template>
                   <v-date-picker
-                  v-model="date"
+                  v-model="driverDate"
                   @input="menu = false"
                   ></v-date-picker>
               </v-menu>
@@ -150,7 +150,7 @@
                         <td>{{ order.id }}</td>
                         <td>{{ order.order_data.customer.address }}</td>
                         <td>{{ order.order_data.customer.name }}</td>
-                        <td>{{ (Number(selectedItem.order_data.totalPrice) - Number(selectedItem.order_data.discPrice)).toFixed(2) }}</td>
+                        <td>{{ (Number(order.order_data.totalPrice) - Number(order.order_data.discPrice)).toFixed(2) }}</td>
                         </tr>
                     </tbody>
                     </template>
@@ -239,6 +239,183 @@
           </v-card>
         </v-dialog>
 
+        <v-dialog
+          v-model="editList"
+          width="600"
+        >
+          <v-card>
+
+            <v-card-text>
+              <v-menu
+                  v-model="menu"
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+              >
+                  <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                      v-model="driverDate"
+                      label="Select Date"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                  ></v-text-field>
+                  </template>
+                  <v-date-picker
+                  v-model="driverDate"
+                  @input="menu = false"
+                  ></v-date-picker>
+              </v-menu>
+              <v-simple-table>
+                    <template v-slot:default>
+                    <thead>
+                        <tr>
+                        <th class="text-left">
+                            Order ID
+                        </th>
+                        <th class="text-left">
+                            Address
+                        </th>
+                        <th class="text-left">
+                            Customer
+                        </th>
+                        <th class="text-left">
+                            Total
+                        </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                        v-for="order in editOrderList"
+                        :key="order.id"
+                        @click="editOrder(order)"
+                        >
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.order_data.customer.address }}</td>
+                        <td>{{ order.order_data.customer.name }}</td>
+                        <td>{{ (Number(order.order_data.totalPrice) - Number(order.order_data.discPrice)).toFixed(2) }}</td>
+                        </tr>
+                    </tbody>
+                    </template>
+                </v-simple-table>
+            </v-card-text>
+
+            <v-divider></v-divider>
+
+          </v-card>
+        </v-dialog>
+
+        <v-dialog
+          v-model="editDialog"
+          width="600"
+        >
+          <v-card>
+            <v-card-title class="headline grey lighten-2">
+               EDIT ORDER: {{ selectedItem.id }} 
+                <br>
+                Delivery Fee: {{ selectedItem.order_data.deliveryFee }}
+                <br>
+                Total : {{ selectedItem.order_data.totalPrice }}
+                 <br>
+                Total Due : {{ (Number(selectedItem.order_data.totalPrice) - Number(selectedItem.order_data.discPrice)).toFixed(2) }} 
+            </v-card-title>
+
+            <v-card-text>
+                {{ selectedItem.order_data.customer.name }}
+                <br>
+                {{ selectedItem.order_data.customer.address }}
+                <br>
+                {{ selectedItem.order_data.customer.phone }}
+                <br>
+                {{ selectedItem.order_data.comment2 }}
+              <v-simple-table>
+                <template v-slot:default>
+                <thead>
+                    <tr>
+                    <th class="text-left">
+                        QTY
+                    </th>
+                    <th class="text-left">
+                        Name
+                    </th>
+                    <th class="text-left">
+                        Total Price
+                    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                    v-for="item in selectedItem.order_data.items"
+                    :key="item.id"
+                    >
+                    <td style="font-size: 18px !important;">{{ item.qty }}</td>
+                    <td style="font-size: 18px !important;"> {{ item.size.toUpperCase() }} {{ item.name }}</td>
+                    <td style="font-size: 18px !important;">{{ item.totalPrice }}</td>
+                    </tr>
+                </tbody>
+                </template>
+            </v-simple-table>
+            </v-card-text>
+
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-spacer>EDIT PAYMENT TYPE</v-spacer>
+              <v-btn
+                v-if="!activateEdit"
+                class="mx-2"
+                large
+                text
+                @click="activateEdit = true"
+              >
+                EDIT PAYMENT METHOD
+              </v-btn>
+              <v-btn
+              v-if="activateEdit"
+                class="green mx-2"
+                large
+                text
+                @click="editItem('cash')"
+              >
+                Cash
+              </v-btn>
+              <v-btn
+                v-if="activateEdit"
+                class="blue mx-2"
+                large
+                text
+                @click="editItem('card')"
+              >
+                Card
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-bottom-sheet v-model="sheet">
+          <v-sheet
+            class="text-center"
+            height="200px"
+          >
+            <v-btn
+              class="mt-6"
+              text
+              color="red"
+              @click="sheet = !sheet"
+            >
+              close
+            </v-btn>
+            <div class="py-3">
+              <h1>
+                {{ errorText }}
+              </h1>
+            </div>
+          </v-sheet>
+        </v-bottom-sheet>
+        
     </v-container>
 </template>
 
@@ -253,6 +430,9 @@ export default {
   data() {
     return {
       menu: false,
+      sheet: false,
+      errorText: '',
+      activateEdit: false,
       driverDate: new Date(),
       date: new Date(),
       isOrders: false,
@@ -267,13 +447,15 @@ export default {
       activeRow: -1,
       loggedUser: {},
       activeDriver: -1,
+      editDialog: false,
+      editList: false,
       orders: [],
       deliveryOrders: [],
       dialog: false,
       singleSelect: true,
       loading: true,
       driverLoad: true,
-      selectedDriver: null,
+      selectedDriver: {},
       selectedOrder: {},
       selectedOrders: [],
       selectedDelivery: {},
@@ -288,12 +470,13 @@ export default {
       tab: 0,
       filteredOrders: [],
       filteredDriverOrders: [],
+      editOrderList: [],
       pageCount: 0,
       itemsPerPage: 5,
       items: [
             { tab: 'Finished Orders', content: 'finished' },
             { tab: 'On Delivery', content: 'ongoing' },
-            { tab: 'Pending', content: 'pending' },
+            { tab: 'Delivered', content: 'delivered' },
             ],
             headers: [
             {
@@ -334,10 +517,10 @@ export default {
             || vm.$store.state.auth.user.data.role.toLowerCase() == "courier" 
             || vm.$store.state.auth.user.data.role.toLowerCase() == "posaccess" 
             || vm.$store.state.auth.user.data.role.toLowerCase() == "driver") {
-         vm.$router.push({name: "driverdispatch"});
+         vm.$router.push({name: "driverdispatch"}).catch(()=>{});
        }
        else {
-         vm.$router.push({name: "dashboard"});
+         vm.$router.push({name: "dashboard"}).catch(()=>{});
        }
     });
   },
@@ -361,11 +544,16 @@ export default {
 
   },
   watch: {
-      date(val){
+      driverDate(val){
+        console.log(val);
         this.updateDriverOrders(val);
       },
   },
   methods: {
+    double(){
+      this.updateDriverOrders(this.driverDate);
+      this.editList = true;
+    },
     formatDate(date) {
           var d = new Date(date),
               month = '' + (d.getMonth() + 1),
@@ -379,6 +567,42 @@ export default {
 
           return [year, month, day].join('-');
       },
+    editItem(type){
+      var bodyFormData=new FormData();
+        bodyFormData.set("driver_id", this.selectedDriver.id);
+        bodyFormData.set("order_id", this.selectedItem.id);
+        bodyFormData.set("payment_method", type);
+        if(type == 'split'){
+          bodyFormData.set("split_cash", '20');
+          bodyFormData.set("split_card", '20');
+        }
+        else {
+          bodyFormData.set("split_cash", null);
+          bodyFormData.set("split_card", null);
+        }
+
+        const TOKEN = this.loggedUser.token;
+        axios.request({
+            method: 'post',
+            url: this.$hostname + 'orders/edit-order-for-driver',
+            headers: { 
+              'Authorization': 'Bearer '+TOKEN, 
+            },
+            data: bodyFormData,
+          })
+          .then(response => {
+            console.log('Edti Order: ', response);
+            if(response.data.is_error){
+                this.sheet = true;
+                this.errorText = response.data.data;
+              }
+              else{
+                this.sheet = true;
+                 this.errorText = response.data.data;
+              }
+            
+        });
+    },
     payOrder(type){
         
         this.selectedOrder = this.selectedItem.order_data;
@@ -467,6 +691,7 @@ export default {
                     }
                 });
                   this.filteredDriverOrders = this.driverOrders.filter((x) => x.status == '6');
+                  this.editOrderList = this.driverOrders.filter((x) => x.status == '7');
                   this.isOrders = true;
                 }
                 else {
@@ -488,7 +713,11 @@ export default {
         this.selectedItem = item;
         //this.driverOrderDialog = false;
         this.selectedItemDialog = true;
-
+    },
+    editOrder(item){
+        this.selectedItem = item;
+        //this.driverOrderDialog = false;
+        this.editDialog = true;
     },
     getOrders(){
       const TOKEN = this.loggedUser.token;

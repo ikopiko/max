@@ -84,7 +84,7 @@
             </v-alert>
             <div class="col-12" style="margin: auto">
                 <ul id="display">
-                    <li v-for="num in pinSync" :key="num">{{ num }}</li>
+                    <li v-for="(num, index) in pinSync" :key="index">{{ num }}</li>
                     <div class="clear"></div>
                 </ul>
             </div>
@@ -200,58 +200,41 @@ export default {
             '-',
             '-',
             '-'],
-        }
-
-        ;
-    }
-
-    ,
+        };
+    },
     validations: {
         form: {
             email: {
                 required
-            }
-
-            ,
+            },
             password: {
                 required,
                 minLength: minLength(3)
             }
         }
-    }
-
-    ,
+    },
     mounted() {
         window.addEventListener("keypress", e=> {
-                this.logKey(e);
+            this.logKey(e);
         });
-    }
-
-    ,
+    },
     methods: {
         validateState(name) {
             const {
                 $dirty,
                 $error
-            }
-
-            =this.$v.form[name];
+            } = this.$v.form[name];
             return $dirty ? !$error : null;
-        }
-
-        ,
+        },
         resetForm() {
             this.form= {
                 email: null,
                     password: null
-            }
-
-            ;
+            };
 
             this.$nextTick(()=> {
                     this.$v.$reset();
                 }
-
             );
         },
         onSubmit() {
@@ -260,7 +243,6 @@ export default {
             if (this.$v.form.$anyError) {
                 return;
             }
-
             const username=this.$v.form.email.$model;
             const password=this.$v.form.password.$model;
 
@@ -278,14 +260,13 @@ export default {
                     this.$store.dispatch(LOGIN, {
                             username, password
                         }
-
                     ) // go to which page after successfully login
 
                     .then(()=> this.$router.push( {
                                 name: "dashboard"
                             }
 
-                        ));
+                        )).catch(()=>{});
 
                     submitButton.classList.remove("spinner",
                         "spinner-light",
@@ -309,27 +290,18 @@ export default {
 
             // dummy delay
             setTimeout(()=> {
-
                     // send login request
                     this.$store.dispatch(LOGIN, {
                             pin,
                             mac
                         }
-
                     ) // go to which page after successfully login
-
                     .then(()=> this.$router.push( {
-                                name: "dashboard"
-                            }
-
-                        ));
-
-                }
-
-                , 100);
-        }
-
-        ,
+                            name: "dashboard"
+                        }
+                    )).catch(()=>{});
+            }, 100);
+        },
 
         pinChar(char) {
             var loggedUser = this.$store.state.auth.user;
@@ -341,11 +313,9 @@ export default {
                     '-'];
                     this.enteredPin='';
                 }
-
                 else if(char==='enter') {
                     this.login(this.enteredPin);
                 }
-
                 else {
                     if(this.enteredPin.length === 3) {
                         var index=this.pinDecon.indexOf('-');
@@ -370,7 +340,6 @@ export default {
         },
 
         login(pin) {
-            
             this.pinError = true;
             // var mac = 'd4:c9:ef:d5:70:8f';
             var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
@@ -385,15 +354,12 @@ export default {
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
             bodyFormData.set("mac", mac);
-
-            axios.request( {
+            
+            axios.request({
                     method: "post",
                     url: this.$authHostName,
                     data: bodyFormData,
-                }
-
-            ) .then((response)=> {
-                
+            }).then((response) => {  
                     if(!response.data.is_error) {
                         console.log('Success Login -- ', response);
                         localStorage.setItem("loggedUserData", JSON.stringify(response.data.data));
@@ -406,9 +372,7 @@ export default {
                         console.log('Login Failed', response);
                         this.pinError = true;
                     }
-
                 }
-
             );
         },
         
@@ -418,7 +382,7 @@ export default {
             var charCode=(e.which) ? e.which: e.keyCode;
 
             if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !==46) {
-                evt.preventDefault();
+                e.preventDefault();
             }
 
             else {
