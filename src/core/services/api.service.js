@@ -14,11 +14,11 @@ const ApiService = {
 
       // "https://api.ronnys.info/rest/web/index.php?r=";  // TEST
 
-      "http://188.169.16.186:8082/ronny/rest/web/index.php?r=";  // DIGOMI OUT
+      // "http://188.169.16.186:8082/ronny/rest/web/index.php?r=";  // DIGOMI OUT
       
       // "http://178.134.12.106:8082/ronny/rest/web/index.php?r=";  // SABURTALO OUT
 
-      // "http://94.43.92.102:8082/ronny/rest/web/index.php?r=";  // VAKE OUT
+      "http://94.43.92.102:8082/ronny/rest/web/index.php?r=";  // VAKE OUT
       
       // "http://178.134.47.222:8082/ronny/rest/web/index.php/?r=";  // GLDANI OUT
 

@@ -55,7 +55,7 @@
                         <v-tab-item v-for="(item, index) in items" :key="index">
                             <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
 
-                            <v-data-table v-model="selected" :search="search" :headers="headers" :items="filteredOrders" :items-per-page="itemsPerPage" item-key="id" show-select class="elevation-1" @page-count="pageCount = $event">
+                            <v-data-table v-model="selected" :search="search" :headers="headers" :items="filteredOrders" :items-per-page="itemsPerPage" item-key="order_id"  class="elevation-1" @page-count="pageCount = $event">
                                 <template v-slot:item="row">
                                     <tr @click="onButtonClick(row.item)">
                                         <td>{{Number(row.item.id)}}</td>
@@ -65,9 +65,9 @@
                                         <td>{{row.item.order_data.adress}}</td>
                                         <td>{{row.item.order_data.customer.name}}</td>
                                         <td>{{row.item.order_data.customer.phone}}</td>
-
                                         <!-- <td>{{ Number(row.item.order_data.discPrice).toFixed(2) }}</td> -->
                                         <td>{{ (Number(row.item.order_data.totalPrice) - Number(row.item.order_data.discPrice)).toFixed(2) }}</td>
+                                        <td>{{ row.item.createTime }}</td>
                                         <!-- <td v-if="!row.item.order_data.discountAmount">{{ (Number(row.item.order_data.totalPrice) - (Number(row.item.order_data.discPrice)/ 100 * Number(row.item.order_data.discount))).toFixed(2) }}</td> -->
                                     </tr>
                                 </template>
@@ -236,6 +236,7 @@ import axios from 'axios';
           { tab: 'Pay Later', content: 'later'},
         ],
         headers: [
+          { text: "ID", value: "id" },
           { text: "Source", value: "source" },
           { text: "Glovo/Wolt #", value: "order_data.customer.code" },
           { text: "Payment Type", value: "order_data.paymentType" },
@@ -243,6 +244,7 @@ import axios from 'axios';
           { text: "Customer Name", value: "order_data.customer.name" },
           { text: "Customer Phone", value: "order_data.customer.phone" },
           { text: "Total Due", value: "order_data.totalPrice" },
+          { text: "Time", value: "createTime" },
         ],
       }
     },
@@ -295,9 +297,22 @@ import axios from 'axios';
       this.date = this.formatDate(this.date);
       this.loggedUser = this.$store.state.auth.user.data;
       this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
+      const TOKEN = this.loggedUser.token;
+
+       axios
+      .request({
+        method: "post",
+        url:
+          this.$hostname + "poses/order-statuses",
+        headers: {
+          Authorization: "Bearer " + TOKEN,
+        },
+      })
+      .then((response) => {
+        this.orderStatuses = response.data.data
+      });
 
         var dateString = this.date + ' to '+ this.date;
-        const TOKEN = this.loggedUser.token;
         var bodyFormData = new FormData();
         //bodyFormData.set("branch", this.branch);
         bodyFormData.set("status_key", this.status);
@@ -316,7 +331,6 @@ import axios from 'axios';
       .then((response) => {
         this.orders = response.data.data;
         this.orders.reverse();
-        console.log("response 123: ", this.orders);
         // this.orders.forEach(x => {
         //     x.order_data = JSON.parse(x.order_data);
         // });
@@ -330,30 +344,28 @@ import axios from 'axios';
             else {
               x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
             }
+            var date = new Date(x.created_at);
+            var hours = date.getHours().toString();
+            var minutes = date.getMinutes().toString();
+            
+            if (minutes.length < 2) 
+              minutes = '0' + minutes;
+            
+            x.createTime = hours + ":" + minutes;
+
         });
-        // this.filteredOrders = this.orders.filter((x) => !(x.status == 10 || x.status == 9) );
-        this.filteredOrders = this.orders.filter((x) => x.status != 10);
-        this.filteredOrders.forEach((y) => {
-          console.log('asdasdasd: ',y.status);
-        });
+        this.filteredOrders = this.orders.filter((x) => !(x.status == 10 || x.status == 9) );
+        // this.filteredOrders = this.orders.filter((x) => x.status != 10);
+        // this.filteredOrders.forEach((y) => {
+          // console.log('asdasdasd: ',y.status);
+          // var date = new Date(y.created_at);
+          // y.createTime = date.getHours() + ":" + date.getMinutes();
+          // alert(y.createTime);
+        // });
         // this.filteredOrders = this.orders;
         // this.orders.filter((x) => x.payment_method_id === '4')
         console.log("orders data: ", this.filteredOrders);
       });
-
-      axios
-      .request({
-        method: "post",
-        url:
-          this.$hostname + "poses/order-statuses",
-        headers: {
-          Authorization: "Bearer " + TOKEN,
-        },
-      })
-      .then((response) => {
-        this.orderStatuses = response.data.data
-      });
-      
 
     },
     components: {
@@ -390,6 +402,7 @@ import axios from 'axios';
           method: "post",
           url:
             this.$hostname + "orders/print",
+            // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },

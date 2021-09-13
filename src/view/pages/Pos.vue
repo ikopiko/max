@@ -2878,9 +2878,7 @@ export default {
               }
 
             return true;
-          }
-
-          
+          }    
       },
 
     categorySelect(id) {
@@ -5456,6 +5454,8 @@ export default {
           method: "post",
           url:
             this.$hostname + "orders/print",
+            // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
+            
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -5481,6 +5481,8 @@ export default {
           method: "post",
           url:
             this.$hostname + "orders/print",
+            // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
+
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -5833,23 +5835,22 @@ export default {
       
     },
     takeoutCustomer(){
-      if(this.curentCustomer.phone === '')
-      {
-        alert('Phone field is empty!');
-      }
-      else {
+      // if(this.curentCustomer.phone === '')
+      // {
+      //   alert('Phone field is empty!');
+      // }
+      // else {
         this.order.customer = this.curentCustomer;
         this.order.deliveryType = "Take_out";
         this.order.deliveryMethod = "Take Out";
-        console.log('take out customer : ', this.order.customer);
         this.takeOutModal = false;
-        if(this.activeInvoice){
-          this.paymentConfirm();
-        }
-        else {
-          this.payLater();
-        }
-      }
+        // if(this.activeInvoice){
+        //   this.paymentConfirm();
+        // }
+        // else {
+        //   this.payLater();
+        // }
+      // }
       
     },
    deliveryCustomer(){

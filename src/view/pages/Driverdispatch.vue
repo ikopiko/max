@@ -80,7 +80,7 @@
               <v-card v-for="driver in outDrivers" :key="driver.id" 
                 class="mx-auto my-3" :class="{ active : activeDriver == driver.id }" color="#A6A2B0" light max-width="200" @click="selectDriverDialog(driver)">
                   <v-card-title class="title font-weight-bold">
-                    {{ driver.username }}
+                    {{ driver.username }} - {{ driver.minutesOut }} Min
                   </v-card-title>
                   <v-card-title> {{ driver.amount }} GEL </v-card-title>
               </v-card>
@@ -539,7 +539,21 @@ export default {
       return this.driverList.filter(x => x.in_way === false);
     },
     outDrivers(){
-      return this.driverList.filter(x => x.in_way === true);
+      var driversOut =  this.driverList.filter(x => x.in_way === true);
+
+      // var driversOut = []; 
+      this.driverList.forEach((x) => {
+        if(x.in_way === true){
+          var driverTime = new Date(x.start_delivery);
+          var timeNow = new Date;
+
+          var diff = timeNow.getTime() - driverTime.getTime(); 
+
+          x.minutesOut = Math.floor(diff / 60000);
+        }
+      });
+
+      return driversOut;
     }
 
   },
@@ -567,6 +581,21 @@ export default {
 
           return [year, month, day].join('-');
       },
+    // formatDateTime(date) {
+    //       var d = new Date(date),
+    //           month = '' + (d.getMonth() + 1),
+    //           day = '' + d.getDate(),
+    //           year = d.getFullYear();
+    //           hours = d.getHours();
+    //           minutes = d.getMinutes();
+
+    //       if (month.length < 2) 
+    //           month = '0' + month;
+    //       if (day.length < 2) 
+    //           day = '0' + day;
+
+    //       return [year, month, day, hours, minutes].join('-');
+    //   },
     editItem(type){
       var bodyFormData=new FormData();
         bodyFormData.set("driver_id", this.selectedDriver.id);
