@@ -14,14 +14,14 @@
                     <li>
                         <orderList :orderProp="order" v-if="showOrderComponent" />
                     </li>
-                    <li class="selecti">
+                    <li class="selecti" v-if="!limited">
                         <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Change Status"></v-select>
                     </li>
                 </ul>
                 <ul class="bottomInner">
                     <li>
                         <!-- <v-btn v-if="statusModel != null" @click="updateOrder()">Change: {{ statusObject[0].status_name }}</v-btn> -->
-                        <v-btn v-if="showOrderComponent " @click="updateOrder()">Change </v-btn>
+                        <v-btn v-if="showOrderComponent && !limited" @click="updateOrder()">Change </v-btn>
                     </li>
                 </ul>
                 <ul class="bottomInner">
@@ -195,6 +195,7 @@ import axios from 'axios';
         filteredOrders: [],
         order: {},
         lastOrder: [],
+        limited: false,
         orderStatuses: [],
         selectedOrder: [],
         selectedOrderItems: [],
@@ -298,6 +299,10 @@ import axios from 'axios';
       this.loggedUser = this.$store.state.auth.user.data;
       this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
       const TOKEN = this.loggedUser.token;
+
+      if(this.loggedUser.role.toLowerCase() == "posaccess" || this.loggedUser.role.toLowerCase() == "cashier" || this.loggedUser.role.toLowerCase() == "courier" ){
+        this.limited = true;
+      }
 
        axios
       .request({

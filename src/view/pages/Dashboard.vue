@@ -233,7 +233,7 @@ export default {
   mounted() {
     this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
     console.log("Fullll", this.loggedUserFull);
-    this.loggedUser = this.$store.state.auth.user.data;;
+    this.loggedUser = this.$store.state.auth.user.data;
 
     if(this.loggedUser.role.toLowerCase() == "admin"){
       this.allView = true;
@@ -266,10 +266,12 @@ export default {
     }
     else if(this.loggedUser.role.toLowerCase() == "driver") {
       this.driverView = true;
+      this.ordersView = true;
       this.timeView = true;
     }
     else if(this.loggedUser.role.toLowerCase() == "courier") {
       this.driverView = true;
+      this.ordersView = true;
       this.timeView = true;
     }
     else if(this.loggedUser.role.toLowerCase() == "cook") {

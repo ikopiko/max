@@ -342,13 +342,13 @@ export default {
         login(pin) {
             this.pinError = true;
             // var mac = 'd4:c9:ef:d5:70:8f';
-            // var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
+            var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
             // var mac = 'ec:b1:d7:6e:01:3r';  // POS 3
             
             // var mac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
 
             // var mac = 'd4:c9:ef:dc:4c:a5';  // VAKE 1
-            var mac = 'f0:92:1c:ea:90:2e';  // VAKE 2
+            // var mac = 'f0:92:1c:ea:90:2e';  // VAKE 2
 
             // var mac = 'e8:39:35:5d:a9:17';  // GLDANI 1
             

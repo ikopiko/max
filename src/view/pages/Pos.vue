@@ -388,7 +388,17 @@
             <!-- UX Change -->
             <div class="col-12 right-2" v-if="calculatorModal">
                 <div class="row" v-if="!discountOrder || !discountItem">
-                    <div class="col w-3 gray">
+                    <div class="col w-3 gray" v-if="!discountActiveVar">
+                        <div>
+                            <h4>Discount:</h4>
+                        </div>
+                        <div>
+                            <h4 id="total_price">
+                                -{{ totalDisc.toFixed(2) }} {{ order.discountName }}
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="col w-3 red" v-if="discountActiveVar">
                         <div>
                             <h4>Discount:</h4>
                         </div>
@@ -429,7 +439,7 @@
                     </div>
                 </div>
 
-                <div class="row" v-if="discountOrder || discountItem">
+                <!-- <div class="row" v-if="discountOrder || discountItem">
                     <div class="col w-3 gray">
                         <div>
                             <h4>Discount:</h4>
@@ -438,7 +448,7 @@
                             <h4 id="total_price">{{ cashInput }}</h4>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row my-1">
                     <div class="col-2 calcBtn blue" v-bind:class="{ active: futureActive }" @click="futureModal = true">
@@ -489,8 +499,8 @@
                     <!-- <div class="col-2 calcBtn blue" @click="studentDisc()">
                         Student
                     </div> -->
-                    <div class="col-2 calcBtn blue">
-                        &nbsp;
+                    <div class="col-2 calcBtn blue" @click="checkManager()">
+                        Manager PIN
                     </div>
                     <div class="col-2 calcBtn" @click="calcInput('1')">1</div>
                     <div class="col-2 calcBtn" @click="calcInput('2')">2</div>
@@ -527,7 +537,7 @@
                     </div>
                 </div>
                 <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="changeDisc()">CRM DISC</div>
+                    <div class="col-2 calcBtn blue" @click="checkManager()">CRM DISC</div>
                     <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">
                         PAY {{ Number(totalPrice).toFixed(2) }}
                     </div>
@@ -1835,7 +1845,7 @@
             <v-btn
               color="primary"
               text
-              @click="applyManager()"
+              @click="checkManager()"
             >
               Apply Discount
             </v-btn>
@@ -1843,6 +1853,78 @@
         </v-card>
       </v-dialog>
       <!-- End of manager modal -->
+
+      <!-- Start of manager PIN modal -->
+        <v-dialog
+            v-model="managerPin"
+            max-width="500px"
+          >
+            <v-card>
+              
+              <div class="container" style="width: 400px;" >
+            
+            <div class="row">
+                <v-alert dense type="info" v-model="pinError" dismissible>
+                    The Pin You Entered is Not Correct
+                </v-alert>
+
+                <div class="col-12" style="margin: auto">
+                    <ul id="display">
+                        <li v-for="(num, index) in pinSync" :key="index">{{ num }}</li>
+                        <div class="clear"></div>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pinBtn" @click="pinChar('1')">
+                    1
+                </div>
+                <div class="col pinBtn" @click="pinChar('2')">
+                    2
+                </div>
+                <div class="col pinBtn" @click="pinChar('3')">
+                    3
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pinBtn" @click="pinChar('4')">
+                    4
+                </div>
+                <div class="col pinBtn" @click="pinChar('5')">
+                    5
+                </div>
+                <div class="col pinBtn" @click="pinChar('6')">
+                    6
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pinBtn" @click="pinChar('7')">
+                    7
+                </div>
+                <div class="col pinBtn" @click="pinChar('8')">
+                    8
+                </div>
+                <div class="col pinBtn" @click="pinChar('9')">
+                    9
+                </div>
+            </div>
+            <div class="row">
+                <div class="col pinBtn" @click="pinChar('clear')">
+                    C
+                </div>
+                <div class="col pinBtn" @click="pinChar('0')">
+                    0
+                </div>
+                <div class="col pinBtn green" @click="pinChar('enter')">
+                    E
+                </div>
+            </div>
+        </div>
+        
+        </v-card>
+      </v-dialog>
+      <!-- End of manager PIN modal -->
+
       <!-- Start of split modal -->
       <v-dialog
         v-model="splitModal"
@@ -1868,7 +1950,24 @@
         </v-card>
       </v-dialog>
       <!-- End of split modal -->
-
+      <v-bottom-sheet v-model="discountActive">
+        <v-sheet
+          class="text-center"
+          height="200px"
+        >
+          <v-btn
+            class="mt-6"
+            text
+            color="red"
+            @click="discountActive = !discountActive"
+          >
+            close
+          </v-btn>
+          <div class="py-3">
+            Discount is available! Please Enter manager PIN!
+          </div>
+        </v-sheet>
+      </v-bottom-sheet>
 </div>
 </template>
 <script>
@@ -1916,6 +2015,13 @@ export default {
     },
   data() {
     return {
+      discountActive: false,
+      discountActiveVar: false,
+      activeDiscType: "",
+      managerPin: false,
+      enteredPin: '',
+      pinError: false,
+      pinDecon: ['-','-','-','-'],
       addressList: [],
       isReopen: false,
       fullOrder: [],
@@ -2238,6 +2344,9 @@ export default {
   },
 
   mounted() {
+    window.addEventListener("keypress", e=> {
+        this.logKey(e);
+    });
     this.date = this.formatDate(this.date);
     this.dateCrm = this.formatDate(this.dateCrm);
 
@@ -2314,6 +2423,7 @@ export default {
         this.fullOrder = fooOrder;
         this.order = fooOrder.order_data;
         this.isReopen = true;
+        this.itemIndex = this.order.items.length -1;
         // alert(this.order.paymentType);
         if(this.order.paymentType == "invoice"){
           // alert("invoice");
@@ -2377,6 +2487,9 @@ export default {
     SticksIngredients
   },
   computed: {
+    pinSync() {
+      return this.pinDecon;
+    },
     totalNet: {
       cache: false,
       get() {
@@ -2526,7 +2639,6 @@ export default {
       return mapping;
     },
     ingredientComponent() {
-
       if(this.wholePizzaPart === 1) {
         this.ingProduct = this.pizza;
         this.ingDefToppings = this.pizza.half1.defaultToppings;
@@ -2576,7 +2688,6 @@ export default {
         this.ingHalfPizzaPart = this.halfPizzaPart;
         return 'HPA';
       }
-
     },
   },
   watch: {
@@ -2589,7 +2700,8 @@ export default {
       curentCustomer(customer) {
         deep: true,
 
-        this.changeDisc();
+        //this.changeDisc();
+        this.checkDisc();
         this.changeGender();
       },
       searchResults(val){
@@ -2610,19 +2722,100 @@ export default {
       },
     },
   methods: {
+    logKey(e) {
+      if(this.managerPin){
+        e=e || window.event;
+        var charCode=(e.which) ? e.which: e.keyCode;
+
+        if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !==46) {
+          e.preventDefault();
+        }
+
+        else {
+          return this.pinChar(e.key);
+        }
+      }
+    },
+    pinChar(char) {
+      if(char==='clear') {
+        this.pinDecon=['-','-','-','-'];
+        this.enteredPin='';
+      }
+      else if(char==='enter') {
+        if(this.managerModal){
+          this.applyManager(this.enteredPin)
+        }
+        else {
+          this.checkManager(this.enteredPin);
+        }
+      }
+      else {
+        if(this.enteredPin.length === 3) {
+          var index=this.pinDecon.indexOf('-');
+          this.pinDecon[index]=char;
+          this.enteredPin=this.enteredPin+char;
+          if(this.managerModal){
+            this.applyManager(this.enteredPin)
+          }
+          else {
+            this.checkManager(this.enteredPin);
+          }
+          this.pinDecon=['-',
+          '-',
+          '-',
+          '-'];
+          this.enteredPin='';
+        }
+        else {
+            var index=this.pinDecon.indexOf('-');
+            this.pinDecon[index]=char;
+            this.enteredPin=this.enteredPin+char;
+            this.$forceUpdate();
+        }
+      }
+    },
+    checkManager(pin){
+      this.managerPin = true;
+
+      const TOKEN = localStorage.getItem("TOKEN");
+      var bodyFormData = new FormData();
+      bodyFormData.set("pin", pin);
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "manager/check-pin",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormData,
+        })
+        .then((response) => {
+            console.log('MANAGER RESPONSE: ', response);
+
+            if (response.data.data == true)
+            {
+              this.changeDisc();
+              this.managerPin = false;
+              this.discountActiveVar = false;
+              return true;
+            }
+            else{
+              return false;
+            }
+        });
+    },
     formatDate(date) {
-          var d = new Date(date),
-              month = '' + (d.getMonth() + 1),
-              day = '' + d.getDate(),
-              year = d.getFullYear();
-
-          if (month.length < 2) 
-              month = '0' + month;
-          if (day.length < 2) 
-              day = '0' + day;
-
-          return [year, month, day].join('-');
-      },
+      var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+      if (month.length < 2) 
+        month = '0' + month;
+      if (day.length < 2) 
+        day = '0' + day;
+      return [year, month, day].join('-');
+    },
     checkNumber(n) { 
       return !isNaN(parseFloat(n)) && !isNaN(n - 0) 
     },
@@ -2639,12 +2832,41 @@ export default {
     changeDisc(){
       if(this.curentCustomer.discount == 'Diplomat'){
         this.diplomatDisc();
+        this.discountActive = false;
       } else if(this.curentCustomer.discount == 'Student'){
         this.studentDisc();
+        this.discountActive = false;
       } else if(this.curentCustomer.discount == 'Team'){
         this.employeeDisc();
+        this.discountActive = false;
       } else if(this.curentCustomer.discount == 'Corporate'){
         this.corporateDisc();
+        this.discountActive = false;
+      } else if(this.curentCustomer.discount == ''){
+        this.noDisc();
+      }
+    },
+    checkDisc(){
+      if(this.curentCustomer.discount == 'Diplomat'){
+        this.discountActive = true;
+        this.discountActiveVar = true;
+        this.activeDiscType = 'Diplomat';
+        this.order.discountName = 'Diplomat';
+      } else if(this.curentCustomer.discount == 'Student'){
+        this.discountActive = true;
+        this.discountActiveVar = true;
+        this.activeDiscType = 'Student';
+        this.order.discountName = 'Student';
+      } else if(this.curentCustomer.discount == 'Team'){
+        this.discountActive = true;
+        this.discountActiveVar = true;
+        this.activeDiscType = 'Team';
+        this.order.discountName = 'Team';
+      } else if(this.curentCustomer.discount == 'Corporate'){
+        this.discountActive = true;
+        this.discountActiveVar = true;
+        this.activeDiscType = 'Corporate';
+        this.order.discountName = 'Corporate';
       } else if(this.curentCustomer.discount == ''){
         this.noDisc();
       }
@@ -2947,7 +3169,6 @@ export default {
           this.selectedProducts.push(product);
           this.itemIndex++;
 
-          console.log("Half Pizza array: ", this.customPizza);
         } else if (this.isHalfPizza == "yes" && this.halfPizzaCounter == 2) {
           this.customPizza.half2.defaultToppings = this.getRecipe(product);
           this.customPizza.name = this.customPizza.name + "/" + product.name;
@@ -2962,7 +3183,7 @@ export default {
           this.showProducts = false;
           this.showIngredients = true;
           this.order.items.push(this.customPizza);
-          console.log("Half Pizza array: ", this.customPizza);
+          this.itemIndex++;
 
           this.halfPizza == "no";
           this.countTotalPrice();
@@ -2985,11 +3206,9 @@ export default {
           //this.pizza.defaultToppings = this.getRecipe(product);
           this.pizza.half1.defaultToppings = this.pizza.defaultToppings;
           this.pizza.half2.defaultToppings = this.pizza.defaultToppings;
-          console.log('PIZZA HALF 1: ', this.getRecipe(product));
           this.pizza.name = product.name;
           this.pizza.price = product.priceBySizes.m;
           this.pizza.priceBySizes = product.priceBySizes;
-          console.log("Unserialized price array: ", product.price);
           this.pizza.totalPrice = this.pizza.price;
           this.pizza.custom = "no";
           this.pizza.qty = this.globalQuantity;
@@ -3006,9 +3225,7 @@ export default {
           this.selectedProducts.push(product);
           this.showProducts = false;
           this.showIngredients = true;
-          console.log("Pizza array: ", this.pizza);
           this.countTotalPrice();
-
         }
       } 
       else if (product.category_name == "Sticks"){
@@ -3016,42 +3233,39 @@ export default {
             if(this.isHalfPizza == "yes"){
               alert('Selected Product is not pizza');
             } else {
-
-                let matched = false;
-                if(!matched){
-                    this.sticks= {
-                            name: "",
-                            price: 0,
-                            totalPrice: 0,
-                            custom: "sticks",
-                            size: 'original',
-                            defaultToppings: [],
-                            toppings: [],
-                            qty: 0,
-                        },                
-                    this.sticks.name = product.name;
-                    this.sticks.qty = this.globalQuantity;
-                    this.sticks.custom = "sticks";
-                    console.log('recipe: ', this.getRecipe(product));
-                    this.sticks.defaultToppings = this.getRecipe(product);
-                    this.isSticks = true;
-                    this.sticks.id = product.id;
-                    this.sticks.price = parseFloat(product.price);
-                    this.sticks.totalPrice = product.price;
-                    this.sticks.isSelected = false;
-                    this.selectedProducts.push(product);
-                    this.itemIndex++;
-                    this.order.items.push(this.sticks);
-                    this.showProducts = false;
-                    this.showIngredients = true;
-                    }
+              let matched = false;
+              if(!matched){
+                  this.sticks= {
+                          name: "",
+                          price: 0,
+                          totalPrice: 0,
+                          custom: "sticks",
+                          size: 'original',
+                          defaultToppings: [],
+                          toppings: [],
+                          qty: 0,
+                      },                
+                  this.sticks.name = product.name;
+                  this.sticks.qty = this.globalQuantity;
+                  this.sticks.custom = "sticks";
+                  console.log('recipe: ', this.getRecipe(product));
+                  this.sticks.defaultToppings = this.getRecipe(product);
+                  this.isSticks = true;
+                  this.sticks.id = product.id;
+                  this.sticks.price = parseFloat(product.price);
+                  this.sticks.totalPrice = product.price;
+                  this.sticks.isSelected = false;
+                  this.selectedProducts.push(product);
+                  this.itemIndex++;
+                  this.order.items.push(this.sticks);
+                  this.showProducts = false;
+                  this.showIngredients = true;
+                }
             }
       }
       else {
         let matched = false;
-            
            this.order.items.forEach((i) => {
-
             if(parseInt(i.id) === parseInt(product.id ) && product.category_id !== 3){
                 i.qty +=1;
                 matched = true;
@@ -3071,7 +3285,8 @@ export default {
         localStorage.setItem("items", JSON.stringify(this.order));
         console.log("Order Array: ", this.order);
         }
-        
+        console.log("Item Index: ",this.itemIndex);
+        // alert(this.itemIndex);
         this.$forceUpdate();
     },
 
@@ -3615,7 +3830,6 @@ export default {
         this.pizza.crust = crust;
       }
 
-      console.log("Pizza array: ", this.pizza);
     },
     addSauce(sauce) {
       if(sauce === 'sauce'){
@@ -3656,9 +3870,10 @@ export default {
         this.pizza.sauce = sauce;
       }
       this.$forceUpdate();
-      console.log("Pizza array: ", this.pizza);
     },
     addSize(size) {
+      // alert(this.itemIndex);
+      this.$forceUpdate();
       if (this.isHalfPizza == "yes") {
         this.changeToppingPrice(size);
         this.customPizza.size = size;
@@ -3752,7 +3967,6 @@ export default {
       }
 
       this.countTotalPrice();
-      console.log("Pizza array: ", this.pizza);
     },
 
     changeToppingPrice(size){
@@ -5692,13 +5906,67 @@ export default {
         this.order.discountName = 'Corporate';
     },
     managerDisc(){
-      this.managerModal = true;
+      // alert(this.checkManager());
+      // if(this.checkManager()){
+      //   this.managerModal = true;
+      // }
+      // else{
+      //   alert('Enter Manager Pin');
+      // }
+      this.managerModal = true; 
     },
-    applyManager(){
+    applyManager(pin){
       if(this.managerComment == ''){
         alert('Manager comment is required!');
       } 
       else{
+        this.managerModal = false;
+        this.managerPin = true;
+        console.log("Check Returns: ", this.checkManager());
+        const TOKEN = localStorage.getItem("TOKEN");
+        var bodyFormData = new FormData();
+        bodyFormData.set("pin", pin);
+        axios
+          .request({
+            method: "post",
+            url:
+              this.$hostname + "manager/check-pin",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: bodyFormData,
+          })
+          .then((response) => {
+              console.log('MANAGER RESPONSE: ', response);
+
+              if (response.data.data == true)
+              {
+                this.discountActiveVar = false;
+                if(this.managerPercent != ''){
+                this.order.discount = this.managerPercent;
+                this.order.managerComment = this.managerComment;
+                this.order.discountName = 'Manager';
+                this.order.discountAmount = false;
+                this.managerPercentVar = true;
+                this.managerModal = false;
+                this.managerPin = false;
+              } else if(this.managerAmount != '') {
+                this.order.discount = this.managerAmount;
+                this.order.managerComment = this.managerComment;
+                this.order.discountName = 'Manager';
+                this.order.discountAmount = true;
+                this.managerAmountVar = true;
+                this.managerModal = false;
+                this.managerPin = false;
+              } else if(this.managerAmount == '' && this.managerPercent == ''){
+                alert('No Discount Selected');
+              }
+              }
+              else{
+                alert('Pin is not correct!');
+              }
+
+          });
           if(this.managerPercent != ''){
             this.order.discount = this.managerPercent;
             this.order.managerComment = this.managerComment;
@@ -5940,3 +6208,68 @@ export default {
   },
 };
 </script>
+<style>
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+#wrap {
+    position: relative;
+    margin-left: 50px;
+}
+
+#display {
+    position: relative;
+    top: -10px;
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #00D881;
+}
+
+#numpad {
+    position: absolute;
+}
+
+#display li {
+    display: inline-block;
+    font-family: monospace;
+    font-size: 200%;
+    padding: 10px 24px;
+    background: #E6BC3B;
+    color: black;
+    margin-right: 1px;
+}
+
+#numpad li {
+    float: left;
+    padding: 13px 50px;
+    background: #00D881;
+    color: black;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.numChar {
+    font-family: monospace;
+    font-size: 200%;
+    border-radius: 51%;
+    margin-top: 50%;
+    height: 60px;
+    width: 60px;
+    background: #00D881;
+    color: rgb(2, 1, 1);
+    margin: 5px;
+    cursor: pointer;
+}
+
+.pressed {
+    box-shadow: inset 2px 2px 12px 5px rgba(0, 0, 0, 0.5);
+}
+
+.clear {
+    clear: both;
+}
+</style>
