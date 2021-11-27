@@ -39,12 +39,6 @@
                                 <v-list-item-content>
                                     <v-list-item-title>{{ safe.branch }}</v-list-item-title>
                                 </v-list-item-content>
-                                <!-- <v-row align="center" justify="end">
-                                    <i class="material-icons md-36">
-                                        alarm
-                                    </i>
-                                    <span class="subheading mr-2">21:55</span>
-                                </v-row> -->
                             </v-list-item>
                         </v-card-actions>
 
@@ -204,7 +198,7 @@
                               <span class="title font-weight-bold" v-if="drv.amount < 200">{{ (Number(drv.amount) + Number(drv.card)).toFixed(2)  }}  - {{ drv.username }}</span>
                               <span class="title font-weight-bold" v-if="drv.amount >= 200"><span style="color: red;" >DROP NEEDED {{ (Number(drv.amount) + Number(drv.card)).toFixed(2) }} </span>  - {{ drv.username }}</span>
                           </v-card-title>
-
+                          
                           <v-card-actions>
                               <v-list-item class="grow">
                                 
@@ -710,21 +704,19 @@
                     class="white--text mx-5"
                     @click="safeExpense('expense')"
                   >Expense</v-btn>
-                  
                 </v-col>
                 <v-col
                   cols="12"
                   sm="6"
                   md="4"
                 >
-                  <v-btn
-                    elevation="2"
-                    color="blue"
-                    x-large
-                    class="white--text mx-5"
-                    @click="safeExpense('taxi')"
-                  >Taxi</v-btn>
-                  
+                <v-btn
+                  elevation="2"
+                  color="blue"
+                  x-large
+                  class="white--text mx-5"
+                  @click="safeExpense('taxi')"
+                >Taxi</v-btn>
                 </v-col>
               </v-row>
               </v-row>
@@ -903,8 +895,18 @@
               </v-row>  
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="3 h4">DRIVER TIP: {{ selectedDriver.tip }}</v-col>
+                <v-col cols="6">&nbsp;</v-col>
+              </v-row>  
+              <v-row>
+                <v-col cols="3">&nbsp;</v-col>
                 <v-col cols="3 h4">Total: {{ (Number(selectedDriver.amount) + Number(selectedDriver.card)).toFixed(2) }}</v-col>
                 <v-col cols="6 h4">{{ (Number(driverCashActual) + Number(driverCardActual)).toFixed(2) }}</v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="3">&nbsp;</v-col>
+                <v-col cols="3 h4">Total Orders: {{ selectedDriver.count }}</v-col>
+                <v-col cols="6 h4">&nbsp;</v-col>
               </v-row>
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
@@ -1234,6 +1236,15 @@
                           <th class="text-left">
                             Wolt
                           </th>
+                          <th class="text-left">
+                            Sum Cash
+                          </th>
+                          <th class="text-left">
+                            Sum Card
+                          </th>
+                          <th class="text-left">
+                            Sum
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1246,6 +1257,9 @@
                           <td>{{ orderDetails.glovo_cash }}</td>
                           <td>{{ orderDetails.glovo_card }}</td>
                           <td>{{ orderDetails.wolt }}</td>
+                          <td>{{ orderDetails.sumCash }}</td>
+                          <td>{{ orderDetails.sumCard }}</td>
+                          <td>{{ orderDetails.sumAll }}</td>
                         </tr>
                       </tbody>
                     </template>
@@ -1342,6 +1356,24 @@
         </v-card>
       </v-dialog>
 
+    <v-bottom-sheet v-model="closeError">
+        <v-sheet
+          class="text-center"
+          height="200px"
+        >
+          <v-btn
+            class="mt-6"
+            text
+            color="red"
+            @click="closeError = !closeError"
+          >
+            close
+          </v-btn>
+          <div class="py-3">
+            {{ closeErrorData }}
+          </div>
+        </v-sheet>
+      </v-bottom-sheet>
       
 
     </v-app>
@@ -1350,7 +1382,6 @@
 
 <script>
 /* eslint-disable */
-import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
 import orderModal from  "../pages/Modal";
 import axios from "axios";
 import Vue from 'vue'
@@ -1371,6 +1402,8 @@ export default {
           // { tab: 'Driver Details', content: 'driver' },
       ],
       tab: 0,
+      closeError: false,
+      closeErrorData: "",
       date: new Date(),
       dateDriver: new Date(),
       detailedInfo: [],
@@ -1406,7 +1439,7 @@ export default {
       driverFormDialog: false,
       driverCloseDialog: false,
       openedTill: {},
-      safes: [],
+      safes: ['a'],
       tills: { unclose: [], current: [] },
       posList: {},
       tillsCount: null,
@@ -1438,10 +1471,6 @@ export default {
       balance: '',
       selectedItem: -1,
       loggedUserFull: [],
-      items1: [
-        { text: 'Pos Default Balance', icon: 'fact_check' },
-        { text: 'Driver Default Balance', icon: 'moped' },
-      ],
       defaultBalance: [
         { balance: 'pos', amount: 150 },
         { balance: 'driver', amount: 40 },
@@ -1602,35 +1631,35 @@ export default {
   },
   methods: {
     formatDate(date) {
-          var d = new Date(date),
-              month = '' + (d.getMonth() + 1),
-              day = '' + d.getDate(),
-              year = d.getFullYear();
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
 
-          if (month.length < 2) 
-              month = '0' + month;
-          if (day.length < 2) 
-              day = '0' + day;
+        if (month.length < 2) 
+            month = '0' + month;
+        if (day.length < 2) 
+            day = '0' + day;
 
-          return [year, month, day].join('-');
-      },
+        return [year, month, day].join('-');
+    },
     getTab(tab){
-        if(tab.content === 'close') {
-          this.updateDetails(this.date);
-        }
-        else if(tab.content === 'pos') {
-          this.posDetails(this.date);
-        }
-        else if(tab.content === 'safe') {
-          this.safeDetails(this.date);
-        }
-        else if(tab.content === 'driver'){
-          this.updateDetails(this.date);
-        }
-        else if(tab.content === 'total'){
-          this.totalDetails(this.date);
-        }
-        this.$forceUpdate();
+      if(tab.content === 'close') {
+        this.updateDetails(this.date);
+      }
+      else if(tab.content === 'pos') {
+        this.posDetails(this.date);
+      }
+      else if(tab.content === 'safe') {
+        this.safeDetails(this.date);
+      }
+      else if(tab.content === 'driver'){
+        this.updateDetails(this.date);
+      }
+      else if(tab.content === 'total'){
+        this.totalDetails(this.date);
+      }
+      this.$forceUpdate();
     },
     updateDetails(date){
       const TOKEN = this.loggedUser.token;
@@ -1647,23 +1676,21 @@ export default {
       bodyUpdate.set("day", dateString);
 
       axios
-        .request({
-          method: "post",
-          url:
-            this.$hostname + "manager/get-close-day",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyUpdate,
-        })
-        .then((response) => {
-            this.detailedInfo = response.data.data;
-
-            this.detailedInfo.forEach(x => {
-              const date = new Date(x.created_at);
-              //x.created_time = date.getHours() + ":" + date.getMinutes();
-            })
-        });
+      .request({
+        method: "post",
+        url:
+          this.$hostname + "manager/get-close-day",
+        headers: {
+          Authorization: "Bearer " + TOKEN,
+        },
+        data: bodyUpdate,
+      }).then((response) => {
+          this.detailedInfo = response.data.data;
+          this.detailedInfo.forEach(x => {
+            const date = new Date(x.created_at);
+            //x.created_time = date.getHours() + ":" + date.getMinutes();
+          })
+      });
     },
     posDetails(date){
       const TOKEN = this.loggedUser.token;
@@ -1734,12 +1761,19 @@ export default {
           this.orderDetails = response.data.data;
 
 
-          this.groupDetails.woltTotal = this.orderDetails.wolt;
-          this.groupDetails.glovoCashTotal = this.orderDetails.glovo_cash;
-          this.groupDetails.glovoCardTotal = this.orderDetails.glovo_card;
-          this.groupDetails.glovoTransferTotal = this.orderDetails.glovo;
-          this.groupDetails.cashTotal = this.orderDetails.cash;
-          this.groupDetails.cardTotal = this.orderDetails.card;
+          this.orderDetails.wolt = Number(this.orderDetails.wolt);
+          this.orderDetails.glovo_cash = Number(this.orderDetails.glovo_cash);
+          this.orderDetails.glovo_card = Number(this.orderDetails.glovo_card);
+          this.orderDetails.glovo = Number(this.orderDetails.glovo);
+          this.orderDetails.cash = Number(this.orderDetails.cash);
+          this.orderDetails.card = Number(this.orderDetails.card);
+          this.driverTotals.cash = Number(this.driverTotals.cash);
+          this.driverTotals.card = Number(this.driverTotals.card);
+
+          this.orderDetails.sumCash = this.orderDetails.glovo_cash + this.orderDetails.cash + this.driverTotals.cash;
+          this.orderDetails.sumCard = this.orderDetails.glovo_card + this.orderDetails.card + this.driverTotals.card +
+          this.orderDetails.wolt + this.orderDetails.glovo;
+          this.orderDetails.sumAll = this.orderDetails.sumCash + this.orderDetails.sumCard;      
           
           console.log('POS SALES: ', this.orderDetails);
           });
@@ -1765,6 +1799,7 @@ export default {
           console.log('DRIVER SALES: ', this.driverTotals);
 
           });
+      this.$forceUpdate();
 
     },
     safeDetails(date){
@@ -1840,7 +1875,6 @@ export default {
           data: bodyUpdate,
         })
         .then((response) => {
-          console.log('BLA ', response);
             this.detailedInfo = response.data.data;
         });
     },
@@ -1878,19 +1912,20 @@ export default {
               data: reconcilePosForm,
             })
             .then((response) => {
-              console.log('Reconcile Pos: ', response);
-              this.safeCloseComment = '';
-              this.cashActual = '';
-              this.cardActual = '';
-              this.totalActual = '';
-              this.tillCloseDialog = false;
-              this.getSafes();
-
-              this.getPoses();
-
-              this.getDrivers();
-
-              this.getBanks();
+              if(response.data.data == "0"){
+                this.safeCloseComment = '';
+                this.cashActual = '';
+                this.cardActual = '';
+                this.totalActual = '';
+                this.tillCloseDialog = false;
+                this.getSafes();
+                this.getPoses();
+                this.getDrivers();
+                this.getBanks();
+              } else {
+                this.closeError = true;
+                this.closeErrorData = response.data.data;
+              }
             });
         }
       }
@@ -1919,7 +1954,6 @@ export default {
             data: reconcileDriverForm,
           })
           .then((response) => {
-            console.log('Reconcile Driver: ', response);
             this.driverCloseComment = '';
             this.driverCashActual = '';
             this.driverCardActual = '';
@@ -1956,7 +1990,6 @@ export default {
         })
         .then((response) => {
           this.safes = response.data.data;
-          console.log("Safe List: ", this.safes);
         });
     },
     getPoses(){
@@ -1976,7 +2009,6 @@ export default {
           data: bodyFormPos,
         })
         .then((response) => {
-          console.log('POS RESPONSE: ', response);
           this.tills = response.data.data;
 
           
@@ -1985,7 +2017,6 @@ export default {
           // this.tillsCount = 1;
 
 
-          //console.log("POS List: ", this.tills);
         }).catch((error) => {
           console.log("getPosses error: ", error);
         });
@@ -2008,7 +2039,6 @@ export default {
         })
         .then((response) => {
           this.drivers = response.data.data;
-          console.log("Drivers List: ", this.drivers);
         }).catch((error) => {
           console.log('getDrivers error: ', error);
         });
@@ -2025,7 +2055,6 @@ export default {
         })
         .then((response) => {
           this.uncloseDrivers = response.data.data;
-          console.log("Drivers List: ", this.uncloseDrivers);
         }).catch((error) => {
           console.log('getDrivers error: ', error);
         });
@@ -2044,7 +2073,6 @@ export default {
         })
         .then((response) => {
           this.banks = response.data.data;
-          console.log("Banks List: ", response);
         });
     },
     addPos(){
@@ -2066,7 +2094,6 @@ export default {
         })
         .then((response) => {
           
-          console.log("Balance Change Response:  ", response);
           this.tillDialog = false;
           this.tillCloseDialog = false;
           this.getSafes();
@@ -2096,7 +2123,6 @@ export default {
           })
           .then((response) => {
             
-            console.log("Balance Change Response:  ", response);
             this.tillFormDialog = false;
             this.tillCloseDialog = false;
             this.getSafes();
@@ -2135,7 +2161,6 @@ export default {
               })
               .then((response) => {
                 
-                console.log("Balance Change Response:  ", response);
                 this.tillFormDialog = false;
                 this.tillCloseDialog = false;
                 this.getSafes();
@@ -2170,7 +2195,6 @@ export default {
           })
           .then((response) => {
             
-            console.log("Balance Change Response:  ", response);
             this.safeCloseDialog = false;
             this.getSafes();
             this.getPoses();
@@ -2183,38 +2207,31 @@ export default {
     dropFromSafe(bank){
       var r = confirm("Drop "+ this.safeAmount +" From Safe?");
       if(r == true){
+        const TOKEN = this.loggedUser.token;
+        var bodyDropSafeBalance = new FormData();
+        bodyDropSafeBalance.set("amount", - this.safeAmount);
+        bodyDropSafeBalance.set("safe_id", this.safes[0].id);
+        bodyDropSafeBalance.set("bank_id", bank.id);
 
-        if(this.safeAmount <= Number(this.safes[0].amount) - Number(this.safes[0].default_amount)){
-          const TOKEN = this.loggedUser.token;
-          var bodyDropSafeBalance = new FormData();
-          bodyDropSafeBalance.set("amount", - this.safeAmount);
-          bodyDropSafeBalance.set("safe_id", this.safes[0].id);
-          bodyDropSafeBalance.set("bank_id", bank.id);
-
-          axios
-            .request({
-              method: "post",
-              url:
-                this.$hostname + "poses/drop-safe-balance",
-              headers: {
-                Authorization: "Bearer " + TOKEN,
-              },
-              data: bodyDropSafeBalance,
-            })
-            .then((response) => {
-              
-              console.log("Balance Change Response:  ", response);
-              this.safeCloseDialog = false;
-              this.getSafes();
-              this.getPoses();
-              this.getDrivers();
-              this.safeDetails(this.date);
-              this.safeAmount = null;
-            });
-        }
-        else {
-          alert('Working Cash - ' + this.safes[0].default_amount + ' should stay in safe');
-        }
+        axios
+          .request({
+            method: "post",
+            url:
+              this.$hostname + "poses/drop-safe-balance",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: bodyDropSafeBalance,
+          })
+          .then((response) => {
+            
+            this.safeCloseDialog = false;
+            this.getSafes();
+            this.getPoses();
+            this.getDrivers();
+            this.safeDetails(this.date);
+            this.safeAmount = null;
+          });
       }
     },
     safeExpense(type){
@@ -2238,7 +2255,6 @@ export default {
           })
           .then((response) => {
             
-            console.log("Expense:  ", response);
             this.safeCloseDialog = false;
             this.getSafes();
             this.getPoses();
@@ -2268,7 +2284,6 @@ export default {
           })
           .then((response) => {
             
-            console.log("Balance Change Response:  ", response);
             this.driverCloseDialog = false;
             this.getSafes();
             this.getPoses();
@@ -2299,7 +2314,6 @@ export default {
             })
             .then((response) => {
               
-              console.log("Balance Change Response:  ", response);
               this.driverFormDialog = false;
               this.getSafes();
               this.getPoses();

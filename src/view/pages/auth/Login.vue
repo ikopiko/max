@@ -84,7 +84,7 @@
             </v-alert>
             <div class="col-12" style="margin: auto">
                 <ul id="display">
-                    <li v-for="(num, index) in pinSync" :key="index">{{ num }}</li>
+                    <li v-for="(num, index) in pinAst" :key="index">{{ num }}</li>
                     <div class="clear"></div>
                 </ul>
             </div>
@@ -200,6 +200,10 @@ export default {
             '-',
             '-',
             '-'],
+            pinAst: ['-',
+            '-',
+            '-',
+            '-'], 
         };
     },
     validations: {
@@ -277,10 +281,10 @@ export default {
                 , 2000);
         },
 
-        onPinSubmit(sentPin, sentMac) {
-        // onPinSubmit(sentPin) {
+        // onPinSubmit(sentPin, sentMac) {
+        onPinSubmit(sentPin) {
             const pin = sentPin;
-            const mac = sentMac;
+            // const mac = sentMac;
 
             // clear existing errors
             this.$store.dispatch(LOGOUT);
@@ -293,7 +297,7 @@ export default {
                     // send login request
                     this.$store.dispatch(LOGIN, {
                             pin,
-                            mac
+                            // mac
                         }
                     ) // go to which page after successfully login
                     .then(()=> this.$router.push( {
@@ -308,6 +312,10 @@ export default {
             if(_.isEmpty(loggedUser)){
                 if(char==='clear') {
                     this.pinDecon=['-',
+                    '-',
+                    '-',
+                    '-'];
+                    this.pinAst=['-',
                     '-',
                     '-',
                     '-'];
@@ -326,11 +334,16 @@ export default {
                         '-',
                         '-',
                         '-'];
+                        this.pinAst=['-',
+                        '-',
+                        '-',
+                        '-'];
                         this.enteredPin='';
                     }
                     else {
                         var index=this.pinDecon.indexOf('-');
                         this.pinDecon[index]=char;
+                        this.pinAst[index]= '*';
                         this.enteredPin=this.enteredPin+char;
                         //alert('Number is: ' + this.enteredPin);
                         this.$forceUpdate();
@@ -342,7 +355,7 @@ export default {
         login(pin) {
             this.pinError = true;
             // var mac = 'd4:c9:ef:d5:70:8f';
-            var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
+            // var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
             // var mac = 'ec:b1:d7:6e:01:3r';  // POS 3
             
             // var mac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
@@ -350,11 +363,11 @@ export default {
             // var mac = 'd4:c9:ef:dc:4c:a5';  // VAKE 1
             // var mac = 'f0:92:1c:ea:90:2e';  // VAKE 2
 
-            // var mac = 'e8:39:35:5d:a9:17';  // GLDANI 1
+            // var mac = 'e8:39:35:5=-09:a9:17';  // GLDANI 1
             
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
-            bodyFormData.set("mac", mac);
+            // bodyFormData.set("mac", mac);
 
             axios.request({
                     method: "post",
@@ -366,8 +379,8 @@ export default {
                         localStorage.setItem("loggedUserData", JSON.stringify(response.data.data));
                         this.pinError = false;
                         this.pinSuccess = true;
-                        this.onPinSubmit(pin, mac);
-                        // this.onPinSubmit(pin);
+                        // this.onPinSubmit(pin, mac);
+                        this.onPinSubmit(pin);
                     }
                     else {
                         console.log('Login Failed', response);
@@ -376,7 +389,6 @@ export default {
                 }
             );
         },
-        
         logKey(e) {
             //alert(e.target);
             e=e || window.event;
@@ -390,24 +402,17 @@ export default {
                 return this.pinChar(e.key);
             }
         },
-
-    }
-
-    ,
+    },
     computed: {
         ...mapState( {
                 errors: state=> state.auth.errors
             }
-
         ),
-
         pinSync() {
             return this.pinDecon;
         }
     }
-}
-
-;
+};
 </script>
 <style>
 ul {

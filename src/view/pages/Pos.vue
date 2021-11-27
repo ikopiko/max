@@ -266,7 +266,7 @@
                                     </div>
                                     <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'sauce'">
                                         <span>{{ item.sauce }}</span>
-                                        <span class="pading-10">0.00</span>
+                                        <span class="pading-10">0.00</span> 
                                     </div>
                                     <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
                                         <span v-if="topping.count == 1">+ {{ topping.name }}</span>
@@ -1581,6 +1581,7 @@
                           <td>{{row.item.order_data.adress}}</td>
                           <td>{{row.item.order_data.items[0].name}}</td>
                           <td>{{row.item.order_data.totalPrice}}</td>
+                          <td>{{row.item.created_at}}</td>
                           <td>
                             <v-btn class="mx-2" fab dark small color="green" @click="rePrint(row.item)">
                                 <v-icon dark>print</v-icon>
@@ -2052,6 +2053,7 @@ export default {
         { text: "Delivery Adress", value: "order_data.adress" },
         { text: "Order Items", value: "order_data.items[0].name" },
         { text: "Total", value: "order_data.totalPrice" },
+        { text: "Date", value: "order_data.created_at" },
       ],
       headers: [
           {
@@ -2374,7 +2376,7 @@ export default {
         // this.orders.forEach(x => {
         //     x.order_data = JSON.parse(x.order_data);
         // });
-        this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4');;
+        this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4' && x.order_data.paymentType != 'invoice');
       });
 
     axios
@@ -2904,7 +2906,7 @@ export default {
       alert('123' + val);
     },
     querySelections (v) {
-        if (v.length > 4){
+        if (v.length > 6){
           this.checkUser(v);
           this.loading = true;
           }
@@ -2963,7 +2965,7 @@ export default {
                 this.order = item.order_data;
                 this.order.id = item.id;
                 this.restrictEdit = true;
-                this.lastOrder = item.order_data;
+                // this.lastOrder = item.order_data;
                 this.selectedOrder = item;
                 this.selectedOrderItems = item.order_data.items;
                 this.curentCustomer = item.order_data.customer;
@@ -3137,6 +3139,7 @@ export default {
         }
 
         if (this.isHalfPizza == "yes" && this.halfPizzaCounter == 1) {
+          // alert('BLA');
             this.smallHalf = true;
             console.log(" Product Recipe ", this.getRecipe(product));
             this.customPizza = {
@@ -3167,7 +3170,7 @@ export default {
           this.halfProduct = true;
           product.qty = this.globalQuantity;
           this.selectedProducts.push(product);
-          this.itemIndex++;
+          // this.itemIndex++;
 
         } else if (this.isHalfPizza == "yes" && this.halfPizzaCounter == 2) {
           this.customPizza.half2.defaultToppings = this.getRecipe(product);
@@ -3189,7 +3192,7 @@ export default {
           this.countTotalPrice();
 
         } else {
-          console.log("---------", this.recipes);
+          // alert('BLA');
           this.pizza = {
             name: "",
             price: 0,
@@ -3203,7 +3206,7 @@ export default {
             toppingChange: 0,
             qty: 0,
           };
-          //this.pizza.defaultToppings = this.getRecipe(product);
+          this.pizza.defaultToppings = this.getRecipe(product);
           this.pizza.half1.defaultToppings = this.pizza.defaultToppings;
           this.pizza.half2.defaultToppings = this.pizza.defaultToppings;
           this.pizza.name = product.name;
@@ -3301,7 +3304,7 @@ export default {
       this.showProductsComponent();
     },
     deleteDefaultTopping(topping) {
-      this.deleteTopping(topping);
+      // this.deleteTopping(topping);
       if (this.wholePizza || this.wholePizzaPart == 3) {
         //topping.isDeleted = false;
           this.order.items[this.itemIndex].defaultToppings.forEach(
@@ -3309,10 +3312,7 @@ export default {
               if (parseInt(t.id) === parseInt(topping.id)) {
                 if (t.name.slice(0, 3) === "No ") {
                   this.changeToppingPrice(this.order.items[this.itemIndex].size);
-                  this.order.items[this.itemIndex].defaultToppings[
-                    index
-                  ].isDeleted = false;
-                
+                  this.order.items[this.itemIndex].defaultToppings[index].isDeleted = false;
                 t.name = t.name.slice(3);
                 this.order.items[this.itemIndex].defaultToppings[index].name = topping.name;
                 if(this.order.items[this.itemIndex].is_special == 0){
@@ -5622,6 +5622,7 @@ export default {
               this.calcPay();
             } else if(response.status === 200 && this.paymentType == "payLater"){
               this.calcPay();
+              console.log('CREATE: ', response);
             } else if(response.status === 200 && this.paymentType == "transfer"){
               this.calcPay();
             } else if(response.status === 200 && this.order.paymentType == "split"){
@@ -5653,6 +5654,7 @@ export default {
             // this.products = response.data;
             console.log(response);
             if(response.status === 200 && this.paymentType == "card" || this.paymentType == "split"){
+              console.log("ORDER: ", response);
               this.calcPay();
             } 
             //this.products = this.products.reverse();
@@ -5687,30 +5689,30 @@ export default {
     },
 
     printOrder(orderID){
-        const TOKEN = localStorage.getItem("TOKEN");
-        console.log('BLA',orderID.data);
-        var bodyFormData = new FormData();
-        bodyFormData.set("id", orderID.data);
-        axios.request({
-          method: "post",
-          url:
-            this.$hostname + "orders/print",
-            // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
+      // alert("BLA");
+      const TOKEN = localStorage.getItem("TOKEN");
+      var bodyFormData = new FormData();
+      bodyFormData.set("id", orderID.data);
+      axios.request({
+        method: "post",
+        url:
+          this.$hostname + "orders/print",
+          // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
 
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyFormData,
-        }).then((response) => {
-            if(response.data.is_error){
-              alert("Error Printing Order");
-              this.printError = true;
-            }
-            else{
-              this.printError = false;
-              console.log("Order Response", response);
-            }
-        });
+        headers: {
+          Authorization: "Bearer " + TOKEN,
+        },
+        data: bodyFormData,
+      }).then((response) => {
+          if(response.data.is_error){
+            alert("Error Printing Order");
+            this.printError = true;
+          }
+          else{
+            this.printError = false;
+            console.log("Order Response", response);
+          }
+      });
     },
     calcClear() {
       this.cashInput = '';
@@ -5784,13 +5786,28 @@ export default {
       this.futureModal = false;
     },
     copyLastOrder() {
-      if(this.curentCustomer.last_order == null) {
-        alert("No Past Order!");
+      if(this.curentCustomer.phone.length < 9){
+        alert("Enter Whole Number!");
+      } else {
+        const TOKEN = localStorage.getItem("TOKEN");
+        var bodyFormData = new FormData();
+        bodyFormData.set("phone", this.curentCustomer.phone);
+        axios.request({
+            method: "post",
+            url:
+              this.$hostname + "customers/last-order",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: bodyFormData,
+          })
+          .then((response) => {
+            console.log('Last Order: ', response.data.data);
+            this.order.items = response.data.data.items;
+          });
       }
-      else {
-        this.order.items = this.curentCustomer.last_order.items;
-        console.log(this.order);
-      }
+      
+        
     },
     closeCalc(){
         this.calculatorModal = false;
@@ -6145,11 +6162,8 @@ export default {
       }
     },
    glovoCustomer(payment){
-     if(this.curentCustomer.code === '')
+     if(this.curentCustomer.code.length === 3)
       {
-        alert('3 Digit Code is required!');
-      }
-      else {
         this.changeDefPrice();
         this.order.customer = this.curentCustomer;
         this.order.deliveryType = 'Glovo';
@@ -6178,13 +6192,14 @@ export default {
         // this.glovoModal = false;
         // this.payGlovo();
       }
+      else {
+        alert('3 Digit Code is required!');
+      }
     },
    woltCustomer(){
-     if(this.curentCustomer.name === '')
+
+   if(this.curentCustomer.code.length === 3 && this.curentCustomer.name !== '')
       {
-        alert('Name Fields is required!');
-      }
-      else {
         this.changeDefPrice();
         this.order.customer = this.curentCustomer;
         this.order.deliveryType = 'Wolt';
@@ -6193,6 +6208,9 @@ export default {
         console.log('Wolt customer : ', this.order.customer);
         this.woltModal = false;
         this.payWolt();
+      }
+      else {
+        alert('3 Digit Code And Customer name fields are required!');
       }
     },
     closeChangeModal(){

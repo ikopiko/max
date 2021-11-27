@@ -220,6 +220,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
+                v-if="selectedItem.order_data.paymentType != 'invoice'"
                 class="green mx-2"
                 large
                 text
@@ -228,12 +229,22 @@
                 Cash
               </v-btn>
               <v-btn
+                v-if="selectedItem.order_data.paymentType != 'invoice'"
                 class="blue mx-2"
                 large
                 text
                 @click="payOrder('card')"
               >
                 Card
+              </v-btn>
+              <v-btn
+                v-if="selectedItem.order_data.paymentType == 'invoice'"
+                class="blue mx-2"
+                large
+                text
+                @click="payOrder('invoice')"
+              >
+                invoice
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -365,16 +376,16 @@
             <v-card-actions>
               <v-spacer>EDIT PAYMENT TYPE</v-spacer>
               <v-btn
-                v-if="!activateEdit"
+                
                 class="mx-2"
                 large
                 text
-                @click="activateEdit = true"
+                @click="activateEdit = !activateEdit"
               >
                 EDIT PAYMENT METHOD
               </v-btn>
               <v-btn
-              v-if="activateEdit"
+              v-if="activateEdit && !activeInvoice"
                 class="green mx-2"
                 large
                 text
@@ -383,13 +394,22 @@
                 Cash
               </v-btn>
               <v-btn
-                v-if="activateEdit"
+                v-if="activateEdit && !activeInvoice"
                 class="blue mx-2"
                 large
                 text
                 @click="editItem('card')"
               >
                 Card
+              </v-btn>
+              <v-btn
+                v-if="activateEdit && !activeInvoice"
+                class="blue mx-2"
+                large
+                text
+                @click="editItem('invoice')"
+              >
+                Transfer
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -429,6 +449,7 @@ export default {
   components: {},
   data() {
     return {
+      activeInvoice: false,
       menu: false,
       sheet: false,
       errorText: '',
@@ -739,6 +760,12 @@ export default {
 
     },
     selectOrder(item){
+       if(item.order_data.paymentType == 'invoice'){
+          this.activeInvoice = true;
+        }
+        else {
+          this.activeInvoice = false;
+        }
         this.selectedItem = item;
         //this.driverOrderDialog = false;
         this.selectedItemDialog = true;

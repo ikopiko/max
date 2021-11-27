@@ -59,6 +59,7 @@
                                 <template v-slot:item="row">
                                     <tr @click="onButtonClick(row.item)">
                                         <td>{{Number(row.item.id)}}</td>
+                                        <td>{{row.item.order_data.pos_id }}</td>
                                         <td>{{row.item.order_data.deliveryMethod}}</td>
                                         <td>{{row.item.order_data.customer.code}}</td>
                                         <td>{{row.item.order_data.paymentType}}</td>
@@ -238,6 +239,7 @@ import axios from 'axios';
         ],
         headers: [
           { text: "ID", value: "id" },
+          { text: "POS ID", value: "order_data.pos_id" },
           { text: "Source", value: "source" },
           { text: "Glovo/Wolt #", value: "order_data.customer.code" },
           { text: "Payment Type", value: "order_data.paymentType" },
