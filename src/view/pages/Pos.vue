@@ -486,7 +486,7 @@
 
                 <div class="row my-1">
                     <!-- <div class="col-2 calcBtn blue" @click="teamModal = true">Team</div> -->
-                    <div class="col-2 calcBtn blue">&nbsp;</div>
+                    <div class="col-2 calcBtn blue" @click="bigOrderModal = true">Big Order</div>
                     <div class="col-2 calcBtn" @click="calcInput('4')">4</div>
                     <div class="col-2 calcBtn" @click="calcInput('5')">5</div>
                     <div class="col-2 calcBtn" @click="calcInput('6')">6</div>
@@ -539,7 +539,7 @@
                 <div class="row my-1">
                     <div class="col-2 calcBtn blue" @click="checkManager()">CRM DISC</div>
                     <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">
-                        PAY {{ Number(totalPrice).toFixed(2) }}
+                        PAY {{ roundNumber(Number(totalPrice).toFixed(2)) }}
                     </div>
                     <div class="col-2 calcBtn lightGreen" @click="calcCash(1)">1</div>
                     <div class="col-2">&nbsp;</div>
@@ -812,6 +812,35 @@
 
     
     <!-- End of Change Modal -->
+
+    <!-- Big Order Modal -->
+
+    <v-dialog 
+      v-model="bigOrderModal"
+      max-width="500px"
+    >
+    <v-card>
+            <v-card-title>Select Free Item</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 400px;">
+                <v-checkbox v-for="(item, index) in order.items" :key="index" v-model="bigorderSelected" :label="item.name+' : '+item.price" :value="item"></v-checkbox>
+                <v-divider></v-divider>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+
+                <v-btn color="blue darken-1" text x-large @click="bigOrderModal = false">
+                    Close
+                </v-btn>
+                <v-btn color="blue darken-1" x-large text @click="bigOrder()">
+                    Done
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+
+    
+    <!-- End of Big Order Modal -->
 
     <!-- Start Of CRM Modal -->
 
@@ -2195,6 +2224,8 @@ export default {
       invoiceModal: false,
       changeModal: false,
       futureModal: false,
+      bigOrderModal: false,
+      bigorderSelected: [],
       paymentType: "",
       isPizza: "no",
       isHalfPizza: "no",
@@ -2724,6 +2755,46 @@ export default {
       },
     },
   methods: {
+    bigOrder() {
+      this.bigorderSelected.forEach( x => {
+        x.isGift = true;
+        x.totalPrice = 0;
+      });
+
+      this.bigOrderModal = false;
+    },
+    roundNumber(val) {
+        var num = val;
+        var oldNum = Number(val);
+        var split = [];
+        var digits = 0;
+        var realDigits = 0;
+
+        if (num.includes('.')){
+          split = num.split('.');
+          this.splitdata = split;
+          num = split[1];
+          digits = num.toString().split('');
+          realDigits = digits.map(Number);
+        } else {
+          digits = num.toString().split('');
+          realDigits = digits.map(Number);
+        }
+
+        if(0 <= realDigits[1] && realDigits[1] <= 4){
+          oldNum = this.splitdata[0] + "." + Number(realDigits[0] + "0");
+        } else if(realDigits[1] == 5){
+          oldNum = this.splitdata[0] + "." + Number(realDigits[0] + "5");
+        } else if(6 <= realDigits[1] && realDigits[1] <= 9){
+          if(realDigits[0] == 9){
+            oldNum = Number(this.splitdata[0]) + 1 +".00";
+          } else {
+            oldNum = this.splitdata[0] + "." + (Number(realDigits[0]) +1) + "0";
+          }
+        }
+        
+        return oldNum;
+      },
     logKey(e) {
       if(this.managerPin){
         e=e || window.event;
