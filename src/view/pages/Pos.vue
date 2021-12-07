@@ -486,7 +486,8 @@
 
                 <div class="row my-1">
                     <!-- <div class="col-2 calcBtn blue" @click="teamModal = true">Team</div> -->
-                    <div class="col-2 calcBtn blue" @click="bigOrderModal = true">Big Order</div>
+                    <!-- <div class="col-2 calcBtn blue" @click="bigOrderModal = true">Big Order</div> -->
+                    <div class="col-2 calcBtn blue">&nbsp;</div>
                     <div class="col-2 calcBtn" @click="calcInput('4')">4</div>
                     <div class="col-2 calcBtn" @click="calcInput('5')">5</div>
                     <div class="col-2 calcBtn" @click="calcInput('6')">6</div>
@@ -539,7 +540,7 @@
                 <div class="row my-1">
                     <div class="col-2 calcBtn blue" @click="checkManager()">CRM DISC</div>
                     <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">
-                        PAY {{ roundNumber(Number(totalPrice).toFixed(2)) }}
+                        PAY {{ Number(totalPrice).toFixed(2) }}
                     </div>
                     <div class="col-2 calcBtn lightGreen" @click="calcCash(1)">1</div>
                     <div class="col-2">&nbsp;</div>
@@ -2328,7 +2329,8 @@ export default {
         phone: '',
         tel2: '',
         comment: '',
-        comment2: ''
+        comment2: '',
+        invoice: {},
       },
       searchResults: [],
       gender: ['Male', 'Female'],
@@ -3143,6 +3145,9 @@ export default {
 
             });
           console.log('Curent User Data: ', this.curentCustomer);
+          if(this.curentCustomer.invoice != false) {
+            this.invoice = this.curentCustomer.invoice;
+          }
           // this.curentCustomer.address = this.curentCustomer.address.split(',');
             if(this.searchResults.length === 0){
               this.curentCustomer.phone = this.search;
@@ -4759,8 +4764,7 @@ export default {
               }
               if (topping.id === 24) {
                   t.price = 2.2;
-                  this.sticks.totalPrice = this.sticks.price + t.price * t.count;
-              } else {
+                  this.sticks.tot 
                   t.price = 0.0;
                   this.sticks.totalPrice = this.sticks.price + t.price * t.count;
               }
@@ -5666,7 +5670,7 @@ export default {
         }
         
         else {
-          this.order.totalPrice = this.totalNet.toFixed(2);
+          this.order.totalPrice = Number(this.totalNet.toFixed(2));
           this.order.promiseTime = this.promiseTime;
           
           this.order.pos_id = this.loggedUserFull.pos_id;

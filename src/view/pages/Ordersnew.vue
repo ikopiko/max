@@ -499,6 +499,14 @@ import axios from 'axios';
                 else {
                   x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
                 }
+                var date = new Date(x.created_at);
+                var hours = date.getHours().toString();
+                var minutes = date.getMinutes().toString();
+                
+                if (minutes.length < 2) 
+                  minutes = '0' + minutes;
+                
+                x.createTime = hours + ":" + minutes;
             });
             this.filteredOrders = this.orders;
           });
