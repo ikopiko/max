@@ -342,15 +342,20 @@ import axios from 'axios';
         //     x.order_data = JSON.parse(x.order_data);
         // });
         this.orders.forEach(x => {
-          if(x.order_data.discountName == 'Diplomat'){
-              x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
-            }
-            else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
-              x.order_data.discPrice = x.order_data.discount;
-            }
-            else {
-              x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
-            }
+          if(x.order_data.discount > 0){
+            if(x.order_data.discountName == 'Diplomat'){
+                x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+              }
+              else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+                x.order_data.discPrice = x.order_data.discount;
+              }
+              else {
+                x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+              }
+          }
+          else {
+            x.order_data.discPrice = 0;
+          }
             var date = new Date(x.created_at);
             var hours = date.getHours().toString();
             var minutes = date.getMinutes().toString();
@@ -451,15 +456,20 @@ import axios from 'axios';
         //     x.order_data = JSON.parse(x.order_data);
         // });
         this.orders.forEach(x => {
-          if(x.order_data.discountName == 'Diplomat'){
-              x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
-            }
-            else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
-              x.order_data.discPrice = x.order_data.discount;
-            }
-            else {
-              x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
-            }
+          if(x.order_data.discount > 0){
+            if(x.order_data.discountName == 'Diplomat'){
+                x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+              }
+              else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+                x.order_data.discPrice = x.order_data.discount;
+              }
+              else {
+                x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+              }
+          }
+          else {
+            x.order_data.discPrice = 0;
+          }
         });
         this.filteredOrders = this.orders.filter((x) => !(x.status == 10 || x.status == 9) );
         this.statusObject = {};
@@ -490,15 +500,20 @@ import axios from 'axios';
             //     x.order_data = JSON.parse(x.order_data);
             // });
             this.orders.forEach(x => {
-              if(x.order_data.discountName == 'Diplomat'){
-                  x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
-                }
-                else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
-                  x.order_data.discPrice = x.order_data.discount;
-                }
-                else {
-                  x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
-                }
+              if(x.order_data.discount > 0){
+                if(x.order_data.discountName == 'Diplomat'){
+                    x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+                  }
+                  else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+                    x.order_data.discPrice = x.order_data.discount;
+                  }
+                  else {
+                    x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+                  }
+              }
+              else {
+                x.order_data.discPrice = 0;
+              }
                 var date = new Date(x.created_at);
                 var hours = date.getHours().toString();
                 var minutes = date.getMinutes().toString();

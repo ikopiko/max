@@ -1313,26 +1313,34 @@
                   </v-form>
               </b-container>
               <div class="row">
-                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 0 }" @click="activateFee(0)">
-                    1.5 GEL
+                <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 0 }" @click="activateFee(0)">
+                    2.5 GEL
                 </div>
-                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 1 }" @click="activateFee(1)">
-                    3 GEL
+                <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 1 }" @click="activateFee(1)">
+                    4 GEL
                 </div>
-                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 2 }" @click="activateFee(2)">
-                    4.5 GEL
-                </div>
-                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 3 }" @click="activateFee(3)">
+                <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 2 }" @click="activateFee(2)">
                     6 GEL
                 </div>
-                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 4 }" @click="activateFee(4)">
-                    7 GEL
+                <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 3 }" @click="activateFee(3)">
+                    7.5 GEL
                 </div>
-                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 5 }" @click="activateFee(5)">
-                    10 GEL
+              </div>
+              <div class="row my-3">
+                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 4 }" @click="activateFee(4)">
+                    Tskneti
                 </div>
-                <div class="col feeClass mx-3" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 6 }" @click="activateFee(6)">
-                    13.5 GEL
+                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 5 }" @click="activateFee(5)">
+                    Tsavkisi
+                </div>
+                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 6 }" @click="activateFee(6)">
+                    Mtsxeta
+                </div>
+                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 7 }" @click="activateFee(7)">
+                    Kojori
+                </div>
+                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 8 }" @click="activateFee(8)">
+                    KTA
                 </div>
               </div>
             </v-row>
@@ -2162,7 +2170,15 @@ export default {
         coupon: 0,
       },
       crustVar: false,
-      deliveryFee: [{id: 0,fee: 1.5, text: "1.5 GEL 0-3.9 Km"}, {id:1,fee:3, text: "3 GEL 4-9.9 Km"}, {id:2,fee:4.5, text: "4.5 GEL 10-15.9 Km"}, {id:3,fee:6, text: "6 GEL 16-19.9 Km"}, {id: 4,fee:7, text: "7 GEL 20-27.9 Km"}, {id: 5,fee:10, text: "10 GEL 28 Km +"}, {id:6,fee:13.5, text: "13.5 GEL Rustavi"} ],
+      deliveryFee: [{id: 0,fee: 2.5, min: 0, text: "2.5 GEL 0-3.9 Km"},
+                    {id:1,fee:4, min: 0,  text: "4 GEL 4-9.9 Km"}, 
+                    {id:2,fee:6, min: 0, text: "6 GEL 10-15.9 Km"}, 
+                    {id:3,fee:7.5, min: 0, text: "7.5 GEL 16-19.9 Km"}, 
+                    {id:4,fee:8, min: 40, text: "8 GEL Tskneti"}, 
+                    {id:5,fee:10, min: 60, text: "10 GEL Tsavkisi"}, 
+                    {id:6,fee:10, min: 60, text: "10 GEL Mtsxeta"},
+                    {id:7,fee:12, min: 60, text: "12 GEL Kojori"},
+                    {id:8,fee:14.5, min: 100, text: "14.5 GEL KTA"} ],
       deliveryType: [{id: 0, type: 'delivery'}, {id: 1, type: 'glovo'},{id: 2, type: 'wolt'}],
       promise: [{id: 0, time:15},{id: 1, time:20},{id: 2, time:30}, {id: 3, time:40}, {id: 4, time:50}],
       promiseTime: 15,
@@ -2204,7 +2220,7 @@ export default {
       discountOrder: false,
       discountItem: false,
       diplomatDiscount: 18,
-      employeeDiscount: 30,
+      employeeDiscount: 40,
       studentDiscount: 15,
       corporateDiscount: 0,
       managerPercent: '',
@@ -2524,6 +2540,23 @@ export default {
   computed: {
     pinSync() {
       return this.pinDecon;
+    },
+    totalOrder: {
+      cache: false,
+      get() {
+        var totalPrice = 0;
+        this.order.items.forEach((i) => {
+          if(i.custom === 'other'){
+            var price = i.price * i.qty;
+            totalPrice = totalPrice + price;
+          } else {
+            var price = i.totalPrice * i.qty;
+            totalPrice = totalPrice + price;    
+          }
+        });
+        
+        return totalPrice;
+      },
     },
     totalNet: {
       cache: false,
@@ -3099,10 +3132,14 @@ export default {
             this.deliveryTypeVar = this.deliveryType[el].type;
         },
         activateFee(el){
+          if(this.totalOrder > this.deliveryFee[el].min){
             this.activeFee_el = el;
             this.deliveryActiveVar = true;
             this.deliveryFeeVar = this.deliveryFee[el].fee;
             this.deliverCustomer(this.deliveryFeeVar);
+          } else {
+            alert('Min Order Amount Of ' + this.deliveryFee[el].min +' Is Required!');
+          }
         },
         activatePromise(el){
             this.promiseFee_el = el;
@@ -4759,12 +4796,11 @@ export default {
               if (t.count === 4) {
                 t.count = 0;
                 this.deleteTopping(t);
-                this.deleteDefaultTopping(t);
-                t.count += 1;
               }
               if (topping.id === 24) {
                   t.price = 2.2;
-                  this.sticks.tot 
+                  this.sticks.totalPrice = this.sticks.price + t.price * t.count;
+              } else {
                   t.price = 0.0;
                   this.sticks.totalPrice = this.sticks.price + t.price * t.count;
               }
@@ -4782,6 +4818,7 @@ export default {
             this.sticks.toppings.push({ ...topping, count: 1 });
           }
         }
+      
       }
 
       // end of add sticks tooppings
@@ -5686,6 +5723,8 @@ export default {
             },
             data: { order: this.order },
           }).then((response) => {
+
+            console.log('ORDER STRUCTURE: ', this.order);
             
             this.printOrder(response.data);
             // alert(this);
@@ -5931,13 +5970,13 @@ export default {
       this.woltActive = false;
       this.glovoActive = false;
       if(ND === 'no'){
-        if (this.order.deliveryFee === 1.5)
+        if (this.order.deliveryFee === 2.5)
           this.activeFee_el = 0;
-        else if (this.order.deliveryFee === 3)
+        else if (this.order.deliveryFee === 4)
           this.activeFee_el = 1;
-        else if (this.order.deliveryFee === 4.5)
-          this.activeFee_el = 2;
         else if (this.order.deliveryFee === 6)
+          this.activeFee_el = 2;
+        else if (this.order.deliveryFee === 7,5)
           this.activeFee_el = 3;
         else if (this.order.deliveryFee === 7)
           this.activeFee_el = 4;
@@ -6282,6 +6321,26 @@ export default {
         this.paymentType = 'card';
         console.log('Wolt customer : ', this.order.customer);
         this.woltModal = false;
+
+        // WOLT SALE CHECK
+        // this.order.items.forEach( x => {
+        //   if(x.id == '42' || x.id == '32'){
+        //     if(x.size == 'm'){
+        //       var diff = x.totalPrice - x.price;
+        //       x.totalPrice = (x.price * 0.9) + diff;
+        //       // x.totalPrice = x.totalPrice * 0.9;
+        //     }
+        //   }
+        //   if(x.id == '40' || x.id == '31'){
+        //     if(x.size == 'xl'){
+        //       var diff = x.totalPrice - x.price;
+        //       x.totalPrice = (x.price * 0.85) + diff;
+        //       // x.totalPrice = x.totalPrice * 0.85;
+        //     }
+        //   }
+        // });
+        // WRITE COMMENT "WOLT SALE" IN ORDER_DATA OBJECT
+
         this.payWolt();
       }
       else {

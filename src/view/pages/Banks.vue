@@ -1431,6 +1431,7 @@ export default {
       safeAmount: null,
       posComment: '',
       safeCloseComment: '',
+      safeDropComment: '',
       driverCloseComment: '',
       safeCloseDialog: false,
       safeFormDialog: false,
@@ -1556,6 +1557,8 @@ export default {
       this.getBanks();
 
       this.updateDetails(this.date);
+
+      this.totalDetails(this.date);
 
       var bodyFormPosAll = new FormData();
       bodyFormPosAll.set("branch_id", this.branchId);
@@ -1730,7 +1733,6 @@ export default {
         });
     },
     totalDetails(date){
-      
       const TOKEN = this.loggedUser.token;
       // var dateString = date + ' to '+ date;
       if(date.length == 2){
@@ -1770,10 +1772,10 @@ export default {
           this.driverTotals.cash = Number(this.driverTotals.cash);
           this.driverTotals.card = Number(this.driverTotals.card);
 
-          this.orderDetails.sumCash = this.orderDetails.glovo_cash + this.orderDetails.cash + this.driverTotals.cash;
-          this.orderDetails.sumCard = this.orderDetails.glovo_card + this.orderDetails.card + this.driverTotals.card +
-          this.orderDetails.wolt + this.orderDetails.glovo;
-          this.orderDetails.sumAll = this.orderDetails.sumCash + this.orderDetails.sumCard;      
+          this.orderDetails.sumCash = Number(this.orderDetails.glovo_cash + this.orderDetails.cash + this.driverTotals.cash);
+          this.orderDetails.sumCard = Number(this.orderDetails.glovo_card + this.orderDetails.card + this.driverTotals.card +
+          this.orderDetails.wolt + this.orderDetails.glovo);
+          this.orderDetails.sumAll = Number(this.orderDetails.sumCash + this.orderDetails.sumCard);      
           
           console.log('POS SALES: ', this.orderDetails);
           });
@@ -2181,7 +2183,8 @@ export default {
         var bodyAddSafeBalance = new FormData();
         bodyAddSafeBalance.set("amount", this.safeAmount);
         bodyAddSafeBalance.set("safe_id", this.safes[0].id);
-        bodyAddSafeBalance.set("bank_id", bank.id)
+        bodyAddSafeBalance.set("bank_id", bank.id);
+        bodyAddSafeBalance.set("comment", this.safeCloseComment);
 
         axios
           .request({
@@ -2201,6 +2204,7 @@ export default {
             this.getDrivers();
             this.safeDetails(this.date);
             this.safeAmount = null;
+            this.safeCloseComment = '';
           });
       }
     },
@@ -2212,6 +2216,7 @@ export default {
         bodyDropSafeBalance.set("amount", - this.safeAmount);
         bodyDropSafeBalance.set("safe_id", this.safes[0].id);
         bodyDropSafeBalance.set("bank_id", bank.id);
+        bodyDropSafeBalance.set("comment", this.safeCloseComment);
 
         axios
           .request({
@@ -2231,7 +2236,8 @@ export default {
             this.getDrivers();
             this.safeDetails(this.date);
             this.safeAmount = null;
-          });
+            this.safeCloseComment = '';
+});
       }
     },
     safeExpense(type){
@@ -2261,6 +2267,7 @@ export default {
             this.getDrivers();
             this.safeDetails(this.date);
             this.safeAmount = null;
+            this.safeCloseComment = '';
           });
       }
     },

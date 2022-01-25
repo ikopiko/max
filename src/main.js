@@ -47,9 +47,9 @@ ApiService.init();
 
 // Vue.prototype.$hostname = "http://94.43.92.102:8082/ronny/rest/web/index.php?r=v1/";  // VAKE OUT
 
-// Vue.prototype.$hostname = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=v1/";  // GLDANI OUT
+Vue.prototype.$hostname = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=v1/";  // GLDANI OUT
 
-Vue.prototype.$hostname = "https://api.ronnys.info/rest/web/index.php?r=v1/";  // TEST
+// Vue.prototype.$hostname = "https://api.ronnys.info/rest/web/index.php?r=v1/";  // TEST
 
 // Vue.prototype.$authHostName = "http://192.168.1.124/ronny/rest/web/index.php?r=auth";  // LOCAL
 
@@ -59,9 +59,9 @@ Vue.prototype.$hostname = "https://api.ronnys.info/rest/web/index.php?r=v1/";  /
 
 // Vue.prototype.$authHostName = "http://94.43.92.102:8082/ronny/rest/web/index.php?r=auth";  // VAKE OUT
 
-// Vue.prototype.$authHostName = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=auth";  // GLDANI OUT
+Vue.prototype.$authHostName = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=auth";  // GLDANI OUT
 
-Vue.prototype.$authHostName = "https://api.ronnys.info/rest/web/index.php?r=auth";  // TEST
+// Vue.prototype.$authHostName = "https://api.ronnys.info/rest/web/index.php?r=auth";  // TEST
 
 // Change It to API.SERVICE.JS ALSO
 

@@ -5,7 +5,7 @@
   <div class="row">
     <span v-for="order in prepOrder" :key="order.id">
 
-      <span v-if="order.source === 'pos'">    
+      <span v-if="order.source === 'pos' || order.source === 'web'">    
         <v-card
           class="mx-3 cardStyle"
           max-width="344"
