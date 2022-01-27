@@ -358,12 +358,12 @@ export default {
             // var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
             // var mac = 'ec:b1:d7:6e:01:3r';  // POS 3
             
-            // var mac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
+            var mac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
 
             // var mac = 'd4:c9:ef:dc:4c:a5';  // VAKE 1
             // var mac = 'f0:92:1c:ea:90:2e';  // VAKE 2
 
-            var mac = '2c:27:d7:27:3e:81';  // GLDANI 1
+            // var mac = '2c:27:d7:27:3e:81';  // GLDANI 1
             
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
