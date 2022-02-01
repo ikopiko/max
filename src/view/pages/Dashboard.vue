@@ -232,7 +232,7 @@ export default {
   },
   mounted() {
     this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
-    console.log("Fullll", this.loggedUserFull);
+    // console.log("Fullll", this.loggedUserFull);
     this.loggedUser = this.$store.state.auth.user.data;
 
     if(this.loggedUser.role.toLowerCase() == "admin"){

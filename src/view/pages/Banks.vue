@@ -1045,7 +1045,7 @@
                   <v-date-picker
                     v-model="date"
                     @input="menu = false"
-                    range
+                    
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -1305,7 +1305,7 @@
                   <v-date-picker
                     v-model="dateDriver"
                     @input="menu2 = false"
-                    range
+                    
                   ></v-date-picker>
                 </v-menu>
               </v-col>

@@ -83,10 +83,10 @@ export default {
             || vm.$store.state.auth.user.data.role.toLowerCase() == "cashier"
             || vm.$store.state.auth.user.data.role.toLowerCase() == "posaccess" 
             || vm.$store.state.auth.user.data.role.toLowerCase() == "cook" ) {
-         vm.$router.push({name: "max"});
+         vm.$router.push({name: "max"}).catch(()=>{});
        }
        else {
-         vm.$router.push({name: "dashboard"});
+         vm.$router.push({name: "dashboard"}).catch(()=>{});
        }
     });
   },

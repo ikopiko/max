@@ -346,7 +346,7 @@
                                 </strong>
                             </span>
                             <span class="mx-3 h3">
-                                <strong>{{ getTime }}</strong>
+                                <strong>{{ hours }}:{{ minutes }}:{{ seconds }}</strong>
                             </span>
                         </div>
 
@@ -492,8 +492,11 @@
                     <div class="col-2 calcBtn" @click="calcInput('5')">5</div>
                     <div class="col-2 calcBtn" @click="calcInput('6')">6</div>
                     <div class="col-2 calcBtn lightGreen" @click="calcCash(20)">20</div>
-                    <div class="col-2 calcBtn blue" v-bind:class="{ active: glovoActive }" @click="glovoDelivery()">
+                    <!-- <div class="col-2 calcBtn blue" v-bind:class="{ active: glovoActive }" @click="glovoDelivery()">
                         Glovo
+                    </div> -->
+                    <div class="col-2 calcBtn blue" v-bind:class="{ active: glovoActive }" >
+                        &nbsp;
                     </div>
                 </div>
                 <div class="row my-1">
@@ -1252,7 +1255,7 @@
             x-large
             @click="takeoutCustomer()"
           >
-            Take Out: {{ order.totalPrice }}
+            Take Out: {{ Number(totalNet).toFixed(2) }}
           </v-btn>   
         </v-card-actions>
     </v-card>
@@ -1355,7 +1358,7 @@
             x-large
             @click="deliveryCustomer()"
           >
-            Delivery: {{ Number(order.totalPrice) + Number(order.deliveryFee) }}
+            Delivery: {{ Number(totalNet).toFixed(2) }}
           </v-btn>   
         </v-card-actions>
     </v-card>
@@ -1506,7 +1509,7 @@
             x-large
             @click="woltCustomer()"
           >
-            Wolt order:  {{ order.totalPrice }}
+            Wolt order:  {{ Number(totalNet).toFixed(2) }}
           </v-btn>   
         </v-card-actions>
     </v-card>
@@ -2054,6 +2057,9 @@ export default {
     },
   data() {
     return {
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
       discountActive: false,
       discountActiveVar: false,
       activeDiscType: "",
@@ -2346,7 +2352,15 @@ export default {
         tel2: '',
         comment: '',
         comment2: '',
-        invoice: {},
+        invoice: {
+          tel: null,
+          name: '',
+          ltd: '',
+          id: null,
+          address: '',
+          phone: '',
+          email: ''
+        },
       },
       searchResults: [],
       gender: ['Male', 'Female'],
@@ -2395,6 +2409,7 @@ export default {
   },
 
   mounted() {
+    this.setTime();
     window.addEventListener("keypress", e=> {
         this.logKey(e);
     });
@@ -2599,7 +2614,7 @@ export default {
   
     getTime() {
       const today = new Date();
-      const time = today.getHours() + ":" + today.getMinutes();
+      const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
       return time;
     },
@@ -2790,6 +2805,17 @@ export default {
       },
     },
   methods: {
+    setTime () {
+      setInterval(() => {
+        const date = new Date();
+        this.hours = date.getHours();
+        this.minutes = this.checkSingleDigit(date.getMinutes());
+        this.seconds = this.checkSingleDigit(date.getSeconds());
+      }, 1000);
+    },
+      checkSingleDigit (digit) {
+        return ('0' + digit).slice(-2)
+    },
     bigOrder() {
       this.bigorderSelected.forEach( x => {
         x.isGift = true;
@@ -2899,7 +2925,7 @@ export default {
           data: bodyFormData,
         })
         .then((response) => {
-            console.log('MANAGER RESPONSE: ', response);
+            // console.log('MANAGER RESPONSE: ', response);
 
             if (response.data.data == true)
             {
@@ -3176,13 +3202,14 @@ export default {
             .then((response) => {
                 this.searchResults = response.data.data;
                 this.searchResults.reverse();
-                console.log('Search Results: ',this.searchResults);
+                // console.log('Search Results: ',this.searchResults);
                 //this.curentCustomer.phone = this.telMessage;
                 //this.lastOrder = response.data.data[0].last_order;
 
             });
-          console.log('Curent User Data: ', this.curentCustomer);
-          if(this.curentCustomer.invoice != false) {
+          // console.log('Curent User Data: ', this.curentCustomer);
+          // alert(Object.keys(this.curentCustomer.invoice).length);
+          if(Object.keys(this.curentCustomer.invoice).length !== 0) {
             this.invoice = this.curentCustomer.invoice;
           }
           // this.curentCustomer.address = this.curentCustomer.address.split(',');
@@ -3910,8 +3937,27 @@ export default {
         address: [], 
         phone: '',
         comment: '',
-        comment2: ''
+        comment2: '',
+        invoice: {
+          tel: null,
+          name: '',
+          ltd: '',
+          id: null,
+          address: '',
+          phone: '',
+          email: ''
+        },
       };
+      this.invoice = {
+        tel: null,
+        name: '',
+        ltd: '',
+        id: null,
+        address: '',
+        phone: '',
+        email: ''
+      };
+      this.searchResults = [];
       this.telMessage = '';
       this.customerChecked = false;
       this.$forceUpdate();
@@ -4842,6 +4888,7 @@ export default {
         product.qty--;
         console.log("--------", this.selectedProducts.indexOf(product));
         this.order.items.splice(this.order.items.indexOf(product), 1);
+        this.itemIndex--;
       } else {
         product.qty--;
         const pr = this.selectedProducts.filter((p) => p.id === product.id);
@@ -5147,7 +5194,6 @@ export default {
     itemTotalPrice(item) {
       //alert(item.totalPrice);
     },
-
     getRecipe(product) {
       const TOKEN = localStorage.getItem("TOKEN");
       var bodyFormData = new FormData();
@@ -5275,7 +5321,6 @@ export default {
         }
       }
     },
-
     addHalf() {
       this.playSound();
       if(this.isHalfPizza === 'yes'){
@@ -5299,7 +5344,6 @@ export default {
         this.wholePizzaPart = 3;
       }
     },
-
     toppingCounter(item, topping) {
       var count = 0;
 
@@ -5488,7 +5532,6 @@ export default {
       }
 
     },
-
     calcCash(cash) {
       this.playSound();
       if(this.splitActive){
@@ -5505,11 +5548,9 @@ export default {
         this.cashInput = Number(this.cashInput) + cash;
       }
     },
-
     calcPayAll(cash){
       this.cashInput = cash;
     },
-
     calcInput(input) {
       this.playSound();
 
@@ -5876,7 +5917,7 @@ export default {
     },
 
     playSound() {
-      console.log('Play Sound!');
+      // console.log('Play Sound!');
     },
     telMsg() {
       this.customer.phone = this.telMessage;
@@ -5916,7 +5957,7 @@ export default {
             data: bodyFormData,
           })
           .then((response) => {
-            console.log('Last Order: ', response.data.data);
+            // console.log('Last Order: ', response.data.data);
             this.order.items = response.data.data.items;
           });
       }
@@ -6053,7 +6094,7 @@ export default {
       else{
         this.managerModal = false;
         this.managerPin = true;
-        console.log("Check Returns: ", this.checkManager());
+        // console.log("Check Returns: ", this.checkManager());
         const TOKEN = localStorage.getItem("TOKEN");
         var bodyFormData = new FormData();
         bodyFormData.set("pin", pin);
@@ -6068,7 +6109,7 @@ export default {
             data: bodyFormData,
           })
           .then((response) => {
-              console.log('MANAGER RESPONSE: ', response);
+              // console.log('MANAGER RESPONSE: ', response);
 
               if (response.data.data == true)
               {
@@ -6122,7 +6163,7 @@ export default {
         this.order.discount = this.cashInput; 
     },
     addCustomer(){
-      console.log('Customer info: ',this.customer);
+      // console.log('Customer info: ',this.customer);
       this.reverseGender();
 
       const TOKEN = localStorage.getItem("TOKEN");
@@ -6151,11 +6192,11 @@ export default {
           data: bodyFormData,
         })
         .then((response) => {
-          console.log('------', response.data);
-          console.log('CUSTOMER: ', this.customer);
+          // console.log('------', response.data);
+          // console.log('CUSTOMER: ', this.customer);
 
         //  this.curentCustomer = this.customer;
-         console.log('Current Customer from API: ', this.curentCustomer);
+        //  console.log('Current Customer from API: ', this.curentCustomer);
 
         });
 
@@ -6189,10 +6230,10 @@ export default {
           data: bodyFormData,
         })
         .then((response) => {
-          console.log('------', response.data);
+        // console.log('------', response.data);
 
-         console.log('Current Customer from API: ', this.curentCustomer);
-         this.changeDisc();
+        // console.log('Current Customer from API: ', this.curentCustomer);
+        this.changeDisc();
 
         });
 

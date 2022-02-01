@@ -98,7 +98,6 @@
           width="600"
         >
           <v-card>
-
             <v-card-text>
               <v-menu
                   v-model="menu"
@@ -156,9 +155,7 @@
                     </template>
                 </v-simple-table>
             </v-card-text>
-
             <v-divider></v-divider>
-
           </v-card>
         </v-dialog>
 
@@ -255,7 +252,6 @@
           width="600"
         >
           <v-card>
-
             <v-card-text>
               <v-menu
                   v-model="menu"
@@ -313,9 +309,7 @@
                     </template>
                 </v-simple-table>
             </v-card-text>
-
             <v-divider></v-divider>
-
           </v-card>
         </v-dialog>
 
@@ -650,7 +644,7 @@ export default {
                 this.sheet = true;
                  this.errorText = response.data.data;
               }
-            
+            this.$router.go();
         });
     },
     payOrder(type){
@@ -680,6 +674,7 @@ export default {
               this.updateStatus('finished', this.selectedOrder.id);
               this.activeDriver = -1;
               this.selectedDriver = null;
+              this.$router.go();
             } 
             
         });
@@ -930,6 +925,7 @@ export default {
                 }
                 else{
                   console.log("Order Status Changed Correctly: ", response.data);
+                  this.$router.go();
                 }
             });
             
