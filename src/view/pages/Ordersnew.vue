@@ -366,7 +366,8 @@ import axios from 'axios';
             x.createTime = hours + ":" + minutes;
 
         });
-        this.filteredOrders = this.orders.filter((x) => !(x.status == 10 || x.status == 9) );
+        this.filteredOrders = this.orders.filter((x) => x.status != "10" || x.status != "9");
+        // this.filteredOrders = this.orders.filter((x) => x.status != '10' || x.status != '9');
         // this.filteredOrders = this.orders.filter((x) => x.status != 10);
         // this.filteredOrders.forEach((y) => {
           // console.log('asdasdasd: ',y.status);
@@ -471,7 +472,7 @@ import axios from 'axios';
             x.order_data.discPrice = 0;
           }
         });
-        this.filteredOrders = this.orders.filter((x) => !(x.status == 10 || x.status == 9) );
+        this.filteredOrders = this.orders.filter((x) => !(x.status == 10 && x.status == 9) );
         this.statusObject = {};
       });
       },
@@ -523,7 +524,7 @@ import axios from 'axios';
                 
                 x.createTime = hours + ":" + minutes;
             });
-            this.filteredOrders = this.orders;
+            this.filteredOrders = this.orders.filter((x) => x.status != 10 && x.status != 9 );
           });
       },
         wasteOrder(){
@@ -628,7 +629,7 @@ import axios from 'axios';
         changeOrder(status){
             console.log('status: ', status);
             if(status == null){
-              this.filteredOrders = this.orders.filter((x) => x.status != 10);
+              this.filteredOrders = this.orders.filter((x) => x.status != '10' && x.status != '9');
             }
             else{
               this.filteredOrders = this.orders.filter((x) => x.status == status);
@@ -744,7 +745,7 @@ import axios from 'axios';
         },
         getTab(tab){
             if(tab.content === 'all') {
-              this.filteredOrders = this.orders.filter((x) => x.status != 10)
+              this.filteredOrders = this.orders.filter((x) => x.status != "10" && x.status != "9");
               // this.orders.filter((x) => x.status != 10)
             }
             else if(tab.content === 'unpaid') {

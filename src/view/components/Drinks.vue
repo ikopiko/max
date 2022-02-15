@@ -80,7 +80,8 @@ export default {
   data(){
     return {
       products: [],
-      recipes: []
+      recipes: [],
+      halfActive: false,
     }
   },
   mounted() {
@@ -95,7 +96,7 @@ export default {
           .then(response => {
             this.products = response.data;
             //this.products = this.products.reverse();
-            console.log("Productd data from API: ", response.data)
+            // console.log("Productd data from API: ", response.data)
           });
           
   },

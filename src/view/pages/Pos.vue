@@ -3,869 +3,1145 @@
 </script>
 
 <template>
-<div class="container container-12 posiza" data-app>
-    <v-alert v-model="printError" color="pink" dark border="top" transition="scale-transition" dismissible>
-        Was unable to print!
-    </v-alert>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <div class="row">
-        <div class="col-5">
-            <div class="sidebar-content">
-                <div class="left-1">
-                    <div class="row" style="padding:10px 20px">
-                      <v-col class="d-flex" cols="12">
-                        <div class="goBack">
-                            <i class="fa fa-arrow-left fa-4x iconColor " @click="goBack()"></i>
-                        </div>
-                        <template>
-                          <v-autocomplete
-                            v-model="curentCustomer"
-                            :items="items"
-                            item-text="address"
-                            item-value="id"
-                            :auto-select-first="true"
-                            :search-input.sync="search"
-                            class="mx-4"
-                            v-on:change="customerChecked = true"
-                            flat
-                            no-filter
-                            hide-no-data 
-                            return-object
-                          ></v-autocomplete>
-                        </template>
-                      </v-col>
-                    </div>
-                    <div class="row">
-                          <div class="addCustomer" @click="telMsg()">
-                              <i class="fa fa-pencil-square-o fa-4x iconColor "></i>
+<v-app>
+  <div class="container container-12 posiza" >
+      <v-alert v-model="printError" color="pink" dark border="top" transition="scale-transition" dismissible>
+          Was unable to print!
+      </v-alert>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+      <div class="row">
+          <div class="col-5">
+              <div class="sidebar-content">
+                  <div class="left-1">
+                      <div class="row" style="padding:10px 20px">
+                        <v-col class="d-flex" cols="12">
+                          <div class="goBack">
+                              <i class="fa fa-arrow-left fa-4x iconColor " @click="goBack()"></i>
                           </div>
-                        <div class="copyOrder">
-                            <i class="fa fa-files-o fa-4x iconColor mx-2" @click="copyLastOrder()"></i>
-                        </div>
-                        <div class="adr">
-                            <p>
-                                <span>{{ curentCustomer.name }}</span>
-                                <br />
-                                <span>{{ curentCustomer.address }}</span>
-                                <br />
-                                <span>{{ curentCustomer.phone }}</span>
-                                <br />
-                                <span>{{ curentCustomer.comment }}</span>
-                            </p>
-                            <i class="material-icons md-36 topcorner clearCustomer" v-if="customerChecked" @click="clearCustomer()">close</i>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- <audio ref="audioElm" src="@assets/beep.wav"></audio> -->
-                <div class="left-2">
-                    <div class="row" >
-
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="titleInner d-flex justify-content-between">
-                                    <div class="col-2 mb-2">
-                                        <strong>Qty</strong>
-                                    </div>
-                                    <div class="col-8">
-                                        <strong>Description</strong>
-                                    </div>
-                                    <div class="col-2">
-                                        <i class="material-icons md-36 clearOrder" @click="clearOrder()" v-if="order.items.length != 0">close</i>
-                                    </div>
-                                </div>
+                          <template>
+                            <v-autocomplete
+                              v-model="curentCustomer"
+                              :items="items"
+                              item-text="address"
+                              item-value="id"
+                              :auto-select-first="true"
+                              :search-input.sync="search"
+                              class="mx-4"
+                              v-on:change="customerChecked = true"
+                              flat
+                              no-filter
+                              hide-no-data 
+                              return-object
+                            ></v-autocomplete>
+                          </template>
+                        </v-col>
+                      </div>
+                      <div class="row">
+                            <div class="addCustomer" @click="telMsg()">
+                                <i class="fa fa-pencil-square-o fa-4x iconColor "></i>
                             </div>
-                            
-                            <div class="row listIem" v-for="(item, index) in order.items" :key="index">
-                                <div class="col-1" v-if="!restrictEdit">
-                                        <i class="material-icons md-24" style="font-size: 3em" @click="deleteProduct(item)">clear</i>
-                                </div>
-                                <!-- Pizza Render -->
+                          <div class="copyOrder">
+                              <i class="fa fa-files-o fa-4x iconColor mx-2" @click="copyLastOrder()"></i>
+                          </div>
+                          <div class="adr">
+                              <p>
+                                  <span>{{ curentCustomer.name }}</span>
+                                  <br />
+                                  <span>{{ curentCustomer.address }}</span>
+                                  <br />
+                                  <span>{{ curentCustomer.phone }}</span>
+                                  <br />
+                                  <span>{{ curentCustomer.comment }}</span>
+                              </p>
+                              <i class="material-icons md-36 topcorner clearCustomer" v-if="customerChecked" @click="clearCustomer()">close</i>
+                          </div>
+                      </div>
 
-                                <div class="col-7" v-if="item.custom == 'no'" @click="foobar(item)">
-                                    <div class="d-flex justify-content-between">
-                                        <span class="orderDisplay itemName" @click="foobar(item)">
-                                            <strong>{{ item.size.toUpperCase() }}
-                                                {{ item.name }}</strong>
-                                            <!-- <strong v-if="item.cuts == 1"> {{ item.cutsCount }} Cut</strong> -->
-                                        </span>
-                                        <span class="itemPrice">
-                                            <strong>{{
-                                (item.totalPrice * item.qty).toFixed(2)
-                                }}</strong>
-                                        </span>
-                                    </div>
-                                    <div class="deletedToppingInner">
-                                        <div class="d-flex justify-content-between changedSetting" v-if="item.cuts == 1">
-                                            <span>{{ item.cutsCount }} Cuts</span>
-                                            <span class="pading-10">0.00</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between changedSetting" v-if="item.crust == 'thin'">
-                                            <span>{{ item.crust }} Crust</span>
-                                            <span class="pading-10">0.00</span>
-                                        </div>
-                                        <!-- <strong v-if="item.cuts == 1"> {{ item.cutsCount }} Cut</strong> -->
-                                        <div class="d-flex justify-content-between changedSetting" v-if="item.sauce != 'sauce'">
-                                            <span>{{ item.sauce }}</span>
-                                            <span class="pading-10">0.00</span>
-                                        </div>
-                                    </div>
-                                    <div class="toppingInner">
-                                        <div class="wholeTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
-                                                <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                                                <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                                <span class="pading-10">{{
-                                                        (topping.price * topping.count).toFixed(2)
-                                                    }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="orderDisplay" @click="foobar(item)">
-                                        <strong>&nbsp;</strong>
-                                    </div>
-                                    <div class="pl-4" style="font-size: 14px">
-                                        <div class="wholeDefTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.defaultToppings" :key="index">
-                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
-                                                <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                                defTopping.isDeleted &&
-                                item.is_special == 0 &&
-                                defTopping.id != 5
-                            ">- {{ defTopping.price }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="bSideTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.half1.defaultToppings" :key="index">
-                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">A - {{ defTopping.name }}</span>
-                                                <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                                defTopping.isDeleted &&
-                                item.is_special == 0 &&
-                                defTopping.id != 5
-                            ">- {{ defTopping.price }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="bSideTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.half1.toppings" :key="index">
-                                                <span v-if="topping.count == 1">A + {{ topping.name }}</span>
-                                                <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
-                                                <span>{{
-                            (topping.price * topping.count).toFixed(2)
-                            }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="orderDisplay" @click="foobar(item)">
-                                        <strong>&nbsp;</strong>
-                                    </div>
-                                    <div class="pl-4" style="font-size: 14px">
-                                        <div class="bSideTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.half2.defaultToppings" :key="index">
-                                                <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">B - {{ defTopping.name }}</span>
-                                                <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                                defTopping.isDeleted &&
-                                item.is_special == 0 &&
-                                defTopping.id != 5
-                            ">- {{ defTopping.price }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="bSideTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.half2.toppings" :key="index">
-                                                <span v-if="topping.count == 1">B + {{ topping.name }}</span>
-                                                <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
-                                                <span class="pading-10">{{
-                            (topping.price * topping.count).toFixed(2)
-                            }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- End of Pizza Render -->
-
-                                <!-- Other Products rendering -->
-                                
-                                <div class="col-7" v-if="item.custom == 'other'">
-                                    <div class="d-flex justify-content-between">
-                                        <span class="orderDisplay itemName" @click="foobar(item)">
-                                            <strong>{{ item.qty }} {{ item.name }}</strong>
-                                            <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
-                                        </span>
-                                        <span class="itemPrice">
-                                            <strong>{{
-                          (item.price * item.qty).toFixed(2)
-                        }}</strong>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- Sticks Rendering -->
-                                <div class="col-7" v-if="item.custom == 'sticks'">
-                                    <div class="d-flex justify-content-between">
-                                        <span class="orderDisplay itemName" @click="foobar(item)">
-                                            <strong>{{ item.qty }} {{ item.name }}</strong>
-                                            <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
-                                        </span>
-                                        <span class="itemPrice">
-                                            <strong>{{
-                          (item.totalPrice * item.qty).toFixed(2)
-                        }}</strong>
-                                        </span>
-                                    </div>
-
-                                    <div class="pl-4" style="font-size: 14px">
-                                      <div class="sticksTopping">
-                                        <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.defaultToppings" :key="index">
-                                            <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
-                                            <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="defTopping.isDeleted">0.00</span>
-                                        </div>
-                                      </div> 
-
-                                        <div class="d-flex justify-content-between deletedToppingStick" v-if="item.size == 'thin'">
-                                            <span>{{ item.size }} Crust</span>
-                                        </div>
-                                        <div class="sticksTopping">
-                                            <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
-
-                                                <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                                                <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                                <span >{{
-                                                (topping.price * topping.count).toFixed(2)
-                                                }}</span>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                                <!-- Half and Half Pizza View -->
-
-                                <div class="col-7 " v-if="item.custom == 'yes'" @click="foobar(item)">
-                                  <div class="halfInner">
-                                    <div class="d-flex justify-content-between halfSett">
-                                        <span class="orderDisplay" @click="foobar(item)">
-                                            <strong>{{ item.qty }}
-                                                {{ item.size.toUpperCase() }} A/B</strong>
-                                            <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
-                                        </span>
-                                        <span>
-                                            <strong>{{
-                          (item.totalPrice * item.qty).toFixed(2)
-                        }}</strong>
-                                        </span>
-                                    </div>
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.cuts == 1">
-                                        <span>{{ item.cutsCount }} Cuts</span>
-                                        <span class="pading-10">0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
-                                        <span>{{ item.crust }} Crust</span>
-                                        <span class="pading-10">0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'sauce'">
-                                        <span>{{ item.sauce }}</span>
-                                        <span class="pading-10">0.00</span> 
-                                    </div>
-                                    <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
-                                        <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                                        <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                        <span>{{
-                        (topping.price * topping.count).toFixed(2)
-                      }}</span>
-                                    </div>
-
-                                    <div class="orderDisplay halfName" @click="foobar(item)">
-                                        <strong>A {{ item.half1.name }}</strong>
-                                    </div>
-                                    <div style="font-size: 14px">
-                                        <div class="d-flex justify-content-between" v-for="(defTopping, index) in item.half1.defaultToppings" :key="index">
-                                            <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
-                                            <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                            defTopping.isDeleted &&
-                            item.half1.is_special == 0 &&
-                            defTopping.id != 5
-                          " >- {{ defTopping.price }}</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between" v-for="(topping, index) in item.half1.toppings" :key="index">
-                                            <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                                            <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                            <span>{{ (topping.price * topping.count).toFixed(2) }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="orderDisplay halfName" @click="foobar(item)">
-                                        <strong>B {{ item.half2.name }}</strong>
-                                    </div>
-                                    <div style="font-size: 14px">
-                                        <div class="d-flex justify-content-between" v-for="(defTopping, index) in item.half2.defaultToppings" :key="index">
-                                            <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
-                                            <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
-                            defTopping.isDeleted &&
-                            item.half2.is_special == 0 &&
-                            defTopping.id != 5
-                          ">- {{ defTopping.price }}
-                                            </span>
-                                        </div>
-                                        <div class="d-flex justify-content-between" v-for="(topping, index) in item.half2.toppings" :key="index">
-                                            <span v-if="topping.count == 1">+ {{ topping.name }}</span>
-                                            <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
-                                            <span>{{ (topping.price * topping.count).toFixed(2) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>
-                                <!-- End Of Half and Half Pizza View -->
-
-                                <div class="col-4" style="margin: 0px">
-                                    <div class="d-flex justify-content-between">
-                                        <span class="material-icons iconMinus" v-bind:class="{ static: restrictEdit }" v-if="item.qty > 1 " @click="minusQty(item)">remove</span>
-                                        <span class="material-icons iconMinus" v-bind:class="{ static: restrictEdit }" v-if="item.qty == 1" @click="minusQty(item)">delete_outline</span>
-                                        <span class="itemQty">{{ item.qty }}</span>
-                                        <span class="material-icons iconPlus" v-bind:class="{ static: restrictEdit }" @click="addQty(item)">add</span>
-                                    </div>
-                                </div>
-
-                                <!-- <div>{{ item.qty }}</div> -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <br />
-                <br />
-            </div>
-        </div>
-        <div class="col-7 mt-2 right-innery">
-            <div class="row">
-                <div class="col-12">
-                    <div class="row mt-1">
-                        <div class="col w-1">
-                            <span>
-                                <strong>
-                                    <span class="activeOrder h3">#{{ order.orderId }}</span>
-                                </strong>
-                            </span>
-                            <span class="mx-3 h3">
-                                <strong>{{ hours }}:{{ minutes }}:{{ seconds }}</strong>
-                            </span>
-                        </div>
-
-                        <!-- Display Total Price and Tax  -->
-                        <div class="col-6 w-1 gray">
-                            <h4 class=" text-md-center">TOTAL: {{ totalNet.toFixed(2) }}</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <table class="w-100 d-noe">
-                <tr>
-                    <td>
-                        <table class="table quantityTable" cellpadding="0" cellspacing="0" v-if="showProducts">
-                            <tr>
-                                <td v-for="(x, index) in 10" :key="x">
-                                    <div class="w-b-1-circle float-left quantity" @click="quantityBar(index)">
-                                        <span>{{ index }}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <div v-if="showProducts">
-                            <div class="row pizza p_binder">
-                                <products v-if="!drinkCat" :categoryId="categoryId" :halfProductVar="halfProduct" @onProductSelect="productSelect" @onAddHalf="addHalf" @onSetting="posSetting" @onFunction="posFunction" @onDoneOrder="doneOrder" @onDrinks="drinkProducts" />
-
-                                <drinks v-if="drinkCat" @onProductSelect="productSelect" @onDoneOrder="doneOrder" @onDrinks="drinkProducts" @onSetting="posSetting" @onFunction="posFunction" />
-                            </div>
-                        </div>
-                        <div class="row pizza p_binder" v-if="customerOrdersComponent">
-                            <orders :customerPhone="this.curentCustomer.phone" @onSelectedOrder="selectOrder" />
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <!-- Calculator component -->
-
-            <!-- UX Change -->
-            <div class="col-12 right-2" v-if="calculatorModal">
-                <div class="row" v-if="!discountOrder || !discountItem">
-                    <div class="col w-3 gray" v-if="!discountActiveVar">
-                        <div>
-                            <h4>Discount:</h4>
-                        </div>
-                        <div>
-                            <h4 id="total_price">
-                                -{{ totalDisc.toFixed(2) }} {{ order.discountName }}
-                            </h4>
-                        </div>
-                    </div>
-                    <div class="col w-3 red" v-if="discountActiveVar">
-                        <div>
-                            <h4>Discount:</h4>
-                        </div>
-                        <div>
-                            <h4 id="total_price">
-                                -{{ totalDisc.toFixed(2) }} {{ order.discountName }}
-                            </h4>
-                        </div>
-                    </div>
-                    <div class="col w-3 gray">
-                        <div>
-                            <h4>Paid:</h4>
-                        </div>
-                        <div>
-                            <h4 id="total_price">{{ Number(cashInput).toFixed(2) }}</h4>
-                        </div>
-                    </div>
-                    <div class="col w-3 gray" v-if="cashInput - totalPrice >= 0">
-                        <div>
-                            <h4>Change:</h4>
-                        </div>
-                        <div>
-                            <h4 id="total_price">
-                                {{ (cashInput - totalPrice).toFixed(2) }}
-                            </h4>
-                        </div>
-                    </div>
-                    <div class="col w-3 gray" v-if="cashInput - totalPrice < 0">
-                        &nbsp;
-                    </div>
-                    <div class="col w-3 gray" v-if="deliveryActiveVar">
-                        <div>
-                            <h4>Delivery Fee:</h4>
-                        </div>
-                        <div>
-                            <h4 id="total_price">{{ order.deliveryFee }}</h4>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- <div class="row" v-if="discountOrder || discountItem">
-                    <div class="col w-3 gray">
-                        <div>
-                            <h4>Discount:</h4>
-                        </div>
-                        <div>
-                            <h4 id="total_price">{{ cashInput }}</h4>
-                        </div>
-                    </div>
-                </div> -->
-
-                <div class="row my-1">
-                    <div class="col-2 calcBtn blue" v-bind:class="{ active: futureActive }" @click="futureModal = true">
-                        Future
-                    </div>
-                    <div class="col-6">&nbsp;</div>
-                    <div class="col-2 calcBtn lightGreen" @click="calcCash(100)">
-                        100
-                    </div>
-                    <div class="col-2 calcBtn blue" @click="invoiceActive()">
-                        Invoice
-                    </div>
-                    <!-- <div class="col-2 calcBtn blue">
-                        &nbsp;
-                    </div> -->
-                </div>
-                <div class="row my-1">
-                    <!-- <div class="col-2 calcBtn blue" @click="studentModal = true">
-                        Student
-                    </div> -->
-                    <!-- <div class="col-2 calcBtn blue" @click="changeDefPrice()">
-                        DEF
-                    </div> -->
-                    <div class="col-2 calcBtn blue">
-                        &nbsp;
-                    </div>
-                    <div class="col-2 calcBtn" @click="calcInput('7')">7</div>
-                    <div class="col-2 calcBtn" @click="calcInput('8')">8</div>
-                    <div class="col-2 calcBtn" @click="calcInput('9')">9</div>
-                    <div class="col-2 calcBtn lightGreen" @click="calcCash(50)">50</div>
-                    <div class="col-2 calcBtn blue" v-bind:class="{ active: woltActive }" @click="woltDelivery()">
-                        Wolt
-                    </div>
-                </div>
-
-                <div class="row my-1">
-                    <!-- <div class="col-2 calcBtn blue" @click="teamModal = true">Team</div> -->
-                    <!-- <div class="col-2 calcBtn blue" @click="bigOrderModal = true">Big Order</div> -->
-                    <div class="col-2 calcBtn blue">&nbsp;</div>
-                    <div class="col-2 calcBtn" @click="calcInput('4')">4</div>
-                    <div class="col-2 calcBtn" @click="calcInput('5')">5</div>
-                    <div class="col-2 calcBtn" @click="calcInput('6')">6</div>
-                    <div class="col-2 calcBtn lightGreen" @click="calcCash(20)">20</div>
-                    <!-- <div class="col-2 calcBtn blue" v-bind:class="{ active: glovoActive }" @click="glovoDelivery()">
-                        Glovo
-                    </div> -->
-                    <div class="col-2 calcBtn blue" v-bind:class="{ active: glovoActive }" >
-                        &nbsp;
-                    </div>
-                </div>
-                <div class="row my-1">
-                    <!-- <div class="col-2 calcBtn blue" @click="studentDisc()">
-                        Student
-                    </div> -->
-                    <div class="col-2 calcBtn blue" @click="checkManager()">
-                        Manager PIN
-                    </div>
-                    <div class="col-2 calcBtn" @click="calcInput('1')">1</div>
-                    <div class="col-2 calcBtn" @click="calcInput('2')">2</div>
-                    <div class="col-2 calcBtn" @click="calcInput('3')">3</div>
-                    <div class="col-2 calcBtn lightGreen" @click="calcCash(10)">10</div>
-                    <div class="col-2 calcBtn blue" @click="ronnysDelivery()" v-bind:class="{ active: ronnysActive }">
-                        Delivery
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-2 calcBtn blue" @click="splitModal = true">
-                        Split
-                    </div>
-                    <!-- <div class="col-2 calcBtn blue">
-                        &nbsp;
-                    </div> -->
-                    <div class="col-4 calcBtn" @click="calcInput('0')">0</div>
-                    <div class="col-2 calcBtn" @click="calcInput('.')">.</div>
-                    <div class="col-2 calcBtn lightGreen" @click="calcCash(5)">5</div>
-                    <div class="col-2 calcBtn blue" @click="takeoutActive()" v-bind:class="{ active: takeoutActiveVar }">
-                        Take Out
-                    </div>
-                </div>
-                <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="managerDisc()">
-                        Manager
-                    </div>
-                    <div class="col-6 calcBtn red" @click="calcClear()">
-                        <i class="material-icons md-36 clearItem">close</i>
-                    </div>
-                    <div class="col-2 calcBtn lightGreen" @click="calcCash(2)">2</div>
-                    <div class="col-2 calcBtn blue" @click="walkinActive()" v-bind:class="{ active: walkinActiveVar }">
-                        Walk In
-                    </div>
-                </div>
-                <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="checkManager()">CRM DISC</div>
-                    <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">
-                        PAY {{ Number(totalPrice).toFixed(2) }}
-                    </div>
-                    <div class="col-2 calcBtn lightGreen" @click="calcCash(1)">1</div>
-                    <div class="col-2">&nbsp;</div>
-                </div>
-                <div class="row my-1">
-                    <div class="col-2 calcBtn blue" @click="noDisc()">NO Disc</div>
-                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 0 }" @click="activatePromise(0)">15</div>
-                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 1 }" @click="activatePromise(1)">20</div>
-                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 2 }" @click="activatePromise(2)">30</div>
-                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 3 }" @click="activatePromise(3)">40</div>
-                    <div class="col-2 calcBtn blue" :class="{ active: promiseFee_el == 4 }" @click="activatePromise(4)">50</div>
-                </div>
-                <div class="row calcFooter">
-                    <div v-if="!restrictEdit" class="col-2 paddingClear" style="padding-left: 0" @click="closeCalc()">
-                        <div class="w-b-1 square calcBtn">
-                            <i class="fa fa-home fa-4x iconColor home"></i>
-                        </div>
-                    </div>
-                    <div v-if="restrictEdit" class="col-2 paddingClear" style="padding-left: 0">
-                        <div class="w-b-1 square calcBtn">
-                            <i class="fa fa-home fa-4x iconColor home"></i>
-                        </div>
-                    </div>
-                    <div class="col-4">&nbsp;</div>
-                    <div class="col-2 calcBtn green " @click="payLater()" v-b-modal.confirmModal>Pay Later</div>
-                    <div class="col-2 calcBtn blue buttonTitle" @click="payCard()" v-b-modal.confirmModal>Card</div>
-                    <div class="col-2 calcBtn green buttonTitle" @click="doneCash()" v-b-modal.confirmModal>Cash</div>
-                </div>
-            </div>
-            <!-- End of UX Change -->
-
-            <!-- End Of Calculator Component -->
-
-            <div class="row mt-1 right-2" v-if="showIngredients">
-                <ingredients v-if="wholePizzaPart == 1" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half1.defaultToppings" :toppings="this.pizza.half1.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
-                <ingredients v-if="wholePizzaPart == 2" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half2.defaultToppings" :toppings="this.pizza.half2.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
-                <ingredients v-if="wholePizzaPart == 3" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.defaultToppings" :toppings="
-              this.pizza.toppings.concat(
-                this.pizza.half1.toppings,
-                this.pizza.half2.toppings
-              )
-            " :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
-                <ingredients v-if="halfPizzaPart == 1" :product="this.customPizza.half1" :sauce="curSauce" :isHalfPizza="this.isHalfPizza" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="this.customPizza.half1.defaultToppings" :toppings="this.customPizza.half1.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusTopping="deleteCusTopping" />
-                <ingredients v-if="halfPizzaPart == 2" :product="this.customPizza.half2" :isHalfPizza="this.isHalfPizza" :sauce="curSauce" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="this.customPizza.half2.defaultToppings" :toppings="this.customPizza.half2.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusTopping="deleteCusTopping" />
-                <ingredients v-if="halfPizzaAll" :product="this.customPizza" :isHalfPizza="this.isHalfPizza" :sauce="curSauce" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="
-              this.customPizza.half2.defaultToppings.concat(
-                this.customPizza.half1.defaultToppings
-              )
-            " :toppings="
-              this.customPizza.half2.toppings.concat(
-                this.customPizza.half1.toppings,
-                this.customPizza.toppings
-              )
-            " :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusMainTopping="deleteCusMainTopping" @onDeleteCusTopping="deleteCusTopping" />
-
-                <sticksIngredients v-if="isSticks" :defaultToppings="this.sticks.defaultToppings" :isSticks="this.isSticks" :toppings="this.sticks.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSticksSize="sticksSize" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
-            </div>
-
-            <div class="row my-5 right-3" v-if="showIngredients && !isSticks">
-                
-                <div class="col" style="padding-left: 0" @click="halfPizza('A')">
-                    <div class="w-h-1 square" v-bind:class="[
-                { active: halfPizzaPart == 1 },
-                { active: wholePizzaPart == 1 },
-                { size_static: noAB },
-              ]">
-                        <span class="position-relative topMargin">
-                            <strong>A</strong>
-                        </span>
-                    </div>
-                </div>
-                <div class="col" style="padding-left: 0" @click="halfPizza('B')">
-                    <div class="w-h-1 square" v-bind:class="[
-                { active: halfPizzaPart == 2 },
-                { active: wholePizzaPart == 2 },
-                { size_static: noAB },
-              ]">
-                        <span class="position-relative topMargin" >
-                            <strong>B</strong>
-                        </span>
-                    </div>
-                </div>
-                <div class="col paddingClear">
-                    <div class="w-h-1 square" v-bind:class="[
-                { active: halfPizzaAll },
-                { active: wholePizzaPart == 3 },
-              ]" @click="seeHalf()">
-                        <span class="position-relative topMargin" >
-                            <strong>A/B</strong>
-                        </span>
-                    </div>
-                </div>
-                <div class="col size paddingClear p-0">
-                    <div class="w-h-1 square paddingClear size_active font-weight-bold" v-bind:class="{ size_static: smallHalf, active: activeSmall }" @click="addSize('s')">
-                        <span>S</span>
-                    </div>
-                </div>
-                <div class="col size paddingClear p-0">
-                    <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{ active: activeMedium }" @click="addSize('m')">
-                        <span>M</span>
-                    </div>
-                </div>
-                <div class="col size paddingClear p-0">
-                    <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{ active: activeXl }" @click="addSize('xl')">
-                        <span>XL</span>
-                    </div>
-                </div>
-                <div class="col p-0 paddingClear">
-                  <div class="w-1-grey square" @click="showProductsClear()">
-                    <i class="fa fa-home fa-4x iconColor"></i>
                   </div>
-                </div>
-                <div class="col thin paddingClear p-0">
-                    <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{ active: crustVar }" v-if="isHalfPizza === 'yes'" @click="addCrust(customPizza.crust)">
-                        <span>Thin</span>
-                    </div>
-                    <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{ active: crustVar }" v-if="isPizza === 'yes'" @click="addCrust(pizza.crust)">
-                        <span>Thin</span>
-                    </div>
-                </div>
-                <div class="col cuts paddingClear p-0">
-                    <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: mediumCuts, active: cutsCount == 6 }" @click="cuts(6)">
-                        <span class="topMargin">6 Cut</span>
-                    </div>
-                </div>
-                <div class="col cuts paddingClear p-0">
-                    <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: cutActive, active: cutsCount == 12 }" @click="cuts(12)">
-                        <span class="topMargin">12 Cut</span>
-                    </div>
-                </div>
-                <div class="col cuts paddingClear p-0">
-                    <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: cutActive, active: cutsCount == 16 }" @click="cuts(16)">
-                        <span class="topMargin">16 Cut</span>
-                    </div>
-                </div>
-                <div class="col p-0 paddingClear">
-                    <div class="w-1" @click="showProductsComponent()">
-                        <i class="fa fa-check fa-4x iconColor"></i>
-                    </div>
-                </div>
-            </div>
-            <hr />
-        </div>
-    </div>
 
-    <!-- Coupon Modal -->
-    <div v-if="couponModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Coupon</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="couponModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="text" id="coupon_code" placeholder="Enter Coupon Code" />
-                            </div>
+                  <!-- <audio ref="audioElm" src="@assets/beep.wav"></audio> -->
+                  <div class="left-2">
+                      <div class="row" >
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="couponModal = false">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary">
-                                    Save changes
-                                </button>
-                            </div>
-                        </div>
+                          <div class="col-12">
+                              <div class="row">
+                                  <div class="titleInner d-flex justify-content-between">
+                                      <div class="col-2 mb-2">
+                                          <strong>Qty</strong>
+                                      </div>
+                                      <div class="col-8">
+                                          <strong>Description</strong>
+                                      </div>
+                                      <div class="col-2">
+                                          <i class="material-icons md-36 clearOrder" @click="clearOrder()" v-if="order.items.length != 0">close</i>
+                                      </div>
+                                  </div>
+                              </div>
+                              
+                              <div class="row listIem" v-for="(item, index) in order.items" :key="index">
+                                  <div class="col-1" v-if="!restrictEdit">
+                                          <i class="material-icons md-24" style="font-size: 3em" @click="deleteProduct(item)">clear</i>
+                                  </div>
+                                  <!-- Pizza Render -->
+
+                                  <div class="col-7" v-if="item.custom == 'no'" @click="foobar(item)">
+                                      <div class="d-flex justify-content-between">
+                                          <span class="orderDisplay itemName" @click="foobar(item)">
+                                              <strong>{{ item.size.toUpperCase() }}
+                                                  {{ item.name }}</strong>
+                                              <!-- <strong v-if="item.cuts == 1"> {{ item.cutsCount }} Cut</strong> -->
+                                          </span>
+                                          <span class="itemPrice">
+                                              <strong>{{
+                                  (item.totalPrice * item.qty).toFixed(2)
+                                  }}</strong>
+                                          </span>
+                                      </div>
+                                      <div class="deletedToppingInner">
+                                          <div class="d-flex justify-content-between changedSetting" v-if="item.cuts == 1">
+                                              <span>{{ item.cutsCount }} Cuts</span>
+                                              <span class="pading-10">0.00</span>
+                                          </div>
+                                          <div class="d-flex justify-content-between changedSetting" v-if="item.crust == 'thin'">
+                                              <span>{{ item.crust }} Crust</span>
+                                              <span class="pading-10">0.00</span>
+                                          </div>
+                                          <!-- <strong v-if="item.cuts == 1"> {{ item.cutsCount }} Cut</strong> -->
+                                          <div class="d-flex justify-content-between changedSetting" v-if="item.sauce != 'sauce'">
+                                              <span>{{ item.sauce }}</span>
+                                              <span class="pading-10">0.00</span>
+                                          </div>
+                                      </div>
+                                      <div class="toppingInner">
+                                          <div class="wholeTopping">
+                                              <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
+                                                  <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                                                  <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                                                  <span class="pading-10">{{
+                                                          (topping.price * topping.count).toFixed(2)
+                                                      }}
+                                                  </span>
+                                              </div>
+                                          </div>
+                                      </div>
+
+                                      <div class="orderDisplay" @click="foobar(item)">
+                                          <strong>&nbsp;</strong>
+                                      </div>
+                                      <div class="pl-4" style="font-size: 14px">
+                                          <div class="wholeDefTopping">
+                                              <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.defaultToppings" :key="index">
+                                                  <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
+                                                  <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                                                      defTopping.isDeleted &&
+                                                      item.is_special == 0 &&
+                                                      defTopping.id != 5
+                                                  ">
+                                                - {{ defTopping.price }}
+                                                </span>
+                                              </div>
+                                          </div>
+                                          <div class="bSideTopping">
+                                              <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.half1.defaultToppings" :key="index">
+                                                  <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">A - {{ defTopping.name }}</span>
+                                                  <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                                  defTopping.isDeleted &&
+                                  item.is_special == 0 &&
+                                  defTopping.id != 5
+                              ">- {{ defTopping.price }}</span>
+                                              </div>
+                                          </div>
+                                          <div class="bSideTopping">
+                                              <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.half1.toppings" :key="index">
+                                                  <span v-if="topping.count == 1">A + {{ topping.name }}</span>
+                                                  <span v-if="topping.count != 1">A + {{ topping.count }} {{ topping.name }}</span>
+                                                  <span>{{
+                              (topping.price * topping.count).toFixed(2)
+                              }}</span>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="orderDisplay" @click="foobar(item)">
+                                          <strong>&nbsp;</strong>
+                                      </div>
+                                      <div class="pl-4" style="font-size: 14px">
+                                          <div class="bSideTopping">
+                                              <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.half2.defaultToppings" :key="index">
+                                                  <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">B - {{ defTopping.name }}</span>
+                                                  <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                                  defTopping.isDeleted &&
+                                  item.is_special == 0 &&
+                                  defTopping.id != 5
+                              ">- {{ defTopping.price }}</span>
+                                              </div>
+                                          </div>
+                                          <div class="bSideTopping">
+                                              <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.half2.toppings" :key="index">
+                                                  <span v-if="topping.count == 1">B + {{ topping.name }}</span>
+                                                  <span v-if="topping.count != 1">B + {{ topping.count }} {{ topping.name }}</span>
+                                                  <span class="pading-10">{{
+                              (topping.price * topping.count).toFixed(2)
+                              }}</span>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <!-- End of Pizza Render -->
+
+                                  <!-- Other Products rendering -->
+                                  
+                                  <div class="col-7" v-if="item.custom == 'other'">
+                                      <div class="d-flex justify-content-between">
+                                          <span class="orderDisplay itemName" @click="foobar(item)">
+                                              <strong>{{ item.qty }} {{ item.name }}</strong>
+                                              <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
+                                          </span>
+                                          <span class="itemPrice">
+                                              <strong>{{
+                            (item.price * item.qty).toFixed(2)
+                          }}</strong>
+                                          </span>
+                                      </div>
+                                  </div>
+
+                                  <!-- Sticks Rendering -->
+                                  <div class="col-7" v-if="item.custom == 'sticks'">
+                                      <div class="d-flex justify-content-between">
+                                          <span class="orderDisplay itemName" @click="foobar(item)">
+                                              <strong>{{ item.qty }} {{ item.name }}</strong>
+                                              <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
+                                          </span>
+                                          <span class="itemPrice">
+                                              <strong>{{
+                            (item.totalPrice * item.qty).toFixed(2)
+                          }}</strong>
+                                          </span>
+                                      </div>
+
+                                      <div class="pl-4" style="font-size: 14px">
+                                        <div class="sticksTopping">
+                                          <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.defaultToppings" :key="index">
+                                              <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
+                                              <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="defTopping.isDeleted">0.00</span>
+                                          </div>
+                                        </div> 
+
+                                          <div class="d-flex justify-content-between deletedToppingStick" v-if="item.size == 'thin'">
+                                              <span>{{ item.size }} Crust</span>
+                                          </div>
+                                          <div class="sticksTopping">
+                                              <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
+
+                                                  <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                                                  <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                                                  <span >{{
+                                                  (topping.price * topping.count).toFixed(2)
+                                                  }}</span>
+                                              </div>
+                                          </div>
+
+                                      </div>
+                                  </div>
+                                  <!-- Half and Half Pizza View -->
+
+                                  <div class="col-7 " v-if="item.custom == 'yes'" @click="foobar(item)">
+                                    <div class="halfInner">
+                                      <div class="d-flex justify-content-between halfSett">
+                                          <span class="orderDisplay" @click="foobar(item)">
+                                              <strong>{{ item.qty }}
+                                                  {{ item.size.toUpperCase() }} A/B</strong>
+                                              <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
+                                          </span>
+                                          <span>
+                                              <strong>{{
+                            (item.totalPrice * item.qty).toFixed(2)
+                          }}</strong>
+                                          </span>
+                                      </div>
+                                      <div class="d-flex justify-content-between deletedTopping" v-if="item.cuts == 1">
+                                          <span>{{ item.cutsCount }} Cuts</span>
+                                          <span class="pading-10">0.00</span>
+                                      </div>
+                                      <div class="d-flex justify-content-between deletedTopping" v-if="item.crust == 'thin'">
+                                          <span>{{ item.crust }} Crust</span>
+                                          <span class="pading-10">0.00</span>
+                                      </div>
+                                      <div class="d-flex justify-content-between deletedTopping" v-if="item.sauce != 'sauce'">
+                                          <span>{{ item.sauce }}</span>
+                                          <span class="pading-10">0.00</span> 
+                                      </div>
+                                      <div class="d-flex justify-content-between halfToppings" v-for="(topping, index) in item.toppings" :key="index">
+                                          <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                                          <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                                          <span>{{
+                          (topping.price * topping.count).toFixed(2)
+                        }}</span>
+                                      </div>
+
+                                      <div class="orderDisplay halfName" @click="foobar(item)">
+                                          <strong>A {{ item.half1.name }}</strong>
+                                      </div>
+                                      <div style="font-size: 14px">
+                                          <div class="d-flex justify-content-between" v-for="(defTopping, index) in item.half1.defaultToppings" :key="index">
+                                              <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
+                                              <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                              defTopping.isDeleted &&
+                              item.half1.is_special == 0 &&
+                              defTopping.id != 5
+                            " >- {{ defTopping.price }}</span>
+                                          </div>
+                                          <div class="d-flex justify-content-between" v-for="(topping, index) in item.half1.toppings" :key="index">
+                                              <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                                              <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                                              <span>{{ (topping.price * topping.count).toFixed(2) }}</span>
+                                          </div>
+                                      </div>
+                                      <div class="orderDisplay halfName" @click="foobar(item)">
+                                          <strong>B {{ item.half2.name }}</strong>
+                                      </div>
+                                      <div style="font-size: 14px">
+                                          <div class="d-flex justify-content-between" v-for="(defTopping, index) in item.half2.defaultToppings" :key="index">
+                                              <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
+                                              <span class="pading-10" :class="defTopping.isDeleted ? 'deletedTopping' : ''" v-if="
+                              defTopping.isDeleted &&
+                              item.half2.is_special == 0 &&
+                              defTopping.id != 5
+                            ">- {{ defTopping.price }}
+                                              </span>
+                                          </div>
+                                          <div class="d-flex justify-content-between" v-for="(topping, index) in item.half2.toppings" :key="index">
+                                              <span v-if="topping.count == 1">+ {{ topping.name }}</span>
+                                              <span v-if="topping.count != 1">+ {{ topping.count }} {{ topping.name }}</span>
+                                              <span>{{ (topping.price * topping.count).toFixed(2) }}</span>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  </div>
+                                  <!-- End Of Half and Half Pizza View -->
+
+                                  <div class="col-4" style="margin: 0px">
+                                      <div class="d-flex justify-content-between">
+                                          <span class="material-icons iconMinus" v-bind:class="{ static: restrictEdit }" v-if="item.qty > 1 " @click="minusQty(item)">remove</span>
+                                          <span class="material-icons iconMinus" v-bind:class="{ static: restrictEdit }" v-if="item.qty == 1" @click="minusQty(item)">delete_outline</span>
+                                          <span class="itemQty">{{ item.qty }}</span>
+                                          <span class="material-icons iconPlus" v-bind:class="{ static: restrictEdit }" @click="addQty(item)">add</span>
+                                      </div>
+                                  </div>
+
+                                  <!-- <div>{{ item.qty }}</div> -->
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <br />
+                  <br />
+              </div>
+          </div>
+          <div class="col-7 mt-2 right-innery">
+              <div class="row">
+                  <div class="col-12">
+                      <div class="row mt-1">
+                          <div class="col w-1">
+                              <span>
+                                  <strong>
+                                      <span class="activeOrder h3">#{{ order.orderId }}</span>
+                                  </strong>
+                              </span>
+                              <span class="mx-3 h3">
+                                  <strong>{{ hours }}:{{ minutes }}:{{ seconds }}</strong>
+                              </span>
+                          </div>
+
+                          <!-- Display Total Price and Tax  -->
+                          <div class="col-6 w-1 gray">
+                              <h4 class=" text-md-center">TOTAL: {{ totalNet.toFixed(2) }}</h4>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <table class="w-100 d-noe">
+                  <tr>
+                      <td>
+                          <table class="table quantityTable" cellpadding="0" cellspacing="0" v-if="showProducts">
+                              <tr>
+                                  <td v-for="(x, index) in 10" :key="x">
+                                      <div class="w-b-1-circle float-left quantity" @click="quantityBar(index)">
+                                          <span>{{ index }}</span>
+                                      </div>
+                                  </td>
+                              </tr>
+                          </table>
+                          <div v-if="showProducts">
+                              <div class="row pizza p_binder">
+                                  <products v-if="!drinkCat" :categoryId="categoryId" :halfProductVar="halfProduct" @onProductSelect="productSelect" @onAddHalf="addHalf" @onSetting="posSetting" @onFunction="posFunction" @onDoneOrder="doneOrder" @onDrinks="drinkProducts" />
+
+                                  <drinks v-if="drinkCat" @onProductSelect="productSelect" @onDoneOrder="doneOrder" @onDrinks="drinkProducts" @onSetting="posSetting" @onFunction="posFunction" />
+                              </div>
+                          </div>
+                          <div class="row pizza p_binder" v-if="customerOrdersComponent">
+                              <orders :customerPhone="this.curentCustomer.phone" @onSelectedOrder="selectOrder" />
+                          </div>
+                      </td>
+                  </tr>
+              </table>
+              <!-- Calculator component -->
+
+              <!-- UX Change -->
+              <div class="col-12 right-2" v-if="calculatorModal">
+                  <div class="row" v-if="!discountOrder || !discountItem">
+                      <div class="col w-3 gray" v-if="!discountActiveVar">
+                          <div>
+                              <h4>Discount:</h4>
+                          </div>
+                          <div>
+                              <h4 id="total_price">
+                                  -{{ totalDisc.toFixed(2) }} {{ order.discountName }}
+                              </h4>
+                          </div>
+                      </div>
+                      <div class="col w-3 red" v-if="discountActiveVar">
+                          <div>
+                              <h4>Discount:</h4>
+                          </div>
+                          <div>
+                              <h4 id="total_price">
+                                  -{{ totalDisc.toFixed(2) }} {{ order.discountName }}
+                              </h4>
+                          </div>
+                      </div>
+                      <div class="col w-3 gray">
+                          <div>
+                              <h4>Paid:</h4>
+                          </div>
+                          <div>
+                              <h4 id="total_price">{{ Number(cashInput).toFixed(2) }}</h4>
+                          </div>
+                      </div>
+                      <div class="col w-3 gray" v-if="cashInput - totalPrice >= 0">
+                          <div>
+                              <h4>Change:</h4>
+                          </div>
+                          <div>
+                              <h4 id="total_price">
+                                  {{ (cashInput - totalPrice).toFixed(2) }}
+                              </h4>
+                          </div>
+                      </div>
+                      <div class="col w-3 gray" v-if="cashInput - totalPrice < 0">
+                          &nbsp;
+                      </div>
+                      <div class="col w-3 gray" v-if="deliveryActiveVar">
+                          <div>
+                              <h4>Delivery Fee:</h4>
+                          </div>
+                          <div>
+                              <h4 id="total_price">{{ order.deliveryFee }}</h4>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- <div class="row" v-if="discountOrder || discountItem">
+                      <div class="col w-3 gray">
+                          <div>
+                              <h4>Discount:</h4>
+                          </div>
+                          <div>
+                              <h4 id="total_price">{{ cashInput }}</h4>
+                          </div>
+                      </div>
+                  </div> -->
+
+                  <div class="row my-1">
+                      <div class="col-2 calcBtn blue" v-bind:class="{ active: futureActive }" @click="futureModal = true">
+                          Future
+                      </div>
+                      <div class="col-6">&nbsp;</div>
+                      <div class="col-2 calcBtn lightGreen" @click="calcCash(100)">
+                          100
+                      </div>
+                      <div class="col-2 calcBtn" v-bind:class=" invoiceActiveVar ? 'active' : 'blue' " @click="invoiceActive()">
+                          Invoice
+                      </div>
+                      <!-- <div class="col-2 calcBtn blue">
+                          &nbsp;
+                      </div> -->
+                  </div>
+                  <div class="row my-1">
+                      <!-- <div class="col-2 calcBtn blue" @click="studentModal = true">
+                          Student
+                      </div> -->
+                      <!-- <div class="col-2 calcBtn blue" @click="changeDefPrice()">
+                          DEF
+                      </div> -->
+                      <div class="col-2 calcBtn blue">
+                          &nbsp;
+                      </div>
+                      <div class="col-2 calcBtn" @click="calcInput('7')">7</div>
+                      <div class="col-2 calcBtn" @click="calcInput('8')">8</div>
+                      <div class="col-2 calcBtn" @click="calcInput('9')">9</div>
+                      <div class="col-2 calcBtn lightGreen" @click="calcCash(50)">50</div>
+                      <div class="col-2 calcBtn " v-bind:class=" woltActive ? 'active' : 'blue' " @click="woltDelivery()">
+                        <!-- :class="defTopping.isDeleted ? 'deletedTopping' : ''" -->
+                        Wolt
+                      </div>
+                  </div>
+
+                  <div class="row my-1">
+                      <!-- <div class="col-2 calcBtn blue" @click="teamModal = true">Team</div> -->
+                      <!-- <div class="col-2 calcBtn blue" @click="bigOrderModal = true">Big Order</div> -->
+                      <div class="col-2 calcBtn blue">&nbsp;</div>
+                      <div class="col-2 calcBtn" @click="calcInput('4')">4</div>
+                      <div class="col-2 calcBtn" @click="calcInput('5')">5</div>
+                      <div class="col-2 calcBtn" @click="calcInput('6')">6</div>
+                      <div class="col-2 calcBtn lightGreen" @click="calcCash(20)">20</div>
+                      <!-- <div class="col-2 calcBtn blue" v-bind:class="{ active: glovoActive }" @click="glovoDelivery()">
+                          Glovo
+                      </div> -->
+                      <div class="col-2 calcBtn"  v-bind:class=" glovoActive ? 'active' : 'blue' " >
+                          &nbsp;
+                      </div>
+                  </div>
+                  <div class="row my-1">
+                      <!-- <div class="col-2 calcBtn blue" @click="studentDisc()">
+                          Student
+                      </div> -->
+                      <div class="col-2 calcBtn blue" @click="checkManager()">
+                          Manager PIN
+                      </div>
+                      <div class="col-2 calcBtn" @click="calcInput('1')">1</div>
+                      <div class="col-2 calcBtn" @click="calcInput('2')">2</div>
+                      <div class="col-2 calcBtn" @click="calcInput('3')">3</div>
+                      <div class="col-2 calcBtn lightGreen" @click="calcCash(10)">10</div>
+                      <div class="col-2 calcBtn " @click="ronnysDelivery()" v-bind:class=" deliveryActiveVar ? 'active' : 'blue' ">
+                        <!-- <div class="col-2 calcBtn" @click="ronnysDelivery()" v-bind:class=" takeoutActiveVar ? 'active' : 'blue'"> -->
+                          Delivery
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-2 calcBtn blue" @click="splitModal = true">
+                          Split
+                      </div>
+                      <!-- <div class="col-2 calcBtn blue">
+                          &nbsp;
+                      </div> -->
+                      <div class="col-4 calcBtn" @click="calcInput('0')">0</div>
+                      <div class="col-2 calcBtn" @click="calcInput('.')">.</div>
+                      <div class="col-2 calcBtn lightGreen" @click="calcCash(5)">5</div>
+                      <div class="col-2 calcBtn " @click="takeoutActive()" v-bind:class=" takeoutActiveVar ? 'active' : 'blue'">
+                          Take Out
+                      </div>
+                  </div>
+                  <div class="row my-1">
+                      <div class="col-2 calcBtn blue" @click="managerDisc()">
+                          Manager
+                      </div>
+                      <div class="col-6 calcBtn red" @click="calcClear()">
+                          <i class="material-icons md-36 clearItem">close</i>
+                      </div>
+                      <div class="col-2 calcBtn lightGreen" @click="calcCash(2)">2</div>
+                      <div class="col-2 calcBtn" @click="walkinActive()" v-bind:class=" walkinActiveVar ? 'active' : 'blue'">
+                          Walk In
+                      </div>
+                  </div>
+                  <div class="row my-1">
+                      <div class="col-2 calcBtn blue" @click="checkManager()">CRM DISC</div>
+                      <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">
+                          PAY {{ Number(totalPrice).toFixed(2) }}
+                      </div>
+                      <div class="col-2 calcBtn lightGreen" @click="calcCash(1)">1</div>
+                      <div class="col-2">&nbsp;</div>
+                  </div>
+                  <div class="row my-1">
+                      <div class="col-2 calcBtn blue" @click="noDisc()">NO Disc</div>
+                      <div class="col-2 calcBtn " :class=" promiseFee_el == 0 ? 'active' : 'blue' "  @click="activatePromise(0)">15</div>
+                      <div class="col-2 calcBtn " :class="promiseFee_el == 1 ? 'active' : 'blue'" @click="activatePromise(1)">20</div>
+                      <div class="col-2 calcBtn " :class="promiseFee_el == 2 ? 'active' : 'blue'" @click="activatePromise(2)">30</div>
+                      <div class="col-2 calcBtn " :class="promiseFee_el == 3 ? 'active' : 'blue'" @click="activatePromise(3)">40</div>
+                      <div class="col-2 calcBtn " :class="promiseFee_el == 4 ? 'active' : 'blue'" @click="activatePromise(4)">50</div>
+                  </div>
+                  <div class="row calcFooter">
+                      <div v-if="!restrictEdit" class="col-2 paddingClear" style="padding-left: 0" @click="closeCalc()">
+                          <div class="w-b-1 square calcBtn">
+                              <i class="fa fa-home fa-4x iconColor home"></i>
+                          </div>
+                      </div>
+                      <div v-if="restrictEdit" class="col-2 paddingClear" style="padding-left: 0">
+                          <div class="w-b-1 square calcBtn">
+                              <i class="fa fa-home fa-4x iconColor home"></i>
+                          </div>
+                      </div>
+                      <div class="col-4">&nbsp;</div>
+                      <div class="col-2 calcBtn green " @click="payLater()" v-b-modal.confirmModal>Pay Later</div>
+                      <div class="col-2 calcBtn blue buttonTitle" @click="payCard()" v-b-modal.confirmModal>Card</div>
+                      <div class="col-2 calcBtn green buttonTitle" @click="doneCash()" v-b-modal.confirmModal>Cash</div>
+                  </div>
+              </div>
+              <!-- End of UX Change -->
+
+              <!-- End Of Calculator Component -->
+
+              <div class="row mt-1 right-2" v-if="showIngredients">
+                  <ingredients v-if="wholePizzaPart == 1" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half1.defaultToppings" :toppings="this.pizza.half1.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
+                  <ingredients v-if="wholePizzaPart == 2" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half2.defaultToppings" :toppings="this.pizza.half2.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
+                  <ingredients v-if="wholePizzaPart == 3" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.defaultToppings" :toppings="
+                this.pizza.toppings.concat(
+                  this.pizza.half1.toppings,
+                  this.pizza.half2.toppings
+                )
+              " :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
+                  <ingredients v-if="halfPizzaPart == 1" :product="this.customPizza.half1" :sauce="curSauce" :isHalfPizza="this.isHalfPizza" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="this.customPizza.half1.defaultToppings" :toppings="this.customPizza.half1.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusTopping="deleteCusTopping" />
+                  <ingredients v-if="halfPizzaPart == 2" :product="this.customPizza.half2" :isHalfPizza="this.isHalfPizza" :sauce="curSauce" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="this.customPizza.half2.defaultToppings" :toppings="this.customPizza.half2.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusTopping="deleteCusTopping" />
+                  <ingredients v-if="halfPizzaAll" :product="this.customPizza" :isHalfPizza="this.isHalfPizza" :sauce="curSauce" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="
+                this.customPizza.half2.defaultToppings.concat(
+                  this.customPizza.half1.defaultToppings
+                )
+              " :toppings="
+                this.customPizza.half2.toppings.concat(
+                  this.customPizza.half1.toppings,
+                  this.customPizza.toppings
+                )
+              " :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusMainTopping="deleteCusMainTopping" @onDeleteCusTopping="deleteCusTopping" />
+
+                  <sticksIngredients v-if="isSticks" :defaultToppings="this.sticks.defaultToppings" :isSticks="this.isSticks" :toppings="this.sticks.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSticksSize="sticksSize" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
+              </div>
+
+              <div class="row my-5 right-3" v-if="showIngredients && !isSticks">
+                  
+                  <div class="col" style="padding-left: 0" @click="halfPizza('A')">
+                      <div class="w-h-1 square" v-bind:class="[
+                  { active: halfPizzaPart == 1 },
+                  { active: wholePizzaPart == 1 },
+                  { size_static: noAB },
+                ]">
+                          <span class="position-relative topMargin">
+                              <strong>A</strong>
+                          </span>
+                      </div>
+                  </div>
+                  <div class="col" style="padding-left: 0" @click="halfPizza('B')">
+                      <div class="w-h-1 square" v-bind:class="[
+                  { active: halfPizzaPart == 2 },
+                  { active: wholePizzaPart == 2 },
+                  { size_static: noAB },
+                ]">
+                          <span class="position-relative topMargin" >
+                              <strong>B</strong>
+                          </span>
+                      </div>
+                  </div>
+                  <div class="col paddingClear">
+                      <div class="w-h-1 square" v-bind:class="[
+                  { active: halfPizzaAll },
+                  { active: wholePizzaPart == 3 },
+                ]" @click="seeHalf()">
+                          <span class="position-relative topMargin" >
+                              <strong>A/B</strong>
+                          </span>
+                      </div>
+                  </div>
+                  <div class="col size paddingClear p-0">
+                      <div class="w-h-1 square paddingClear size_active font-weight-bold" v-bind:class="{ size_static: smallHalf, active: activeSmall }" @click="addSize('s')">
+                          <span>S</span>
+                      </div>
+                  </div>
+                  <div class="col size paddingClear p-0">
+                      <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{ active: activeMedium }" @click="addSize('m')">
+                          <span>M</span>
+                      </div>
+                  </div>
+                  <div class="col size paddingClear p-0">
+                      <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{ active: activeXl }" @click="addSize('xl')">
+                          <span>XL</span>
+                      </div>
+                  </div>
+                  <div class="col p-0 paddingClear">
+                    <div class="w-1-grey square" @click="showProductsClear()">
+                      <i class="fa fa-home fa-4x iconColor"></i>
                     </div>
-                </div>
-            </div>
-        </transition>
-    </div>
-    <!-- End Of Coupon Modal -->
+                  </div>
+                  <div class="col thin paddingClear p-0">
+                      <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{ active: crustVar }" v-if="isHalfPizza === 'yes'" @click="addCrust(customPizza.crust)">
+                          <span>Thin</span>
+                      </div>
+                      <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{ active: crustVar }" v-if="isPizza === 'yes'" @click="addCrust(pizza.crust)">
+                          <span>Thin</span>
+                      </div>
+                  </div>
+                  <div class="col cuts paddingClear p-0">
+                      <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: mediumCuts, active: cutsCount == 6 }" @click="cuts(6)">
+                          <span class="topMargin">6 Cut</span>
+                      </div>
+                  </div>
+                  <div class="col cuts paddingClear p-0">
+                      <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: cutActive, active: cutsCount == 12 }" @click="cuts(12)">
+                          <span class="topMargin">12 Cut</span>
+                      </div>
+                  </div>
+                  <div class="col cuts paddingClear p-0">
+                      <div class="w-h-1 square paddingClear cut_static font-weight-bold" v-bind:class="{ cut_active: cutActive, active: cutsCount == 16 }" @click="cuts(16)">
+                          <span class="topMargin">16 Cut</span>
+                      </div>
+                  </div>
+                  <div class="col p-0 paddingClear">
+                      <div class="w-1" @click="showProductsComponent()">
+                          <i class="fa fa-check fa-4x iconColor"></i>
+                      </div>
+                  </div>
+              </div>
+              <hr />
+          </div>
+      </div>
 
-    <!-- Payment Confirm Modal -->
+      <!-- Coupon Modal -->
+      <div v-if="couponModal">
+          <transition name="modal">
+              <div class="modal-mask">
+                  <div class="modal-wrapper">
+                      <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h5 class="modal-title">Coupon</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true" @click="couponModal = false">&times;</span>
+                                  </button>
+                              </div>
+                              <div class="modal-body">
+                                  <input type="text" id="coupon_code" placeholder="Enter Coupon Code" />
+                              </div>
 
-    <div v-if="confirmModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Confirm Payment</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="confirmModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div v-if="paymentType == 'card'">Confirm Card Payment?</div>
-                                <div v-if="paymentType == 'cash'">Confirm Cash Payment?</div>
-                            </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" @click="couponModal = false">
+                                      Close
+                                  </button>
+                                  <button type="button" class="btn btn-primary">
+                                      Save changes
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </transition>
+      </div>
+      <!-- End Of Coupon Modal -->
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="confirmModal = false">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" v-if="paymentType == 'card'" @click="paymentConfirm()">
-                                    Confirm Payment
-                                </button>
-                                <button type="button" class="btn btn-primary" v-if="paymentType == 'cash'" @click="paymentConfirm()">
-                                    Confirm Payment
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
-    <!-- End of Payment Confirm Modal -->
+      <!-- Payment Confirm Modal -->
 
-    <!-- Change Modal -->
+      <div v-if="confirmModal">
+          <transition name="modal">
+              <div class="modal-mask">
+                  <div class="modal-wrapper">
+                      <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h5 class="modal-title">Confirm Payment</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true" @click="confirmModal = false">&times;</span>
+                                  </button>
+                              </div>
+                              <div class="modal-body">
+                                  <div v-if="paymentType == 'card'">Confirm Card Payment?</div>
+                                  <div v-if="paymentType == 'cash'">Confirm Cash Payment?</div>
+                              </div>
 
-    <v-dialog 
-      v-model="changeModal"
-      max-width="500px"
-    >
-    <v-card class="justify-center">
-        <v-card-title>
-          <span class="headline">Change</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <div class="row">
-                <div class="col w-3 gray">
-                    <div>
-                        <h4>Subtotal:</h4>
-                    </div>
-                    <div>
-                        <h4 id="total_price">{{ totalNet.toFixed(2) }}</h4>
-                    </div>
-                </div>
-                <div class="col w-3 gray">
-                    <div>
-                        <h4>Paid:</h4>
-                    </div>
-                    <div>
-                        <h4 id="total_price">{{ cashInput }}</h4>
-                    </div>
-                </div>
-                <div class="col w-3 gray">
-                    <div>
-                        <h4>Change:</h4>
-                    </div>
-                    <div>
-                        <h4 id="total_price">{{ (cashInput - totalPrice).toFixed(2) }}</h4>
-                    </div>
-                </div>
-            </div>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>      
-          <v-btn
-            color="blue darken-1"
-            text
-            x-large
-            @click="closeChangeModal()"
-          >
-            Close
-          </v-btn>
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" @click="confirmModal = false">
+                                      Close
+                                  </button>
+                                  <button type="button" class="btn btn-primary" v-if="paymentType == 'card'" @click="paymentConfirm()">
+                                      Confirm Payment
+                                  </button>
+                                  <button type="button" class="btn btn-primary" v-if="paymentType == 'cash'" @click="paymentConfirm()">
+                                      Confirm Payment
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </transition>
+      </div>
+      <!-- End of Payment Confirm Modal -->
 
-    
-    <!-- End of Change Modal -->
+      <!-- Change Modal -->
 
-    <!-- Big Order Modal -->
+      <v-dialog 
+        v-model="changeModal"
+        max-width="500px"
+      >
+      <v-card class="justify-center">
+          <v-card-title>
+            <span class="headline">Change</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <div class="row">
+                  <div class="col w-3 gray">
+                      <div>
+                          <h4>Subtotal:</h4>
+                      </div>
+                      <div>
+                          <h4 id="total_price">{{ totalNet.toFixed(2) }}</h4>
+                      </div>
+                  </div>
+                  <div class="col w-3 gray">
+                      <div>
+                          <h4>Paid:</h4>
+                      </div>
+                      <div>
+                          <h4 id="total_price">{{ cashInput }}</h4>
+                      </div>
+                  </div>
+                  <div class="col w-3 gray">
+                      <div>
+                          <h4>Change:</h4>
+                      </div>
+                      <div>
+                          <h4 id="total_price">{{ (cashInput - totalPrice).toFixed(2) }}</h4>
+                      </div>
+                  </div>
+              </div>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>      
+            <v-btn
+              color="blue darken-1"
+              text
+              x-large
+              @click="closeChangeModal()"
+            >
+              Close
+            </v-btn>
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
 
-    <v-dialog 
-      v-model="bigOrderModal"
-      max-width="500px"
-    >
-    <v-card>
-            <v-card-title>Select Free Item</v-card-title>
-            <v-divider></v-divider>
-            <v-card-text style="height: 400px;">
-                <v-checkbox v-for="(item, index) in order.items" :key="index" v-model="bigorderSelected" :label="item.name+' : '+item.price" :value="item"></v-checkbox>
-                <v-divider></v-divider>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
+      
+      <!-- End of Change Modal -->
 
-                <v-btn color="blue darken-1" text x-large @click="bigOrderModal = false">
-                    Close
-                </v-btn>
-                <v-btn color="blue darken-1" x-large text @click="bigOrder()">
-                    Done
-                </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+      <!-- Big Order Modal -->
 
-    
-    <!-- End of Big Order Modal -->
+      <v-dialog 
+        v-model="bigOrderModal"
+        max-width="500px"
+      >
+      <v-card>
+              <v-card-title>Select Free Item</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text style="height: 400px;">
+                  <v-checkbox v-for="(item, index) in order.items" :key="index" v-model="bigorderSelected" :label="item.name+' : '+item.price" :value="item"></v-checkbox>
+                  <v-divider></v-divider>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
 
-    <!-- Start Of CRM Modal -->
+                  <v-btn color="blue darken-1" text x-large @click="bigOrderModal = false">
+                      Close
+                  </v-btn>
+                  <v-btn color="blue darken-1" x-large text @click="bigOrder()">
+                      Done
+                  </v-btn>
+              </v-card-actions>
+          </v-card>
+      </v-dialog>
 
-    <v-dialog 
-      v-model="crmModal"
-      max-width="700px"
-    >
-    <v-card class="justify-center">
-        <v-card-title>
-          <span v-if="customerChecked" class="headline">Edit Customer</span>
-          <span v-if="!customerChecked" class="headline">Add New Customer</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
+      
+      <!-- End of Big Order Modal -->
+
+      <!-- Start Of CRM Modal -->
+
+      <v-dialog 
+        v-model="crmModal"
+        max-width="700px"
+      >
+      <v-card class="justify-center">
+          <v-card-title>
+            <span v-if="customerChecked" class="headline">Edit Customer</span>
+            <span v-if="!customerChecked" class="headline">Add New Customer</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+                <v-row>
+                  <v-form ref="form" v-model="valid" lazy-validation>
+                      <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+
+                      <v-text-field v-model="curentCustomer.name" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+                    
+
+                      <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
+                          <v-radio label="Male" value="male"></v-radio>
+                          <v-radio label="Female" value="female"></v-radio>
+                          <v-radio label="None" value="none"></v-radio>
+                      </v-radio-group>
+
+                      <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
+
+                      <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="curentCustomer.address" clearable ></v-text-field>
+
+                      <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                      
+                      <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+                      
+                      <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+                                          
+                      <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                      
+                      <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
+                      
+
+                  </v-form>
+                </v-row>
+                <v-row>
+                  <div class="col" v-for="(discount, index) in discountTypes" :key="index">
+                    <v-btn class="blueBtn" v-if="discount.name != 'Manager'" :class="{ active : discount.name == curentCustomer.discount }" large @click="crmDiscount(discount)">{{ discount.name }}</v-btn>
+                  </div>
+                </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              v-if="!customerChecked"
+              color="blue darken-1"
+              text
+              x-large
+              @click="addCustomer()"
+            >
+              Add New Customer
+            </v-btn>
+            <v-btn
+              v-if="customerChecked"
+              color="blue darken-1"
+              text
+              x-large
+              @click="editCustomer()"
+            >
+              Save
+            </v-btn>      
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
+
+      <!-- End Of CRM Modal -->
+
+      <!-- Start Of Delivery Modal -->
+
+      <div v-if="deliveryModal">
+          <transition name="modal">
+              <div class="modal-mask">
+                  <div class="modal-wrapper">
+                      <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h5 class="modal-title">Delivery Information</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true" @click="deliveryModal = false">&times;</span>
+                                  </button>
+                              </div>
+                              <div class="modal-body">
+                                  <b-container fluid>
+                                      <v-form ref="form" v-model="valid" lazy-validation>
+                                          <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+
+                                          <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail" required></v-text-field>
+
+                                          <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
+                                              <v-radio label="Male" value="male"></v-radio>
+                                              <v-radio label="Female" value="female"></v-radio>
+                                              <v-radio label="None" value="none"></v-radio>
+                                          </v-radio-group>
+
+                                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
+
+                                          <!-- <v-combobox
+                                            v-model="curentCustomer.address"
+                                            label="Address"
+                                            multiple
+                                            chips
+                                            dense
+                                          ></v-combobox> -->
+                                          
+                                          <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+
+                                          <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                                      </v-form>
+                                  </b-container>
+                              </div>
+
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" @click="deliveryModal = false">
+                                      Close
+                                  </button>
+                                  <button type="button" class="btn btn-primary" @click="deliveryStep()">
+                                      Deliver To Customer
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </transition>
+      </div>
+
+      <!-- End Of Delivery Modal -->
+
+      <!-- Start Of Delivery Fee Modal -->
+      <!-- Am not using anymore -->
+      <div v-if="deliveryFeeModal">
+          <transition name="modal">
+              <div class="modal-mask">
+                  <div class="modal-wrapper">
+                      <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h5 class="modal-title">Delivery Information</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true" @click="deliveryFeeModal = false">&times;</span>
+                                  </button>
+                              </div>
+                              <div class="modal-body">
+                                  <b-container fluid>
+                                      <div class="row" @click="activateFee(fee.id)" v-for="(fee, index) in deliveryFee" :key="index">
+                                          <div class="col feeClass" :class="{ active: activeFee_el == fee.id }">
+                                              {{ fee.text }}
+                                          </div>
+                                      </div>
+                                  </b-container>
+                              </div>
+
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" @click="deliveryFeeModal = false">
+                                      Close
+                                  </button>
+                                  <button type="button" class="btn btn-primary" @click="deliverCustomer(deliveryFeeVar)">
+                                      Delivery Fee
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </transition>
+      </div>
+
+      <!-- End Of Fee Modal -->
+
+      <!-- Start Of Delivery Type Modal -->
+      <div v-if="deliveryTypeModal">
+          <transition name="modal">
+              <div class="modal-mask">
+                  <div class="modal-wrapper">
+                      <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h5 class="modal-title">Delivery Type</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true" @click="deliveryTypeModal = false">&times;</span>
+                                  </button>
+                              </div>
+                              <div class="modal-body">
+                                  <b-container fluid>
+                                      <div class="row" @click="activate(type.id)" v-for="(type, index) in deliveryType" :key="index">
+                                          <div class="col feeClass" :class="{ active: active_el == type.id }">
+                                              {{ type.type }}
+                                          </div>
+                                      </div>
+                                  </b-container>
+                              </div>
+
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" @click="deliveryActiveModal = false">
+                                      Close
+                                  </button>
+                                  <button type="button" class="btn btn-primary" @click="
+                        (deliveryModal = true),
+                          (deliveryTypeModal = false),
+                          deliverType(deliveryTypeVar)
+                      ">
+                                      Deliver Type
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </transition>
+      </div>
+
+      <!-- End Of Delivery Type Modal -->
+
+      <!-- Start of invoice modal -->
+
+      <v-dialog 
+        v-model="invoiceModal"
+        max-width="700px"
+      >
+      <v-card>
+          <v-card-title>
+            <span class="headline">Invoice Information</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
               <v-row>
                 <v-form ref="form" v-model="valid" lazy-validation>
-                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                    <v-text-field v-model="invoice.name" class="my-2" label="Name" clearable></v-text-field>
+                    <v-text-field v-model="invoice.ltd" class="my-2" label="LTD" clearable></v-text-field>
 
-                    <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+                    <v-text-field v-model="invoice.email" class="my-2" label="E-mail"></v-text-field>
+
+                    <v-row>
+                        <v-col cols="12" sm="12">
+                            <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="invoice.address" clearable required></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-text-field v-model="invoice.id" @keypress="isNumber($event)" class="my-2" label="Company ID #" clearable></v-text-field>
+
+                    <v-text-field v-model="invoice.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                </v-form>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              text
+              x-large
+              @click="generateInvoice()"
+            >
+              Generate Invoice
+            </v-btn>   
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
+
+      <!-- End of invoice modal -->
+
+      <!-- Start Of Walk in Modal -->
+
+      
+      <v-dialog 
+        v-model="walkInModal"
+        max-width="700px"
+      >
+      <v-card>
+          <v-card-title>
+            <span class="headline">Walk In Information</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                                          
+                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
+
+
                   
-
                     <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
                         <v-radio label="Male" value="male"></v-radio>
                         <v-radio label="Female" value="female"></v-radio>
@@ -874,7 +1150,7 @@
 
                     <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
 
-                    <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="curentCustomer.address" clearable ></v-text-field>
+                    <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
 
                     <!-- <v-combobox
                       v-model="curentCustomer.address"
@@ -884,753 +1160,576 @@
                       dense
                     ></v-combobox> -->
 
-                    <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
-                    
-                    <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
-                    
                     <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
-                                        
+
+                    <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                      
                     <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
                     
                     <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
-                    
 
                 </v-form>
               </v-row>
-              <v-row>
-                <div class="col" v-for="(discount, index) in discountTypes" :key="index">
-                  <v-btn class="blue" v-if="discount.name != 'Manager'" :class="{ active : discount.name == curentCustomer.discount }" large @click="crmDiscount(discount)">{{ discount.name }}</v-btn>
-                </div>
-              </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            v-if="!customerChecked"
-            color="blue darken-1"
-            text
-            x-large
-            @click="addCustomer()"
-          >
-            Add New Customer
-          </v-btn>
-          <v-btn
-            v-if="customerChecked"
-            color="blue darken-1"
-            text
-            x-large
-            @click="editCustomer()"
-          >
-            Save
-          </v-btn>      
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-
-    <!-- End Of CRM Modal -->
-
-    <!-- Start Of Delivery Modal -->
-
-    <div v-if="deliveryModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Delivery Information</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="deliveryModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <v-form ref="form" v-model="valid" lazy-validation>
-                                        <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
-
-                                        <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail" required></v-text-field>
-
-                                        <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
-                                            <v-radio label="Male" value="male"></v-radio>
-                                            <v-radio label="Female" value="female"></v-radio>
-                                            <v-radio label="None" value="none"></v-radio>
-                                        </v-radio-group>
-
-                                        <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable required></v-text-field>
-
-                                        <!-- <v-combobox
-                                          v-model="curentCustomer.address"
-                                          label="Address"
-                                          multiple
-                                          chips
-                                          dense
-                                        ></v-combobox> -->
-                                        
-                                        <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-
-                                        <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-                                    </v-form>
-                                </b-container>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="deliveryModal = false">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="deliveryStep()">
-                                    Deliver To Customer
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
-
-    <!-- End Of Delivery Modal -->
-
-    <!-- Start Of Delivery Fee Modal -->
-    <!-- Am not using anymore -->
-    <div v-if="deliveryFeeModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Delivery Information</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="deliveryFeeModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <div class="row" @click="activateFee(fee.id)" v-for="(fee, index) in deliveryFee" :key="index">
-                                        <div class="col feeClass" :class="{ active: activeFee_el == fee.id }">
-                                            {{ fee.text }}
-                                        </div>
-                                    </div>
-                                </b-container>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="deliveryFeeModal = false">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="deliverCustomer(deliveryFeeVar)">
-                                    Delivery Fee
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
-
-    <!-- End Of Fee Modal -->
-
-    <!-- Start Of Delivery Type Modal -->
-    <div v-if="deliveryTypeModal">
-        <transition name="modal">
-            <div class="modal-mask">
-                <div class="modal-wrapper">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Delivery Type</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="deliveryTypeModal = false">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <b-container fluid>
-                                    <div class="row" @click="activate(type.id)" v-for="(type, index) in deliveryType" :key="index">
-                                        <div class="col feeClass" :class="{ active: active_el == type.id }">
-                                            {{ type.type }}
-                                        </div>
-                                    </div>
-                                </b-container>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="deliveryActiveModal = false">
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="
-                      (deliveryModal = true),
-                        (deliveryTypeModal = false),
-                        deliverType(deliveryTypeVar)
-                    ">
-                                    Deliver Type
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
-    </div>
-
-    <!-- End Of Delivery Type Modal -->
-
-    <!-- Start of invoice modal -->
-
-    <v-dialog 
-      v-model="invoiceModal"
-      max-width="700px"
-    >
-    <v-card>
-        <v-card-title>
-          <span class="headline">Invoice Information</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="invoice.name" class="my-2" label="Name" clearable></v-text-field>
-                  <v-text-field v-model="invoice.ltd" class="my-2" label="LTD" clearable></v-text-field>
-
-                  <v-text-field v-model="invoice.email" class="my-2" label="E-mail"></v-text-field>
-
-                  <v-row>
-                      <v-col cols="12" sm="12">
-                          <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="invoice.address" clearable required></v-text-field>
-                      </v-col>
-                  </v-row>
-                  <v-text-field v-model="invoice.id" @keypress="isNumber($event)" class="my-2" label="Company ID #" clearable></v-text-field>
-
-                  <v-text-field v-model="invoice.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-              </v-form>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-           <v-btn
-            color="blue darken-1"
-            text
-            x-large
-            @click="generateInvoice()"
-          >
-            Generate Invoice
-          </v-btn>   
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-
-    <!-- End of invoice modal -->
-
-    <!-- Start Of Walk in Modal -->
-
-    
-    <v-dialog 
-      v-model="walkInModal"
-      max-width="700px"
-    >
-    <v-card>
-        <v-card-title>
-          <span class="headline">Walk In Information</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                                        
-                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
-
-
-                 
-                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
-                      <v-radio label="Male" value="male"></v-radio>
-                      <v-radio label="Female" value="female"></v-radio>
-                      <v-radio label="None" value="none"></v-radio>
-                  </v-radio-group>
-
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
-
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-
-                  <!-- <v-combobox
-                    v-model="curentCustomer.address"
-                    label="Address"
-                    multiple
-                    chips
-                    dense
-                  ></v-combobox> -->
-
-                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
-                    
-                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
-
-              </v-form>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-           <v-btn
-            color="blue darken-1"
-            class="blue"
-            text
-            x-large
-            @click="walkinCustomer()"
-          >
-            Walk In Customer
-          </v-btn>   
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-
-    <!-- End Of Walk In Modal -->
-
-    <!-- Start Of Take out Modal -->
-
-    <v-dialog 
-      v-model="takeOutModal"
-      max-width="700px"
-    >
-    <v-card>
-        <v-card-title>
-          <span class="headline">Take Out Information</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-form ref="form" v-model="valid" lazy-validation>
-
-                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
-
-                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
-                      <v-radio label="Male" value="male"></v-radio>
-                      <v-radio label="Female" value="female"></v-radio>
-                      <v-radio label="None" value="none"></v-radio>
-                  </v-radio-group>
-
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
-
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-
-                  <!-- <v-combobox
-                    v-model="curentCustomer.address"
-                    label="Address"
-                    multiple
-                    chips
-                    dense
-                  ></v-combobox> -->
-
-                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
-                    
-                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
-
-              </v-form>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-           <v-btn
-            color="blue darken-1"
-            class="blue"
-            text
-            x-large
-            @click="takeoutCustomer()"
-          >
-            Take Out: {{ Number(totalNet).toFixed(2) }}
-          </v-btn>   
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-
-    <!-- End Of Walk In Modal -->
-
-    <!-- Start Of Ronnys Modal -->
-
-    <v-dialog 
-      v-model="ronnysModal"
-      max-width="700px"
-    >
-    <v-card class="justify-center">
-        <v-card-title>
-          <span class="headline">Delivery Information</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <b-container fluid>
-                  <v-form ref="form" v-model="valid" lazy-validation>
-                      
-                      <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
-
-
-                 
-                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
-                      <v-radio label="Male" value="male"></v-radio>
-                      <v-radio label="Female" value="female"></v-radio>
-                      <v-radio label="None" value="none"></v-radio>
-                  </v-radio-group>
-
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
-
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-
-                  <!-- <v-combobox
-                    v-model="curentCustomer.address"
-                    label="Address"
-                    multiple
-                    chips
-                    dense
-                  ></v-combobox> -->
-
-                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
-                    
-                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
-
-                  </v-form>
-              </b-container>
-              <div class="row">
-                <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 0 }" @click="activateFee(0)">
-                    2.5 GEL
-                </div>
-                <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 1 }" @click="activateFee(1)">
-                    4 GEL
-                </div>
-                <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 2 }" @click="activateFee(2)">
-                    6 GEL
-                </div>
-                <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 3 }" @click="activateFee(3)">
-                    7.5 GEL
-                </div>
-              </div>
-              <div class="row my-3">
-                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 4 }" @click="activateFee(4)">
-                    Tskneti
-                </div>
-                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 5 }" @click="activateFee(5)">
-                    Tsavkisi
-                </div>
-                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 6 }" @click="activateFee(6)">
-                    Mtsxeta
-                </div>
-                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 7 }" @click="activateFee(7)">
-                    Kojori
-                </div>
-                <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 8 }" @click="activateFee(8)">
-                    KTA
-                </div>
-              </div>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            class="blue"
-            text
-            x-large
-            @click="deliveryCustomer()"
-          >
-            Delivery: {{ Number(totalNet).toFixed(2) }}
-          </v-btn>   
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-
-    <!-- End Of Ronnys Modal -->
-
-    <!-- Start Of Glovo Modal -->
-
-   
-    <v-dialog 
-      v-model="glovoModal"
-      max-width="700px"
-    >
-    <v-card>
-        <v-card-title>
-          <span class="headline">Glovo Information</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-form ref="form" v-model="valid" lazy-validation>
-
-                <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.code" class="my-2" label="3 Digit Code #" required clearable></v-text-field>
-
-                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
-                      <v-radio label="Male" value="male"></v-radio>
-                      <v-radio label="Female" value="female"></v-radio>
-                      <v-radio label="None" value="none"></v-radio>
-                  </v-radio-group>
-
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
-
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-
-                  <!-- <v-combobox
-                    v-model="curentCustomer.address"
-                    label="Address"
-                    multiple
-                    chips
-                    dense
-                  ></v-combobox> -->
-
-                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
-                    
-                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
-
-              </v-form>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-           <v-btn
-            color="blue darken-1"
-            class="green"
-            text
-            x-large
-            @click="glovoCustomer('cash')"
-          >
-            Glovo Pay later : {{ Number(totalPrice).toFixed(2) }}
-          </v-btn>     
-           <v-btn
-            color="blue darken-1"
-            class="blue"
-            text
-            x-large
-            @click="glovoCustomer('transfer')"
-          >
-            Glovo Transfer: {{ Number(totalPrice).toFixed(2) }}
-          </v-btn>   
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-
-    <!-- End Of Glovo Modal -->
-
-    <!-- Start Of Wolt Modal -->
-
-    <v-dialog 
-      v-model="woltModal"
-      max-width="700px"
-    >
-    <v-card>
-        <v-card-title>
-          <span class="headline">Wolt Information</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                                        
-                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.code" class="my-2" label="3 Digit Code #" required clearable></v-text-field>
-
-                 
-                  <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
-                      <v-radio label="Male" value="male"></v-radio>
-                      <v-radio label="Female" value="female"></v-radio>
-                      <v-radio label="None" value="none"></v-radio>
-                  </v-radio-group>
-
-                  <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
-
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
-
-                  <!-- <v-combobox
-                    v-model="curentCustomer.address"
-                    label="Address"
-                    multiple
-                    chips
-                    dense
-                  ></v-combobox> -->
-
-                  <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
-
-                  <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
-                    
-                  <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
-                  
-                  <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
-
-              </v-form>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-           <v-btn
-            color="blue darken-1"
-            class="blue"
-            text
-            x-large
-            @click="woltCustomer()"
-          >
-            Wolt order:  {{ Number(totalNet).toFixed(2) }}
-          </v-btn>   
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-
-    <!-- End Of Wolt Modal -->
-
-    <!-- Start Of Future Modal -->
-
-    <div v-if="futureModal">
-        <v-dialog 
-        v-model="futureModal"
-        max-width="600px"
-      >
-      <v-card>
-          <v-card-title>
-            <span class="headline">Future Order</span>
-          </v-card-title>
-          <v-card-text>
-              <v-row>
-                <v-menu
-                  v-model="menu"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="date"
-                      label="Select Date"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="date"
-                    @input="menu = false"
-                  ></v-date-picker>
-                </v-menu>
-                <v-time-picker
-                  format="24hr"
-                  dark
-                  v-model="futureTime"
-                  scrollable
-                ></v-time-picker>
-                <v-text-field readonly v-model="futureTime" label="Enter Time 00:00 format (14:30)"></v-text-field>
-              </v-row>
+            </v-container>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-
             <v-btn
-              color="blue darken-1"
+              class="blue"
+              text
               x-large
-              @click="cancelFuture()"
+              @click="walkinCustomer()"
             >
-              Cancel Future
-            </v-btn>
-            <v-btn
-              color="green darken-1"
-              x-large
-              @click="futureOrder()"
-            >
-              Select Date
-            </v-btn>
+              Walk In Customer
+            </v-btn>   
           </v-card-actions>
       </v-card>
       </v-dialog>
-    </div>
 
-    <!-- End Of Future Modal -->
+      <!-- End Of Walk In Modal -->
 
-    <!-- Start Of Setting Modal -->
-    <div class="float-right">
+      <!-- Start Of Take out Modal -->
+
       <v-dialog 
-        v-model="settingModal"
-        max-width="800px"
+        v-model="takeOutModal"
+        max-width="700px"
       >
-      <v-card height="100vh">
+      <v-card>
           <v-card-title>
-            <span class="headline">Unpaid Orders</span>
+            <span class="headline">Take Out Information</span>
           </v-card-title>
           <v-card-text>
             <v-container>
               <v-row>
-                <v-data-table
-                  v-model="selected"
-                  :search="search"
-                  :items="filteredOrders"
-                  :headers="settingHeaders"
-                  :items-per-page="itemsPerPage"
-                  item-key="order_id"
-                  :loading="loadingTable"
-                  :single-select="singleSelect"
-                  show-select
-                  class="elevation-1"
-                  @page-count="pageCount = $event"
-                >
-                    <template v-slot:item="row">
-                        <tr @click="onButtonClick(row.item)">
-                          <td>{{row.item.id}}</td>
-                          <td>{{row.item.order_data.deliveryMethod}}</td>
-                          <td>{{row.item.order_data.customer.code}}</td>
-                          <td>{{row.item.order_data.customer.phone}}</td>
-                          <td>{{row.item.order_data.customer.name}}</td>
-                          <td>{{row.item.order_data.adress}}</td>
-                          <td>{{row.item.order_data.items[0].name}}</td>
-                          <td>{{row.item.order_data.totalPrice}}</td>
-                          <td>{{row.item.created_at}}</td>
-                          <td>
-                            <v-btn class="mx-2" fab dark small color="green" @click="rePrint(row.item)">
-                                <v-icon dark>print</v-icon>
-                            </v-btn>
-                          </td>
-                        </tr>
+                <v-form ref="form" v-model="valid" lazy-validation>
+
+                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
+
+                    <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
+                        <v-radio label="Male" value="male"></v-radio>
+                        <v-radio label="Female" value="female"></v-radio>
+                        <v-radio label="None" value="none"></v-radio>
+                    </v-radio-group>
+
+                    <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
+
+                    <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
+
+                    <!-- <v-combobox
+                      v-model="curentCustomer.address"
+                      label="Address"
+                      multiple
+                      chips
+                      dense
+                    ></v-combobox> -->
+
+                    <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                      
+                    <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
+
+                </v-form>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              class="blue"
+              text
+              x-large
+              @click="takeoutCustomer()"
+            >
+              Take Out: {{ Number(totalNet).toFixed(2) }}
+            </v-btn>   
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
+
+      <!-- End Of Walk In Modal -->
+
+      <!-- Start Of Ronnys Modal -->
+
+      <v-dialog 
+        v-model="ronnysModal"
+        max-width="700px"
+      >
+      <v-card class="justify-center">
+          <v-card-title>
+            <span class="headline">Delivery Information</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <b-container fluid>
+                    <v-form ref="form" v-model="valid" lazy-validation>
+                        
+                        <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
+
+
+                  
+                    <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
+                        <v-radio label="Male" value="male"></v-radio>
+                        <v-radio label="Female" value="female"></v-radio>
+                        <v-radio label="None" value="none"></v-radio>
+                    </v-radio-group>
+
+                    <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
+
+                    <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
+
+                    <!-- <v-combobox
+                      v-model="curentCustomer.address"
+                      label="Address"
+                      multiple
+                      chips
+                      dense
+                    ></v-combobox> -->
+
+                    <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                      
+                    <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
+
+                    </v-form>
+                </b-container>
+                <div class="row">
+                  <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 0 }" @click="activateFee(0)">
+                      2.5 GEL
+                  </div>
+                  <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 1 }" @click="activateFee(1)">
+                      4 GEL
+                  </div>
+                  <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 2 }" @click="activateFee(2)">
+                      6 GEL
+                  </div>
+                  <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 3 }" @click="activateFee(3)">
+                      7.5 GEL
+                  </div>
+                </div>
+                <div class="row my-3">
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 4 }" @click="activateFee(4)">
+                      Tskneti
+                  </div>
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 5 }" @click="activateFee(5)">
+                      Tsavkisi
+                  </div>
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 6 }" @click="activateFee(6)">
+                      Mtsxeta
+                  </div>
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 7 }" @click="activateFee(7)">
+                      Kojori
+                  </div>
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 8 }" @click="activateFee(8)">
+                      KTA
+                  </div>
+                </div>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              class="blue"
+              text
+              x-large
+              @click="deliveryCustomer()"
+            >
+              Delivery: {{ Number(totalNet).toFixed(2) }}
+            </v-btn>   
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
+
+      <!-- End Of Ronnys Modal -->
+
+      <!-- Start Of Glovo Modal -->
+
+    
+      <v-dialog 
+        v-model="glovoModal"
+        max-width="700px"
+      >
+      <v-card>
+          <v-card-title>
+            <span class="headline">Glovo Information</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-form ref="form" v-model="valid" lazy-validation>
+
+                  <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.code" class="my-2" label="3 Digit Code #" required clearable></v-text-field>
+
+                    <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
+                        <v-radio label="Male" value="male"></v-radio>
+                        <v-radio label="Female" value="female"></v-radio>
+                        <v-radio label="None" value="none"></v-radio>
+                    </v-radio-group>
+
+                    <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
+
+                    <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
+
+                    <!-- <v-combobox
+                      v-model="curentCustomer.address"
+                      label="Address"
+                      multiple
+                      chips
+                      dense
+                    ></v-combobox> -->
+
+                    <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                      
+                    <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
+
+                </v-form>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              class="green"
+              text
+              x-large
+              @click="glovoCustomer('cash')"
+            >
+              Glovo Pay later : {{ Number(totalPrice).toFixed(2) }}
+            </v-btn>     
+            <v-btn
+              color="blue darken-1"
+              class="blue"
+              text
+              x-large
+              @click="glovoCustomer('transfer')"
+            >
+              Glovo Transfer: {{ Number(totalPrice).toFixed(2) }}
+            </v-btn>   
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
+
+      <!-- End Of Glovo Modal -->
+
+      <!-- Start Of Wolt Modal -->
+
+      <v-dialog 
+        v-model="woltModal"
+        max-width="700px"
+      >
+      <v-card>
+          <v-card-title>
+            <span class="headline">Wolt Information</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                                          
+                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.code" class="my-2" label="3 Digit Code #" required clearable></v-text-field>
+
+                  
+                    <v-radio-group v-model="curentCustomer.gender" label="Gender" row>
+                        <v-radio label="Male" value="male"></v-radio>
+                        <v-radio label="Female" value="female"></v-radio>
+                        <v-radio label="None" value="none"></v-radio>
+                    </v-radio-group>
+
+                    <v-text-field v-if="discountActive" v-model="curentCustomer.personal_id" class="my-2" label="ID #" clearable required></v-text-field>
+
+                    <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="curentCustomer.address" clearable></v-text-field>
+
+                    <!-- <v-combobox
+                      v-model="curentCustomer.address"
+                      label="Address"
+                      multiple
+                      chips
+                      dense
+                    ></v-combobox> -->
+
+                    <v-text-field v-model="curentCustomer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.email" :rules="emailRules" class="my-2" label="E-mail"></v-text-field>
+
+                    <v-text-field v-model="curentCustomer.comment2" class="my-2" label="Driver Details" clearable></v-text-field>
+                      
+                    <v-text-field v-model="curentCustomer.ltdName" v-if="corporateActive" class="my-2" label="LTD Name" clearable></v-text-field>
+                    
+                    <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
+
+                </v-form>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              class="blue"
+              text
+              x-large
+              @click="woltCustomer()"
+            >
+              Wolt order:  {{ Number(totalNet).toFixed(2) }}
+            </v-btn>   
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
+
+      <!-- End Of Wolt Modal -->
+
+      <!-- Start Of Future Modal -->
+
+      <div v-if="futureModal">
+          <v-dialog 
+          v-model="futureModal"
+          max-width="600px"
+        >
+        <v-card>
+            <v-card-title>
+              <span class="headline">Future Order</span>
+            </v-card-title>
+            <v-card-text>
+                <v-row>
+                  <v-menu
+                    v-model="menu"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="date"
+                        label="Select Date"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
                     </template>
-                </v-data-table>
+                    <v-date-picker
+                      v-model="date"
+                      @input="menu = false"
+                    ></v-date-picker>
+                  </v-menu>
+                  <v-time-picker
+                    format="24hr"
+                    dark
+                    v-model="futureTime"
+                    scrollable
+                  ></v-time-picker>
+                  <v-text-field readonly v-model="futureTime" label="Enter Time 00:00 format (14:30)"></v-text-field>
+                </v-row>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                color="blue darken-1"
+                x-large
+                @click="cancelFuture()"
+              >
+                Cancel Future
+              </v-btn>
+              <v-btn
+                color="green darken-1"
+                x-large
+                @click="futureOrder()"
+              >
+                Select Date
+              </v-btn>
+            </v-card-actions>
+        </v-card>
+        </v-dialog>
+      </div>
+
+      <!-- End Of Future Modal -->
+
+      <!-- Start Of Setting Modal -->
+      <div class="float-right">
+        <v-dialog 
+          v-model="settingModal"
+          max-width="800px"
+        >
+        <v-card height="100vh">
+            <v-card-title>
+              <span class="headline">Unpaid Orders</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-data-table
+                    v-model="selected"
+                    :search="search"
+                    :items="filteredOrders"
+                    :headers="settingHeaders"
+                    :items-per-page="itemsPerPage"
+                    item-key="order_id"
+                    :loading="loadingTable"
+                    :single-select="singleSelect"
+                    show-select
+                    class="elevation-1"
+                    @page-count="pageCount = $event"
+                  >
+                      <template v-slot:item="row">
+                          <tr @click="onButtonClick(row.item)">
+                            <td>{{row.item.id}}</td>
+                            <td>{{row.item.order_data.deliveryMethod}}</td>
+                            <td>{{row.item.order_data.customer.code}}</td>
+                            <td>{{row.item.order_data.customer.phone}}</td>
+                            <td>{{row.item.order_data.customer.name}}</td>
+                            <td>{{row.item.order_data.adress}}</td>
+                            <td>{{row.item.order_data.items[0].name}}</td>
+                            <td>{{row.item.order_data.totalPrice}}</td>
+                            <td>{{row.item.created_at}}</td>
+                            <td>
+                              <v-btn class="mx-2" fab dark small color="green" @click="rePrint(row.item)">
+                                  <v-icon dark>print</v-icon>
+                              </v-btn>
+                            </td>
+                          </tr>
+                      </template>
+                  </v-data-table>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="blue darken-1"
+                icon
+                x-large
+                @click="arrowOrder('down')"
+              >
+                <i class="material-icons md-36" style="font-size: 3em" >south</i>
+              </v-btn>
+              <v-btn
+                color="blue darken-1"
+                icon
+                x-large
+                @click="arrowOrder('up')"
+              >
+                <i class="material-icons md-36" style="font-size: 3em" >north</i>
+              </v-btn>
+            </v-card-actions>
+        </v-card>
+        </v-dialog>
+      </div>
+
+      <!-- End Of Setting Modal -->
+
+      <!-- Start Of Function Modal -->
+
+      <v-dialog 
+        v-model="functionModal"
+        max-width="800px"
+      >
+      <v-card>
+          <v-card-title>
+            <span class="headline">Functions</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <router-link to="/timetable">
+                  <v-btn color="blue" elevation="1" x-large>Timeclock</v-btn>
+                </router-link>
+                <router-link to="/max">
+                  <v-btn color="blue" elevation="1" x-large>KDS</v-btn>
+                </router-link>
+                <router-link to="/orders">
+                  <v-btn color="blue" elevation="1" x-large>Orders</v-btn>
+                </router-link>
+                <router-link to="/driverdispatch">
+                  <v-btn color="blue" elevation="1" x-large>Drivers</v-btn>
+                </router-link>
+                <v-btn color="green" elevation="1" x-large @click="print()">NO SALE</v-btn>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+      </v-card>
+      </v-dialog>
+      <!-- End of Function Modal -->
+
+      <!-- Start Of Diplomat Modal -->
+
+      <v-dialog 
+        v-model="diplomatModal"
+        max-width="700px"
+      >
+      <v-card>
+          <v-card-title>
+            <span class="headline">Diplomat Discount</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-text-field v-model="customer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                    
+                    <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+
+                    <v-radio-group v-model="customer.gender" label="Gender" row>
+                        <v-radio label="Male" value="male"></v-radio>
+                        <v-radio label="Female" value="female"></v-radio>
+                        <v-radio label="None" value="none"></v-radio>
+                    </v-radio-group>
+
+                    <v-text-field v-model="customer.id" class="my-2" label="Diplomat #" ></v-text-field>
+                    
+
+                    <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
+
+                    <!-- <v-combobox
+                      v-model="curentCustomer.address"
+                      label="Address"
+                      multiple
+                      chips
+                      dense
+                    ></v-combobox> -->
+
+                    <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
+
+                    <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+
+                    <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                </v-form>
               </v-row>
             </v-container>
           </v-card-text>
@@ -1638,380 +1737,274 @@
             <v-spacer></v-spacer>
             <v-btn
               color="blue darken-1"
-              icon
+              text
               x-large
-              @click="arrowOrder('down')"
+              @click="diplomatDisc()"
             >
-              <i class="material-icons md-36" style="font-size: 3em" >south</i>
-            </v-btn>
-            <v-btn
-              color="blue darken-1"
-              icon
-              x-large
-              @click="arrowOrder('up')"
-            >
-              <i class="material-icons md-36" style="font-size: 3em" >north</i>
-            </v-btn>
+              Discount: - {{ ((this.totalNet/100) * this.diplomatDiscount).toFixed(2) }}
+            </v-btn>   
           </v-card-actions>
       </v-card>
       </v-dialog>
-    </div>
 
-    <!-- End Of Setting Modal -->
+      <!-- End of diplomat modal -->
 
-    <!-- Start Of Function Modal -->
+      <!-- Start of student modal -->
 
-    <v-dialog 
-      v-model="functionModal"
-      max-width="800px"
-    >
-    <v-card>
-        <v-card-title>
-          <span class="headline">Functions</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <router-link to="/timetable">
-                <v-btn color="blue" elevation="1" x-large>Timeclock</v-btn>
-              </router-link>
-              <router-link to="/max">
-                <v-btn color="blue" elevation="1" x-large>KDS</v-btn>
-              </router-link>
-              <router-link to="/orders">
-                <v-btn color="blue" elevation="1" x-large>Orders</v-btn>
-              </router-link>
-              <router-link to="/driverdispatch">
-                <v-btn color="blue" elevation="1" x-large>Drivers</v-btn>
-              </router-link>
-              <v-btn color="green" elevation="1" x-large @click="print()">NO SALE</v-btn>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-    <!-- End of Function Modal -->
-
-    <!-- Start Of Diplomat Modal -->
-
-    <v-dialog 
-      v-model="diplomatModal"
-      max-width="700px"
-    >
-    <v-card>
-        <v-card-title>
-          <span class="headline">Diplomat Discount</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="customer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-                  
-                  <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
-
-                  <v-radio-group v-model="customer.gender" label="Gender" row>
-                      <v-radio label="Male" value="male"></v-radio>
-                      <v-radio label="Female" value="female"></v-radio>
-                      <v-radio label="None" value="none"></v-radio>
-                  </v-radio-group>
-
-                  <v-text-field v-model="customer.id" class="my-2" label="Diplomat #" ></v-text-field>
-                  
-
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
-
-                  <!-- <v-combobox
-                    v-model="curentCustomer.address"
-                    label="Address"
-                    multiple
-                    chips
-                    dense
-                  ></v-combobox> -->
-
-                  <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
-
-                  <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
-
-                  <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-              </v-form>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-           <v-btn
-            color="blue darken-1"
-            text
-            x-large
-            @click="diplomatDisc()"
-          >
-            Discount: - {{ ((this.totalNet/100) * this.diplomatDiscount).toFixed(2) }}
-          </v-btn>   
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-
-    <!-- End of diplomat modal -->
-
-    <!-- Start of student modal -->
-
-    <v-dialog 
-      v-model="studentModal"
-      max-width="700px"
-    >
-    <v-card>
-        <v-card-title>
-          <span class="headline">Student Discount</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="customer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-                  
-                  <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
-
-                  <v-radio-group v-model="customer.gender" label="Gender" row>
-                      <v-radio label="Male" value="male"></v-radio>
-                      <v-radio label="Female" value="female"></v-radio>
-                      <v-radio label="None" value="none"></v-radio>
-                  </v-radio-group>
-
-                  <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
-                  
-
-                  <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
-
-                  <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
-
-                  <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
-
-                  <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-              </v-form>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-           <v-btn
-            color="blue darken-1"
-            text
-            x-large
-            @click="studentDisc()"
-          >
-            Discount:  {{ ((this.totalNet/100) * this.studentDiscount).toFixed(2) }}
-          </v-btn>   
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-
-    <!-- End of student modal -->
-
-    <!-- Start of team modal -->
-
-   
-    <v-dialog 
-      v-model="teamModal"
-      max-width="700px"
-    >
-    <v-card>
-        <v-card-title>
-          <span class="headline">Team Discount</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-text-field v-model="customer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
-                  
-                  <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
-
-                  <v-radio-group v-model="customer.gender" label="Gender" row>
-                      <v-radio label="Male" value="male"></v-radio>
-                      <v-radio label="Female" value="female"></v-radio>
-                      <v-radio label="None" value="none"></v-radio>
-                  </v-radio-group>
-
-                  <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
-                  
-
-                  <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
-
-                  <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
-
-                  <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
-
-                  <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
-
-              </v-form>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-           <v-btn
-            color="blue darken-1"
-            text
-            x-large
-            @click="employeeDisc()"
-          >
-            Discount:  {{ ((this.totalNet/100) * this.employeeDiscount).toFixed(2) }}
-          </v-btn>   
-        </v-card-actions>
-    </v-card>
-    </v-dialog>
-    <!-- End of student modal -->
-    <!-- Start of manager modal -->
-    <v-dialog
-        v-model="managerModal"
-        max-width="300px"
+      <v-dialog 
+        v-model="studentModal"
+        max-width="700px"
       >
-        <v-card>
+      <v-card>
           <v-card-title>
-            Manager Discount
+            <span class="headline">Student Discount</span>
           </v-card-title>
           <v-card-text>
-            <v-text-field v-if="managerAmount ==  ''" v-model="managerPercent" label="Manager Discount Percent" class="my-2" ></v-text-field>
-            <v-text-field v-if="managerAmount != ''" v-model="managerPercent" label="Manager Discount Percent" class="my-2" disabled ></v-text-field>
-            <v-text-field v-if="managerPercent == ''" v-model="managerAmount" label="Manager Discount Amount" class="my-2" ></v-text-field>
-            <v-text-field v-if="managerPercent != ''" v-model="managerAmount" label="Manager Discount Amount" class="my-2" disabled ></v-text-field>
-            <v-text-field v-model="managerComment" label="Manager Comment" class="my-2"></v-text-field>
+            <v-container>
+              <v-row>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-text-field v-model="customer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                    
+                    <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+
+                    <v-radio-group v-model="customer.gender" label="Gender" row>
+                        <v-radio label="Male" value="male"></v-radio>
+                        <v-radio label="Female" value="female"></v-radio>
+                        <v-radio label="None" value="none"></v-radio>
+                    </v-radio-group>
+
+                    <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
+                    
+
+                    <v-text-field name="input-7-1" label="Street address" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
+
+                    <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
+
+                    <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+
+                    <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                </v-form>
+              </v-row>
+            </v-container>
           </v-card-text>
           <v-card-actions>
+            <v-spacer></v-spacer>
             <v-btn
-              color="primary"
+              color="blue darken-1"
               text
-              @click="checkManager()"
+              x-large
+              @click="studentDisc()"
             >
-              Apply Discount
-            </v-btn>
+              Discount:  {{ ((this.totalNet/100) * this.studentDiscount).toFixed(2) }}
+            </v-btn>   
           </v-card-actions>
-        </v-card>
+      </v-card>
       </v-dialog>
-      <!-- End of manager modal -->
 
-      <!-- Start of manager PIN modal -->
-        <v-dialog
-            v-model="managerPin"
-            max-width="500px"
-          >
-            <v-card>
-              
-              <div class="container" style="width: 400px;" >
-            
-            <div class="row">
-                <v-alert dense type="info" v-model="pinError" dismissible>
-                    The Pin You Entered is Not Correct
-                </v-alert>
+      <!-- End of student modal -->
 
-                <div class="col-12" style="margin: auto">
-                    <ul id="display">
-                        <li v-for="(num, index) in pinSync" :key="index">{{ num }}</li>
-                        <div class="clear"></div>
-                    </ul>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col pinBtn" @click="pinChar('1')">
-                    1
-                </div>
-                <div class="col pinBtn" @click="pinChar('2')">
-                    2
-                </div>
-                <div class="col pinBtn" @click="pinChar('3')">
-                    3
-                </div>
-            </div>
-            <div class="row">
-                <div class="col pinBtn" @click="pinChar('4')">
-                    4
-                </div>
-                <div class="col pinBtn" @click="pinChar('5')">
-                    5
-                </div>
-                <div class="col pinBtn" @click="pinChar('6')">
-                    6
-                </div>
-            </div>
-            <div class="row">
-                <div class="col pinBtn" @click="pinChar('7')">
-                    7
-                </div>
-                <div class="col pinBtn" @click="pinChar('8')">
-                    8
-                </div>
-                <div class="col pinBtn" @click="pinChar('9')">
-                    9
-                </div>
-            </div>
-            <div class="row">
-                <div class="col pinBtn" @click="pinChar('clear')">
-                    C
-                </div>
-                <div class="col pinBtn" @click="pinChar('0')">
-                    0
-                </div>
-                <div class="col pinBtn green" @click="pinChar('enter')">
-                    E
-                </div>
-            </div>
-        </div>
-        
-        </v-card>
+      <!-- Start of team modal -->
+
+    
+      <v-dialog 
+        v-model="teamModal"
+        max-width="700px"
+      >
+      <v-card>
+          <v-card-title>
+            <span class="headline">Team Discount</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-text-field v-model="customer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                    
+                    <v-text-field v-model="customer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
+
+                    <v-radio-group v-model="customer.gender" label="Gender" row>
+                        <v-radio label="Male" value="male"></v-radio>
+                        <v-radio label="Female" value="female"></v-radio>
+                        <v-radio label="None" value="none"></v-radio>
+                    </v-radio-group>
+
+                    <v-text-field v-model="customer.id" class="my-2" label="Personal #" ></v-text-field>
+                    
+
+                    <v-text-field name="input-7-1" label="Street address *" :rules="addressRules" v-model="customer.address" clearable required></v-text-field>
+
+                    <v-text-field v-model="customer.driver" class="my-2" label="Driver Details" clearable></v-text-field>
+
+                    <v-text-field v-model="customer.email" :rules="emailRules" class="my-2" label="E-mail" ></v-text-field>
+
+                    <v-text-field v-model="customer.comment" class="my-2" label="Comment" clearable></v-text-field>
+
+                </v-form>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="blue darken-1"
+              text
+              x-large
+              @click="employeeDisc()"
+            >
+              Discount:  {{ ((this.totalNet/100) * this.employeeDiscount).toFixed(2) }}
+            </v-btn>   
+          </v-card-actions>
+      </v-card>
       </v-dialog>
-      <!-- End of manager PIN modal -->
-
-      <!-- Start of split modal -->
+      <!-- End of student modal -->
+      <!-- Start of manager modal -->
       <v-dialog
-        v-model="splitModal"
-        max-width="500px"
-      >
-        <v-card>
-          <v-card-title>
-            Total Due: {{ Number(totalPrice).toFixed(2) }}
-          </v-card-title>
-          <v-card-text>
-            <v-text-field v-model="splitCash" label="Split Cash" class="my-2" ></v-text-field>
-            <v-text-field v-model="splitCard" label="Split Card" class="my-2"  ></v-text-field>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-              color="primary"
-              text
-              @click="applySplit()"
-            >
-              Pay Split
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <!-- End of split modal -->
-      <v-bottom-sheet v-model="discountActive">
-        <v-sheet
-          class="text-center"
-          height="200px"
+          v-model="managerModal"
+          max-width="300px"
         >
-          <v-btn
-            class="mt-6"
-            text
-            color="red"
-            @click="discountActive = !discountActive"
-          >
-            close
-          </v-btn>
-          <div class="py-3">
-            Discount is available! Please Enter manager PIN!
+          <v-card>
+            <v-card-title>
+              Manager Discount
+            </v-card-title>
+            <v-card-text>
+              <v-text-field v-if="managerAmount ==  ''" v-model="managerPercent" label="Manager Discount Percent" class="my-2" ></v-text-field>
+              <v-text-field v-if="managerAmount != ''" v-model="managerPercent" label="Manager Discount Percent" class="my-2" disabled ></v-text-field>
+              <v-text-field v-if="managerPercent == ''" v-model="managerAmount" label="Manager Discount Amount" class="my-2" ></v-text-field>
+              <v-text-field v-if="managerPercent != ''" v-model="managerAmount" label="Manager Discount Amount" class="my-2" disabled ></v-text-field>
+              <v-text-field v-model="managerComment" label="Manager Comment" class="my-2"></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                class="blue"
+                text
+                @click="checkManager()"
+              >
+                Apply Discount
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- End of manager modal -->
+
+        <!-- Start of manager PIN modal -->
+          <v-dialog
+              v-model="managerPin"
+              max-width="500px"
+            >
+              <v-card>
+                
+                <div class="container" style="width: 400px;" >
+              
+              <div class="row">
+                  <v-alert dense type="info" v-model="pinError" dismissible>
+                      The Pin You Entered is Not Correct
+                  </v-alert>
+
+                  <div class="col-12" style="margin: auto">
+                      <ul id="display">
+                          <li v-for="(num, index) in pinSync" :key="index">{{ num }}</li>
+                          <div class="clear"></div>
+                      </ul>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col pinBtn" @click="pinChar('1')">
+                      1
+                  </div>
+                  <div class="col pinBtn" @click="pinChar('2')">
+                      2
+                  </div>
+                  <div class="col pinBtn" @click="pinChar('3')">
+                      3
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col pinBtn" @click="pinChar('4')">
+                      4
+                  </div>
+                  <div class="col pinBtn" @click="pinChar('5')">
+                      5
+                  </div>
+                  <div class="col pinBtn" @click="pinChar('6')">
+                      6
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col pinBtn" @click="pinChar('7')">
+                      7
+                  </div>
+                  <div class="col pinBtn" @click="pinChar('8')">
+                      8
+                  </div>
+                  <div class="col pinBtn" @click="pinChar('9')">
+                      9
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col pinBtn" @click="pinChar('clear')">
+                      C
+                  </div>
+                  <div class="col pinBtn" @click="pinChar('0')">
+                      0
+                  </div>
+                  <div class="col pinBtn green" @click="pinChar('enter')">
+                      E
+                  </div>
+              </div>
           </div>
-        </v-sheet>
-      </v-bottom-sheet>
-</div>
+          
+          </v-card>
+        </v-dialog>
+        <!-- End of manager PIN modal -->
+
+        <!-- Start of split modal -->
+        <v-dialog
+          v-model="splitModal"
+          max-width="500px"
+        >
+          <v-card>
+            <v-card-title>
+              Total Due: {{ Number(totalPrice).toFixed(2) }}
+            </v-card-title>
+            <v-card-text>
+              <v-text-field v-model="splitCash" label="Split Cash" class="my-2" ></v-text-field>
+              <v-text-field v-model="splitCard" label="Split Card" class="my-2"  ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                class="blue"
+                text
+                @click="applySplit()"
+              >
+                Pay Split
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- End of split modal -->
+        <v-bottom-sheet v-model="discountActive">
+          <v-sheet
+            class="text-center"
+            height="200px"
+          >
+            <v-btn
+              class="mt-6"
+              text
+              color="red"
+              @click="discountActive = !discountActive"
+            >
+              close
+            </v-btn>
+            <div class="py-3">
+              Discount is available! Please Enter manager PIN!
+            </div>
+          </v-sheet>
+        </v-bottom-sheet>
+  </div>
+</v-app>
 </template>
+
 <script>
 
 document.onkeypress = function (e) {
@@ -2126,11 +2119,11 @@ export default {
       printError: false,
       valid: true,
       nameRules: [
-        v => (v && v.length <= 20) || 'Name must be less than 20 characters',
+        v => (v && v.length <= 50) || 'Name must be less than 50 characters',
       ],
       telRules: [
         v => !!v || 'Phone is required',
-        v => (v && v.length ==20) || 'Phone be less than 20 characters',
+        v => (v && v.length <=20) || 'Phone be less than 20 characters',
       ],
       addressRules: [
           v => !!v || 'Adress is required',
@@ -2245,6 +2238,7 @@ export default {
       functionModal: false,
       confirmModal: false,
       invoiceModal: false,
+      invoiceActiveVar: false,
       changeModal: false,
       futureModal: false,
       bigOrderModal: false,
@@ -2347,7 +2341,7 @@ export default {
         gender: '',
         email: '',
         dob: '',
-        address: [],
+        address: '',
         phone: '',
         tel2: '',
         comment: '',
@@ -3050,47 +3044,76 @@ export default {
 
       },
         crmDiscount(discount){
-          if(discount.name == 'Diplomat'|| discount.name == 'Team' || discount.name == 'Student' || discount.name == 'Social'){
-            this.discountActive = true;
-          } 
-          else if(discount.name == 'Corporate'){
-            this.corporateActive = true;
-          }
-          else {
-            this.discountActive = false;
-            this.corporateActive = false;
-          }
-          if(discount.name == this.curentCustomer.discount){
-            this.curentCustomer.discount = '';
-            this.discountActive = false;
-          }
-          else {
+          // if(discount.name == 'Diplomat'|| discount.name == 'Team' || discount.name == 'Student' || discount.name == 'Social'){
+          //   this.discountActive = true;
+          // } 
+          // else if(discount.name == 'Corporate'){
+          //   this.corporateActive = true;
+          // }
+          // else {
+          //   this.discountActive = false;
+          //   this.corporateActive = false;
+          // }
+          // if(discount.name == this.curentCustomer.discount){
+          //   this.curentCustomer.discount = '';
+          //   this.discountActive = false;
+          // }
+          // else {
+          //   this.curentCustomer.discount = discount.name;
+          //   }
             this.curentCustomer.discount = discount.name;
-          }
           this.$forceUpdate();
         },
         arrowOrder(way){
           var ordersLength = this.filteredOrders.length;
           var orderPosition = null;
-          if(this.arrowIndex < ordersLength-1 && this.arrowIndex >= 0){
-            if(way === 'up'){
-              this.arrowIndex = this.arrowIndex -1;
-              this.order = this.filteredOrders[this.arrowIndex].order_data;
+          if(this.arrowIndex == -1){
+            this.arrowIndex = 0;
+          } else {
+              if(this.arrowIndex < ordersLength-1 && this.arrowIndex > 0){
+                if(way === 'up'){
+                  // console.log('UP IF');
+                  this.arrowIndex = this.arrowIndex -1;
+                  this.order = this.filteredOrders[this.arrowIndex].order_data;
+                }
+                else if(way === 'down'){
+                  // console.log('DOWN IF');
+                  this.arrowIndex = this.arrowIndex + 1;
+                  this.order = this.filteredOrders[this.arrowIndex].order_data;
+                }
+              } 
+              else if(this.arrowIndex < ordersLength-1 && this.arrowIndex == 0){
+                if(way === 'up'){
+                  // console.log('UP els IF');
+                  this.arrowIndex = ordersLength-1;
+                  this.order = this.filteredOrders[this.arrowIndex].order_data;
+                }
+                else if(way === 'down'){
+                  // console.log('DOWN else IF');
+                  this.arrowIndex = this.arrowIndex + 1;
+                  this.order = this.filteredOrders[this.arrowIndex].order_data;
+                }
+              }
+              else {
+                if(way === 'up'){
+                  // console.log('UP ELSE');
+                  this.arrowIndex = this.arrowIndex -1;
+                  this.order = this.filteredOrders[this.arrowIndex].order_data;
+                  // alert(this.arrowIndex);
+                  // if(this.arrowIndex != ordersLength -1 ){
+                  //   this.arrowIndex = ordersLength -1;
+                  // } else {
+                  //   this.arrowIndex = 0;
+                  // }
+                }
+                else if(way === 'down'){
+                  // console.log("DOWN ELSE");
+                  this.arrowIndex = 0;
+                  this.order = this.filteredOrders[this.arrowIndex].order_data;
+                }
+              }
             }
-            else if(way === 'down'){
-              this.arrowIndex = this.arrowIndex + 1;
-              this.order = this.filteredOrders[this.arrowIndex].order_data;
-            }
-          }
-          else {
-            if(way === 'up'){
-              this.arrowIndex = ordersLength -1;
-            }
-            else if(way === 'down'){
-              this.arrowIndex = 0;
-            }
-            this.order = this.filteredOrders[this.arrowIndex].order_data;
-          }
+          // alert(this.arrowIndex);
         },
         onButtonClick(item) {
                 this.showOrderComponent = true;
@@ -3147,8 +3170,9 @@ export default {
                 "http://localhost/print/index.php",
             })
             .then((response) => {
-              console.log('------', response.data.data);
+              console.log('Open Drawer!', response.data.data);
             });
+            // alert('DRAWER');
         },
         selectOrder(items){
           this.order = items;
@@ -5461,6 +5485,7 @@ export default {
     },
     invoiceActive(){
       this.invoiceModal = true;
+      this.invoiceActiveVar = true;
     },
     generateInvoice(){
       this.order.invoice = this.invoice;
@@ -5674,6 +5699,7 @@ export default {
       this.paymentConfirm();
     },
     drinkProducts(){
+      // alert(this.drinkCat);
       this.drinkCat = !this.drinkCat;
     },
     paymentConfirm() {
@@ -5705,6 +5731,7 @@ export default {
         this.order.paymentType = 'split';
         this.order.splitCard = this.splitCard;
         this.order.splitCash = this.splitCash;
+        this.print();
       }
 
 
@@ -5818,7 +5845,7 @@ export default {
     },
     rePrint(orderID){
         const TOKEN = localStorage.getItem("TOKEN");
-        console.log('BLA',orderID);
+        // console.log('BLA',orderID);
         var bodyFormData = new FormData();
         bodyFormData.set("id", orderID.id);
         axios.request({
@@ -6175,7 +6202,7 @@ export default {
       bodyFormData.set("email", this.curentCustomer.email);
       bodyFormData.set("phone", this.curentCustomer.phone);
       bodyFormData.set("discount", this.curentCustomer.discount);
-      bodyFormData.set("comment2", this.curentCustomer.driverDetails);
+      bodyFormData.set("comment2", this.curentCustomer.comment2);
       bodyFormData.set("personal_id", this.curentCustomer.personal_id);
       bodyFormData.set("comment", this.curentCustomer.comment);
       bodyFormData.set("ltd_name", this.curentCustomer.ltdName);
@@ -6213,9 +6240,10 @@ export default {
       bodyFormData.set("gender", this.curentCustomer.gender);
       bodyFormData.set("phone", this.curentCustomer.phone);
       bodyFormData.set("discount", this.curentCustomer.discount);
+      bodyFormData.set("email", this.curentCustomer.email);
       bodyFormData.set("personal_id", this.curentCustomer.personal_id);
       bodyFormData.set("comment", this.curentCustomer.comment);
-      bodyFormData.set("comment2", this.curentCustomer.driverDetails);
+      bodyFormData.set("comment2", this.curentCustomer.comment2);
       bodyFormData.set("ltd_name", this.curentCustomer.ltdName);
       bodyFormData.set("ltd_id", this.curentCustomer.ltdId);
       axios
@@ -6402,6 +6430,11 @@ export default {
 };
 </script>
 <style>
+
+.active {
+    border: 3px solid #F60005 !important;
+    box-sizing: border-box;
+}
 ul {
     list-style: none;
     padding: 0;

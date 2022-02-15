@@ -2,7 +2,8 @@
 /* eslint-disable */
 </script>
 <template>
-  <v-container data-app>
+<v-app>
+  <v-container >
     <v-overlay
       :absolute="absolute"
       :opacity="opacity"
@@ -89,7 +90,7 @@
         </v-row>
         <v-row>
           <div class="bottomRight">
-            <v-btn large color="red" @click="driverOut()">OUT =></v-btn>
+            <v-btn large color="blue" @click="driverOut()">OUT =></v-btn>
           </div>
         </v-row>
 
@@ -430,7 +431,8 @@
           </v-sheet>
         </v-bottom-sheet>
         
-    </v-container>
+  </v-container>
+</v-app>
 </template>
 
 <script>
@@ -540,6 +542,10 @@ export default {
     });
   },
   mounted() {
+    setInterval(() => {
+      this.getOrders();
+      this.getDrivers();
+      }, 1000);
     this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
     this.loggedUser = this.$store.state.auth.user.data;
 
@@ -789,15 +795,14 @@ export default {
           data: bodyFormData,
       })
       .then((response) => {
-          console.log("response: ", response);
           this.orders = response.data.data;
           this.orders = this.orders.filter((x) =>  x.order_data.deliveryType === "delivery" )
           // this.orders.forEach(x => {
           //     x.order_data = JSON.parse(x.order_data);
           // });
           this.filteredOrders = this.orders.filter((x) => x.status === '5');
-          console.log("orders data: ", response.data.data);
       });
+      this.$forceUpdate();
     },
     getDrivers(){
       const TOKEN = this.loggedUser.token;
@@ -816,7 +821,6 @@ export default {
         })
         .then((response) => {
           this.driverList = response.data.data;
-          console.log("Drivers List: ", this.driverList);
         });
     },
     selectDriver(driver){

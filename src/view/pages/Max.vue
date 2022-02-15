@@ -2,6 +2,7 @@
 /* eslint-disable */
 </script>
 <template>
+<!-- <v-app> -->
   <div class="row">
       <v-tabs
       v-model="tab"
@@ -34,15 +35,14 @@
     <v-tabs-items v-model="tab">
       <v-tab-item v-for="item in items" :key="item.id">
         <v-card
-          color="basil"
-          flat
         >
           <Card 
           :orders = filteredOrders />
         </v-card>
       </v-tab-item>
     </v-tabs-items>
-    </div>
+  </div>
+<!-- </v-app> -->
 </template>
 
 <script>

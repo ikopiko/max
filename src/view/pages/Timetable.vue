@@ -2,7 +2,8 @@
 /* eslint-disable */
 </script>
 <template>
-    <b-container data-app>  
+<v-app>
+    <b-container>  
       <v-alert v-model="alert" color="pink" dark border="top" transition="scale-transition" dismissible>
           Login Failed
       </v-alert>
@@ -143,7 +144,6 @@
                   <v-date-picker
                     v-model="date"
                     @input="menu = false"
-                    range
                   ></v-date-picker>
                 </v-menu>
               </v-col>
@@ -195,8 +195,7 @@
       </v-dialog>
 
     </b-container>
-    
-
+</v-app>
 </template>
 
 <script>

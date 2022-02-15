@@ -2,11 +2,9 @@
 /* eslint-disable */
 </script>
 <template>
-  <div id="app">
-    <v-app id="inspire">
-      
-
-      <div class="container" data-app>
+  <v-app>
+  <div>
+      <div class="container">
         <div class="row">
           <v-btn @click="banksDetail = true, updateDetails(date)">Banks History</v-btn>
         </div>
@@ -1374,10 +1372,8 @@
           </div>
         </v-sheet>
       </v-bottom-sheet>
-      
-
-    </v-app>
-  </div>
+    </div>
+  </v-app>
 </template>
 
 <script>

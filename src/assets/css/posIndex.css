@@ -166,6 +166,7 @@ body{
 }
 .container-12 {
     /* bla */
+    overflow: hidden;
 }
 body .row,
 body .col-5,
@@ -535,6 +536,7 @@ body .col-12 {
     background-color: #4d2db9 !important;
 }
 
+
 .yellow {
     background-color: #e0de59;
 }
@@ -578,7 +580,9 @@ body .col-12 {
 
 .active {
     border: 3px solid #F60005 !important;
+    /* border: thin solid #CCCCCC; */
     box-sizing: border-box;
+    z-index: 100;
 }
 
 .active_default {
@@ -721,7 +725,7 @@ body .col-12 {
     background-color: #5DCCF5 !important;
 }
 
-.blue {
+.blueBtn {
     background-color:cornflowerblue !important;
 } 
 
@@ -915,6 +919,9 @@ body .col-12 {
 .aSideTopping.price
 {
     position: absolute; right: 0px;
+}
+.posiza {
+    overflow: hidden;
 }
 .container.posiza
 {
