@@ -295,10 +295,13 @@ export default {
             // dummy delay
             setTimeout(()=> {
                     // send login request
+                    // localStorage.setItem('reloaded', '1');
+                    // alert(localStorage.getItem('reloaded'));
                     this.$store.dispatch(LOGIN, {
                             pin,
                             mac
                         }
+                        
                     ) // go to which page after successfully login
                     .then(()=> this.$router.push( {
                             name: "dashboard"

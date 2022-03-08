@@ -37,6 +37,7 @@ ApiService.init();
 // Remove this to disable mock API
 //MockService.init();
 
+
 // Global URL Variable
 
 // Vue.prototype.$hostname = "http://192.168.1.124/ronny/rest/web/index.php?r=v1/";  // LOCAL
@@ -73,7 +74,7 @@ router.beforeEach((to, from, next) => {
   store.dispatch(RESET_LAYOUT_CONFIG);
 
   // Scroll page to top on every route change
-  setTimeout(() => {
+  setTimeout(() => { 
     window.scrollTo(0, 0);
   }, 100);
 });

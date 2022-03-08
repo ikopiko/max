@@ -3,13 +3,13 @@
 </script>
 
 <template>
-<v-app>
+<v-app style="overflow:hidden">
   <div class="container container-12 posiza" >
       <v-alert v-model="printError" color="pink" dark border="top" transition="scale-transition" dismissible>
           Was unable to print!
       </v-alert>
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+      <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" /> -->
       <div class="row">
           <div class="col-5">
               <div class="sidebar-content">
@@ -28,8 +28,8 @@
                               :auto-select-first="true"
                               :search-input.sync="search"
                               class="mx-4"
+                              label="Phone"
                               v-on:change="customerChecked = true"
-                              flat
                               no-filter
                               hide-no-data 
                               return-object
@@ -323,7 +323,7 @@
                                   <div class="col-4" style="margin: 0px">
                                       <div class="d-flex justify-content-between">
                                           <span class="material-icons iconMinus" v-bind:class="{ static: restrictEdit }" v-if="item.qty > 1 " @click="minusQty(item)">remove</span>
-                                          <span class="material-icons iconMinus" v-bind:class="{ static: restrictEdit }" v-if="item.qty == 1" @click="minusQty(item)">delete_outline</span>
+                                          <span class="material-icons iconMinus" v-bind:class="{ static: restrictEdit }" v-if="item.qty == 1" @click="deleteProduct(item)">delete_outline</span>
                                           <span class="itemQty">{{ item.qty }}</span>
                                           <span class="material-icons iconPlus" v-bind:class="{ static: restrictEdit }" @click="addQty(item)">add</span>
                                       </div>
@@ -507,7 +507,7 @@
                       <!-- <div class="col-2 calcBtn blue" @click="studentDisc()">
                           Student
                       </div> -->
-                      <div class="col-2 calcBtn blue" @click="checkManager()">
+                      <div class="col-2 calcBtn blue" @click="managerAmount = '', managerPercent = '', managerPin = true">
                           Manager PIN
                       </div>
                       <div class="col-2 calcBtn" @click="calcInput('1')">1</div>
@@ -518,7 +518,7 @@
                         <!-- <div class="col-2 calcBtn" @click="ronnysDelivery()" v-bind:class=" takeoutActiveVar ? 'active' : 'blue'"> -->
                           Delivery
                       </div>
-                  </div>
+                  </div> 
                   <div class="row">
                       <div class="col-2 calcBtn blue" @click="splitModal = true">
                           Split
@@ -583,17 +583,17 @@
               <!-- End Of Calculator Component -->
 
               <div class="row mt-1 right-2" v-if="showIngredients">
-                  <ingredients v-if="wholePizzaPart == 1" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half1.defaultToppings" :toppings="this.pizza.half1.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
-                  <ingredients v-if="wholePizzaPart == 2" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half2.defaultToppings" :toppings="this.pizza.half2.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
-                  <ingredients v-if="wholePizzaPart == 3" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.defaultToppings" :toppings="
+                  <ingredients v-if="wholePizzaPart == 1" :loversActive="this.loversActive" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half1.defaultToppings" :toppings="this.pizza.half1.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
+                  <ingredients v-if="wholePizzaPart == 2" :loversActive="this.loversActive" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.half2.defaultToppings" :toppings="this.pizza.half2.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
+                  <ingredients v-if="wholePizzaPart == 3" :loversActive="this.loversActive" :product="this.pizza" :sauce="curSauce" :defaultToppings="this.pizza.defaultToppings" :toppings="
                 this.pizza.toppings.concat(
                   this.pizza.half1.toppings,
                   this.pizza.half2.toppings
                 )
               " :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" />
-                  <ingredients v-if="halfPizzaPart == 1" :product="this.customPizza.half1" :sauce="curSauce" :isHalfPizza="this.isHalfPizza" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="this.customPizza.half1.defaultToppings" :toppings="this.customPizza.half1.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusTopping="deleteCusTopping" />
-                  <ingredients v-if="halfPizzaPart == 2" :product="this.customPizza.half2" :isHalfPizza="this.isHalfPizza" :sauce="curSauce" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="this.customPizza.half2.defaultToppings" :toppings="this.customPizza.half2.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusTopping="deleteCusTopping" />
-                  <ingredients v-if="halfPizzaAll" :product="this.customPizza" :isHalfPizza="this.isHalfPizza" :sauce="curSauce" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="
+                  <ingredients v-if="halfPizzaPart == 1" :loversActive="this.loversActive" :product="this.customPizza.half1" :sauce="curSauce" :isHalfPizza="this.isHalfPizza" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="this.customPizza.half1.defaultToppings" :toppings="this.customPizza.half1.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusTopping="deleteCusTopping" />
+                  <ingredients v-if="halfPizzaPart == 2" :loversActive="this.loversActive" :product="this.customPizza.half2" :isHalfPizza="this.isHalfPizza" :sauce="curSauce" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="this.customPizza.half2.defaultToppings" :toppings="this.customPizza.half2.toppings" :mapping="toppingIdCountMap" @onAddTopping="addTopping" @onSendSauce="addSauce" @onShowProductsClear="showProductsClear" @onShowProductsComponent="showProductsComponent" @onDeleteDefTopping="deleteDefaultTopping" @onDeleteTopping="deleteTopping" @onDeleteCusTopping="deleteCusTopping" />
+                  <ingredients v-if="halfPizzaAll" :loversActive="this.loversActive" :product="this.customPizza" :isHalfPizza="this.isHalfPizza" :sauce="curSauce" :halfPizzaPart="this.halfPizzaPart" :defaultToppings="
                 this.customPizza.half2.defaultToppings.concat(
                   this.customPizza.half1.defaultToppings
                 )
@@ -642,7 +642,7 @@
                       </div>
                   </div>
                   <div class="col size paddingClear p-0">
-                      <div class="w-h-1 square paddingClear size_active font-weight-bold" v-bind:class="{ size_static: smallHalf, active: activeSmall }" @click="addSize('s')">
+                      <div class="w-h-1 square paddingClear size_active font-weight-bold" v-bind:class="{ size_static: smallHalf, size_static: cheesseLoversActive, active: activeSmall }" @click="addSize('s')">
                           <span>S</span>
                       </div>
                   </div>
@@ -652,7 +652,7 @@
                       </div>
                   </div>
                   <div class="col size paddingClear p-0">
-                      <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{ active: activeXl }" @click="addSize('xl')">
+                      <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{size_static: cheesseLoversActive, active: activeXl }" @click="addSize('xl')">
                           <span>XL</span>
                       </div>
                   </div>
@@ -1878,7 +1878,7 @@
               <v-btn
                 class="blue"
                 text
-                @click="checkManager()"
+                @click=" checkAmount()"
               >
                 Apply Discount
               </v-btn>
@@ -2050,6 +2050,8 @@ export default {
     },
   data() {
     return {
+      cheesseLoversActive: false,
+      loversActive: false,
       hours: 0,
       minutes: 0,
       seconds: 0,
@@ -2155,7 +2157,7 @@ export default {
         safe_id: null,
         orderId: Number,
         items: [],
-        deliveryMethod: "walk_in",
+        deliveryMethod: "Walk_In",
         deliveryType: "Walk_In",
         deliveryFee: 0,
         payment: 0,
@@ -2193,6 +2195,7 @@ export default {
       studentModal: false,
       teamModal: false,
       managerModal: false,
+      managerModalVar: false,
       splitModal: false,
       calculatorModal: false,
       calculatorModal1: false,
@@ -2870,7 +2873,7 @@ export default {
         this.enteredPin='';
       }
       else if(char==='enter') {
-        if(this.managerModal){
+        if(this.managerModalVar){
           this.applyManager(this.enteredPin)
         }
         else {
@@ -2882,7 +2885,7 @@ export default {
           var index=this.pinDecon.indexOf('-');
           this.pinDecon[index]=char;
           this.enteredPin=this.enteredPin+char;
-          if(this.managerModal){
+          if(this.managerModalVar){
             this.applyManager(this.enteredPin)
           }
           else {
@@ -2902,36 +2905,50 @@ export default {
         }
       }
     },
+    checkAmount(){
+       if(Number(this.managerAmount) <= this.totalPrice && Number(this.managerPercent <= 100)){
+         this.managerPin = true;
+         this.managerModal = false;
+         this.managerModalVar = true;
+       } else {
+         alert('Discount Amount Is Larger Than Total');
+       }
+    },
     checkManager(pin){
-      this.managerPin = true;
-
-      const TOKEN = localStorage.getItem("TOKEN");
-      var bodyFormData = new FormData();
-      bodyFormData.set("pin", pin);
-      axios
-        .request({
-          method: "post",
-          url:
-            this.$hostname + "manager/check-pin",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyFormData,
-        })
-        .then((response) => {
-            // console.log('MANAGER RESPONSE: ', response);
-
-            if (response.data.data == true)
-            {
-              this.changeDisc();
-              this.managerPin = false;
-              this.discountActiveVar = false;
-              return true;
-            }
-            else{
-              return false;
-            }
-        });
+      
+      if(Number(this.managerAmount) <= this.totalPrice && Number(this.managerPercent <= 100)){
+        this.managerPin = true;
+        const TOKEN = localStorage.getItem("TOKEN");
+        var bodyFormData = new FormData();
+        bodyFormData.set("pin", pin);
+        bodyFormData.set("order_id", this.order.orderId);
+        axios
+          .request({
+            method: "post",
+            url:
+              this.$hostname + "manager/check-pin",
+            headers: {
+              Authorization: "Bearer " + TOKEN,
+            },
+            data: bodyFormData,
+          })
+          .then((response) => {
+              // console.log('MANAGER RESPONSE: ', response);
+  
+              if (response.data.data == true)
+              {
+                this.changeDisc();
+                this.managerPin = false;
+                this.discountActiveVar = false;
+                return true;
+              }
+              else{
+                return false;
+              }
+          });
+      } else {
+        alert("Discount Amount Is Larger Than Total");
+      }
     },
     formatDate(date) {
       var d = new Date(date),
@@ -3260,12 +3277,14 @@ export default {
             evt.preventDefault();         
 
           } else {
-
+            if(this.search != null){
               if(this.search.length >= 5){
                 this.checkUser(this.search);
               }
 
             return true;
+            }
+              
           }    
       },
 
@@ -3295,6 +3314,11 @@ export default {
       this.playSound();
 
       if (product.category_name == "Pizza") {
+
+        if(product.id == '56'){
+          this.cheesseLoversActive = true;
+          this.loversActive = true;
+        }
         this.halfPizzaPart = 0;
         this.wholePizza = false;
 
@@ -3958,7 +3982,7 @@ export default {
         gender: '',
         email: '',
         dob: '',
-        address: [], 
+        address: '', 
         phone: '',
         comment: '',
         comment2: '',
@@ -4068,6 +4092,10 @@ export default {
             this.order.items[this.itemIndex].totalPrice =
             this.order.items[this.itemIndex].half1.priceBySizes.xl / 2 +
             this.order.items[this.itemIndex].half2.priceBySizes.xl / 2;
+            this.order.items[this.itemIndex].price = this.order.items[this.itemIndex].totalPrice;
+            // DELETE AFTER
+            // this.order.items[this.itemIndex].totalPrice = (this.order.items[this.itemIndex].totalPrice / 100) * 90;
+            //
             this.customPizza.totalPrice = this.order.items[this.itemIndex].totalPrice;
             this.customPizza.price = this.customPizza.totalPrice;
             this.activeSmall = false;
@@ -4115,6 +4143,15 @@ export default {
             this.itemIndex
           ].priceBySizes.xl;
           this.order.items[this.itemIndex].price = this.order.items[this.itemIndex].totalPrice;
+          // this.order.items[this.itemIndex].oldPrice = this.order.items[
+          //   this.itemIndex
+          // ].priceBySizes.xl;
+          // DELETE AFTER
+          // this.order.items[this.itemIndex].price = (this.order.items[this.itemIndex].totalPrice / 100) * 90
+          // alert(this.order.items[this.itemIndex].totalPrice);
+          // this.order.items[this.itemIndex].totalPrice = (this.order.items[this.itemIndex].totalPrice / 100) * 90;
+          // alert(this.order.items[this.itemIndex].totalPrice);
+          //
           this.activeSmall = false;
           this.noAB = false;
             this.activeMedium = false;
@@ -4311,586 +4348,589 @@ export default {
     addTopping(topping) {
       this.playSound();
       let matchedTopping = false;
-      if(topping.name.slice(0, 3) === "No ")
-      {
-        topping.name = topping.name.slice(3);
-      }
-      if (this.isHalfPizza == "yes") {
-        
-        if(this.halfPizzaPart == 1){
-
-            let matched = false;
-
-            this.customPizza.half1.defaultToppings.forEach((t) => {
-          if (parseInt(t.id) === topping.id) {
-            matchedTopping = true;
-            if (t.name.slice(0, 3) == "No ") {
-              t.name = topping.name;
-              t.isDeleted = false;
-              matched = true;
-              this.customPizza.totalPrice = this.customPizza.price;
-            }
-          }
-        });
-            if (!matched) {
-            matched = false;
-            this.customPizza.half1.toppings.forEach((t) => {
-              if (parseInt(t.id) === topping.id) {
-                t.count += 1;
-                if (t.count === 4) {
-                  t.count = 0;
-                  this.deleteCusTopping(t);
-                  this.deleteDefaultTopping(t);
-                  this.customPizza.totalPrice = this.customPizza.price;
-                }
-                // Adding topping price
-                  if (this.customPizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s /2;
-                    this.customPizza.totalPrice =
-                      this.customPizza.totalPrice + t.price;
-                  } else if (this.customPizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m /2;
-                    this.customPizza.totalPrice =
-                      this.customPizza.totalPrice + t.price;
-                  } else if (this.customPizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl /2;
-                    this.customPizza.totalPrice =
-                      this.customPizza.totalPrice + t.price;
-                  }
-                matched = true;
-                }
-            });
-
-            if (!matched) {
-                if (this.customPizza.size == "s") {
-                  topping.price = this.toppingPrice[topping.isPremium].s /2;
-                  this.customPizza.totalPrice =
-                    this.customPizza.totalPrice + topping.price;
-                } else if (this.customPizza.size == "m") {
-                  topping.price = this.toppingPrice[topping.isPremium].m /2;
-                  this.customPizza.totalPrice =
-                    this.customPizza.totalPrice + topping.price;
-                } else if (this.customPizza.size == "xl") {
-                  topping.price = this.toppingPrice[topping.isPremium].xl /2;
-                  this.customPizza.totalPrice =
-                    this.customPizza.totalPrice + topping.price;
-                }
-              this.customPizza.half1.toppings.push({ ...topping, count: 1 });
-              } 
-            }
-          this.countTotalPrice();
-          this.$forceUpdate();
-
-        }     
-      }
-        // end of half pizza part 1
-        if(this.halfPizzaPart == 2){
-
-          
-
-            let matched = false;
-
-            this.customPizza.half2.defaultToppings.forEach((t) => {
-          if (parseInt(t.id) === topping.id) {
-            if (t.name.slice(0, 3) == "No ") {
-              t.name = topping.name;
-              t.isDeleted = false;
-              this.customPizza.totalPrice = this.customPizza.price;
-              matched = true;
-            }
-            // t.count += 1;
-            // matched = true;
-          }
-        });
-            if (!matched) {
-            matched = false;
-            this.customPizza.half2.toppings.forEach((t) => {
-              if (parseInt(t.id) === topping.id) {
-                t.count += 1;
-                if (t.count === 4) {
-                  t.count = 0;
-                  this.deleteCusTopping(t);
-                  this.deleteDefaultTopping(t);
-                  this.customPizza.totalPrice = this.customPizza.price;
-                }
-                // Adding topping price
-                  if (this.customPizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s /2;
-                    this.customPizza.totalPrice =
-                      this.customPizza.totalPrice + t.price;
-                  } else if (this.customPizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m /2;
-                    this.customPizza.totalPrice =
-                      this.customPizza.totalPrice + t.price;
-                  } else if (this.customPizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl /2;
-                    this.customPizza.totalPrice =
-                      this.customPizza.totalPrice + t.price;
-                  }
-                matched = true;
-                }
-            });
-
-            if (!matched) {
-                if (this.customPizza.size == "s") {
-                  topping.price = this.toppingPrice[topping.isPremium].s /2;
-                  this.customPizza.totalPrice =
-                    this.customPizza.totalPrice + topping.price;
-                } else if (this.customPizza.size == "m") {
-                  topping.price = this.toppingPrice[topping.isPremium].m /2;
-                  this.customPizza.totalPrice =
-                    this.customPizza.totalPrice + topping.price;
-                } else if (this.customPizza.size == "xl") {
-                  topping.price = this.toppingPrice[topping.isPremium].xl /2;
-                  this.customPizza.totalPrice =
-                    this.customPizza.totalPrice + topping.price;
-                }
-              this.customPizza.half2.toppings.push({ ...topping, count: 1 });
-              } 
-            }
-          this.countTotalPrice();
-          this.$forceUpdate();
-
+      if(topping.isPremium == 4){
+        this.deleteDefaultTopping(topping);
+      } else{
+        if(topping.name.slice(0, 3) === "No ")
+        {
+          topping.name = topping.name.slice(3);
         }
-        // end of half pizza part 2
-        else if (this.halfPizzaAll){
-            
-            let matched = false;
-            
-            if (!matched) {
-            matched = false;
-            this.customPizza.toppings.forEach((t) => {
-              if (parseInt(t.id) === topping.id) {
-                t.count += 1;
-                if (t.count === 4) {
-                  t.count = 0;
-                  this.deleteCusMainTopping(t);
-                  
-                  this.customPizza.totalPrice = this.customPizza.price;
-                }
-                // Adding topping price
-                  if (this.customPizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s;
-                    this.customPizza.totalPrice =
-                      this.customPizza.totalPrice + t.price;
-                  } else if (this.customPizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m;
-                    this.customPizza.totalPrice =
-                      this.customPizza.totalPrice + t.price;
-                  } else if (this.customPizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl;
-                    this.customPizza.totalPrice =
-                      this.customPizza.totalPrice + t.price;
+        if (this.isHalfPizza == "yes") {
+          
+          if(this.halfPizzaPart == 1){
+
+              let matched = false;
+
+              this.customPizza.half1.defaultToppings.forEach((t) => {
+            if (parseInt(t.id) === topping.id) {
+              matchedTopping = true;
+              if (t.name.slice(0, 3) == "No ") {
+                t.name = topping.name;
+                t.isDeleted = false;
+                matched = true;
+                this.customPizza.totalPrice = this.customPizza.price;
+              }
+            }
+          });
+              if (!matched) {
+              matched = false;
+              this.customPizza.half1.toppings.forEach((t) => {
+                if (parseInt(t.id) === topping.id) {
+                  t.count += 1;
+                  if (t.count === 4) {
+                    t.count = 0;
+                    this.deleteCusTopping(t);
+                    this.deleteDefaultTopping(t);
+                    this.customPizza.totalPrice = this.customPizza.price;
                   }
-  
+                  // Adding topping price
+                    if (this.customPizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s /2;
+                      this.customPizza.totalPrice =
+                        this.customPizza.totalPrice + t.price;
+                    } else if (this.customPizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m /2;
+                      this.customPizza.totalPrice =
+                        this.customPizza.totalPrice + t.price;
+                    } else if (this.customPizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl /2;
+                      this.customPizza.totalPrice =
+                        this.customPizza.totalPrice + t.price;
+                    }
+                  matched = true;
+                  }
+              });
+
+              if (!matched) {
+                  if (this.customPizza.size == "s") {
+                    topping.price = this.toppingPrice[topping.isPremium].s /2;
+                    this.customPizza.totalPrice =
+                      this.customPizza.totalPrice + topping.price;
+                  } else if (this.customPizza.size == "m") {
+                    topping.price = this.toppingPrice[topping.isPremium].m /2;
+                    this.customPizza.totalPrice =
+                      this.customPizza.totalPrice + topping.price;
+                  } else if (this.customPizza.size == "xl") {
+                    topping.price = this.toppingPrice[topping.isPremium].xl /2;
+                    this.customPizza.totalPrice =
+                      this.customPizza.totalPrice + topping.price;
+                  }
+                this.customPizza.half1.toppings.push({ ...topping, count: 1 });
+                } 
+              }
+            this.countTotalPrice();
+            this.$forceUpdate();
+
+          }     
+        }
+          // end of half pizza part 1
+          if(this.halfPizzaPart == 2){
+
+            
+
+              let matched = false;
+
+              this.customPizza.half2.defaultToppings.forEach((t) => {
+            if (parseInt(t.id) === topping.id) {
+              if (t.name.slice(0, 3) == "No ") {
+                t.name = topping.name;
+                t.isDeleted = false;
+                this.customPizza.totalPrice = this.customPizza.price;
                 matched = true;
               }
-            });
-            if (!matched) {
-                if (this.customPizza.size == "s") {
-                  topping.price = this.toppingPrice[topping.isPremium].s;
-                  this.customPizza.totalPrice =
-                    this.customPizza.totalPrice + topping.price;
-                } else if (this.customPizza.size == "m") {
-                  topping.price = this.toppingPrice[topping.isPremium].m;
-                  this.customPizza.totalPrice =
-                    this.customPizza.totalPrice + topping.price;
-                } else if (this.customPizza.size == "xl") {
-                  topping.price = this.toppingPrice[topping.isPremium].xl;
-                  this.customPizza.totalPrice =
-                    this.customPizza.totalPrice + topping.price;
-                }
+              // t.count += 1;
+              // matched = true;
+            }
+          });
+              if (!matched) {
+              matched = false;
+              this.customPizza.half2.toppings.forEach((t) => {
+                if (parseInt(t.id) === topping.id) {
+                  t.count += 1;
+                  if (t.count === 4) {
+                    t.count = 0;
+                    this.deleteCusTopping(t);
+                    this.deleteDefaultTopping(t);
+                    this.customPizza.totalPrice = this.customPizza.price;
+                  }
+                  // Adding topping price
+                    if (this.customPizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s /2;
+                      this.customPizza.totalPrice =
+                        this.customPizza.totalPrice + t.price;
+                    } else if (this.customPizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m /2;
+                      this.customPizza.totalPrice =
+                        this.customPizza.totalPrice + t.price;
+                    } else if (this.customPizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl /2;
+                      this.customPizza.totalPrice =
+                        this.customPizza.totalPrice + t.price;
+                    }
+                  matched = true;
+                  }
+              });
+
+              if (!matched) {
+                  if (this.customPizza.size == "s") {
+                    topping.price = this.toppingPrice[topping.isPremium].s /2;
+                    this.customPizza.totalPrice =
+                      this.customPizza.totalPrice + topping.price;
+                  } else if (this.customPizza.size == "m") {
+                    topping.price = this.toppingPrice[topping.isPremium].m /2;
+                    this.customPizza.totalPrice =
+                      this.customPizza.totalPrice + topping.price;
+                  } else if (this.customPizza.size == "xl") {
+                    topping.price = this.toppingPrice[topping.isPremium].xl /2;
+                    this.customPizza.totalPrice =
+                      this.customPizza.totalPrice + topping.price;
+                  }
+                this.customPizza.half2.toppings.push({ ...topping, count: 1 });
+                } 
+              }
+            this.countTotalPrice();
+            this.$forceUpdate();
+
+          }
+          // end of half pizza part 2
+          else if (this.halfPizzaAll){
               
-              this.customPizza.toppings.push({ ...topping, count: 1 });
-            }
-          }
-          this.countTotalPrice();
-          this.$forceUpdate();
-
-      } //end of half pizza block
-
-        // End of topping on whole pizza
-        else if (this.isPizza == "yes") {
-        let matched = false;
-        
-        //this.pizza.toppingChange++;
-        if(this.pizza.is_special == 0){
-          this.pizza.defaultToppings.forEach((t) => {
-            if (parseInt(t.id) === topping.id) {
-              matchedTopping = true;
-              if (t.name.slice(0, 3) === "No ") {
-                if(topping.id == 5){
-
-                  this.pizza.totalPrice = this.pizza.totalPrice; 
-                }
-                else {
-                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                }
-                t.name = topping.name;
-                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                t.isDeleted = false;
-                matched = true;
-              }
-
-              if (this.pizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                } else if (this.pizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price;
-                } else if (this.pizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                }
-              // t.count += 1;
-              // matched = true;
-            }
-          });
-        }
-        else if(this.pizza.is_special == 1){
-          this.pizza.defaultToppings.forEach((t) => {
-            if (parseInt(t.id) === topping.id) {
-               matchedTopping = true;
-              if (t.name.slice(0, 3) == "No ") {
-                if(topping.id == 5){
-                  this.pizza.totalPrice = this.pizza.totalPrice;  
-                }
-                else {
-                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                }
-                t.name = topping.name;
-                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                t.isDeleted = false;
-                matched = true;
-              }
-
-              if (this.pizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                } else if (this.pizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price;
-                } else if (this.pizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                }
-              // t.count += 1;
-              // matched = true;
-            }
-          });
-        }
-
-        if (this.wholePizzaPart === 1){
-
-          if(this.pizza.is_special == 0){
-          this.pizza.half1.defaultToppings.forEach((t) => {
-            if (parseInt(t.id) === topping.id) {
-              matchedTopping = true;
-              if (t.name.slice(0, 3) === "No ") {
-                if(topping.id == 5){
-                  this.pizza.totalPrice = this.pizza.totalPrice; 
-                }
-                else {
-                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                }
-                t.name = topping.name;
-                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                t.isDeleted = false;
-                matched = true;
-              }
-
-              if (this.pizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                } else if (this.pizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price;
-                } else if (this.pizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                }
-              // t.count += 1;
-              // matched = true;
-            }
-          });
-        }
-        else if(this.pizza.is_special == 1){
-          this.pizza.half1.defaultToppings.forEach((t) => {
-            if (parseInt(t.id) === topping.id) {
-              matchedTopping = true;
-              if (t.name.slice(0, 3) == "No ") {       
-                if(topping.id == 5){
-                  this.pizza.totalPrice = this.pizza.totalPrice;  
-                }
-                else {
-                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                }
-                t.name = topping.name;
-                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                t.isDeleted = false;
-                matched = true;
-              }
-
-              if (this.pizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                } else if (this.pizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price;
-                } else if (this.pizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                }
-              // t.count += 1;
-              // matched = true;
-            }
-          });
-        }
-          
-          this.wholePizzaActive = true;
-          if (!matched) {
-            matched = false;
-            this.pizza.half1.toppings.forEach((t) => {
+              let matched = false;
+              
+              if (!matched) {
+              matched = false;
+              this.customPizza.toppings.forEach((t) => {
                 if (parseInt(t.id) === topping.id) {
-                t.count += 1;
-                if (t.count === 4) {
+                  t.count += 1;
+                  if (t.count === 4) {
                     t.count = 0;
-                    this.deleteTopping(t);
-                    if(matchedTopping){
-                      this.deleteDefaultTopping(t);
+                    this.deleteCusMainTopping(t);
+                    
+                    this.customPizza.totalPrice = this.customPizza.price;
+                  }
+                  // Adding topping price
+                    if (this.customPizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s;
+                      this.customPizza.totalPrice =
+                        this.customPizza.totalPrice + t.price;
+                    } else if (this.customPizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m;
+                      this.customPizza.totalPrice =
+                        this.customPizza.totalPrice + t.price;
+                    } else if (this.customPizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl;
+                      this.customPizza.totalPrice =
+                        this.customPizza.totalPrice + t.price;
                     }
+    
+                  matched = true;
                 }
-                    if (this.pizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
-                    } else if (this.pizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
-                    } else if (this.pizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
-                    }
-                matched = true;
-                }
-            });
-            if (!matched) {
-                if (this.pizza.size == "s") {
-                    topping.price = this.toppingPrice[topping.isPremium].s/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                } else if (this.pizza.size == "m") {
-                    topping.price = this.toppingPrice[topping.isPremium].m/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                } else if (this.pizza.size == "xl") {
-                    topping.price = this.toppingPrice[topping.isPremium].xl/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                }
-                this.pizza.half1.toppings.push({ ...topping, count: 1 });
-            }
-            }
-
-        }
-        else if(this.wholePizzaPart === 2){
-          if(this.pizza.is_special == 0){
-          this.pizza.half2.defaultToppings.forEach((t) => {
-            if (parseInt(t.id) === topping.id) {
-              matchedTopping = true;
-              if (t.name.slice(0, 3) === "No ") {
-                if(topping.id == 5){
-                  this.pizza.totalPrice = this.pizza.totalPrice; 
-                }
-                else {
-                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                }
-                t.name = topping.name;
-                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                t.isDeleted = false;
-                matched = true;
-              }
-
-              if (this.pizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                } else if (this.pizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price;
-                } else if (this.pizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                }
-              // t.count += 1;
-              // matched = true;
-            }
-          });
-        }
-        else if(this.pizza.is_special == 1){
-          this.pizza.half2.defaultToppings.forEach((t) => {
-            if (parseInt(t.id) === topping.id) {
-              matchedTopping = true;
-              if (t.name.slice(0, 3) == "No ") {
-                if(topping.id == 5){
-                  this.pizza.totalPrice = this.pizza.totalPrice;  
-                }
-                else {
-                  this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                }
-                t.name = topping.name;
-                // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                t.isDeleted = false;
-                matched = true;
-              }
-
-              if (this.pizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                } else if (this.pizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m;
-                    this.pizza.totalPrice = this.pizza.price;
-                } else if (this.pizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl;
-                    this.pizza.totalPrice = this.pizza.price + t.price;
-                }
-              // t.count += 1;
-              // matched = true;
-            }
-          });
-        }
-          
-          this.wholePizzaActive = true;
-          if (!matched) {
-            matched = false;
-            this.pizza.half2.toppings.forEach((t) => {
-                if (parseInt(t.id) === topping.id) {
-                t.count += 1;
-                if (t.count === 4) {
-                    t.count = 0;
-                    this.deleteTopping(t);
-                    if(matchedTopping){
-                      this.deleteDefaultTopping(t);
-                    }
-                }
-                    if (this.pizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
-                    } else if (this.pizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
-                    } else if (this.pizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
-                    }
-                matched = true;
-                }
-            });
-            if (!matched) {
-                if (this.pizza.size == "s") {
-                    topping.price = this.toppingPrice[topping.isPremium].s/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                } else if (this.pizza.size == "m") {
-                    topping.price = this.toppingPrice[topping.isPremium].m/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                } else if (this.pizza.size == "xl") {
-                    topping.price = this.toppingPrice[topping.isPremium].xl/2;
-                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                }
-                
-                this.pizza.half2.toppings.push({ ...topping, count: 1 });
-            }
-            }
-
-        }
-        else {
-            if (!matched) {
-            matched = false;
-            this.pizza.toppings.forEach((t) => {
-                if (parseInt(t.id) === topping.id) {
-                t.count += 1;
-                if (t.count === 4) {
-                    t.count = 0;
-                    console.log('Topping count: ', t.count);
-                    this.deleteTopping(t);
-                    if(matchedTopping){
-                      this.deleteDefaultTopping(t);
-                    }
-                }   
-                    if (this.pizza.size == "s") {
-                    t.price = this.toppingPrice[topping.isPremium].s;
-                      this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
-                    } else if (this.pizza.size == "m") {
-                    t.price = this.toppingPrice[topping.isPremium].m;
-                    // alert(this.pizza.totalPrice); // ?????
-                    //this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
-                    } else if (this.pizza.size == "xl") {
-                    t.price = this.toppingPrice[topping.isPremium].xl;
-                    this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
-                    }
-                matched = true;
-                }
-            });
-            if (!matched) {
-                if (this.pizza.size == "s") {
+              });
+              if (!matched) {
+                  if (this.customPizza.size == "s") {
                     topping.price = this.toppingPrice[topping.isPremium].s;
-                    //this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                } else if (this.pizza.size == "m") {
+                    this.customPizza.totalPrice =
+                      this.customPizza.totalPrice + topping.price;
+                  } else if (this.customPizza.size == "m") {
                     topping.price = this.toppingPrice[topping.isPremium].m;
-                    //this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
-                } else if (this.pizza.size == "xl") {
+                    this.customPizza.totalPrice =
+                      this.customPizza.totalPrice + topping.price;
+                  } else if (this.customPizza.size == "xl") {
                     topping.price = this.toppingPrice[topping.isPremium].xl;
-                    //this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                    this.customPizza.totalPrice =
+                      this.customPizza.totalPrice + topping.price;
+                  }
+                
+                this.customPizza.toppings.push({ ...topping, count: 1 });
+              }
+            }
+            this.countTotalPrice();
+            this.$forceUpdate();
+
+        } //end of half pizza block
+
+          // End of topping on whole pizza
+          else if (this.isPizza == "yes") {
+          let matched = false;
+          
+          //this.pizza.toppingChange++;
+          if(this.pizza.is_special == 0){
+            this.pizza.defaultToppings.forEach((t) => {
+              if (parseInt(t.id) === topping.id) {
+                matchedTopping = true;
+                if (t.name.slice(0, 3) === "No ") {
+                  if(topping.id == 5){
+
+                    this.pizza.totalPrice = this.pizza.totalPrice; 
+                  }
+                  else {
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  }
+                  t.name = topping.name;
+                  // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  t.isDeleted = false;
+                  matched = true;
                 }
 
-                this.pizza.toppings.push({ ...topping, count: 1 });
-            }
-            }
-        }
-      }
-        // end of add pizza toppings
-
-        else if (this.isSticks) {
-        let matched = false;
-        this.sticks.defaultToppings.forEach((t) => {
-          if (parseInt(t.id) === topping.id) {
-            if (t.name.slice(0, 3) == "No ") {
-              t.name = topping.name;
-              t.isDeleted = false;
-              matched = true;
-            }
-            // t.count += 1;
-            // matched = true;
+                if (this.pizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  } else if (this.pizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m;
+                      this.pizza.totalPrice = this.pizza.price;
+                  } else if (this.pizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  }
+                // t.count += 1;
+                // matched = true;
+              }
+            });
           }
-        });
-        if (!matched) {
-          matched = false;
-          this.sticks.toppings.forEach((t) => {
+          else if(this.pizza.is_special == 1){
+            this.pizza.defaultToppings.forEach((t) => {
+              if (parseInt(t.id) === topping.id) {
+                matchedTopping = true;
+                if (t.name.slice(0, 3) == "No ") {
+                  if(topping.id == 5){
+                    this.pizza.totalPrice = this.pizza.totalPrice;  
+                  }
+                  else {
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  }
+                  t.name = topping.name;
+                  // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  t.isDeleted = false;
+                  matched = true;
+                }
+
+                if (this.pizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  } else if (this.pizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m;
+                      this.pizza.totalPrice = this.pizza.price;
+                  } else if (this.pizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  }
+                // t.count += 1;
+                // matched = true;
+              }
+            });
+          }
+
+          if (this.wholePizzaPart === 1){
+
+            if(this.pizza.is_special == 0){
+            this.pizza.half1.defaultToppings.forEach((t) => {
+              if (parseInt(t.id) === topping.id) {
+                matchedTopping = true;
+                if (t.name.slice(0, 3) === "No ") {
+                  if(topping.id == 5){
+                    this.pizza.totalPrice = this.pizza.totalPrice; 
+                  }
+                  else {
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  }
+                  t.name = topping.name;
+                  // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  t.isDeleted = false;
+                  matched = true;
+                }
+
+                if (this.pizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  } else if (this.pizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m;
+                      this.pizza.totalPrice = this.pizza.price;
+                  } else if (this.pizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  }
+                // t.count += 1;
+                // matched = true;
+              }
+            });
+          }
+          else if(this.pizza.is_special == 1){
+            this.pizza.half1.defaultToppings.forEach((t) => {
+              if (parseInt(t.id) === topping.id) {
+                matchedTopping = true;
+                if (t.name.slice(0, 3) == "No ") {       
+                  if(topping.id == 5){
+                    this.pizza.totalPrice = this.pizza.totalPrice;  
+                  }
+                  else {
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  }
+                  t.name = topping.name;
+                  // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  t.isDeleted = false;
+                  matched = true;
+                }
+
+                if (this.pizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  } else if (this.pizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m;
+                      this.pizza.totalPrice = this.pizza.price;
+                  } else if (this.pizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  }
+                // t.count += 1;
+                // matched = true;
+              }
+            });
+          }
+            
+            this.wholePizzaActive = true;
+            if (!matched) {
+              matched = false;
+              this.pizza.half1.toppings.forEach((t) => {
+                  if (parseInt(t.id) === topping.id) {
+                  t.count += 1;
+                  if (t.count === 4) {
+                      t.count = 0;
+                      this.deleteTopping(t);
+                      if(matchedTopping){
+                        this.deleteDefaultTopping(t);
+                      }
+                  }
+                      if (this.pizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
+                      } else if (this.pizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
+                      } else if (this.pizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
+                      }
+                  matched = true;
+                  }
+              });
+              if (!matched) {
+                  if (this.pizza.size == "s") {
+                      topping.price = this.toppingPrice[topping.isPremium].s/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  } else if (this.pizza.size == "m") {
+                      topping.price = this.toppingPrice[topping.isPremium].m/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  } else if (this.pizza.size == "xl") {
+                      topping.price = this.toppingPrice[topping.isPremium].xl/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  }
+                  this.pizza.half1.toppings.push({ ...topping, count: 1 });
+              }
+              }
+
+          }
+          else if(this.wholePizzaPart === 2){
+            if(this.pizza.is_special == 0){
+            this.pizza.half2.defaultToppings.forEach((t) => {
+              if (parseInt(t.id) === topping.id) {
+                matchedTopping = true;
+                if (t.name.slice(0, 3) === "No ") {
+                  if(topping.id == 5){
+                    this.pizza.totalPrice = this.pizza.totalPrice; 
+                  }
+                  else {
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  }
+                  t.name = topping.name;
+                  // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  t.isDeleted = false;
+                  matched = true;
+                }
+
+                if (this.pizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  } else if (this.pizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m;
+                      this.pizza.totalPrice = this.pizza.price;
+                  } else if (this.pizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  }
+                // t.count += 1;
+                // matched = true;
+              }
+            });
+          }
+          else if(this.pizza.is_special == 1){
+            this.pizza.half2.defaultToppings.forEach((t) => {
+              if (parseInt(t.id) === topping.id) {
+                matchedTopping = true;
+                if (t.name.slice(0, 3) == "No ") {
+                  if(topping.id == 5){
+                    this.pizza.totalPrice = this.pizza.totalPrice;  
+                  }
+                  else {
+                    this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  }
+                  t.name = topping.name;
+                  // this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  t.isDeleted = false;
+                  matched = true;
+                }
+
+                if (this.pizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  } else if (this.pizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m;
+                      this.pizza.totalPrice = this.pizza.price;
+                  } else if (this.pizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl;
+                      this.pizza.totalPrice = this.pizza.price + t.price;
+                  }
+                // t.count += 1;
+                // matched = true;
+              }
+            });
+          }
+            
+            this.wholePizzaActive = true;
+            if (!matched) {
+              matched = false;
+              this.pizza.half2.toppings.forEach((t) => {
+                  if (parseInt(t.id) === topping.id) {
+                  t.count += 1;
+                  if (t.count === 4) {
+                      t.count = 0;
+                      this.deleteTopping(t);
+                      if(matchedTopping){
+                        this.deleteDefaultTopping(t);
+                      }
+                  }
+                      if (this.pizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
+                      } else if (this.pizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
+                      } else if (this.pizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
+                      }
+                  matched = true;
+                  }
+              });
+              if (!matched) {
+                  if (this.pizza.size == "s") {
+                      topping.price = this.toppingPrice[topping.isPremium].s/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  } else if (this.pizza.size == "m") {
+                      topping.price = this.toppingPrice[topping.isPremium].m/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  } else if (this.pizza.size == "xl") {
+                      topping.price = this.toppingPrice[topping.isPremium].xl/2;
+                      this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  }
+                  
+                  this.pizza.half2.toppings.push({ ...topping, count: 1 });
+              }
+              }
+
+          }
+          else {
+              if (!matched) {
+              matched = false;
+              this.pizza.toppings.forEach((t) => {
+                  if (parseInt(t.id) === topping.id) {
+                  t.count += 1;
+                  if (t.count === 4) {
+                      t.count = 0;
+                      console.log('Topping count: ', t.count);
+                      this.deleteTopping(t);
+                      if(matchedTopping){
+                        this.deleteDefaultTopping(t);
+                      }
+                  }   
+                      if (this.pizza.size == "s") {
+                      t.price = this.toppingPrice[topping.isPremium].s;
+                        this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
+                      } else if (this.pizza.size == "m") {
+                      t.price = this.toppingPrice[topping.isPremium].m;
+                      // alert(this.pizza.totalPrice); // ?????
+                      //this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
+                      } else if (this.pizza.size == "xl") {
+                      t.price = this.toppingPrice[topping.isPremium].xl;
+                      this.pizza.totalPrice = this.pizza.totalPrice + t.price * t.count;
+                      }
+                  matched = true;
+                  }
+              });
+              if (!matched) {
+                  if (this.pizza.size == "s") {
+                      topping.price = this.toppingPrice[topping.isPremium].s;
+                      //this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  } else if (this.pizza.size == "m") {
+                      topping.price = this.toppingPrice[topping.isPremium].m;
+                      //this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  } else if (this.pizza.size == "xl") {
+                      topping.price = this.toppingPrice[topping.isPremium].xl;
+                      //this.pizza.totalPrice = this.pizza.totalPrice + topping.price;
+                  }
+
+                  this.pizza.toppings.push({ ...topping, count: 1 });
+              }
+              }
+          }
+        }
+          // end of add pizza toppings
+
+          else if (this.isSticks) {
+          let matched = false;
+          this.sticks.defaultToppings.forEach((t) => {
             if (parseInt(t.id) === topping.id) {
-              t.count += 1;
-              if (t.count === 4) {
-                t.count = 0;
-                this.deleteTopping(t);
+              if (t.name.slice(0, 3) == "No ") {
+                t.name = topping.name;
+                t.isDeleted = false;
+                matched = true;
               }
-              if (topping.id === 24) {
-                  t.price = 2.2;
-                  this.sticks.totalPrice = this.sticks.price + t.price * t.count;
-              } else {
-                  t.price = 0.0;
-                  this.sticks.totalPrice = this.sticks.price + t.price * t.count;
-              }
-              matched = true;
+              // t.count += 1;
+              // matched = true;
             }
           });
           if (!matched) {
-            if (topping.id === 24) {
-                topping.price = 2.2;
-                this.sticks.totalPrice = this.sticks.price + topping.price;
-            } else {
-                topping.price = 0.0;
-                this.sticks.totalPrice = this.sticks.price + topping.price;
+            matched = false;
+            this.sticks.toppings.forEach((t) => {
+              if (parseInt(t.id) === topping.id) {
+                t.count += 1;
+                if (t.count === 4) {
+                  t.count = 0;
+                  this.deleteTopping(t);
+                }
+                if (topping.id === 24) {
+                    t.price = 2.4;
+                    this.sticks.totalPrice = this.sticks.price + t.price * t.count;
+                } else {
+                    t.price = 0.0;
+                    this.sticks.totalPrice = this.sticks.price + t.price * t.count;
+                }
+                matched = true;
+              }
+            });
+            if (!matched) {
+              if (topping.id === 24) {
+                  topping.price = 2.4;
+                  this.sticks.totalPrice = this.sticks.price + topping.price;
+              } else {
+                  topping.price = 0.0;
+                  this.sticks.totalPrice = this.sticks.price + topping.price;
+              }
+              this.sticks.toppings.push({ ...topping, count: 1 });
             }
-            this.sticks.toppings.push({ ...topping, count: 1 });
           }
+        
         }
-      
       }
-
       // end of add sticks tooppings
 
       this.countTotalPrice();
@@ -5390,6 +5430,8 @@ export default {
       this.halfPizzaPart = 0;
       this.wholePizzaPart = 0;
       this.smallHalf = false;
+      this.cheesseLoversActive = false;
+      this.loversActive = false;
       this.crustVar = false;
       this.halfPizzaCounter = 1;
       this.globalQuantity = 1;
@@ -5428,6 +5470,11 @@ export default {
             this.showProducts = false;
             this.showIngredients = true;
             this.itemIndex = this.order.items.indexOf(item);
+
+            if(this.order.items[this.itemIndex].id == '56'){
+              this.cheesseLoversActive = true;
+              this.loversActive = true;
+            }
 
             if(this.order.items[this.itemIndex].size === 's'){
               this.activeSmall = true;
@@ -5506,7 +5553,7 @@ export default {
         this.ronnysActive = false;
       }
       this.order.deliveryFee = 0;
-      this.order.deliveryMethod = 'walk_in';
+      this.order.deliveryMethod = 'Walk_In';
       this.order.customer = this.curentCustomer;
       if(ND === 'no'){
         // pass
@@ -5623,6 +5670,16 @@ export default {
     },
     payWolt() {
         this.noDisc();
+        // DELETE AFTER
+        // this.order.items.forEach(x =>{
+        //   if(x.size == 'xl'){
+        //     // alert(x.name);
+        //     var diff = x.totalPrice - x.price;
+        //     x.price = x.oldPrice + diff;
+        //     x.totalPrice = x.price;
+        //   }
+        // });
+        //
         this.paymentConfirm();
     },
     doneCash() {
@@ -6119,12 +6176,14 @@ export default {
         alert('Manager comment is required!');
       } 
       else{
-        this.managerModal = false;
-        this.managerPin = true;
+        // totalPrice
+        // this.managerModal = false;
+        // this.managerPin = true;
         // console.log("Check Returns: ", this.checkManager());
         const TOKEN = localStorage.getItem("TOKEN");
         var bodyFormData = new FormData();
         bodyFormData.set("pin", pin);
+        bodyFormData.set("order_id", this.order.orderId);
         axios
           .request({
             method: "post",
@@ -6147,7 +6206,7 @@ export default {
                 this.order.discountName = 'Manager';
                 this.order.discountAmount = false;
                 this.managerPercentVar = true;
-                this.managerModal = false;
+                this.managerModalVar = false;
                 this.managerPin = false;
               } else if(this.managerAmount != '') {
                 this.order.discount = this.managerAmount;
@@ -6155,34 +6214,38 @@ export default {
                 this.order.discountName = 'Manager';
                 this.order.discountAmount = true;
                 this.managerAmountVar = true;
-                this.managerModal = false;
+                this.managerModalVar = false;
                 this.managerPin = false;
               } else if(this.managerAmount == '' && this.managerPercent == ''){
+                this.managerModalVar = false;
+                this.managerPin = false;
                 alert('No Discount Selected');
               }
               }
               else{
+                this.managerModal = false;
+                this.managerPin = false;
                 alert('Pin is not correct!');
               }
 
           });
-          if(this.managerPercent != ''){
-            this.order.discount = this.managerPercent;
-            this.order.managerComment = this.managerComment;
-            this.order.discountName = 'Manager';
-            this.order.discountAmount = false;
-            this.managerPercentVar = true;
-            this.managerModal = false;
-          } else if(this.managerAmount != '') {
-            this.order.discount = this.managerAmount;
-            this.order.managerComment = this.managerComment;
-            this.order.discountName = 'Manager';
-            this.order.discountAmount = true;
-            this.managerAmountVar = true;
-            this.managerModal = false;
-          } else if(this.managerAmount == '' && this.managerPercent == ''){
-            alert('No Discount Selected');
-          }
+          // if(this.managerPercent != ''){
+          //   this.order.discount = this.managerPercent;
+          //   this.order.managerComment = this.managerComment;
+          //   this.order.discountName = 'Manager';
+          //   this.order.discountAmount = false;
+          //   this.managerPercentVar = true;
+          //   this.managerModal = false;
+          // } else if(this.managerAmount != '') {
+          //   this.order.discount = this.managerAmount;
+          //   this.order.managerComment = this.managerComment;
+          //   this.order.discountName = 'Manager';
+          //   this.order.discountAmount = true;
+          //   this.managerAmountVar = true;
+          //   this.managerModal = false;
+          // } else if(this.managerAmount == '' && this.managerPercent == ''){
+          //   alert('No Discount Selected');
+          // }
       }
       this.$forceUpdate();
     },
@@ -6297,7 +6360,7 @@ export default {
     walkinCustomer(){
       
       this.order.customer = this.curentCustomer;
-      this.order.deliveryType = "Walk_in";
+      this.order.deliveryType = "Walk_In";
       this.order.deliveryMethod = "Walk_In";
       this.walkInModal = false;
       

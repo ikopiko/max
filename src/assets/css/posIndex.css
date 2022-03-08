@@ -921,7 +921,7 @@ body .col-12 {
     position: absolute; right: 0px;
 }
 .posiza {
-    overflow: hidden;
+    overflow: hidden !important;
 }
 .container.posiza
 {

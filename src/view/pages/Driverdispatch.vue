@@ -731,15 +731,20 @@ export default {
                   this.driverOrders = response.data.data;
                 this.driverOrders.forEach(x => {
                     x.order_data = JSON.parse(x.order_data);
-                    if(x.order_data.discount == 'Diplomat'){
-                      x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
-                    }
-                    else if(x.order_data.discount == 'Manager' && x.order_data.discountAmount == true){
-                      x.order_data.discPrice = x.order_data.discount;
-                    }
-                    else {
-                      x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
-                    }
+                    if(x.order_data.discount > 0){
+                    if(x.order_data.discountName == 'Diplomat'){
+                        x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+                      }
+                      else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+                        x.order_data.discPrice = x.order_data.discount;
+                      }
+                      else {
+                        x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+                      }
+                  }
+                  else {
+                    x.order_data.discPrice = 0;
+                  }
                 });
                   this.filteredDriverOrders = this.driverOrders.filter((x) => x.status == '6');
                   this.editOrderList = this.driverOrders.filter((x) => x.status == '7');

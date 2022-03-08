@@ -7,7 +7,7 @@
         <div class="row right-2" id="toppings">
                <div class=" col-2 paddingClear" v-for="product in products" :key="product.id">
                     <div class="w-b-1 square" @click="send(product)" v-bind:class="[product.class_name]">
-                       <span class="position-relative" ><strong>{{ product.name }}</strong></span>
+                       <span class="position-relative"><strong>{{ product.name }}</strong></span>
                     </div>
                 </div> 
         </div>

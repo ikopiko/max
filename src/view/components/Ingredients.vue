@@ -27,6 +27,10 @@ import axios from 'axios';
 export default {
   name: 'Home',
   props: {
+      loversActive: {
+        type: Boolean,
+        default: false
+      },
       isHalfPizza: {
         type: String,
         default: 'no'
@@ -79,8 +83,22 @@ export default {
           
   },
   computed: {
-      filteredIngredients () {      
-        return this.ingredients.filter(x => x.product_category_id === 1 || x.product_category_id === 0);
+      filteredIngredients () {
+        if(this.loversActive){
+          return this.ingredients.filter(x => x.product_category_id === 1 || x.product_category_id === 0);
+        } else {
+          // alert('NO CHEESE');
+          var ingredientsFilter = this.ingredients.filter(x => x.product_category_id === 1 || x.product_category_id === 0);
+          var newArr = [];
+          ingredientsFilter.forEach(x => {
+            if(x.isPremium !== 4){
+              // alert(x.name);
+              newArr.push(x);
+            }
+          });
+          return newArr;
+          // return this.ingredients.filter( x=> x.isPremium === 4);
+        }
       },
   },
   methods: {

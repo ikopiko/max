@@ -225,7 +225,6 @@ import axios from 'axios';
           { tab: 'Walk In', content: 'walkin' },
           { tab: 'Take Out', content: 'takeout' },
           { tab: 'Delivery', content: 'ronnys' },
-          { tab: 'Glovo', content: 'glovo' },
           { tab: 'Wolt', content: 'wolt' },
           { tab: 'Future', content: 'future' },
         ],
@@ -241,7 +240,7 @@ import axios from 'axios';
           { text: "ID", value: "id" },
           { text: "POS ID", value: "order_data.pos_id" },
           { text: "Source", value: "source" },
-          { text: "Glovo/Wolt #", value: "order_data.customer.code" },
+          { text: "Wolt #", value: "order_data.customer.code" },
           { text: "Payment Type", value: "order_data.paymentType" },
           { text: "Delivery Adress", value: "order_data.adress"},
           { text: "Customer Name", value: "order_data.customer.name" },
@@ -755,7 +754,7 @@ import axios from 'axios';
               this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "delivery" && x.status != 10);
             }
             else if(tab.content === 'walkin'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Walk_In" && x.status != 10);
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Walk_In" || x.order_data.deliveryMethod === "walk_in" && x.status != 10);
             }
             else if(tab.content === 'glovo'){
               this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "Glovo" && x.status != 10);

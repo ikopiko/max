@@ -138,7 +138,7 @@
                         <strong v-if="item.cuts"> 16 Cut</strong>
                         </span>
                         <span>
-                        {{ (item.totalPrice * item.qty).toFixed(2) }}
+                        {{ (item.price * item.qty).toFixed(2) }}
                         </span>
                     </div>
                     </div>
