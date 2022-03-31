@@ -393,7 +393,6 @@ export default {
             );
         },
         logKey(e) {
-            //alert(e.target);
             e=e || window.event;
             var charCode=(e.which) ? e.which: e.keyCode;
 

@@ -73,7 +73,7 @@
                   <v-card-title class="title font-weight-bold">
                     {{ driver.username }}
                   </v-card-title>
-                  <v-card-title> {{ driver.amount }} GEL </v-card-title>
+                  <v-card-title> {{ driver.amount.toFixed(2) }} GEL </v-card-title>
               </v-card>
             </div>
             <div class="col-md-2 col-sm-12" >
@@ -83,7 +83,7 @@
                   <v-card-title class="title font-weight-bold">
                     {{ driver.username }} - {{ driver.minutesOut }} Min
                   </v-card-title>
-                  <v-card-title> {{ driver.amount }} GEL </v-card-title>
+                  <v-card-title> {{ driver.amount.toFixed(2) }} GEL </v-card-title>
               </v-card>
             </div>
             
@@ -217,6 +217,15 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
+              <v-btn
+                v-if="selectedItem.order_data.paymentType != 'invoice'"
+                class="red mx-2"
+                large
+                text
+                @click="removeDriver()"
+              >
+                Remove Driver
+              </v-btn>
               <v-btn
                 v-if="selectedItem.order_data.paymentType != 'invoice'"
                 class="green mx-2"
@@ -369,43 +378,51 @@
             <v-divider></v-divider>
 
             <v-card-actions>
-              <v-spacer>EDIT PAYMENT TYPE</v-spacer>
-              <v-btn
-                
-                class="mx-2"
-                large
-                text
-                @click="activateEdit = !activateEdit"
-              >
-                EDIT PAYMENT METHOD
-              </v-btn>
-              <v-btn
-              v-if="activateEdit && !activeInvoice"
-                class="green mx-2"
-                large
-                text
-                @click="editItem('cash')"
-              >
-                Cash
-              </v-btn>
-              <v-btn
+              <v-row>
+                <v-btn
+                  class="mx-2"
+                  large
+                  text
+                  @click="activateEdit = !activateEdit"
+                >
+                  EDIT PAYMENT
+                </v-btn>
+              </v-row>
+              <v-row>
+                <v-text-field
+                  v-if="activateEdit && !activeInvoice"
+                  label="EDIT TIP"
+                  v-model="tip"
+                  @keypress="isNumber($event)"
+                ></v-text-field>
+                <v-btn
                 v-if="activateEdit && !activeInvoice"
-                class="blue mx-2"
-                large
-                text
-                @click="editItem('card')"
-              >
-                Card
-              </v-btn>
-              <v-btn
-                v-if="activateEdit && !activeInvoice"
-                class="blue mx-2"
-                large
-                text
-                @click="editItem('invoice')"
-              >
-                Transfer
-              </v-btn>
+                  class="green mx-2"
+                  large
+                  text
+                  @click="editItem('cash')"
+                >
+                  Cash
+                </v-btn>
+                <v-btn
+                  v-if="activateEdit && !activeInvoice"
+                  class="blue mx-2"
+                  large
+                  text
+                  @click="editItem('card')"
+                >
+                  Card
+                </v-btn>
+                <v-btn
+                  v-if="activateEdit && !activeInvoice"
+                  class="blue mx-2"
+                  large
+                  text
+                  @click="editItem('invoice')"
+                >
+                  Transfer
+                </v-btn>
+              </v-row>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -445,6 +462,7 @@ export default {
   components: {},
   data() {
     return {
+      tip: null,
       activeInvoice: false,
       menu: false,
       sheet: false,
@@ -585,6 +603,50 @@ export default {
       },
   },
   methods: {
+    removeDriver(){
+      // alert('REMOVE DRIVER DROM ORDER: ' + this.selectedItem.id);
+
+      var bodyFormData=new FormData();
+      bodyFormData.set("order_id", this.selectedItem.id);
+
+      const TOKEN = this.loggedUser.token;
+      axios.request({
+          method: 'post',
+          url: this.$hostname + 'manager/remove-order-from-driver',
+          headers: { 
+            'Authorization': 'Bearer '+TOKEN, 
+          },
+          data: bodyFormData,
+        })
+        .then(response => {
+          console.log('REMOVE DRIVER: ', response);
+          if(response.data.is_error){
+              // this.sheet = true;
+              this.errorText = response.data.data;
+              selectedItemDialog
+            }
+            else{
+              // this.sheet = true;
+              this.errorText = response.data.data;
+            }
+          this.$router.go();
+      });
+    },
+    isNumber(evt) {
+          evt = (evt) ? evt : window.event;
+          var charCode = (evt.which) ? evt.which : evt.keyCode;
+          if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+            evt.preventDefault();         
+
+          } else {
+
+              if(this.search.length >= 5){
+                this.checkUser(this.search);
+              }
+
+            return true;
+          }    
+    },
     double(){
       this.updateDriverOrders(this.driverDate);
       this.editList = true;
@@ -621,6 +683,13 @@ export default {
       var bodyFormData=new FormData();
         bodyFormData.set("driver_id", this.selectedDriver.id);
         bodyFormData.set("order_id", this.selectedItem.id);
+        if(this.tip == null){
+          alert('NO TIP');
+          bodyFormData.set("tips", -1);
+        } else {
+          alert('TIP CHANGE');
+          bodyFormData.set("tips", this.tip);
+        }
         bodyFormData.set("payment_method", type);
         if(type == 'split'){
           bodyFormData.set("split_cash", '20');

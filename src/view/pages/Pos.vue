@@ -642,7 +642,7 @@
                       </div>
                   </div>
                   <div class="col size paddingClear p-0">
-                      <div class="w-h-1 square paddingClear size_active font-weight-bold" v-bind:class="{ size_static: smallHalf, size_static: cheesseLoversActive, active: activeSmall }" @click="addSize('s')">
+                      <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{size_static_half: smallHalf, size_static: cheesseLoversActive, active: activeSmall }" @click="addSize('s')">
                           <span>S</span>
                       </div>
                   </div>
@@ -866,7 +866,7 @@
             <v-container>
                 <v-row>
                   <v-form ref="form" v-model="valid" lazy-validation>
-                      <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable></v-text-field>
+                      <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" required clearable autofocus></v-text-field>
 
                       <v-text-field v-model="curentCustomer.name" :rules="nameRules" class="my-2" label="Name" required clearable></v-text-field>
                     
@@ -1136,7 +1136,7 @@
               <v-row>
                 <v-form ref="form" v-model="valid" lazy-validation>
                                           
-                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
                     <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
@@ -1205,7 +1205,7 @@
               <v-row>
                 <v-form ref="form" v-model="valid" lazy-validation>
 
-                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
                     <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
@@ -1273,7 +1273,7 @@
                 <b-container fluid>
                     <v-form ref="form" v-model="valid" lazy-validation>
                         
-                        <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                        <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
                     <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
@@ -1453,7 +1453,7 @@
               <v-row>
                 <v-form ref="form" v-model="valid" lazy-validation>
                                           
-                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable></v-text-field>
+                    <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
                     <v-text-field v-model="curentCustomer.name" :counter="10" :rules="nameRules" class="my-2" label="Name" clearable></v-text-field>
 
@@ -3046,7 +3046,7 @@ export default {
     },
     customerPhone(val) {
       this.curentCustomer.phone = val;
-      alert('123' + val);
+      // alert('123' + val);
     },
     querySelections (v) {
         if (v.length > 6){
@@ -3061,23 +3061,6 @@ export default {
 
       },
         crmDiscount(discount){
-          // if(discount.name == 'Diplomat'|| discount.name == 'Team' || discount.name == 'Student' || discount.name == 'Social'){
-          //   this.discountActive = true;
-          // } 
-          // else if(discount.name == 'Corporate'){
-          //   this.corporateActive = true;
-          // }
-          // else {
-          //   this.discountActive = false;
-          //   this.corporateActive = false;
-          // }
-          // if(discount.name == this.curentCustomer.discount){
-          //   this.curentCustomer.discount = '';
-          //   this.discountActive = false;
-          // }
-          // else {
-          //   this.curentCustomer.discount = discount.name;
-          //   }
             this.curentCustomer.discount = discount.name;
           this.$forceUpdate();
         },
@@ -3264,7 +3247,6 @@ export default {
         this.showProducts = false;
 
       },
-          
         isEmailValid() {
           const reg =  /\S+@\S+\.\S+/;
           return (this.customer.email == "")? "" : (reg.test(this.customer.email)) ? 'has-success' : 'has-error';
@@ -3287,12 +3269,10 @@ export default {
               
           }    
       },
-
     categorySelect(id) {
       this.categoryId = id;
     },
-    testAxios(){
-          
+    testAxios(){    
           const TOKEN = localStorage.getItem("TOKEN");
           var bodyFormData = new FormData();
           bodyFormData.set("branch", this.userLast);
@@ -3311,6 +3291,7 @@ export default {
             });
     },
     productSelect(product) {
+      console.log(product);
       this.playSound();
 
       if (product.category_name == "Pizza") {
@@ -3327,60 +3308,61 @@ export default {
         }
 
         if (this.isHalfPizza == "yes" && this.halfPizzaCounter == 1) {
-          // alert('BLA');
-            this.smallHalf = true;
-            console.log(" Product Recipe ", this.getRecipe(product));
-            this.customPizza = {
-              crust: "original",
-              sauce: "sauce",
-              size: "",
-              price: 0,
-              name: "",
-              custom: "yes",
-              toppings: [],
-              half1: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
-              half2: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
-              toppingChange: 0,
-              qty: 0,
-          };
-          //this.customPizza.half1.defaultToppings = this.getRecipe(product);
-          if (this.customPizza.qty === 0) {
-            this.customPizza.qty = this.globalQuantity;
+          if(product.id != '56'){
+            // alert('BLA');
+              this.smallHalf = true;
+              console.log(" Product Recipe ", this.getRecipe(product));
+              this.customPizza = {
+                crust: "original",
+                sauce: "sauce",
+                size: "",
+                price: 0,
+                name: "",
+                custom: "yes",
+                toppings: [],
+                half1: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
+                half2: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
+                toppingChange: 0,
+                qty: 0,
+            };
+            if (this.customPizza.qty === 0) {
+              this.customPizza.qty = this.globalQuantity;
+            }
+            this.customPizza.name = product.name;
+            this.customPizza.half1.name = product.name;
+            this.customPizza.half1.is_special = product.is_special;
+            this.customPizza.half1.priceBySizes = product.priceBySizes;
+            this.customPizza.price = this.customPizza.price + product.priceBySizes.m / 2;
+            this.customPizza.size = "m";
+            this.customPizza.cuts = false;
+            this.customPizza.isSelected = false;
+            this.halfProduct = true;
+            product.qty = this.globalQuantity;
+            this.selectedProducts.push(product);
+            // this.itemIndex++;
           }
-          this.customPizza.name = product.name;
-          this.customPizza.half1.name = product.name;
-          this.customPizza.half1.is_special = product.is_special;
-          this.customPizza.half1.priceBySizes = product.priceBySizes;
-          this.customPizza.price = this.customPizza.price + product.priceBySizes.m / 2;
-          this.customPizza.size = "m";
-          this.customPizza.cuts = false;
-          this.customPizza.isSelected = false;
-          this.halfProduct = true;
-          product.qty = this.globalQuantity;
-          this.selectedProducts.push(product);
-          // this.itemIndex++;
-
         } else if (this.isHalfPizza == "yes" && this.halfPizzaCounter == 2) {
-          this.customPizza.half2.defaultToppings = this.getRecipe(product);
-          this.customPizza.name = this.customPizza.name + "/" + product.name;
-          this.customPizza.half2.name = product.name;
-          this.customPizza.half2.is_special = product.is_special;
-          this.customPizza.half2.priceBySizes = product.priceBySizes;
-          this.customPizza.price = this.customPizza.price + product.priceBySizes.m / 2;
-          this.customPizza.totalPrice = this.customPizza.price;
-          product.qty = this.globalQuantity;
-          this.selectedProducts.push(product);
-          this.halfProduct = false;
-          this.showProducts = false;
-          this.showIngredients = true;
-          this.order.items.push(this.customPizza);
-          this.itemIndex++;
-
-          this.halfPizza == "no";
-          this.countTotalPrice();
+          if(product.id != '56'){
+            this.customPizza.half2.defaultToppings = this.getRecipe(product);
+            this.customPizza.name = this.customPizza.name + "/" + product.name;
+            this.customPizza.half2.name = product.name;
+            this.customPizza.half2.is_special = product.is_special;
+            this.customPizza.half2.priceBySizes = product.priceBySizes;
+            this.customPizza.price = this.customPizza.price + product.priceBySizes.m / 2;
+            this.customPizza.totalPrice = this.customPizza.price;
+            product.qty = this.globalQuantity;
+            this.selectedProducts.push(product);
+            this.halfProduct = false;
+            this.showProducts = false;
+            this.showIngredients = true;
+            this.order.items.push(this.customPizza);
+            this.itemIndex++;
+  
+            this.halfPizza == "no";
+            this.countTotalPrice();
+          }
 
         } else {
-          // alert('BLA');
           this.pizza = {
             name: "",
             price: 0,
@@ -3419,7 +3401,7 @@ export default {
           this.countTotalPrice();
         }
       } 
-      else if (product.category_name == "Sticks"){
+      else if (product.category_name == "Sticks" || product.is_sticks == 1){
             
             if(this.isHalfPizza == "yes"){
               alert('Selected Product is not pizza');
@@ -3480,7 +3462,6 @@ export default {
         // alert(this.itemIndex);
         this.$forceUpdate();
     },
-
     ingredientSelect(ingredient) {
       this.selectedIngredients.push(ingredient);
     },
@@ -3823,8 +3804,8 @@ export default {
               }
             }
             this.countTotalPrice();
-          this.$forceUpdate();
-            }
+            this.$forceUpdate();
+          }
           );
         }
       } else if(this.isSticks){  

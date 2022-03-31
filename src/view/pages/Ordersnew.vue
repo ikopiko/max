@@ -18,13 +18,13 @@
                         <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Change Status"></v-select>
                     </li>
                 </ul>
-                <ul class="bottomInner">
+                <ul class="inner">
                     <li>
                         <!-- <v-btn v-if="statusModel != null" @click="updateOrder()">Change: {{ statusObject[0].status_name }}</v-btn> -->
                         <v-btn v-if="showOrderComponent && !limited" @click="updateOrder()">Change </v-btn>
                     </li>
                 </ul>
-                <ul class="bottomInner">
+                <ul class="inner">
                     <li>
                         <v-btn v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="re_open(selectedOrder)">
                             <v-icon dark>open_in_new</v-icon>
@@ -59,16 +59,16 @@
                                 <template v-slot:item="row">
                                     <tr @click="onButtonClick(row.item)">
                                         <td>{{Number(row.item.id)}}</td>
-                                        <td>{{row.item.order_data.pos_id }}</td>
-                                        <td>{{row.item.order_data.deliveryMethod}}</td>
-                                        <td>{{row.item.order_data.customer.code}}</td>
                                         <td>{{row.item.order_data.paymentType}}</td>
+                                        <td>{{ (Number(row.item.order_data.totalPrice) - Number(row.item.order_data.discPrice)).toFixed(2) }}</td>
+                                        <td>{{ row.item.createTime }}</td>
+                                        <td>{{row.item.order_data.deliveryMethod}}</td>
+                                        <td>{{row.item.order_data.pos_id }}</td>
+                                        <td>{{row.item.order_data.customer.code}}</td>
                                         <td>{{row.item.order_data.adress}}</td>
                                         <td>{{row.item.order_data.customer.name}}</td>
                                         <td>{{row.item.order_data.customer.phone}}</td>
                                         <!-- <td>{{ Number(row.item.order_data.discPrice).toFixed(2) }}</td> -->
-                                        <td>{{ (Number(row.item.order_data.totalPrice) - Number(row.item.order_data.discPrice)).toFixed(2) }}</td>
-                                        <td>{{ row.item.createTime }}</td>
                                         <!-- <td v-if="!row.item.order_data.discountAmount">{{ (Number(row.item.order_data.totalPrice) - (Number(row.item.order_data.discPrice)/ 100 * Number(row.item.order_data.discount))).toFixed(2) }}</td> -->
                                     </tr>
                                 </template>
@@ -218,7 +218,7 @@ import axios from 'axios';
         status: '1,2,3,4,5,6,7,8,9,10',
         page: 0,
         pageCount: 0,
-        itemsPerPage: 5,
+        itemsPerPage: 10,
         items: [
           { tab: 'All Orders', content: 'all' },
           { tab: 'Unpaid Orders', content: 'unpaid' },
@@ -238,15 +238,15 @@ import axios from 'axios';
         ],
         headers: [
           { text: "ID", value: "id" },
-          { text: "POS ID", value: "order_data.pos_id" },
-          { text: "Source", value: "source" },
-          { text: "Wolt #", value: "order_data.customer.code" },
           { text: "Payment Type", value: "order_data.paymentType" },
+          { text: "Total Due", value: "order_data.totalPrice" },
+          { text: "Time", value: "createTime" },
+          { text: "Source", value: "source" },
+          { text: "POS ID", value: "order_data.pos_id" },
+          { text: "Wolt #", value: "order_data.customer.code" },
           { text: "Delivery Adress", value: "order_data.adress"},
           { text: "Customer Name", value: "order_data.customer.name" },
           { text: "Customer Phone", value: "order_data.customer.phone" },
-          { text: "Total Due", value: "order_data.totalPrice" },
-          { text: "Time", value: "createTime" },
         ],
       }
     },

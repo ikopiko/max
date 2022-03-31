@@ -1222,15 +1222,7 @@
                           <th class="text-left">
                             Delivery cash
                           </th>
-                          <th class="text-left">
-                            Glovo transfer
-                          </th>
-                          <th class="text-left">
-                            Glovo cash
-                          </th>
-                          <th class="text-left">
-                            Glovo card
-                          </th>
+
                           <th class="text-left">
                             Wolt
                           </th>
@@ -1251,9 +1243,6 @@
                           <td>{{ orderDetails.card }}</td>
                           <td>{{ driverTotals.card }}</td>
                           <td>{{ driverTotals.cash }}</td>
-                          <td>{{ orderDetails.glovo }}</td>
-                          <td>{{ orderDetails.glovo_cash }}</td>
-                          <td>{{ orderDetails.glovo_card }}</td>
                           <td>{{ orderDetails.wolt }}</td>
                           <td>{{ orderDetails.sumCash }}</td>
                           <td>{{ orderDetails.sumCard }}</td>
@@ -1729,6 +1718,7 @@ export default {
         });
     },
     totalDetails(date){
+      
       const TOKEN = this.loggedUser.token;
       // var dateString = date + ' to '+ date;
       if(date.length == 2){
@@ -1740,6 +1730,30 @@ export default {
       else {
         var dateString = date + " to "+ date;
       }
+
+      var bodyFormDataDrv = new FormData();
+      //bodyFormData.set("branch", this.branch);
+      bodyFormDataDrv.set("branch_id", this.loggedUserFull.branch_id);
+      bodyFormDataDrv.set("day", dateString);
+      
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "driver/sales",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+          data: bodyFormDataDrv,
+        })
+        .then((response) => {
+        this.driverTotals = response.data.data;
+
+        console.log('DRIVER SALES: ', this.driverTotals);
+
+        });
+      this.$forceUpdate();
+
       var bodyFormData = new FormData();
       //bodyFormData.set("branch", this.branch);
       bodyFormData.set("branch_id", this.loggedUserFull.branch_id);
@@ -1759,45 +1773,32 @@ export default {
           this.orderDetails = response.data.data;
 
 
+          // this.orderDetails.glovo_cash = Number(this.orderDetails.glovo_cash);
+          // this.orderDetails.glovo_card = Number(this.orderDetails.glovo_card);
+          // this.orderDetails.glovo = Number(this.orderDetails.glovo);
           this.orderDetails.wolt = Number(this.orderDetails.wolt);
-          this.orderDetails.glovo_cash = Number(this.orderDetails.glovo_cash);
-          this.orderDetails.glovo_card = Number(this.orderDetails.glovo_card);
-          this.orderDetails.glovo = Number(this.orderDetails.glovo);
           this.orderDetails.cash = Number(this.orderDetails.cash);
           this.orderDetails.card = Number(this.orderDetails.card);
           this.driverTotals.cash = Number(this.driverTotals.cash);
           this.driverTotals.card = Number(this.driverTotals.card);
 
-          this.orderDetails.sumCash = Number(this.orderDetails.glovo_cash + this.orderDetails.cash + this.driverTotals.cash);
-          this.orderDetails.sumCard = Number(this.orderDetails.glovo_card + this.orderDetails.card + this.driverTotals.card +
-          this.orderDetails.wolt + this.orderDetails.glovo);
+          // this.orderDetails.wolt = 100;
+          // this.orderDetails.glovo_cash = 100;
+          // this.orderDetails.glovo_card =100;
+          // this.orderDetails.glovo = 100;
+          // this.orderDetails.cash = 100;
+          // this.orderDetails.card = 100;
+          // this.driverTotals.cash = 100;
+          // this.driverTotals.card = 100;
+
+          this.orderDetails.sumCash = Number( this.orderDetails.cash + this.driverTotals.cash);
+          this.orderDetails.sumCard = Number( this.orderDetails.card + this.driverTotals.card +
+          this.orderDetails.wolt);
           this.orderDetails.sumAll = Number(this.orderDetails.sumCash + this.orderDetails.sumCard);      
           
           console.log('POS SALES: ', this.orderDetails);
+          this.$forceUpdate();
           });
-      
-      var bodyFormDataDrv = new FormData();
-      //bodyFormData.set("branch", this.branch);
-      bodyFormDataDrv.set("branch_id", this.loggedUserFull.branch_id);
-      bodyFormDataDrv.set("day", dateString);
-      
-      axios
-        .request({
-          method: "post",
-          url:
-            this.$hostname + "driver/sales",
-          headers: {
-            Authorization: "Bearer " + TOKEN,
-          },
-          data: bodyFormDataDrv,
-        })
-        .then((response) => {
-          this.driverTotals = response.data.data;
-
-          console.log('DRIVER SALES: ', this.driverTotals);
-
-          });
-      this.$forceUpdate();
 
     },
     safeDetails(date){

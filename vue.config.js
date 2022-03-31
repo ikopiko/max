@@ -3,8 +3,8 @@ const path = require("path");
 module.exports = {
   transpileDependencies: ['vuex-persist'],
   publicPath:
-    process.env.NODE_ENV === "production" ? "/max/" : "/",
-    // process.env.NODE_ENV === "production" ? "/" : "/",
+    // process.env.NODE_ENV === "production" ? "/max/" : "/",
+    process.env.NODE_ENV === "production" ? "/" : "/",
   configureWebpack: {
     resolve: {
       alias: {

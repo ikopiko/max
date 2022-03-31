@@ -26,7 +26,8 @@
                   <div class="col paddingClear" style="padding-left: 0">
                       <div class="w-b-1 square" @click="sendAddHalf()" :class="{ active: halfActive}">
                         <!-- <span class="position-relative" style="top: 16px;"><strong>A/B</strong></span> -->
-                        <i class="material-icons md-48 iconColor" style="margin-top: 4px;">tonality</i> 
+                        <!-- <i class="material-icons md-48 iconColor" style="margin-top: 4px;">tonality</i>  -->
+                        <i class="fa fa-adjust fa-4x iconColor " @click="goBack()"></i>
                       </div>
                     </div>
                     <div class="col-md-2 paddingClear" style="padding-left: 0">

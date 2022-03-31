@@ -620,6 +620,11 @@ body .col-12 {
     pointer-events: none !important;
 }
 
+.size_static_half {
+    opacity: 0.5 !important;
+    pointer-events: none !important;
+}
+
 .size_active {
     opacity: 1;
     pointer-events: auto;

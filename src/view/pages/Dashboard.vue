@@ -24,11 +24,11 @@
                   size="120"
                   color="grey"
                 >
-                <v-icon
+                <!-- <v-icon
                   x-large
                 >
                 bar_chart
-                </v-icon>
+                </v-icon> -->
                 </v-list-item-avatar>
               </v-list-item>
 
@@ -56,11 +56,11 @@
                   size="120"
                   color="grey"
                 >
-                <v-icon
+                <!-- <v-icon
                   x-large
                 >
                 bar_chart
-                </v-icon>
+                </v-icon> -->
                 </v-list-item-avatar>
               </v-list-item>
 
@@ -88,11 +88,11 @@
                   size="120"
                   color="grey"
                 >
-                <v-icon
+                <!-- <v-icon
                   x-large
                 >
                 bar_chart
-                </v-icon>
+                </v-icon> -->
                 </v-list-item-avatar>
               </v-list-item>
 
@@ -120,11 +120,11 @@
                   size="120"
                   color="grey"
                 >
-                <v-icon
+                <!-- <v-icon
                   x-large
                 >
                 bar_chart
-                </v-icon>
+                </v-icon> -->
                 </v-list-item-avatar>
               </v-list-item>
 
@@ -153,11 +153,11 @@
                   size="120"
                   color="grey"
                 >
-                <v-icon
+                <!-- <v-icon
                   x-large
                 >
                 alarm
-                </v-icon>
+                </v-icon> -->
                 </v-list-item-avatar>
               </v-list-item>
 
@@ -186,11 +186,11 @@
                   size="120"
                   color="grey"
                 >
-                <v-icon
+                <!-- <v-icon
                   x-large
                 >
                 account_balance
-                </v-icon>
+                </v-icon> -->
                 </v-list-item-avatar>
               </v-list-item>
 
