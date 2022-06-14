@@ -97,6 +97,23 @@
                         <span v-if="item.half1.toppings.length > 0">A</span>
 
                         <div
+                        class="d-flex justify-content-between"
+                        v-for="(defTopping, index) in item.half1.defaultToppings"
+                        :key="index"
+                        >
+                        <span
+                            v-if="defTopping.isDeleted"
+                            :class="defTopping.isDeleted ? 'deletedTopping' : ''"
+                            >A - {{ defTopping.name }}</span
+                        >
+                        <span
+                            :class="defTopping.isDeleted ? 'deletedTopping' : ''"
+                            v-if="defTopping.isDeleted"
+                            >0.00</span
+                        >
+                        </div>
+
+                        <div
                         class="d-flex justify-content-between orderDisplay"
                         v-for="(topping, index) in item.half1.toppings"
                         :key="index"
@@ -111,7 +128,25 @@
                             (topping.price * topping.count).toFixed(2)
                         }}</span>
                         </div>
+
                         <span v-if="item.half2.toppings.length > 0">B</span>
+
+                        <div
+                        class="d-flex justify-content-between"
+                        v-for="(defTopping, index) in item.half2.defaultToppings"
+                        :key="index"
+                        >
+                        <span
+                            v-if="defTopping.isDeleted"
+                            :class="defTopping.isDeleted ? 'deletedTopping' : ''"
+                            >B - {{ defTopping.name }}</span
+                        >
+                        <span
+                            :class="defTopping.isDeleted ? 'deletedTopping' : ''"
+                            v-if="defTopping.isDeleted"
+                            >0.00</span
+                        >
+                        </div>
 
                         <div
                         class="d-flex justify-content-between orderDisplay"
@@ -128,6 +163,7 @@
                             (topping.price * topping.count).toFixed(2)
                         }}</span>
                         </div>
+
                     </div>
                     </div>
                     <!-- Other Products rendering -->

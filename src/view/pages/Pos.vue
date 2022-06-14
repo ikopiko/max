@@ -27,12 +27,11 @@
                               item-value="id"
                               :auto-select-first="true"
                               :search-input.sync="search"
-                              class="mx-4"
-                              label="Phone"
                               v-on:change="customerChecked = true"
                               no-filter
                               hide-no-data 
                               return-object
+                              
                             ></v-autocomplete>
                           </template>
                         </v-col>
@@ -86,8 +85,8 @@
                                   <!-- Pizza Render -->
 
                                   <div class="col-7" v-if="item.custom == 'no'" @click="foobar(item)">
-                                      <div class="d-flex justify-content-between">
-                                          <span class="orderDisplay itemName" @click="foobar(item)">
+                                      <div class="d-flex justify-content-between" @click="foobar(item)">
+                                          <span class="orderDisplay itemName" >
                                               <strong>{{ item.size.toUpperCase() }}
                                                   {{ item.name }}</strong>
                                               <!-- <strong v-if="item.cuts == 1"> {{ item.cutsCount }} Cut</strong> -->
@@ -207,8 +206,8 @@
 
                                   <!-- Sticks Rendering -->
                                   <div class="col-7" v-if="item.custom == 'sticks'">
-                                      <div class="d-flex justify-content-between">
-                                          <span class="orderDisplay itemName" @click="foobar(item)">
+                                      <div class="d-flex justify-content-between" @click="foobar(item)">
+                                          <span class="orderDisplay itemName">
                                               <strong>{{ item.qty }} {{ item.name }}</strong>
                                               <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                                           </span>
@@ -219,7 +218,7 @@
                                           </span>
                                       </div>
 
-                                      <div class="pl-4" style="font-size: 14px">
+                                      <div class="pl-4" style="font-size: 14px" @click="foobar(item)">
                                         <div class="sticksTopping">
                                           <div class="d-flex justify-content-between halfToppings" v-for="(defTopping, index) in item.defaultToppings" :key="index">
                                               <span v-if="defTopping.isDeleted" :class="defTopping.isDeleted ? 'deletedTopping' : ''">{{ defTopping.name }}</span>
@@ -437,7 +436,7 @@
                               <h4>Delivery Fee:</h4>
                           </div>
                           <div>
-                              <h4 id="total_price">{{ order.deliveryFee }}</h4>
+                              <h4 id="total_price">{{ deliveryFeeVar }}</h4>
                           </div>
                       </div>
                   </div>
@@ -1134,7 +1133,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-form ref="form" v-model="valid" lazy-validation>
+                <v-form ref="form" @submit.prevent="walkinCustomer" v-model="valid" lazy-validation>
                                           
                     <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
@@ -1170,21 +1169,32 @@
                     
                     <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
-                </v-form>
-              </v-row>
+                    <v-btn
+                      class="blue"
+                      text
+                      x-large
+                      type="submit"
+                      @click="walkinCustomer()"
+                    >
+                      Walk In Customer
+                    </v-btn> 
+              </v-form>
+            </v-row>
             </v-container>
           </v-card-text>
-          <v-card-actions>
+          <!-- <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
               class="blue"
               text
               x-large
+              type="submit"
               @click="walkinCustomer()"
             >
               Walk In Customer
             </v-btn>   
-          </v-card-actions>
+          </v-card-actions> -->
+        
       </v-card>
       </v-dialog>
 
@@ -1203,7 +1213,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-form ref="form" v-model="valid" lazy-validation>
+                <v-form ref="form" @submit.prevent="takeoutCustomer" v-model="valid" lazy-validation>
 
                     <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
@@ -1237,11 +1247,21 @@
                     
                     <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
+                    <v-btn
+                      class="blue"
+                      type="submit"
+                      text
+                      x-large
+                      @click="takeoutCustomer()"
+                    >
+                      Take Out: {{ Number(totalNet).toFixed(2) }}
+                    </v-btn>  
+
                 </v-form>
               </v-row>
             </v-container>
           </v-card-text>
-          <v-card-actions>
+          <!-- <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
               class="blue"
@@ -1251,7 +1271,7 @@
             >
               Take Out: {{ Number(totalNet).toFixed(2) }}
             </v-btn>   
-          </v-card-actions>
+          </v-card-actions> -->
       </v-card>
       </v-dialog>
 
@@ -1270,8 +1290,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <b-container fluid>
-                    <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-form ref="form" @submit.prevent="deliveryCustomer" v-model="valid" lazy-validation>
                         
                         <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
@@ -1307,9 +1326,23 @@
                     
                     <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
-                    </v-form>
-                </b-container>
+                  
                 <div class="row">
+
+                  <!-- <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" v-bind:class="[{ fee_static: feeSaleActive }, { active: activeFee_el == 0 }]" @click="activateFee(0)">
+                      2.5 GEL
+                  </div>
+                  <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" v-bind:class="[{ fee_static: feeSaleActive }, { active: activeFee_el == 1 }]" @click="activateFee(1)">
+                      4 GEL
+                  </div>
+                  <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" v-bind:class="[{ fee_static: feeSaleActive }, { active: activeFee_el == 2 }]" @click="activateFee(2)">
+                      6 GEL
+                  </div>
+                  <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" v-bind:class="[{ fee_static: feeSaleActive }, { active: activeFee_el == 3 }]" @click="activateFee(3)">
+                      7.5 GEL
+                  </div> -->
+                  <!-- DELETE AFTER -->
+
                   <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 0 }" @click="activateFee(0)">
                       2.5 GEL
                   </div>
@@ -1322,9 +1355,29 @@
                   <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 3 }" @click="activateFee(3)">
                       7.5 GEL
                   </div>
+
+                  <!-- DELETE AFTER -->
                 </div>
                 <div class="row my-3">
-                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 4 }" @click="activateFee(4)">
+
+                  <!-- <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar"  v-bind:class="[{ fee_static: feeSaleActive }, { active: activeFee_el == 4 }]" @click="activateFee(4)">
+                      Tskneti
+                  </div>
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" v-bind:class="[{ fee_static: feeSaleActive }, { active: activeFee_el == 5 }]" @click="activateFee(5)">
+                      Tsavkisi
+                  </div>
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" v-bind:class="[{ fee_static: feeSaleActive }, { active: activeFee_el == 6 }]" @click="activateFee(6)">
+                      Mtsxeta
+                  </div>
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" v-bind:class="[{ fee_static: feeSaleActive }, { active: activeFee_el == 7 }]" @click="activateFee(7)">
+                      Kojori
+                  </div>
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" v-bind:class="[{ fee_static: feeSaleActive }, { active: activeFee_el == 8 }]" @click="activateFee(8)">
+                      KTA
+                  </div> -->
+                  <!-- DELETE AFTER -->
+
+                  <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar"  :class="{ active: activeFee_el == 4 }" @click="activateFee(4)">
                       Tskneti
                   </div>
                   <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 5 }" @click="activateFee(5)">
@@ -1339,11 +1392,25 @@
                   <div class="col-2 feeClassBlue mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 8 }" @click="activateFee(8)">
                       KTA
                   </div>
+
+                  <!-- DELETE AFTER -->
                 </div>
+
+                <v-btn
+                  class="blue"
+                  type="submit"
+                  text
+                  x-large
+                  @click="deliveryCustomer()"
+                >
+                  Delivery: {{ Number(totalNet).toFixed(2) }}
+                </v-btn>  
+
+                </v-form>
               </v-row>
             </v-container>
           </v-card-text>
-          <v-card-actions>
+          <!-- <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
               class="blue"
@@ -1353,7 +1420,7 @@
             >
               Delivery: {{ Number(totalNet).toFixed(2) }}
             </v-btn>   
-          </v-card-actions>
+          </v-card-actions> -->
       </v-card>
       </v-dialog>
 
@@ -1451,7 +1518,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-form ref="form" v-model="valid" lazy-validation>
+                <v-form ref="form" @submit.prevent="woltCustomer" v-model="valid" lazy-validation>
                                           
                     <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
@@ -1488,11 +1555,20 @@
                     
                     <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
+                    <v-btn
+                      class="blue"
+                      type="submit"
+                      text
+                      x-large
+                      @click="woltCustomer()"
+                    >
+                      Wolt order:  {{ Number(totalNet).toFixed(2) }}
+                    </v-btn>   
                 </v-form>
               </v-row>
             </v-container>
           </v-card-text>
-          <v-card-actions>
+          <!-- <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
               class="blue"
@@ -1502,7 +1578,7 @@
             >
               Wolt order:  {{ Number(totalNet).toFixed(2) }}
             </v-btn>   
-          </v-card-actions>
+          </v-card-actions> -->
       </v-card>
       </v-dialog>
 
@@ -1610,7 +1686,7 @@
                             <td>{{row.item.order_data.customer.code}}</td>
                             <td>{{row.item.order_data.customer.phone}}</td>
                             <td>{{row.item.order_data.customer.name}}</td>
-                            <td>{{row.item.order_data.adress}}</td>
+                            <td>{{row.item.order_data.customer.address}}</td>
                             <td>{{row.item.order_data.items[0].name}}</td>
                             <td>{{row.item.order_data.totalPrice}}</td>
                             <td>{{row.item.created_at}}</td>
@@ -2050,6 +2126,8 @@ export default {
     },
   data() {
     return {
+      isLoading: null,
+      feeSaleActive: false,
       cheesseLoversActive: false,
       loversActive: false,
       hours: 0,
@@ -2089,7 +2167,7 @@ export default {
         { text: "Glovo/Wolt #", value: "order_data.customer.code" },
         { text: "Customer Phone", value: "order_data.customer.phone" },
         { text: "Customer Name", value: "order_data.customer.name" },
-        { text: "Delivery Adress", value: "order_data.adress" },
+        { text: "Delivery Adress", value: "order_data.address" },
         { text: "Order Items", value: "order_data.items[0].name" },
         { text: "Total", value: "order_data.totalPrice" },
         { text: "Date", value: "order_data.created_at" },
@@ -2103,7 +2181,7 @@ export default {
           },
           { text: "Branch", value: "branch" },
           { text: "Source", value: "source" },
-          { text: "Delivery Adress", value: "order_data.adress" },
+          { text: "Delivery Adress", value: "order_data.address" },
           { text: "Customer Name", value: "order_data.customer.name" },
           { text: "Customer Phone", value: "order_data.customer.phone" },
           { text: "Order Items", value: "order_data.items[0].name" },
@@ -2151,6 +2229,7 @@ export default {
       dateCrm: new Date(),
       menu: false,   
       telMessageActive: false,
+      selectedFee: 0,
       order: {
         id: 0,
         pos_id: null,
@@ -2183,7 +2262,7 @@ export default {
       deliveryType: [{id: 0, type: 'delivery'}, {id: 1, type: 'glovo'},{id: 2, type: 'wolt'}],
       promise: [{id: 0, time:15},{id: 1, time:20},{id: 2, time:30}, {id: 3, time:40}, {id: 4, time:50}],
       promiseTime: 15,
-      deliveryFeeVar: -1,
+      deliveryFeeVar: 0,
       deliveryTypeVar: -1,
       ronnysActive: false,
       glovoActive: false,
@@ -2487,6 +2566,11 @@ export default {
         this.order = fooOrder.order_data;
         this.isReopen = true;
         this.itemIndex = this.order.items.length -1;
+        if(this.order.deliveryFee > 0) {
+          this.order.deliveryFee = 0;
+          this.deliveryActiveVar = true;
+          this.activeFee_el = -1;
+        }
         // alert(this.order.paymentType);
         if(this.order.paymentType == "invoice"){
           // alert("invoice");
@@ -2583,8 +2667,23 @@ export default {
             totalPrice = totalPrice + price;    
           }
         });
+
+        // DELETE AFTER
+
+        // if(totalPrice >= 40){
+        //   this.feeSaleActive = true;
+        // } else {
+        //   this.feeSaleActive = false;
+        // }
+
+        // DELETE AFTER
+
+        if(this.order.deliveryFee != 0){
+          return totalPrice + this.order.deliveryFee;
+        } else {
+          return Number(totalPrice + this.deliveryFeeVar);
+        }
         
-        return totalPrice + this.order.deliveryFee;
       },
     },
     totalDisc: {
@@ -2915,7 +3014,6 @@ export default {
        }
     },
     checkManager(pin){
-      
       if(Number(this.managerAmount) <= this.totalPrice && Number(this.managerPercent <= 100)){
         this.managerPin = true;
         const TOKEN = localStorage.getItem("TOKEN");
@@ -3182,11 +3280,12 @@ export default {
             this.deliveryTypeVar = this.deliveryType[el].type;
         },
         activateFee(el){
+          this.order.deliveryFee = 0;
           if(this.totalOrder > this.deliveryFee[el].min){
             this.activeFee_el = el;
             this.deliveryActiveVar = true;
             this.deliveryFeeVar = this.deliveryFee[el].fee;
-            this.deliverCustomer(this.deliveryFeeVar);
+            // this.deliverCustomer(this.deliveryFeeVar);
           } else {
             alert('Min Order Amount Of ' + this.deliveryFee[el].min +' Is Required!');
           }
@@ -3336,6 +3435,7 @@ export default {
             this.customPizza.size = "m";
             this.customPizza.cuts = false;
             this.customPizza.isSelected = false;
+            this.customPizza.category_name = "halfPizza";
             this.halfProduct = true;
             product.qty = this.globalQuantity;
             this.selectedProducts.push(product);
@@ -3384,6 +3484,7 @@ export default {
           this.pizza.priceBySizes = product.priceBySizes;
           this.pizza.totalPrice = this.pizza.price;
           this.pizza.custom = "no";
+          this.pizza.category_name = "pizza";
           this.pizza.qty = this.globalQuantity;
           this.pizza.id = product.id;
           this.pizza.is_special = product.is_special;
@@ -3421,6 +3522,7 @@ export default {
                   this.sticks.name = product.name;
                   this.sticks.qty = this.globalQuantity;
                   this.sticks.custom = "sticks";
+                  this.sticks.category_name = "sticks";
                   console.log('recipe: ', this.getRecipe(product));
                   this.sticks.defaultToppings = this.getRecipe(product);
                   this.isSticks = true;
@@ -5319,6 +5421,7 @@ export default {
     addToOrder() {
       if (this.isHalfPizza == "yes" || this.halfPizzaCounter == 3) {
         this.customPizza.custom = "yes";
+        this.customPizza.category_name = "halfPizza";
         this.order.items.push(this.customPizza);
         this.isHalfPizza = "no";
         this.halfPizzaCounter = 1;
@@ -5534,6 +5637,7 @@ export default {
         this.ronnysActive = false;
       }
       this.order.deliveryFee = 0;
+      this.deliveryFeeVar = 0;
       this.order.deliveryMethod = 'Walk_In';
       this.order.customer = this.curentCustomer;
       if(ND === 'no'){
@@ -5554,6 +5658,7 @@ export default {
         this.ronnysActive = false;
       }
       this.order.deliveryFee = 0;
+      this.deliveryFeeVar = 0;
       this.order.deliveryMethod = 'Take Out';
       this.order.deliveryType = 'Take_out';
       if(ND === 'no'){
@@ -5778,7 +5883,10 @@ export default {
           this.payOrder();
         }
         else if(this.isReopen){
-
+        if(this.order.deliveryMethod == 'delivery' && this.order.deliveryFee == 0){
+          alert("Please Select Delivery Fee!");
+        } else {
+        this.deliveryFeeVar = this.order.deliveryFee;
         this.order.totalPrice = this.totalNet.toFixed(2);
         this.order.promiseTime = this.promiseTime;
         this.order.id = this.fullOrder.id;
@@ -5812,8 +5920,10 @@ export default {
           });
         }
         
+        }
+        
         else {
-          this.order.totalPrice = Number(this.totalNet.toFixed(2));
+          this.order.totalPrice = this.totalNet.toFixed(2);
           this.order.promiseTime = this.promiseTime;
           
           this.order.pos_id = this.loggedUserFull.pos_id;
@@ -5830,36 +5940,39 @@ export default {
             data: { order: this.order },
           }).then((response) => {
 
-            console.log('ORDER STRUCTURE: ', this.order);
-            
-            this.printOrder(response.data);
-            // alert(this);
-            localStorage.removeItem("reopenItem");
-            if(this.printError){
-              console.log("Print Error");
+            // console.log('ORDER STRUCTURE: ', this.order);
+
+            console.log("CREATE RESPONSE", response.data);
+            // alert(response.data.data);
+            if(response.data.data > 0){
+              this.printOrder(response.data);
+              localStorage.removeItem("reopenItem");
+              if(this.printError){
+                console.log("Print Error");
+              }
+              else if(response.status === 200 && this.paymentType == "card"){
+                this.calcPay();
+              } else if(response.status === 200 && this.paymentType == "payLater"){
+                this.calcPay();
+                console.log('CREATE: ', response);
+              } else if(response.status === 200 && this.paymentType == "transfer"){
+                this.calcPay();
+              } else if(response.status === 200 && this.order.paymentType == "split"){
+                this.splitModal = false;
+                this.calcPay();
+              } else if(response.status === 200 && this.paymentType == "invoice"){
+                this.calcPay();
+              }
+            } else {
+              alert('Error Adding Order!');
             }
-            else if(response.status === 200 && this.paymentType == "card"){
-              this.calcPay();
-            } else if(response.status === 200 && this.paymentType == "payLater"){
-              this.calcPay();
-              console.log('CREATE: ', response);
-            } else if(response.status === 200 && this.paymentType == "transfer"){
-              this.calcPay();
-            } else if(response.status === 200 && this.order.paymentType == "split"){
-              this.splitModal = false;
-              this.calcPay();
-            } else if(response.status === 200 && this.paymentType == "invoice"){
-              this.calcPay();
-            }
-              console.log("Order Response", response);
+             
           });
         }
       }
     },
     payOrder(){
         const TOKEN = localStorage.getItem("TOKEN");
-        //this.order.id = this.selected
-        //this.order = JSON.parse(this.selectedOrder);
         this.order.totalPrice = this.totalNet.toFixed(2);
         this.order.pos_id = this.loggedUserFull.pos_id;
         axios.request({
@@ -5945,7 +6058,7 @@ export default {
         gender: '',
         email: '',
         dob: '',
-        adress: [],
+        address: [],
         tel: '',
         tel2: '',
         comment: '',
@@ -6055,6 +6168,7 @@ export default {
     woltDelivery(ND){
       this.noDisc();
       this.order.deliveryFee = 0;
+      this.deliveryFeeVar = 0;
       this.walkinActiveVar = false;
       this.takeoutActiveVar = false;
       this.deliveryActiveVar = false;
@@ -6076,20 +6190,20 @@ export default {
       this.woltActive = false;
       this.glovoActive = false;
       if(ND === 'no'){
-        if (this.order.deliveryFee === 2.5)
-          this.activeFee_el = 0;
-        else if (this.order.deliveryFee === 4)
-          this.activeFee_el = 1;
-        else if (this.order.deliveryFee === 6)
-          this.activeFee_el = 2;
-        else if (this.order.deliveryFee === 7,5)
-          this.activeFee_el = 3;
-        else if (this.order.deliveryFee === 7)
-          this.activeFee_el = 4;
-        else if (this.order.deliveryFee === 10)
-          this.activeFee_el = 5;
-        else if (this.order.deliveryFee === 13.5)
-          this.activeFee_el = 6;
+        // if (this.order.deliveryFee === 2.5)
+        //   this.activeFee_el = 0;
+        // else if (this.order.deliveryFee === 4)
+        //   this.activeFee_el = 1;
+        // else if (this.order.deliveryFee === 6)
+        //   this.activeFee_el = 2;
+        // else if (this.order.deliveryFee === 7,5)
+        //   this.activeFee_el = 3;
+        // else if (this.order.deliveryFee === 7)
+        //   this.activeFee_el = 4;
+        // else if (this.order.deliveryFee === 10)
+        //   this.activeFee_el = 5;
+        // else if (this.order.deliveryFee === 13.5)
+        //   this.activeFee_el = 6;
         // pass
       }
       else {
@@ -6317,11 +6431,11 @@ export default {
         this.order.deliveryFee = fee;
         this.deliveryFeeModal = false;
         this.order.customer = this.curentCustomer;
-        this.order.adress = this.curentCustomer.address;
+        this.order.address = this.curentCustomer.address;
       }
       else {
         this.order.customer = this.curentCustomer;
-        this.order.adress = this.curentCustomer.address;
+        this.order.address = this.curentCustomer.address;
         this.deliveryFeeModal = false;
       }
       
@@ -6334,25 +6448,41 @@ export default {
       else {
         this.order.deliveryFee = 'other';
         this.order.customer = this.curentCustomer;
-        this.order.adress = this.curentCustomer.address;
+        this.order.address = this.curentCustomer.address;
         console.log('Order View: ', this.order);
       }
     },
-    walkinCustomer(){
+    walkinCustomer(e){
+
+      e.preventDefault();
+      this.isLoading = true
+      
+      setTimeout(() => {
+      	this.isLoading = false
+      }, 1000)
       
       this.order.customer = this.curentCustomer;
+      this.order.deliveryFee = 0;
       this.order.deliveryType = "Walk_In";
       this.order.deliveryMethod = "Walk_In";
       this.walkInModal = false;
       
     },
-    takeoutCustomer(){
+    takeoutCustomer(e){
       // if(this.curentCustomer.phone === '')
       // {
       //   alert('Phone field is empty!');
       // }
       // else {
+        e.preventDefault();
+        this.isLoading = true
+        
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1000)
+
         this.order.customer = this.curentCustomer;
+        this.order.deliveryFee = 0;
         this.order.deliveryType = "Take_out";
         this.order.deliveryMethod = "Take Out";
         this.takeOutModal = false;
@@ -6365,28 +6495,61 @@ export default {
       // }
       
     },
-   deliveryCustomer(){
-      if(this.curentCustomer.address === '' || this.curentCustomer.phone === ''){
-        alert('Adress and Phone Fields are required!');
-      }
-      else if(this.deliveryFeeVar == -1){
-        alert("You should select delivery fee!");
-      }
-      else {
-        this.order.customer = this.curentCustomer;
-        this.order.deliveryType = 'delivery';
-        this.order.deliveryMethod = 'delivery';
-        console.log('Ronnys customer : ', this.order.customer);
-        this.ronnysModal = false;
-        
-        if(this.activeInvoice){
-          this.paymentConfirm();
+   deliveryCustomer(e){
+     // DELETE AFTER 
+    //  if(!this.feeSaleActive){
+     // DELETE AFTER 
+     e.preventDefault();
+      this.isLoading = true
+      
+      setTimeout(() => {
+      	this.isLoading = false
+      }, 1000)
+
+        if(this.curentCustomer.address === '' || this.curentCustomer.phone === ''){
+          alert('Adress and Phone Fields are required!');
+        }
+        else if(this.deliveryFeeVar == -1){
+          alert("You should select delivery fee!");
         }
         else {
-          this.payLater();
+          this.order.customer = this.curentCustomer;
+          this.order.deliveryFee = this.deliveryFeeVar;
+          this.order.deliveryType = 'delivery';
+          this.order.deliveryMethod = 'delivery';
+          console.log('Ronnys customer : ', this.order.customer);
+          this.ronnysModal = false;
+          
+          if(this.activeInvoice){
+            this.paymentConfirm();
+          }
+          else {
+            this.payLater();
+          }
+          //this.deliveryFeeModal = true;
         }
-        //this.deliveryFeeModal = true;
-      }
+    // DELETE AFTER
+    // } else {
+    //   if(this.curentCustomer.address === '' || this.curentCustomer.phone === ''){
+    //     alert('Adress and Phone Fields are required!');
+    //   }
+    //   else {
+    //     this.order.customer = this.curentCustomer;
+    //     this.order.deliveryType = 'delivery';
+    //     this.order.deliveryMethod = 'delivery';
+    //     console.log('Ronnys customer : ', this.order.customer);
+    //     this.ronnysModal = false;
+        
+    //     if(this.activeInvoice){
+    //       this.paymentConfirm();
+    //     }
+    //     else {
+    //       this.payLater();
+    //     }
+    //     //this.deliveryFeeModal = true;
+    //   }
+    // }
+    // DELETE AFTER 
     },
    glovoCustomer(payment){
      if(this.curentCustomer.code.length === 3)
@@ -6423,7 +6586,14 @@ export default {
         alert('3 Digit Code is required!');
       }
     },
-   woltCustomer(){
+   woltCustomer(e){
+     
+     e.preventDefault();
+      this.isLoading = true
+      
+      setTimeout(() => {
+      	this.isLoading = false
+      }, 1000)
 
    if(this.curentCustomer.code.length === 3 && this.curentCustomer.name !== '')
       {
@@ -6431,6 +6601,7 @@ export default {
         this.order.customer = this.curentCustomer;
         this.order.deliveryType = 'Wolt';
         this.order.deliveryMethod = 'Wolt';
+        this.order.deliveryFee = 0;
         this.paymentType = 'card';
         console.log('Wolt customer : ', this.order.customer);
         this.woltModal = false;
@@ -6474,6 +6645,9 @@ export default {
 };
 </script>
 <style>
+.v-autocomplete .v-select .v-input--is-focused input {border-bottom: 2px solid #000 !important;}
+
+.v-input input:active .v-input input:focus .v-input textarea:active .v-input textarea:focus { border-bottom: 2px solid #000 !important;}
 
 .active {
     border: 3px solid #F60005 !important;

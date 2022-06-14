@@ -59,12 +59,13 @@
   height: 50px !important;
   /* background-color: red; */
 }
+
 .inner {
     background: #eee;
     /* position sticky */
     position: sticky;
     top: 3em;
-  
+
 }
 .pinBtn {
   background: #1D7EA8;

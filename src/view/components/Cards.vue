@@ -3,7 +3,7 @@
 </script>
 <template>
   <div class="row">
-    <span v-for="order in prepOrder" :key="order.id">
+    <span v-for="(order, index) in prepOrder" :key="index + Math.random()">
 
       <span v-if="order.source === 'pos' || order.source === 'web'">    
         <v-card
@@ -46,8 +46,8 @@
               >
               <div
                 class="row"
-                v-for="item in order.order_data.items"
-                :key="item.id"
+                v-for="(item, index) in order.order_data.items"
+                :key="index + Math.random()"
               >
                 <div class="col-12" v-if="item.custom == 'no'">
                   <div class="d-flex justify-content-between">
@@ -80,8 +80,8 @@
                     </div>
                     <div
                       class="d-flex justify-content-between"
-                      v-for="defTopping in item.defaultToppings"
-                      :key="defTopping.id"
+                      v-for="(defTopping, index) in item.defaultToppings"
+                      :key="index + Math.random()"
                     >
                       <span
                         v-if="defTopping.isDeleted"
@@ -96,8 +96,8 @@
                     </div>
                     <div
                       class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.toppings"
-                      :key="topping.id"
+                      v-for="(topping, index) in item.toppings"
+                      :key="index + Math.random()"
                     >
                       <span v-if="topping.count == 1"
                         >+ {{ topping.name }}</span
@@ -114,8 +114,8 @@
 
                     <div
                       class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.half1.toppings"
-                      :key="topping.id"
+                      v-for="(topping, index) in item.half1.toppings"
+                      :key="index + Math.random()"
                     >
                       <span v-if="topping.count == 1"
                         >+ {{ topping.name }}</span
@@ -131,8 +131,8 @@
 
                     <div
                       class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.half2.toppings"
-                      :key="topping.id"
+                      v-for="(topping, index) in item.half2.toppings"
+                      :key="index + Math.random()"
                     >
                       <span v-if="topping.count == 1"
                         >+ {{ topping.name }}</span
@@ -173,8 +173,8 @@
                   <div class="pl-4" style="font-size: 14px">
                     <div
                       class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.toppings"
-                      :key="topping.id"
+                      v-for="(topping, index) in item.toppings"
+                      :key="index + Math.random()"
                     >
                       <span v-if="topping.count == 1"
                         >+ {{ topping.name }}</span
@@ -209,8 +209,8 @@
                   </div>
                   <div
                     class="d-flex justify-content-between orderDisplay"
-                    v-for="topping in item.toppings"
-                    :key="topping.id"
+                    v-for="(topping, index) in item.toppings"
+                    :key="index + Math.random()"
                   >
                     <span v-if="topping.count == 1">+ {{ topping.name }}</span>
                     <span v-if="topping.count != 1"
@@ -256,8 +256,8 @@
                     </div>
                     <div
                       class="d-flex justify-content-between"
-                      v-for="defTopping in item.half1.defaultToppings"
-                      :key="defTopping.id"
+                      v-for="(defTopping, index) in item.half1.defaultToppings"
+                      :key="index + Math.random()"
                     >
                       <span
                         v-if="defTopping.isDeleted"
@@ -272,8 +272,8 @@
                     </div>
                     <div
                       class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.half1.toppings"
-                      :key="topping.id"
+                      v-for="(topping, index) in item.half1.toppings"
+                      :key="index + Math.random()"
                     >
                       <span v-if="topping.count == 1"
                         >+ {{ topping.name }}</span
@@ -306,8 +306,8 @@
                     </div>
                     <div
                       class="d-flex justify-content-between"
-                      v-for="defTopping in item.half2.defaultToppings"
-                      :key="defTopping.id"
+                      v-for="(defTopping, index) in item.half2.defaultToppings"
+                      :key="index + Math.random()"
                     >
                       <span
                         v-if="defTopping.isDeleted"
@@ -322,8 +322,8 @@
                     </div>
                     <div
                       class="d-flex justify-content-between orderDisplay"
-                      v-for="topping in item.half2.toppings"
-                      :key="topping.id"
+                      v-for="(topping, index) in item.half2.toppings"
+                      :key="index + Math.random()"
                     >
                       <span v-if="topping.count == 1"
                         >+ {{ topping.name }}</span

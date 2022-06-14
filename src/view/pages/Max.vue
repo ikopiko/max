@@ -4,6 +4,8 @@
 <template>
 <!-- <v-app> -->
   <div class="row">
+    <audio ref="audioElm" src="@/assets/beep.wav"></audio>
+    <!-- <button @click="playSound">PLAY</button> -->
       <v-tabs
       v-model="tab"
       background-color="transparent"
@@ -65,10 +67,11 @@ export default {
       filteredOrders: [],
       tab: 1,
       date: new Date(),
+      oldCount: null,
       items: [
-        {id: 0, name: "Pending Orders", content: null, color: 'red'},
-        {id: 1, name: "Preparing in Kitchen", content: null, color: 'green'},
-        {id: 2, name: "Completed Orders", content: null, color: 'yellow'},
+        {id: 0, name: "Pending Orders", content: null, oldContent: null, color: 'red'},
+        {id: 1, name: "Preparing in Kitchen", content: null, oldContent: null, color: 'green'},
+        {id: 2, name: "Completed Orders", content: null,  oldContent: null, color: 'yellow'},
       ],
     };
   },
@@ -151,12 +154,34 @@ export default {
             })
             .then((response) => {
               this.orders = response.data.data;
+              this.items[0].oldContent = this.items[0].content;
+              this.items[1].oldContent = this.items[1].content;
+              this.items[2].oldContent = this.items[2].content;
+
+              // var contentSum = this.items[0].content  + this.items[1].content + this.items[2].content;
+
               this.items[0].content = this.orders.filter((x) => x.status == 1).length;
               this.items[1].content = this.orders.filter((x) => x.status == 2 || x.status == 3 || x.status == 4).length;
               this.items[2].content = this.orders.filter((x) => x.status == 5).length;
 
+              this.oldCount = this.items[0].content  + this.items[1].content + this.items[2].content;
+              var contentSum = 0;
+              var oldSum = 0;
+              this.items.forEach(x => {
+                contentSum = contentSum + x.content;
+                oldSum = oldSum + x.oldContent;
+              });
+              this.oldCount = oldSum;
+
+              if(contentSum > oldSum){
+                this.playSound();
+              }
+
             });
           this.getTab(this.items[this.tab]);
+        },
+        playSound() {
+          this.$refs.audioElm.play();
         },
   }
 };

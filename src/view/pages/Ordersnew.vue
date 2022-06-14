@@ -7,12 +7,12 @@
         Was unable to print!
     </v-alert>
     <v-row no-gutters>
-        <v-col cols="12" sm="6" md="4"  class="vCard100">
-            <v-card class="pa-2" outlined >
+        <v-col cols="12" sm="6" md="4"  class="vCard100 ">
+            <v-card class="pa-2 orderScroll" outlined >
                 <i class="material-icons md-36 topcorner" @click="clearOrder()" v-if="showOrderComponent">close</i>
                 <ul class="inner">
                     <li>
-                        <orderList :orderProp="order" v-if="showOrderComponent" />
+                        <orderList :orderProp="order" v-if="showOrderComponent" :key="orderChange"/>
                     </li>
                     <li class="selecti" v-if="!limited">
                         <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Change Status"></v-select>
@@ -20,7 +20,6 @@
                 </ul>
                 <ul class="inner">
                     <li>
-                        <!-- <v-btn v-if="statusModel != null" @click="updateOrder()">Change: {{ statusObject[0].status_name }}</v-btn> -->
                         <v-btn v-if="showOrderComponent && !limited" @click="updateOrder()">Change </v-btn>
                     </li>
                 </ul>
@@ -65,7 +64,7 @@
                                         <td>{{row.item.order_data.deliveryMethod}}</td>
                                         <td>{{row.item.order_data.pos_id }}</td>
                                         <td>{{row.item.order_data.customer.code}}</td>
-                                        <td>{{row.item.order_data.adress}}</td>
+                                        <td>{{row.item.order_data.customer.address}}</td>
                                         <td>{{row.item.order_data.customer.name}}</td>
                                         <td>{{row.item.order_data.customer.phone}}</td>
                                         <!-- <td>{{ Number(row.item.order_data.discPrice).toFixed(2) }}</td> -->
@@ -154,6 +153,9 @@
 .vCard100 {
     width: 100%;
 }
+.orderScroll {
+  overflow: scroll;
+}
 .v-sheet.v-card
 {
   height: 100%;
@@ -162,11 +164,9 @@ ul.inner li,
 ul.bottomInner li {
     list-style: none;
     float: left;
-    margin-top: 40px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     padding: 0 10px;
 }
-
 li.selecti {
     width: 100%;
 }
@@ -177,6 +177,7 @@ import axios from 'axios';
   export default {
     data () {
       return {
+        orderChange: 0,
         orderFunctions : ['Reopen'],
         date: new Date(),
         menu:false,
@@ -195,7 +196,6 @@ import axios from 'axios';
         itemIndex: -1,
         filteredOrders: [],
         order: {},
-        lastOrder: [],
         limited: false,
         orderStatuses: [],
         selectedOrder: [],
@@ -244,7 +244,7 @@ import axios from 'axios';
           { text: "Source", value: "source" },
           { text: "POS ID", value: "order_data.pos_id" },
           { text: "Wolt #", value: "order_data.customer.code" },
-          { text: "Delivery Adress", value: "order_data.adress"},
+          { text: "Delivery Adress", value: "order_data.customer.address"},
           { text: "Customer Name", value: "order_data.customer.name" },
           { text: "Customer Phone", value: "order_data.customer.phone" },
         ],
@@ -271,7 +271,6 @@ import axios from 'axios';
       },
       selectedStatus(){
           this.statusObject = this.orderStatuses.filter((x) => x.status_name === this.statusModel);
-          console.log("COMPUTED: ", this.statusObject);
 
           return this.statusObject;
       }
@@ -341,6 +340,7 @@ import axios from 'axios';
         //     x.order_data = JSON.parse(x.order_data);
         // });
         this.orders.forEach(x => {
+          x.id = Number(x.id);
           if(x.order_data.discount > 0){
             if(x.order_data.discountName == 'Diplomat'){
                 x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
@@ -366,16 +366,10 @@ import axios from 'axios';
 
         });
         this.filteredOrders = this.orders.filter((x) => x.status != "10" || x.status != "9");
-        // this.filteredOrders = this.orders.filter((x) => x.status != '10' || x.status != '9');
-        // this.filteredOrders = this.orders.filter((x) => x.status != 10);
-        // this.filteredOrders.forEach((y) => {
-          // console.log('asdasdasd: ',y.status);
-          // var date = new Date(y.created_at);
-          // y.createTime = date.getHours() + ":" + date.getMinutes();
-          // alert(y.createTime);
+        // this.filteredOrders.forEach(x => {
+          // alert(x.order_data.totalPrice)
+        // x.totalPrice = this.addZeroes(x.totalPrice);
         // });
-        // this.filteredOrders = this.orders;
-        // this.orders.filter((x) => x.payment_method_id === '4')
         console.log("orders data: ", this.filteredOrders);
       });
 
@@ -392,6 +386,12 @@ import axios from 'axios';
     },
   },
     methods: {
+      addZeroes(num) {
+      return num.toLocaleString('en', {
+        useGrouping: false,
+        minimumFractionDigits: 2,
+      })
+    },
       formatDate(date) {
           var d = new Date(date),
               month = '' + (d.getMonth() + 1),
@@ -724,15 +724,17 @@ import axios from 'axios';
           this.showOrderComponent = false;
         },
         onButtonClick(item) {
+          this.orderChange++;
+          // alert(item);
+          if(item == undefined) {return}
             this.showOrderComponent = true;
             this.order = item;
-            this.lastOrder = item;
             this.selectedOrder = item;
             this.selectedOrderItems = item.order_data.items;
-            // console.log("orderstatuses: ",this.orderStatuses);
+            console.log("orderstatuses: ",this.orderStatuses);
             for(var i = 0; i <= this.orderStatuses.length; i++){
                 if(i == item.status){
-                  console.log(this.orderStatuses[i-1])
+                  // console.log(this.orderStatuses[i-1])
                   this.statusModel = this.orderStatuses[i-1].status_name;
                   this.statusObject = this.orderStatuses[i-1];
                 }

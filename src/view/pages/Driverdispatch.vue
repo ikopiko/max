@@ -509,22 +509,22 @@ export default {
       pageCount: 0,
       itemsPerPage: 5,
       items: [
-            { tab: 'Finished Orders', content: 'finished' },
-            { tab: 'On Delivery', content: 'ongoing' },
-            { tab: 'Delivered', content: 'delivered' },
-            ],
-            headers: [
-            {
-                text: "ORDER ID",
-                align: "start",
-                sortable: false,
-                value: "id",
-            },
-            { text: "Delivery Adress", value: "order_data.adress" },
-            { text: "Customer Name", value: "order_data.customer.name" },
-            { text: "Customer Phone", value: "order_data.customer.tel" },
-            { text: "Order Items", value: "order_data.items[0].name" },
-        ],
+      { tab: 'Finished Orders', content: 'finished' },
+      { tab: 'On Delivery', content: 'ongoing' },
+      { tab: 'Delivered', content: 'delivered' },
+      ],
+      headers: [
+      {
+          text: "ORDER ID",
+          align: "start",
+          sortable: false,
+          value: "id",
+      },
+      { text: "Delivery Adress", value: "order_data.customer.address" },
+      { text: "Customer Name", value: "order_data.customer.name" },
+      { text: "Customer Phone", value: "order_data.customer.phone" },
+      { text: "Order Items", value: "order_data.items[0].name" },
+  ],
       headersDialog: [
         {
           text: "ORDER ID",
@@ -534,9 +534,9 @@ export default {
         },
         { text: "Branch", value: "branch" },
         { text: "Order Type", value: "order_data.deliveryMethod" },
-        { text: "Delivery Adress", value: "order_data.adress" },
+        { text: "Delivery Adress", value: "order_data.customer.address" },
         { text: "Customer Name", value: "order_data.customer.name" },
-        { text: "Customer Phone", value: "order_data.customer.tel" },
+        { text: "Customer Phone", value: "order_data.customer.phone" },
         { text: "Start Delivery", value: "start_delivery" },
       ],  
     };

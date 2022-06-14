@@ -882,18 +882,18 @@
             <v-container>
               <v-row>
                 <v-col cols="3" class="justify-end">&nbsp;</v-col>
-                <v-col cols="3 h4">Cash: {{ selectedDriver.amount }}</v-col>
+                <v-col cols="3 h4">Cash: {{ Number(selectedDriver.amount).toFixed(2) }}</v-col>
                 <v-col cols="6"><v-text-field label="Cash Amount" v-model="driverCashActual"></v-text-field></v-col>
               </v-row>
 
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">Card: {{ selectedDriver.card }}</v-col>
+                <v-col cols="3 h4">Card: {{ Number(selectedDriver.card).toFixed(2) }}</v-col>
                 <v-col cols="6"><v-text-field label="Card Amount" v-model="driverCardActual"></v-text-field></v-col>
               </v-row>  
               <v-row>
                 <v-col cols="3">&nbsp;</v-col>
-                <v-col cols="3 h4">DRIVER TIP: {{ selectedDriver.tip }}</v-col>
+                <v-col cols="3 h4">DRIVER TIP: {{ Number(selectedDriver.tip).toFixed(2) }}</v-col>
                 <v-col cols="6">&nbsp;</v-col>
               </v-row>  
               <v-row>
@@ -1792,11 +1792,9 @@ export default {
           // this.driverTotals.card = 100;
 
           this.orderDetails.sumCash = Number( this.orderDetails.cash + this.driverTotals.cash);
-          this.orderDetails.sumCard = Number( this.orderDetails.card + this.driverTotals.card +
-          this.orderDetails.wolt);
-          this.orderDetails.sumAll = Number(this.orderDetails.sumCash + this.orderDetails.sumCard);      
+          this.orderDetails.sumCard = Number( this.orderDetails.card + this.driverTotals.card);
+          this.orderDetails.sumAll = Number(this.orderDetails.sumCash + this.orderDetails.sumCard + this.orderDetails.wolt);
           
-          console.log('POS SALES: ', this.orderDetails);
           this.$forceUpdate();
           });
 

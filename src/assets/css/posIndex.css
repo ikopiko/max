@@ -2,7 +2,6 @@
 
 .font-noto {font-family: 'Noto Sans', sans-serif;}
 
-
 body{
     font-family: 'Noto Sans', sans-serif !important;
 }
@@ -580,7 +579,6 @@ body .col-12 {
 
 .active {
     border: 3px solid #F60005 !important;
-    /* border: thin solid #CCCCCC; */
     box-sizing: border-box;
     z-index: 100;
 }
@@ -616,6 +614,11 @@ body .col-12 {
     top: 16px;    
 }
 .size_static {
+    opacity: 0.5 !important;
+    pointer-events: none !important;
+}
+
+.fee_static {
     opacity: 0.5 !important;
     pointer-events: none !important;
 }
@@ -824,6 +827,18 @@ body .col-12 {
     padding: 0px !important;
     margin: 0px !important;
 }
+.v-autocomplete .v-select .v-input--is-focused input {border-bottom: 2px solid #000 !important;}
+
+.v-input input:active .v-input input:focus .v-input textarea:active .v-input textarea:focus { border-bottom: 2px solid #000 !important;}
+
+.v-text-field--outline.v-input--has-state>.v-input__control>.v-input__slot, 
+.v-text-field--outline.v-input--is-focused>.v-input__control>.v-input__slot,
+.theme--light.v-text-field--outline:not(.v-input--is-focused):not(.v-input--has-state)>.v-input__control>.v-input__slot:hover {
+    border-bottom: 1px solid !important;
+}
+.theme--light.v-text-field--outline>.v-input__control>.v-input__slot {
+    border-bottom: 1px solid !important;
+}
 
 .iconPlus, .iconMinus
 {
@@ -965,5 +980,6 @@ body .col-12 {
         margin: 0px !important;
     }
 }
+
 
 
