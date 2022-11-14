@@ -5,7 +5,7 @@
 <v-app>
     <b-container>  
       <v-alert v-model="alert" color="pink" dark border="top" transition="scale-transition" dismissible>
-          Login Failed
+          {{ alertText }}
       </v-alert>
           <b-row>
             <v-btn v-if="loggedUser.role == 'admin' || 
@@ -19,7 +19,7 @@
               <b-col cols="3" ><h2>{{ pinUser.first_name  }} - {{ pinUser.role }}</h2></b-col>
               <b-col cols="3">
                 <ul id="display">
-                    <li v-for="(num, index) in pinSync" :key="index">{{ num }}</li>
+                    <li v-for="(num, index) in pinAst" :key="index">{{ num }}</li>
                     <div class="clear"></div>
                 </ul>
               </b-col>
@@ -213,6 +213,7 @@ export default {
   },
   data() {
     return {
+      alertText: '',
       menu: false,
       detailedInfo: [],
       date: new Date(),
@@ -221,7 +222,8 @@ export default {
       loginActive: false,
       alert: false,
       enteredPin: '',
-      pinDecon: ['-', '-', '-', '-'],
+      pinDecon: ['-', '-', '-', '-', '-', '-'],
+      pinAst: ['-', '-', '-', '-', '-', '-'],
       loginToken: '',
       pinUser: {
           first_name: '',
@@ -419,9 +421,11 @@ export default {
             alert('Exit Function');
         },
         pinCharClock(char){
+                this.alert = false;
                 if(char === 'clear'){
                     // alert('Input Cleared');
-                    this.pinDecon = ['-', '-', '-', '-'];
+                    this.pinDecon = ['-', '-', '-', '-', '-', '-'];
+                    this.pinAst = ['-', '-', '-', '-', '-', '-'];
                     this.enteredPin = '';
                     this.pinUser = {};
                 }
@@ -429,18 +433,21 @@ export default {
                   this.loginClock(this.enteredPin);
                 }
                 else {
-                    if(this.enteredPin.length === 3)
+                    if(this.enteredPin.length === 5)
                     {
                         var index = this.pinDecon.indexOf('-');
                         this.pinDecon[index] = char;
+                        this.pinAst[index] = '*';
                         this.enteredPin = this.enteredPin + char;
                         this.loginClock(this.enteredPin);
-                        this.pinDecon = ['-', '-', '-', '-'];
+                        this.pinDecon = ['-', '-', '-', '-', '-', '-'];
+                        this.pinAst = ['-', '-', '-', '-', '-', '-'];
                         this.enteredPin = '';
                     }
                     else {
                     var index = this.pinDecon.indexOf('-');
                     this.pinDecon[index] = char;
+                    this.pinAst[index] = '*';
                     this.enteredPin = this.enteredPin + char;
                     this.$forceUpdate();
                     }
@@ -449,6 +456,7 @@ export default {
           loginClock(pin){
               var bodyFormData = new FormData();
               bodyFormData.set("pin", pin);
+              bodyFormData.set("branch_id", this.loggedUser.branch_id);
               axios.request({
                   method: "post",
                   url:
@@ -456,18 +464,17 @@ export default {
                   data: bodyFormData,
                   })
                   .then((response) => {
-                      if(response.status === 200 && !response.data.is_error){
-                          console.log('------', response);
-                          this.loginToken = response.data.data.token;
-                          this.pinUser = response.data.data;
-                          this.loginActive = true;
-
-                      }
-                      else {
-                          console.log('Login Failed');
-                          this.alert = true;
-                      }
-                  });    
+                    if(response.status === 200 && !response.data.is_error){
+                      console.log('------', response);
+                      this.loginToken = response.data.data.token;
+                      this.pinUser = response.data.data;
+                      this.loginActive = true;
+                    }
+                    else {
+                        this.alertText = response.data.error_message;
+                        this.alert = true;
+                    }
+                });
         },
     }
 };

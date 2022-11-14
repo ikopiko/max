@@ -1,5 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
+
+/* Loader Styles */
+.custom-loader {
+    animation: loader 1s infinite;
+    display: flex;
+  }
+  @-moz-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-webkit-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-o-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  /* End Of Loader Styles */
 .font-noto {font-family: 'Noto Sans', sans-serif;}
 
 body{
@@ -65,6 +104,27 @@ body{
     align-items: center;
     justify-content: center;
     background-color:cornflowerblue !important;
+    height: 60px;
+    text-align: center;
+    border-radius: 4px;
+    border-color: #000000;
+    border-width: 2px;
+    border: 2px solid #ECECEC;
+    /* margin: 4px; */
+    /* box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
+        -webkit-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;
+        -moz-box-shadow: 1px -1px 11px 1px rgba(23,21,21,0.2) inset;*/
+    color: #000000;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.feeClassRed {
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:crimson !important;
     height: 60px;
     text-align: center;
     border-radius: 4px;
@@ -540,8 +600,8 @@ body .col-12 {
     background-color: #e0de59;
 }
 
-.red {
-    background-color: #D23A32;
+.redText {
+    color: red;
 }
 
 .white {

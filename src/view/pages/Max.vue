@@ -4,7 +4,8 @@
 <template>
 <!-- <v-app> -->
   <div class="row">
-    <audio ref="audioElm" src="@/assets/beep.wav"></audio>
+    <!-- <v-btn @click="playSound">PLAY SOUND!</v-btn> -->
+    <audio ref="audioElm" src="http://pos.ronnys.info/sound/beep.mp3"></audio>
     <!-- <button @click="playSound">PLAY</button> -->
       <v-tabs
       v-model="tab"
@@ -51,6 +52,7 @@
 /* eslint-disable */
 import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
 import axios from "axios";
+// import sound from "http://pos.ronnys.info/sound/beep.mp3"
 
 import Card from "@/view/components/Cards.vue";
 
@@ -64,6 +66,7 @@ export default {
       loggedUser: {},
       loader: true,
       orders: [],
+      pendingOrders: [],
       filteredOrders: [],
       tab: 1,
       date: new Date(),
@@ -95,13 +98,15 @@ export default {
   },
   mounted() {
     this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
+    this.date = this.formatDate(this.date);
     this.updateOrders();
+    this.updatePendingOrders();
 
     this.filteredOrders = this.orders.filter((x) => x.status == 2 || x.status == 3 || x.status == 4);
-    this.date = this.formatDate(this.date);
   },
   created () {
-      this.timer = setInterval(this.updateOrders, 500)
+      this.timer = setInterval(this.updateOrders, 3000)
+      this.timer = setInterval(this.updatePendingOrders, 3000)
     },
   methods: {
     formatDate(date) {
@@ -123,7 +128,7 @@ export default {
      */
     getTab(tab){
             if(tab.id == 0) {
-              this.filteredOrders = this.orders.filter((x) => x.status == 1);
+              this.filteredOrders = this.pendingOrders.filter((x) => x.status == 1);
             }
             else if(tab.id == 1) {
               this.filteredOrders = this.orders.filter((x) => x.status == 2 || x.status == 3 || x.status == 4);
@@ -140,7 +145,7 @@ export default {
           var bodyFormData = new FormData();
           //bodyFormData.set("branch", this.branch);
           bodyFormData.set("day", dateString);
-          bodyFormData.set("status_key", '1,2,3,4,5');
+          bodyFormData.set("status_key", '2,3,4,5');
 
           axios
             .request({
@@ -154,26 +159,59 @@ export default {
             })
             .then((response) => {
               this.orders = response.data.data;
-              this.items[0].oldContent = this.items[0].content;
+              // this.items[0].oldContent = this.items[0].content;
               this.items[1].oldContent = this.items[1].content;
               this.items[2].oldContent = this.items[2].content;
 
               // var contentSum = this.items[0].content  + this.items[1].content + this.items[2].content;
 
-              this.items[0].content = this.orders.filter((x) => x.status == 1).length;
+              // this.items[0].content = this.orders.filter((x) => x.status == 1).length;
               this.items[1].content = this.orders.filter((x) => x.status == 2 || x.status == 3 || x.status == 4).length;
               this.items[2].content = this.orders.filter((x) => x.status == 5).length;
 
-              this.oldCount = this.items[0].content  + this.items[1].content + this.items[2].content;
-              var contentSum = 0;
-              var oldSum = 0;
-              this.items.forEach(x => {
-                contentSum = contentSum + x.content;
-                oldSum = oldSum + x.oldContent;
-              });
-              this.oldCount = oldSum;
+              // this.oldCount = this.items[0].content  + this.items[1].content + this.items[2].content;
+              // var contentSum = 0;
+              // var oldSum = 0;
+              // this.items.forEach(x => {
+              //   contentSum = contentSum + x.content;
+              //   oldSum = oldSum + x.oldContent;
+              // });
+              // this.oldCount = oldSum;
 
-              if(contentSum > oldSum){
+              // if(this.items[0].content > 0){
+              //   this.playSound();
+              // }
+
+            });
+          this.getTab(this.items[this.tab]);
+        },
+        updatePendingOrders(){
+          const TOKEN = this.$store.state.auth.user.data.token;
+
+          var dateString = this.date + ' to '+ this.date;
+          var bodyFormData = new FormData();
+          bodyFormData.set("day", dateString);
+          // bodyFormData.set("status_key", '1,2,3,4,5');
+
+          axios
+            .request({
+              method: "post",
+              url:
+                this.$hostname + "orders/pending",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+              data: bodyFormData,
+            })
+            .then((response) => {
+              this.pendingOrders = response.data.data;
+              this.items[0].oldContent = this.items[0].content;
+
+              // var contentSum = this.items[0].content  + this.items[1].content + this.items[2].content;
+
+              this.items[0].content = this.pendingOrders.filter((x) => x.status == 1).length;
+
+              if(this.items[0].content > 0){
                 this.playSound();
               }
 
@@ -182,6 +220,8 @@ export default {
         },
         playSound() {
           this.$refs.audioElm.play();
+          // const audio = new Audio(sound)
+          // audio.play()
         },
   }
 };

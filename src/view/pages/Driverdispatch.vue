@@ -4,17 +4,17 @@
 <template>
 <v-app>
   <v-container >
+
+
     <v-overlay
       :absolute="absolute"
       :opacity="opacity"
       :value="overlay"
-      :z-index="zIndex"
     >
       <v-progress-circular
         :size="70"
         :width="7"
         v-model="overlay"
-        color="purple"
         indeterminate
       ></v-progress-circular>
     </v-overlay>
@@ -40,27 +40,27 @@
                     :key="item.tab"
                 >
                     <v-data-table
-                            v-model="selectedOrders"
-                            :search="search"
-                            :headers="headers"
-                            :items="filteredOrders"
-                            :items-per-page="itemsPerPage"
-                            item-key="id"
-                            :loading="loading"
-                            show-select
-                            class="elevation-1"
-                            @page-count="pageCount = $event"
-                            @click:row="onButtonClick"
-                        >
-                            <!-- <template v-slot:item="row">
-                                <tr @click="onButtonClick(row.item)" :class="{ active : activeRow == row.item.id}">
-                                    <td>{{row.item.order_data.deliveryMethod}}</td>
-                                    <td>{{row.item.order_data.adress}}</td>
-                                    <td>{{row.item.order_data.customer.name}}</td>
-                                    <td>{{row.item.order_data.customer.tel}}</td>
-                                    <td>{{row.item.order_data.items[0].name}}</td>
-                                </tr>
-                            </template> -->
+                        v-model="selectedOrders"
+                        :search="search"
+                        :headers="headers"
+                        :items="filteredOrders"
+                        :items-per-page="itemsPerPage"
+                        item-key="id"
+                        :loading="loading"
+                        show-select
+                        class="elevation-1"
+                        @page-count="pageCount = $event"
+                        @click:row="onButtonClick"
+                    >
+                        <!-- <template v-slot:item="row">
+                            <tr @click="onButtonClick(row.item)" :class="{ active : activeRow == row.item.id}">
+                                <td>{{row.item.order_data.deliveryMethod}}</td>
+                                <td>{{row.item.order_data.adress}}</td>
+                                <td>{{row.item.order_data.customer.name}}</td>
+                                <td>{{row.item.order_data.customer.tel}}</td>
+                                <td>{{row.item.order_data.items[0].name}}</td>
+                            </tr>
+                        </template> -->
                     </v-data-table>
                     </v-tab-item>
             </v-tabs-items>
@@ -447,7 +447,6 @@
             </div>
           </v-sheet>
         </v-bottom-sheet>
-        
   </v-container>
 </v-app>
 </template>
@@ -457,9 +456,11 @@
 import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
 import axios from "axios";
 
+
 export default {
   name: "dashboard",
-  components: {},
+  components: {
+  },
   data() {
     return {
       tip: null,
@@ -563,7 +564,7 @@ export default {
     setInterval(() => {
       this.getOrders();
       this.getDrivers();
-      }, 1000);
+    }, 5000);
     this.$store.dispatch(SET_BREADCRUMB, [{ title: "Dashboard" }]);
     this.loggedUser = this.$store.state.auth.user.data;
 
@@ -574,6 +575,9 @@ export default {
     
   },
   computed: {
+    loaderLogo() {
+      return "../../../public/media/logos/new_ronnys.png";
+    },
     availableDrivers(){
       return this.driverList.filter(x => x.in_way === false);
     },
@@ -719,7 +723,7 @@ export default {
                 this.sheet = true;
                  this.errorText = response.data.data;
               }
-            this.$router.go();
+            // this.$router.go();
         });
     },
     payOrder(type){
@@ -749,7 +753,7 @@ export default {
               this.updateStatus('finished', this.selectedOrder.id);
               this.activeDriver = -1;
               this.selectedDriver = null;
-              this.$router.go();
+              // this.$router.go();
             } 
             
         });
@@ -881,7 +885,7 @@ export default {
     getDrivers(){
       const TOKEN = this.loggedUser.token;
       var bodyFormDriver = new FormData();
-      bodyFormDriver.set("branch", 'digomi');
+      // bodyFormDriver.set("branch", this.loggedUser.branch_name);
 
       axios
         .request({
@@ -954,7 +958,7 @@ export default {
         },
         driverOut(){
           if(this.selectedOrders[0].status == '5' && this.selectedDriver.in_way == false){
-            this,this.overlay = true;
+            this.overlay = true;
             var orderIDs = [];
             this.selectedOrders.forEach(x => {
                orderIDs.push(x.id);
@@ -979,11 +983,12 @@ export default {
                   console.log(response.error_message);
               }
                 this.orders = response.data.data;
+                this.selectedOrders = [];
                 console.log("orders data: ", response.data.data);
             });
 
             var statusFormData = new FormData();
-            statusFormData.set("order_status", '6');
+            statusFormData.set("order_status", 'in_delivery');
             statusFormData.set("id", this.selectedOrder.id);
 
             axios
@@ -994,16 +999,22 @@ export default {
                 headers: {
                   Authorization: "Bearer " + TOKEN,
                 },
-                data: bodyFormData,
+                data: statusFormData,
               })
               .then((response) => {
+                setTimeout(() => {
+                    this.overlay = false;
+                  }, 5000);
                 if(response.data.is_error){
                   console.log('Status Change Error: ', response.data.is_error);
-                  
                 }
                 else{
+                  
                   console.log("Order Status Changed Correctly: ", response.data);
-                  this.$router.go();
+                  setTimeout(() => {
+                    this.overlay = false;
+                    this.$router.go();
+                  }, 1000);
                 }
             });
             
@@ -1016,10 +1027,10 @@ export default {
           setTimeout(() => {
             this.getOrders();
             this.getDrivers();
-            this.overlay = false;
             this.$forceUpdate();
+            this.overlay = false;
             this.selectedDriver = null;
-        }, 500);
+        }, 50000);
     },
 
     deliveryProcess(){

@@ -12,7 +12,9 @@ const ApiService = {
     Vue.use(VueAxios, axios);
     Vue.axios.defaults.baseURL =
 
-      // "https://api.ronnys.info/rest/web/index.php?r=";  // TEST
+      "http://test.ronnys.info/rest/web/index.php?r=";  // TEST
+
+      // "http://new.ronnys.info/rest/web/index.php?r=";  // POS MERGE
 
       // "http://109.172.176.98:8082/ronny/rest/web/index.php?r=";  // DIGOMI OUT
       
@@ -22,7 +24,7 @@ const ApiService = {
       
       // "http://178.134.47.222:8082/ronny/rest/web/index.php?r=";  // GLDANI OUT
 
-      "http://192.168.1.124/ronny/rest/web/index.php?r=";  // LOCAL
+      // "http://192.168.1.124/ronny/rest/web/index.php?r=";  // LOCAL
 
   },
 

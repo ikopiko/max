@@ -5,9 +5,15 @@ import App from "./App.vue";
 import router from "./router";
 import store from "@/core/services/store";
 import ApiService from "@/core/services/api.service";
+import firebase from "@/core/plugins/firebase";
+// import { rtdbPlugin } from 'vuefire'
 //import MockService from "@/core/mock/mock.service";
 import { VERIFY_AUTH } from "@/core/services/store/auth.module";
 import { RESET_LAYOUT_CONFIG } from "@/core/services/store/config.module";
+
+import {rtdbPlugin as Vuefire} from 'vuefire'
+
+Vue.use(Vuefire);
 
 Vue.config.productionTip = false;
 
@@ -37,10 +43,9 @@ ApiService.init();
 // Remove this to disable mock API
 //MockService.init();
 
-
 // Global URL Variable
 
-Vue.prototype.$hostname = "http://192.168.1.124/ronny/rest/web/index.php?r=v1/";  // LOCAL
+// Vue.prototype.$hostname = "http://192.168.1.124/ronny/rest/web/index.php?r=v1/";  // LOCAL
 
 // Vue.prototype.$hostname = "http://109.172.176.98:8082/ronny/rest/web/index.php?r=v1/";  // DIGOMI OUT
 
@@ -50,11 +55,13 @@ Vue.prototype.$hostname = "http://192.168.1.124/ronny/rest/web/index.php?r=v1/";
 
 // Vue.prototype.$hostname = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=v1/";  // GLDANI OUT
 
-// Vue.prototype.$hostname = "https://api.ronnys.info/rest/web/index.php?r=v1/";  // TEST
+// Vue.prototype.$hostname = "http://test.ronnys.info/rest/web/index.php?r=v1/";  // TEST
+
+Vue.prototype.$hostname = "http://new.ronnys.info/rest/web/index.php?r=v1/";  // POS MERGE
 
 
 
-Vue.prototype.$authHostName = "http://192.168.1.124/ronny/rest/web/index.php?r=auth";  // LOCAL
+// Vue.prototype.$authHostName = "http://192.168.1.124/ronny/rest/web/index.php?r=auth";  // LOCAL
 
 // Vue.prototype.$authHostName = "http://109.172.176.98:8082/ronny/rest/web/index.php?r=auth";  // DIGOMI OUT
 
@@ -64,7 +71,27 @@ Vue.prototype.$authHostName = "http://192.168.1.124/ronny/rest/web/index.php?r=a
 
 // Vue.prototype.$authHostName = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=auth";  // GLDANI OUT
 
-// Vue.prototype.$authHostName = "https://api.ronnys.info/rest/web/index.php?r=auth";  // TEST
+// Vue.prototype.$authHostName = "http://test.ronnys.info/rest/web/index.php?r=auth";  // TEST
+
+Vue.prototype.$authHostName = "http://new.ronnys.info/rest/web/index.php?r=auth";  // POS MERGE
+
+// Physical Servers
+
+Vue.prototype.$localServer = "http://192.168.11.250/ronny/rest/web/index.php?r=v1/";  // DIGOMI 192.168.11.250
+
+Vue.prototype.$localServerAuth = "http://192.168.11.250/ronny/rest/web/index.php?r=auth";  // DIGOMI 192.168.11.250
+
+// Vue.prototype.$localServer = "http://192.168.12.250/ronny/rest/web/index.php?r=v1/";  // GLDANI 192.168.12.250  
+
+// Vue.prototype.$localServerAuth = "http://192.168.12.250/ronny/rest/web/index.php?r=auth";  // GLDANI 192.168.12.250  
+
+// Vue.prototype.$localServer = "http://192.168.13.250/ronny/rest/web/index.php?r=v1/";  // SABURTALO 192.168.13.250
+
+// Vue.prototype.$localServerAuth = "http://192.168.13.250/ronny/rest/web/index.php?r=auth";  // SABURTALO 192.168.13.250
+
+// Vue.prototype.$localServer = "http://192.168.14.250/ronny/rest/web/index.php?r=v1/";  // VAKE  192.168.14.250
+
+// Vue.prototype.$localServerAuth = "http://192.168.14.250/ronny/rest/web/index.php?r=auth";  // VAKE  192.168.14.250
 
 // Change It to API.SERVICE.JS ALSO
 
@@ -86,5 +113,6 @@ new Vue({
   store,
   i18n,
   vuetify,
+  firebase,
   render: h => h(App)
 }).$mount("#app");

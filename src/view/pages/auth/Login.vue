@@ -82,7 +82,7 @@
             <v-alert dense dismissible v-if="pinSuccess" type="success">
                 The Pin You Entered is Correct
             </v-alert>
-            <div class="col-12" style="margin: auto">
+            <div class="col-12" >
                 <ul id="display">
                     <li v-for="(num, index) in pinAst" :key="index">{{ num }}</li>
                     <div class="clear"></div>
@@ -184,7 +184,7 @@ export default {
     name: "login",
     data() {
         return {
-
+            getMac: null,
             // Remove this dummy login info
             form: {
                 email: "",
@@ -199,8 +199,12 @@ export default {
             pinDecon: ['-',
             '-',
             '-',
+            '-',
+            '-',
             '-'],
             pinAst: ['-',
+            '-',
+            '-',
             '-',
             '-',
             '-'], 
@@ -221,6 +225,17 @@ export default {
         window.addEventListener("keypress", e=> {
             this.logKey(e);
         });
+
+        axios.request({
+                method: "post",
+                url:
+                // this.$hostname + "orders/print",
+                // "http://192.168.1.124/ronny/rest/web/index.php?r=auth/get-mac",
+                this.$localServerAuth + "/get-mac",
+            }).then((response) => {
+                console.log("GET MAC RESPONSE: "+ response.data);
+                this.getMac = response.data;
+            });
     },
     methods: {
         validateState(name) {
@@ -281,10 +296,10 @@ export default {
                 , 2000);
         },
 
-        // onPinSubmit(sentPin, sentMac) {
-        onPinSubmit(sentPin) {
+        onPinSubmit(sentPin, sentMac) {
+        // onPinSubmit(sentPin) {
             const pin = sentPin;
-            // const mac = sentMac;
+            const mac = sentMac;
 
             // clear existing errors
             this.$store.dispatch(LOGOUT);
@@ -299,7 +314,7 @@ export default {
                     // alert(localStorage.getItem('reloaded'));
                     this.$store.dispatch(LOGIN, {
                             pin,
-                            // mac
+                            mac
                         }
                         
                     ) // go to which page after successfully login
@@ -317,8 +332,12 @@ export default {
                     this.pinDecon=['-',
                     '-',
                     '-',
-                    '-'];
+                    '-',
+                    '-',
+                    '-',];
                     this.pinAst=['-',
+                    '-',
+                    '-',
                     '-',
                     '-',
                     '-'];
@@ -328,7 +347,7 @@ export default {
                     this.login(this.enteredPin);
                 }
                 else {
-                    if(this.enteredPin.length === 3) {
+                    if(this.enteredPin.length === 5) {
                         var index=this.pinDecon.indexOf('-');
                         this.pinDecon[index]=char;
                         this.enteredPin=this.enteredPin+char;
@@ -336,8 +355,12 @@ export default {
                         this.pinDecon=['-',
                         '-',
                         '-',
+                        '-',
+                        '-',
                         '-'];
                         this.pinAst=['-',
+                        '-',
+                        '-',
                         '-',
                         '-',
                         '-'];
@@ -357,20 +380,28 @@ export default {
 
         login(pin) {
             this.pinError = true;
-            // var mac = 'd4:c9:ef:d5:70:8f';
-            // var mac = 'ec:b1:d7:6e:01:3b';  // POS 2
-            // var mac = 'ec:b1:d7:6e:01:3r';  // POS 3
-            
-            // var mac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
 
-            // var mac = 'd4:c9:ef:dc:4c:a5';  // VAKE 1
-            // var mac = 'f0:92:1c:ea:90:2e';  // VAKE 2
+            // let mac = "BLA";
 
-            // var mac = '2c:27:d7:27:3e:81';  // GLDANI 1
+            this.getMac = 'd4:c9:ef:dc:4c:a5';  // VAKE NEW TEST
+
+            // this.getMac = 'D4:C9:EF:D5:6D:D2';  // SABURTALO NEW TEST
+
+            // this.getMac = 'd4:c9:ef:d5:70:8f';  //  DIGOMI POS 1
+            // this.getMac = 'ec:b1:d7:6e:01:3b';  //  DIGOMI POS 2
+            // this.getMac = 'ec:b1:d7:6e:01:3r';  // DIGOMI POS 3
+
+            // this.getMac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
+
+            // this.getMac = 'd4:c9:ef:dc:4c:a5';  // VAKE 1
+            // this.getMac = 'f0:92:1c:ea:90:2e';  // VAKE 2
+
+            // this.getMac = '2c:27:d7:27:3e:81';  // GLDANI 1
+
             
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
-            // bodyFormData.set("mac", mac);
+            bodyFormData.set("mac", this.getMac);
 
             axios.request({
                     method: "post",
@@ -382,8 +413,8 @@ export default {
                         localStorage.setItem("loggedUserData", JSON.stringify(response.data.data));
                         this.pinError = false;
                         this.pinSuccess = true;
-                        // this.onPinSubmit(pin, mac);
-                        this.onPinSubmit(pin);
+                        this.onPinSubmit(pin, this.getMac);
+                        // this.onPinSubmit(pin);
                     }
                     else {
                         console.log('Login Failed', response);
@@ -445,7 +476,7 @@ ul {
     display: inline-block;
     font-family: monospace;
     font-size: 200%;
-    padding: 10px 24px;
+    padding: 10px 16px;
     background: #E6BC3B;
     color: black;
     margin-right: 1px;

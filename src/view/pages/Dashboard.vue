@@ -208,14 +208,13 @@
 
 <script>
 /* eslint-disable */
-import { SET_BREADCRUMB } from "@/core/services/store/breadcrumbs.module";
-
 
 export default {
   name: "dashboard",
   components: {
 
   },
+ 
   data(){
     return {
       loggedUser: {},
@@ -230,7 +229,13 @@ export default {
       dialog: false,
     }
   },
+  watch: {
+  },
   mounted() {
+    // alert('BLA');
+    // this.firebaseNotifications = Object.values(db.collection('bla').get());
+    // this.firebaseNotifications = branchOrders;
+
       if (localStorage.getItem('reloaded')) {
           // The page was just reloaded. Clear the value from local storage
           // so that it will reload the next time this page is visited.
@@ -243,6 +248,8 @@ export default {
     this.loggedUserFull = JSON.parse(localStorage.getItem("loggedUserData"));
     // console.log("Fullll", this.loggedUserFull);
     this.loggedUser = this.$store.state.auth.user.data;
+
+    // this.warehouseId = this.loggedUser.branch_id;
 
     if(this.loggedUser.role.toLowerCase() == "admin"){
       this.allView = true;

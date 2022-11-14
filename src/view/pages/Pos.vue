@@ -3,7 +3,19 @@
 </script>
 
 <template>
-<v-app style="overflow:hidden">
+<v-app style="flow:hidden">
+    <v-overlay
+        :absolute="absolute"
+        :opacity="opacity"
+        :value="overlay"
+      >
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          v-model="overlay"
+          indeterminate
+        ></v-progress-circular>
+    </v-overlay>
   <div class="container container-12 posiza" >
       <v-alert v-model="printError" color="pink" dark border="top" transition="scale-transition" dismissible>
           Was unable to print!
@@ -1133,7 +1145,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-form ref="form" @submit.prevent="walkinCustomer" v-model="valid" lazy-validation>
+                <v-form ref="form"  v-model="valid" lazy-validation>
                                           
                     <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
@@ -1173,7 +1185,7 @@
                       class="blue"
                       text
                       x-large
-                      type="submit"
+                      
                       @click="walkinCustomer()"
                     >
                       Walk In Customer
@@ -1213,7 +1225,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-form ref="form" @submit.prevent="takeoutCustomer" v-model="valid" lazy-validation>
+                <v-form ref="form" v-model="valid" lazy-validation>
 
                     <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
@@ -1249,7 +1261,6 @@
 
                     <v-btn
                       class="blue"
-                      type="submit"
                       text
                       x-large
                       @click="takeoutCustomer()"
@@ -1290,7 +1301,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                    <v-form ref="form" @submit.prevent="deliveryCustomer" v-model="valid" lazy-validation>
+                    <v-form ref="form" v-model="valid" lazy-validation>
                         
                         <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
@@ -1343,6 +1354,9 @@
                   </div> -->
                   <!-- DELETE AFTER -->
 
+                  <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 9 }" @click="activateFee(9)">
+                      FREE DELIVERY
+                  </div>
                   <div class="col-2 feeClass mx-2" v-if="deliveryActiveVar" :class="{ active: activeFee_el == 0 }" @click="activateFee(0)">
                       2.5 GEL
                   </div>
@@ -1398,7 +1412,6 @@
 
                 <v-btn
                   class="blue"
-                  type="submit"
                   text
                   x-large
                   @click="deliveryCustomer()"
@@ -1518,7 +1531,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-form ref="form" @submit.prevent="woltCustomer" v-model="valid" lazy-validation>
+                <v-form ref="form" v-model="valid" lazy-validation>
                                           
                     <v-text-field v-model="curentCustomer.phone" @keypress="isNumber($event)" :rules="telRules" class="my-2" label="Tel" clearable autofocus></v-text-field>
                     
@@ -1555,15 +1568,33 @@
                     
                     <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
-                    <v-btn
+                    <!-- <v-btn
                       class="blue"
-                      type="submit"
                       text
                       x-large
                       @click="woltCustomer()"
                     >
                       Wolt order:  {{ Number(totalNet).toFixed(2) }}
-                    </v-btn>   
+                    </v-btn>    -->
+
+                    <!-- DELETE AFTER WOLT SALE -->
+                    <!-- <v-btn
+                      class="blue mx-5"
+                      text
+                      x-large
+                      @click="woltCustomer('sale')"
+                    >
+                      Wolt SALE:  {{ (Number(totalNet) - Number(this.totalWoltSale)).toFixed(2) }}
+                    </v-btn>    -->
+                    <v-btn
+                      class="blue mx-5"
+                      text
+                      x-large
+                      @click="woltCustomer('no')"
+                    >
+                      Wolt:  {{ Number(totalNet).toFixed(2) }}
+                    </v-btn>
+                    <!-- DELETE AFTER WOLT SALE -->
                 </v-form>
               </v-row>
             </v-container>
@@ -1954,7 +1985,7 @@
               <v-btn
                 class="blue"
                 text
-                @click=" checkAmount()"
+                @click="checkAmount()"
               >
                 Apply Discount
               </v-btn>
@@ -1979,7 +2010,7 @@
 
                   <div class="col-12" style="margin: auto">
                       <ul id="display">
-                          <li v-for="(num, index) in pinSync" :key="index">{{ num }}</li>
+                          <li v-for="(num, index) in pinAst" :key="index">{{ num }}</li>
                           <div class="clear"></div>
                       </ul>
                   </div>
@@ -2044,8 +2075,8 @@
               Total Due: {{ Number(totalPrice).toFixed(2) }}
             </v-card-title>
             <v-card-text>
-              <v-text-field v-model="splitCash" label="Split Cash" class="my-2" ></v-text-field>
-              <v-text-field v-model="splitCard" label="Split Card" class="my-2"  ></v-text-field>
+              <v-text-field v-model="splitCash" v-on:keydown="splitCashFoo" label="Split Cash" class="my-2" ></v-text-field>
+              <v-text-field v-model="splitCard" v-on:keydown="splitCardFoo" label="Split Card" class="my-2"  ></v-text-field>
             </v-card-text>
             <v-card-actions>
               <v-btn
@@ -2126,6 +2157,9 @@ export default {
     },
   data() {
     return {
+      overlay: false,
+      totalWoltSale: null,
+      firstEnter: false,
       isLoading: null,
       feeSaleActive: false,
       cheesseLoversActive: false,
@@ -2139,7 +2173,8 @@ export default {
       managerPin: false,
       enteredPin: '',
       pinError: false,
-      pinDecon: ['-','-','-','-'],
+      pinDecon: ['-','-','-','-','-','-'],
+      pinAst: ['-','-','-','-','-','-'],
       addressList: [],
       isReopen: false,
       fullOrder: [],
@@ -2258,7 +2293,8 @@ export default {
                     {id:5,fee:10, min: 60, text: "10 GEL Tsavkisi"}, 
                     {id:6,fee:10, min: 60, text: "10 GEL Mtsxeta"},
                     {id:7,fee:12, min: 60, text: "12 GEL Kojori"},
-                    {id:8,fee:14.5, min: 100, text: "14.5 GEL KTA"} ],
+                    {id:8,fee:12, min: 60, text: "12 GEL Kojori"},
+                    {id:9,fee:0, min: 0, text: "Free Delivery For Site"} ],
       deliveryType: [{id: 0, type: 'delivery'}, {id: 1, type: 'glovo'},{id: 2, type: 'wolt'}],
       promise: [{id: 0, time:15},{id: 1, time:20},{id: 2, time:30}, {id: 3, time:40}, {id: 4, time:50}],
       promiseTime: 15,
@@ -2344,6 +2380,8 @@ export default {
       cashInput: '',
       splitCash: null,
       splitCard: null,
+      splitCashActive: false,
+      splitCardActive: false,
       splitChange: false,
       split: {
         split1: {
@@ -2428,6 +2466,7 @@ export default {
         tel2: '',
         comment: '',
         comment2: '',
+        code: '',
         invoice: {
           tel: null,
           name: '',
@@ -2486,8 +2525,11 @@ export default {
 
   mounted() {
     this.setTime();
+    this.setEnterClick();
     window.addEventListener("keypress", e=> {
         this.logKey(e);
+        this.logEnter(e);
+        
     });
     this.date = this.formatDate(this.date);
     this.dateCrm = this.formatDate(this.dateCrm);
@@ -2571,6 +2613,8 @@ export default {
           this.deliveryActiveVar = true;
           this.activeFee_el = -1;
         }
+        this.customer = fooOrder.order_data.customer;
+        this.curentCustomer = fooOrder.order_data.customer;
         // alert(this.order.paymentType);
         if(this.order.paymentType == "invoice"){
           // alert("invoice");
@@ -2686,6 +2730,46 @@ export default {
         
       },
     },
+    // totalNetWoltsale: {
+    //   cache: false,
+    //   get() {
+    //     var totalPrice = 0;
+    //     this.order.items.forEach((i) => {
+
+    //       if(i.size == 'xl'){
+    //         var diff = i.totalPrice - i.price;
+    //         i.diff = diff;
+    //         i.totalPrice = (i.price * 0.8) + diff;
+    //       }
+
+    //       if(i.custom === 'other'){
+    //         var price = i.price * i.qty;
+    //         totalPrice = totalPrice + price;
+    //       } else {
+    //         var price = i.totalPrice * i.qty;
+    //         totalPrice = totalPrice + price;    
+    //       }
+    //     });
+
+    //     // DELETE AFTER
+
+    //     // if(totalPrice >= 40){
+    //     //   this.feeSaleActive = true;
+    //     // } else {
+    //     //   this.feeSaleActive = false;
+    //     // }
+
+    //     // DELETE AFTER
+
+    //     if(this.order.deliveryFee != 0){
+    //       return totalPrice + this.order.deliveryFee;
+    //     } else {
+    //       return Number(totalPrice + this.deliveryFeeVar);
+    //     }
+        
+    //   },
+    // },
+
     totalDisc: {
       cache: false,
       get() {
@@ -2897,8 +2981,30 @@ export default {
         }
       },
       splitCash(val){
-        this.splitCard = String((this.totalPrice - Number(val)).toFixed(2));
+        if(this.splitCashActive){
+          this.splitCard = String((this.totalPrice - Number(val)).toFixed(2));
+        }
       },
+      splitCard(val){
+        if(this.splitCardActive){
+          this.splitCash = String((this.totalPrice - Number(val)).toFixed(2));
+        }
+      },
+      woltModal(val){
+        if(val == false){
+          this.totalWoltSale = 0;
+        }
+        // if(val == false){
+        //   this.order.items.forEach(x => {
+        //     // alert(x.size);
+        //     if(x.size == 'xl'){
+        //       // alert(x.price + " --" + x.diff);
+        //       // alert(Number(x.totalPrice) - (Number(x.price.toFixed(2)) + Number(x.diff.toFixed(2))));
+        //       x.totalPrice = x.price + x.diff;
+        //     }
+        //   });
+        // }
+      }
     },
   methods: {
     setTime () {
@@ -2908,6 +3014,20 @@ export default {
         this.minutes = this.checkSingleDigit(date.getMinutes());
         this.seconds = this.checkSingleDigit(date.getSeconds());
       }, 1000);
+    },
+    splitCashFoo(){
+      // alert(this.splitCash);
+      this.splitCashActive = true;
+      this.splitCardActive = false;
+    },
+    splitCardFoo(){
+      this.splitCashActive = false;
+      this.splitCardActive = true;
+    },
+    setEnterClick () {
+      setInterval(() => {
+        this.firstEnter = false;
+      }, 500);
     },
       checkSingleDigit (digit) {
         return ('0' + digit).slice(-2)
@@ -2966,9 +3086,46 @@ export default {
         }
       }
     },
+    checkMethod(){
+      if(this.walkInModal){
+        this.walkinCustomer();
+        // alert('WALK IN ACTIVE');
+      } else if(this.takeOutModal){
+        this.takeoutCustomer();
+        // alert('TAKE OUT ACTIVE');
+      } else if(this.ronnysModal){
+        this.deliveryCustomer();
+        // alert('DELIVERY ACTIVE');
+      } else if(this.woltModal) {
+        this.woltCustomer();
+        // alert('WOLT ACTIVE');
+      }
+    },
+    logEnter(x) {
+        x=x || window.event;
+        var charCode=(x.which) ? x.which: x.keyCode;
+
+        if (charCode == 13 ) {
+          if(this.firstEnter == false){
+            this.firstEnter = true;
+          } else {
+            this.checkMethod();
+            this.firstEnter = false;
+          }
+        }
+        // else {
+        //   if(this.firstEnter == false){
+        //     this.firstEnter = true;
+        //   } else {
+        //     this.checkMethod();
+        //     this.firstEnter = false;
+        //   }
+        // }
+    },
     pinChar(char) {
       if(char==='clear') {
-        this.pinDecon=['-','-','-','-'];
+        this.pinDecon=['-','-','-','-','-','-'];
+        this.pinAst=['-','-','-','-','-','-'];
         this.enteredPin='';
       }
       else if(char==='enter') {
@@ -2980,9 +3137,10 @@ export default {
         }
       }
       else {
-        if(this.enteredPin.length === 3) {
+        if(this.enteredPin.length === 5) {
           var index=this.pinDecon.indexOf('-');
           this.pinDecon[index]=char;
+          this.pinAst[index]='*';
           this.enteredPin=this.enteredPin+char;
           if(this.managerModalVar){
             this.applyManager(this.enteredPin)
@@ -2993,12 +3151,21 @@ export default {
           this.pinDecon=['-',
           '-',
           '-',
+          '-',
+          '-',
+          '-'];
+          this.pinAst=['-',
+          '-',
+          '-',
+          '-',
+          '-',
           '-'];
           this.enteredPin='';
         }
         else {
             var index=this.pinDecon.indexOf('-');
             this.pinDecon[index]=char;
+            this.pinAst[index]="*";
             this.enteredPin=this.enteredPin+char;
             this.$forceUpdate();
         }
@@ -3069,7 +3236,7 @@ export default {
         }
           // x.totalPrice = x.totalPrice + x.defCount;
       });
-      this.order.totalPrice = this.totalNet;
+      this.order.totalPrice = this.totalNet.toFixed(2);
       this.$forceUpdate();
     },
     changeDisc(){
@@ -3429,6 +3596,7 @@ export default {
             }
             this.customPizza.name = product.name;
             this.customPizza.half1.name = product.name;
+            this.customPizza.half1.id = product.id;
             this.customPizza.half1.is_special = product.is_special;
             this.customPizza.half1.priceBySizes = product.priceBySizes;
             this.customPizza.price = this.customPizza.price + product.priceBySizes.m / 2;
@@ -3446,6 +3614,7 @@ export default {
             this.customPizza.half2.defaultToppings = this.getRecipe(product);
             this.customPizza.name = this.customPizza.name + "/" + product.name;
             this.customPizza.half2.name = product.name;
+            this.customPizza.half2.id = product.id;
             this.customPizza.half2.is_special = product.is_special;
             this.customPizza.half2.priceBySizes = product.priceBySizes;
             this.customPizza.price = this.customPizza.price + product.priceBySizes.m / 2;
@@ -4057,7 +4226,10 @@ export default {
       localStorage.removeItem("payItem");
       localStorage.removeItem("reopenItem");
       this.calculatorModal = false;
-      this.$router.go();
+      setTimeout(() => {
+        this.overlay = false;
+        this.$router.go();
+      }, 2000);
     },
     clearCustomer(){
       this.curentCustomer = {
@@ -5660,7 +5832,7 @@ export default {
       this.order.deliveryFee = 0;
       this.deliveryFeeVar = 0;
       this.order.deliveryMethod = 'Take Out';
-      this.order.deliveryType = 'Take_out';
+      this.order.deliveryType = 'Take Out';
       if(ND === 'no'){
         // pass
       }
@@ -5847,6 +6019,8 @@ export default {
     },
     paymentConfirm() {
       this.playSound();
+      this.overlay = true;
+      // alert(this.overlay);
       this.order.customer = this.curentCustomer;
       if (this.paymentType == "cash") {
         this.confirmModal = false;
@@ -6002,8 +6176,10 @@ export default {
         axios.request({
           method: "post",
           url:
-            this.$hostname + "orders/print",
+            // this.$hostname + "orders/print",
             // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
+            this.$localServer + "orders/print",
+            
             
           headers: {
             Authorization: "Bearer " + TOKEN,
@@ -6029,9 +6205,9 @@ export default {
       axios.request({
         method: "post",
         url:
-          this.$hostname + "orders/print",
+          // this.$hostname + "orders/print",
           // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
-
+          this.$localServer + "orders/print",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -6179,6 +6355,8 @@ export default {
         // pass
       }
       else {
+        // this.checkWoltSale();
+        this.woltSale();
         this.woltModal = true;
       }
     },
@@ -6452,14 +6630,14 @@ export default {
         console.log('Order View: ', this.order);
       }
     },
-    walkinCustomer(e){
+    walkinCustomer(){
 
-      e.preventDefault();
-      this.isLoading = true
+      // e.preventDefault();
+      // this.isLoading = true
       
-      setTimeout(() => {
-      	this.isLoading = false
-      }, 1000)
+      // setTimeout(() => {
+      // 	this.isLoading = false
+      // }, 1000)
       
       this.order.customer = this.curentCustomer;
       this.order.deliveryFee = 0;
@@ -6469,17 +6647,17 @@ export default {
       
     },
     takeoutCustomer(e){
-      // if(this.curentCustomer.phone === '')
-      // {
-      //   alert('Phone field is empty!');
-      // }
-      // else {
-        e.preventDefault();
-        this.isLoading = true
+      if(this.curentCustomer.phone === '')
+      {
+        alert('Phone field is empty!');
+      }
+      else {
+        // e.preventDefault();
+        // this.isLoading = true
         
-        setTimeout(() => {
-          this.isLoading = false
-        }, 1000)
+        // setTimeout(() => {
+        //   this.isLoading = false
+        // }, 1000)
 
         this.order.customer = this.curentCustomer;
         this.order.deliveryFee = 0;
@@ -6492,19 +6670,19 @@ export default {
         // else {
         //   this.payLater();
         // }
-      // }
+      }
       
     },
    deliveryCustomer(e){
      // DELETE AFTER 
     //  if(!this.feeSaleActive){
      // DELETE AFTER 
-     e.preventDefault();
-      this.isLoading = true
+    //  e.preventDefault();
+    //   this.isLoading = true
       
-      setTimeout(() => {
-      	this.isLoading = false
-      }, 1000)
+    //   setTimeout(() => {
+    //   	this.isLoading = false
+    //   }, 1000)
 
         if(this.curentCustomer.address === '' || this.curentCustomer.phone === ''){
           alert('Adress and Phone Fields are required!');
@@ -6586,17 +6764,74 @@ export default {
         alert('3 Digit Code is required!');
       }
     },
-   woltCustomer(e){
+    woltSale() {
+      // var total;
+      this.order.items.forEach( x => {
+
+          if(x.size == 'xl'){
+            // var diff = x.totalPrice - x.price;
+            // x.diff = diff;
+            // x.totalPrice = (x.price * 0.8) + diff;
+            // total = total + (x.price * 0.2)
+            // alert(total);
+            x.woltSale = (x.price * 0.2) * x.qty;
+            // alert(x.woltSale);
+            // alert(x.woltSale);
+            // this.totalWoltSale = this.totalWoltSale + (x.price * 0.2);
+          } else {
+            x.woltSale = 0;
+          }
+
+          this.totalWoltSale = this.totalWoltSale + x.woltSale;
+        });
+    },
+  checkWoltSale() {
+    // WOLT SALE CHECK
+        this.order.items.forEach( x => {
+          // alert(x.size);
+
+          if(x.size == 'xl'){
+            var diff = x.totalPrice - x.price;
+            x.diff = diff;
+            x.totalPrice = (x.price * 0.8) + diff;
+          }
+          
+          // if(x.id == '42' || x.id == '32'){
+          //   if(x.size == 'm'){
+          //     var diff = x.totalPrice - x.price;
+          //     x.totalPrice = (x.price * 0.9) + diff;
+          //     // x.totalPrice = x.totalPrice * 0.9;
+          //   }
+          // }
+
+          // if(x.id == '40' || x.id == '31'){
+          //   if(x.size == 'xl'){
+          //     var diff = x.totalPrice - x.price;
+          //     x.totalPrice = (x.price * 0.85) + diff;
+          //     // x.totalPrice = x.totalPrice * 0.85;
+          //   }
+          // }
+        });
+        // WRITE COMMENT "WOLT SALE" IN ORDER_DATA OBJECT
+  },
+   woltCustomer(sale){
+
+    // if(sale == 'sale'){
+    //   this.checkWoltSale();
+    // }
      
-     e.preventDefault();
-      this.isLoading = true
+    //  e.preventDefault();
+    //   this.isLoading = true
       
-      setTimeout(() => {
-      	this.isLoading = false
-      }, 1000)
+    //   setTimeout(() => {
+    //   	this.isLoading = false
+    //   }, 1000)
 
    if(this.curentCustomer.code.length === 3 && this.curentCustomer.name !== '')
       {
+        if(sale == 'sale'){
+          this.checkWoltSale();
+        }
         this.changeDefPrice();
         this.order.customer = this.curentCustomer;
         this.order.deliveryType = 'Wolt';
@@ -6607,22 +6842,27 @@ export default {
         this.woltModal = false;
 
         // WOLT SALE CHECK
+
         // this.order.items.forEach( x => {
-        //   if(x.id == '42' || x.id == '32'){
-        //     if(x.size == 'm'){
-        //       var diff = x.totalPrice - x.price;
-        //       x.totalPrice = (x.price * 0.9) + diff;
-        //       // x.totalPrice = x.totalPrice * 0.9;
-        //     }
-        //   }
-        //   if(x.id == '40' || x.id == '31'){
-        //     if(x.size == 'xl'){
-        //       var diff = x.totalPrice - x.price;
-        //       x.totalPrice = (x.price * 0.85) + diff;
-        //       // x.totalPrice = x.totalPrice * 0.85;
-        //     }
-        //   }
+        //   alert(x.size);
+          
+          // if(x.id == '42' || x.id == '32'){
+          //   if(x.size == 'm'){
+          //     var diff = x.totalPrice - x.price;
+          //     x.totalPrice = (x.price * 0.9) + diff;
+          //     // x.totalPrice = x.totalPrice * 0.9;
+          //   }
+          // }
+
+          // if(x.id == '40' || x.id == '31'){
+          //   if(x.size == 'xl'){
+          //     var diff = x.totalPrice - x.price;
+          //     x.totalPrice = (x.price * 0.85) + diff;
+          //     // x.totalPrice = x.totalPrice * 0.85;
+          //   }
+          // }
         // });
+
         // WRITE COMMENT "WOLT SALE" IN ORDER_DATA OBJECT
 
         this.payWolt();
@@ -6681,7 +6921,7 @@ ul {
     display: inline-block;
     font-family: monospace;
     font-size: 200%;
-    padding: 10px 24px;
+    padding: 10px 16px;
     background: #E6BC3B;
     color: black;
     margin-right: 1px;

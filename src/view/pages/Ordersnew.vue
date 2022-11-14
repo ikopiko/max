@@ -8,11 +8,11 @@
     </v-alert>
     <v-row no-gutters>
         <v-col cols="12" sm="6" md="4"  class="vCard100 ">
-            <v-card class="pa-2 orderScroll" outlined >
+            <v-card class="pa-2 orderScroll" outlined v-if="showOrderComponent">
                 <i class="material-icons md-36 topcorner" @click="clearOrder()" v-if="showOrderComponent">close</i>
                 <ul class="inner">
                     <li>
-                        <orderList :orderProp="order" v-if="showOrderComponent" :key="orderChange"/>
+                        <orderList :orderProp="order" :key="orderChange"/>
                     </li>
                     <li class="selecti" v-if="!limited">
                         <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Change Status"></v-select>
@@ -56,9 +56,10 @@
 
                             <v-data-table v-model="selected" :search="search" :headers="headers" :items="filteredOrders" :items-per-page="itemsPerPage" item-key="order_id"  class="elevation-1" @page-count="pageCount = $event">
                                 <template v-slot:item="row">
-                                    <tr @click="onButtonClick(row.item)">
+                                    <tr @click="onButtonClick(row.item)" :class="{selectedRow : row.item.id == selectedOrder.id}">
                                         <td>{{Number(row.item.id)}}</td>
                                         <td>{{row.item.order_data.paymentType}}</td>
+                                        <td>{{row.item.opay_status}}</td>
                                         <td>{{ (Number(row.item.order_data.totalPrice) - Number(row.item.order_data.discPrice)).toFixed(2) }}</td>
                                         <td>{{ row.item.createTime }}</td>
                                         <td>{{row.item.order_data.deliveryMethod}}</td>
@@ -77,9 +78,8 @@
                 </v-tabs>
                 <v-row>
                     <!-- <v-btn elevation='2' dark large class="mx-2 my-2" v-for="status in orderStatuses" :key="status" @click="changeOrder(status)">
-                {{ status.status_name }}
-              </v-btn> -->
-
+                      {{ status.status_name }}
+                    </v-btn> -->
                     <v-select :items="orderStatuses" v-on:change="changeOrder" item-text="status_name" item-value="id" clearable label="Filter Order"></v-select>
                 </v-row>
             </v-card>
@@ -136,7 +136,6 @@
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
-
                 <v-btn color="blue darken-1" text x-large @click="wasteDialog = false">
                     Close
                 </v-btn>
@@ -150,10 +149,15 @@
 </template>
 
 <style scoped>
+.selectedRow {
+    /* background-color:yellow; */
+    font-weight: bold;
+}
 .vCard100 {
     width: 100%;
 }
 .orderScroll {
+  /* position: fixed; */
   overflow: scroll;
 }
 .v-sheet.v-card
@@ -239,6 +243,7 @@ import axios from 'axios';
         headers: [
           { text: "ID", value: "id" },
           { text: "Payment Type", value: "order_data.paymentType" },
+          { text: "Opay Status", value: "order_data.opay_status" },
           { text: "Total Due", value: "order_data.totalPrice" },
           { text: "Time", value: "createTime" },
           { text: "Source", value: "source" },
@@ -413,8 +418,9 @@ import axios from 'axios';
         axios.request({
           method: "post",
           url:
-            this.$hostname + "orders/print",
+            // this.$hostname + "orders/print",
             // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
+            this.$localServer + "orders/print",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },

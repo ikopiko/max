@@ -1083,7 +1083,10 @@
                             Name
                           </th>
                           <th class="text-left">
-                            Difference
+                            Difference Cash
+                          </th>
+                          <th class="text-left">
+                            Difference Card
                           </th>
                           <th class="text-left">
                             Comment
@@ -1100,7 +1103,8 @@
                         >
                           <td v-if="item.driver_id == 0">{{ item.pos_name }}</td>
                           <td v-if="item.pos_id == null">{{ item.username }}</td>
-                          <td>{{ item.difference }}</td>
+                          <td>{{ item.diff_cash }}</td>
+                          <td>{{ item.diff_card }}</td>
                           <td>{{ item.comment }}</td>
                           <td>{{ item.created_at }}</td>
                         </tr>
@@ -1319,6 +1323,9 @@
                             Amount
                           </th>
                           <th class="text-left">
+                            tip
+                          </th>
+                          <th class="text-left">
                             Time
                           </th>
                         </tr>
@@ -1331,6 +1338,7 @@
                           <td>{{ item.name }}</td>
                           <td>{{ item.action }}</td>
                           <td>{{ item.amount }}</td>
+                          <td>{{ item.tip }}</td>
                           <td>{{ item.created_at }}</td>
                         </tr>
                       </tbody>
@@ -1710,7 +1718,6 @@ export default {
             this.detailedInfo.forEach(x => {
               const date = new Date(x.created_at);
               //x.created_time = date.getUTCFullYear() + "-" + date.getHours() + ":" + date.getMinutes();
-
               if(x.amount < 0 && x.action != 'New order'){
                 x.payment_method = 'Drop balance';
               }
@@ -2412,26 +2419,7 @@ export default {
           }
       },
 
-      addBalance() {
-        const TOKEN = this.loggedUser.token;
-        var bodyFormData = new FormData();
-        bodyFormData.set("driver_id", this.filteredDriver.id);
-        bodyFormData.set("amount", this.balance);
 
-        axios
-          .request({
-            method: "post",
-            url:
-              "http://188.169.16.186:8082/ronny/ronny/rest/web/index.php?r=v1/manager/add-balance-to-driver",
-            headers: {
-              Authorization: "Bearer " + TOKEN,
-            },
-            data: bodyFormData,
-          })
-          .then((response) => {
-            console.log("added to API ");
-          });
-      },
   },
 };
 </script>

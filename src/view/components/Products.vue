@@ -130,7 +130,7 @@ export default {
       return user_token;
     },
     send(product){
-        this.$emit('onProductSelect', product);
+      this.$emit('onProductSelect', product);
     },
     sendDoneOrder(){
       this.$emit('onDoneOrder');
