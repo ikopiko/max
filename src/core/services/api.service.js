@@ -12,17 +12,19 @@ const ApiService = {
     Vue.use(VueAxios, axios);
     Vue.axios.defaults.baseURL =
 
-      "http://test.ronnys.info/rest/web/index.php?r=";  // TEST
+      // "http://test.ronnys.info/rest/web/index.php?r=";  // TEST  
+
+      'http://posapi.ronnyspizza.grena.ge/rest/web/index.php?r=';  // POS MERGE GRENA
 
       // "http://new.ronnys.info/rest/web/index.php?r=";  // POS MERGE
 
-      // "http://109.172.176.98:8082/ronny/rest/web/index.php?r=";  // DIGOMI OUT
+      // "http://192.168.11.250/ronny/rest/web/index.php?r=";  // DIGOMI LOCAL
       
-      // "http://178.134.12.106:8082/ronny/rest/web/index.php?r=";  // SABURTALO OUT
+      // "http://192.168.13.250/ronny/rest/web/index.php?r=";  // SABURTALO LOCAL
 
-      // "http://94.43.92.102:8082/ronny/rest/web/index.php?r=";  // VAKE OUT
+      // "http://192.168.14.250/ronny/rest/web/index.php?r=";  // VAKE LOCAL
       
-      // "http://178.134.47.222:8082/ronny/rest/web/index.php?r=";  // GLDANI OUT
+      // "http://192.168.12.250/ronny/rest/web/index.php?r=";  // GLDANI LOCAL
 
       // "http://192.168.1.124/ronny/rest/web/index.php?r=";  // LOCAL
 

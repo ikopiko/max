@@ -47,51 +47,55 @@ ApiService.init();
 
 // Vue.prototype.$hostname = "http://192.168.1.124/ronny/rest/web/index.php?r=v1/";  // LOCAL
 
-// Vue.prototype.$hostname = "http://109.172.176.98:8082/ronny/rest/web/index.php?r=v1/";  // DIGOMI OUT
+// Vue.prototype.$hostname = "http://192.168.11.250/ronny/rest/web/index.php?r=v1/";  // DIGOMI LOCAL
 
-// Vue.prototype.$hostname = "http://178.134.12.106:8082/ronny/rest/web/index.php?r=v1/";  // SABURTALO OUT
+// Vue.prototype.$hostname = "http://192.168.13.250/ronny/rest/web/index.php?r=v1/";  // SABURTALO LOCAL
 
-// Vue.prototype.$hostname = "http://94.43.92.102:8082/ronny/rest/web/index.php?r=v1/";  // VAKE OUT
+// Vue.prototype.$hostname = "http://192.168.14.250/ronny/rest/web/index.php?r=v1/";  // VAKE LOCAL
 
-// Vue.prototype.$hostname = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=v1/";  // GLDANI OUT
+// Vue.prototype.$hostname = "http://192.168.12.250/ronny/rest/web/index.php?r=v1/";  // GLDANI LOCAL
 
 // Vue.prototype.$hostname = "http://test.ronnys.info/rest/web/index.php?r=v1/";  // TEST
 
-Vue.prototype.$hostname = "http://new.ronnys.info/rest/web/index.php?r=v1/";  // POS MERGE
+// Vue.prototype.$hostname = "http://new.ronnys.info/rest/web/index.php?r=v1/";  // POS MERGE
+
+Vue.prototype.$hostname = "http://posapi.ronnyspizza.grena.ge/rest/web/index.php?r=v1/";  // POS MERGE GRENA
 
 
 
 // Vue.prototype.$authHostName = "http://192.168.1.124/ronny/rest/web/index.php?r=auth";  // LOCAL
 
-// Vue.prototype.$authHostName = "http://109.172.176.98:8082/ronny/rest/web/index.php?r=auth";  // DIGOMI OUT
+// Vue.prototype.$authHostName = "http://192.168.11.250/ronny/rest/web/index.php?r=auth";  // DIGOMI LOCAL
 
-// Vue.prototype.$authHostName = "http://178.134.12.106:8082/ronny/rest/web/index.php?r=auth";  // SABURTALO OUT
+// Vue.prototype.$authHostName = "http://192.168.13.250/ronny/rest/web/index.php?r=auth";  // SABURTALO LOCAL
 
-// Vue.prototype.$authHostName = "http://94.43.92.102:8082/ronny/rest/web/index.php?r=auth";  // VAKE OUT
+// Vue.prototype.$authHostName = "http://192.168.14.250/ronny/rest/web/index.php?r=auth";  // VAKE LOCAL
 
-// Vue.prototype.$authHostName = "http://178.134.47.222:8082/ronny/rest/web/index.php?r=auth";  // GLDANI OUT
+// Vue.prototype.$authHostName = "http://192.168.12.250/ronny/rest/web/index.php?r=auth";  // GLDANI LOCAL
 
 // Vue.prototype.$authHostName = "http://test.ronnys.info/rest/web/index.php?r=auth";  // TEST
 
-Vue.prototype.$authHostName = "http://new.ronnys.info/rest/web/index.php?r=auth";  // POS MERGE
+// Vue.prototype.$authHostName = "http://new.ronnys.info/rest/web/index.php?r=auth";  // POS MERGE
+
+Vue.prototype.$authHostName = "http://posapi.ronnyspizza.grena.ge/rest/web/index.php?r=auth";  // POS MERGE GRENA
 
 // Physical Servers
 
-Vue.prototype.$localServer = "http://192.168.11.250/ronny/rest/web/index.php?r=v1/";  // DIGOMI 192.168.11.250
+Vue.prototype.$digomiServer = "http://192.168.11.250/ronny/rest/web/index.php?r=v1/";  // DIGOMI 192.168.11.250
 
-Vue.prototype.$localServerAuth = "http://192.168.11.250/ronny/rest/web/index.php?r=auth";  // DIGOMI 192.168.11.250
+Vue.prototype.$digomiServerAuth = "http://192.168.11.250/ronny/rest/web/index.php?r=auth";  // DIGOMI 192.168.11.250
 
-// Vue.prototype.$localServer = "http://192.168.12.250/ronny/rest/web/index.php?r=v1/";  // GLDANI 192.168.12.250  
+Vue.prototype.$gldaniServer = "http://192.168.12.250/ronny/rest/web/index.php?r=v1/";  // GLDANI 192.168.12.250  
 
-// Vue.prototype.$localServerAuth = "http://192.168.12.250/ronny/rest/web/index.php?r=auth";  // GLDANI 192.168.12.250  
+Vue.prototype.$gldaniServerAuth = "http://192.168.12.250/ronny/rest/web/index.php?r=auth";  // GLDANI 192.168.12.250  
 
-// Vue.prototype.$localServer = "http://192.168.13.250/ronny/rest/web/index.php?r=v1/";  // SABURTALO 192.168.13.250
+Vue.prototype.$saburtaloServer = "http://192.168.13.250/ronny/rest/web/index.php?r=v1/";  // SABURTALO 192.168.13.250
 
-// Vue.prototype.$localServerAuth = "http://192.168.13.250/ronny/rest/web/index.php?r=auth";  // SABURTALO 192.168.13.250
+Vue.prototype.$saburtaloServerAuth = "http://192.168.13.250/ronny/rest/web/index.php?r=auth";  // SABURTALO 192.168.13.250
 
-// Vue.prototype.$localServer = "http://192.168.14.250/ronny/rest/web/index.php?r=v1/";  // VAKE  192.168.14.250
+Vue.prototype.$vakeServer = "http://192.168.14.250/ronny/rest/web/index.php?r=v1/";  // VAKE  192.168.14.250
 
-// Vue.prototype.$localServerAuth = "http://192.168.14.250/ronny/rest/web/index.php?r=auth";  // VAKE  192.168.14.250
+Vue.prototype.$vakeServerAuth = "http://192.168.14.250/ronny/rest/web/index.php?r=auth";  // VAKE  192.168.14.250
 
 // Change It to API.SERVICE.JS ALSO
 

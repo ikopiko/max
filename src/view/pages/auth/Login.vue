@@ -184,7 +184,10 @@ export default {
     name: "login",
     data() {
         return {
+            ipCheck: false,
             getMac: null,
+            macURL: null,
+            localIP: null,
             // Remove this dummy login info
             form: {
                 email: "",
@@ -226,18 +229,109 @@ export default {
             this.logKey(e);
         });
 
+        // this.getIP();
+        
+        // var server = "192.168.11.250" // DIGOMI
+        // var server = "192.168.12.250" // GLDANI
+        // var server = "192.168.13.250" // SABURTALO
+        var server = "192.168.14.250" // VAKE 
+        
+        this.$store.dispatch("getLocalIP", server);
+
         axios.request({
+            method: "post",
+            url:
+            // this.$hostname + "orders/print",
+            // "http://192.168.1.124/ronny/rest/web/index.php?r=auth/get-mac",
+            this.localAuthIP + "/get-mac",
+            }).then((response) => {
+            console.log("GET MAC RESPONSE: "+ response.data);
+            this.getMac = response.data;
+        });
+    },
+    methods: {
+        getIP(){
+            axios.request({
                 method: "post",
                 url:
                 // this.$hostname + "orders/print",
                 // "http://192.168.1.124/ronny/rest/web/index.php?r=auth/get-mac",
-                this.$localServerAuth + "/get-mac",
+                this.$digomiServerAuth + "/get-ip",
             }).then((response) => {
-                console.log("GET MAC RESPONSE: "+ response.data);
-                this.getMac = response.data;
+                console.log("GET IP RESPONSE: "+ response.data);
+
+                var temp = response.data;
+                temp = temp.substr(0, temp.lastIndexOf("."));
+
+                this.localIP = temp + '.250';
+                this.$store.dispatch("getLocalIP", this.localIP);
+                if(response.data != null){
+                    this.ipCheck = true;
+                }
             });
-    },
-    methods: {
+
+            if(this.ipCheck){
+                axios.request({
+                method: "post",
+                url:
+                // this.$hostname + "orders/print",
+                // "http://192.168.1.124/ronny/rest/web/index.php?r=auth/get-mac",
+                this.$gldaniServerAuth + "/get-ip",
+            }).then((response) => {
+                console.log("GET IP RESPONSE: "+ response.data);
+
+                var temp = response.data;
+                temp = temp.substr(0, temp.lastIndexOf("."));
+
+                this.localIP = temp + '.250';
+                this.$store.dispatch("getLocalIP", this.localIP);
+                if(response.data != null){
+                    this.ipCheck = true;
+                }
+            });
+            }
+
+            if(this.ipCheck){
+                axios.request({
+                method: "post",
+                url:
+                // this.$hostname + "orders/print",
+                // "http://192.168.1.124/ronny/rest/web/index.php?r=auth/get-mac",
+                this.$saburtaloServerAuth + "/get-ip",
+            }).then((response) => {
+                console.log("GET IP RESPONSE: "+ response.data);
+
+                var temp = response.data;
+                temp = temp.substr(0, temp.lastIndexOf("."));
+
+                this.localIP = temp + '.250';
+                this.$store.dispatch("getLocalIP", this.localIP);
+                if(response.data != null){
+                    this.ipCheck = true;
+                }
+            });
+            }
+            if(this.ipCheck){
+                axios.request({
+                method: "post",
+                url:
+                // this.$hostname + "orders/print",
+                // "http://192.168.1.124/ronny/rest/web/index.php?r=auth/get-mac",
+                this.$vakeServerAuth + "/get-ip",
+            }).then((response) => {
+                console.log("GET IP RESPONSE: "+ response.data);
+
+                var temp = response.data;
+                temp = temp.substr(0, temp.lastIndexOf("."));
+
+                this.localIP = temp + '.250';
+                this.$store.dispatch("getLocalIP", this.localIP);
+                if(response.data != null){
+                    this.ipCheck = true;
+                }
+            });
+            }
+        },
         validateState(name) {
             const {
                 $dirty,
@@ -383,7 +477,7 @@ export default {
 
             // let mac = "BLA";
 
-            this.getMac = 'd4:c9:ef:dc:4c:a5';  // VAKE NEW TEST
+            // this.getMac = 'd4:c9:ef:dc:4c:a5';  // VAKE NEW TEST
 
             // this.getMac = 'D4:C9:EF:D5:6D:D2';  // SABURTALO NEW TEST
 
@@ -443,7 +537,13 @@ export default {
         ),
         pinSync() {
             return this.pinDecon;
-        }
+        },
+        localAuthIP() {
+        return this.$store.getters.getLocalAuthURL;
+        },
+        localApiIP() {
+        return this.$store.getters.getLocalApiURL;
+      },
     }
 };
 </script>

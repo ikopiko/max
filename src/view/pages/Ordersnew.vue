@@ -2,159 +2,181 @@
 /* eslint-disable */
 </script>
 <template>
-<v-container data-app>
-    <v-alert v-model="printError" color="pink" dark border="top" transition="scale-transition" dismissible>
-        Was unable to print!
-    </v-alert>
-    <v-row no-gutters>
-        <v-col cols="12" sm="6" md="4"  class="vCard100 ">
-            <v-card class="pa-2 orderScroll" outlined v-if="showOrderComponent">
-                <i class="material-icons md-36 topcorner" @click="clearOrder()" v-if="showOrderComponent">close</i>
-                <ul class="inner">
-                    <li>
-                        <orderList :orderProp="order" :key="orderChange"/>
-                    </li>
-                    <li class="selecti" v-if="!limited">
-                        <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Change Status"></v-select>
-                    </li>
-                </ul>
-                <ul class="inner">
-                    <li>
-                        <v-btn v-if="showOrderComponent && !limited" @click="updateOrder()">Change </v-btn>
-                    </li>
-                </ul>
-                <ul class="inner">
-                    <li>
-                        <v-btn v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="re_open(selectedOrder)">
-                            <v-icon dark>open_in_new</v-icon>
-                        </v-btn>
-                        <v-btn v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="rePrint(selectedOrder)">
-                                <v-icon dark>print</v-icon>
+    <v-container data-app>
+        <v-alert v-model="printError" color="pink" dark border="top" transition="scale-transition" dismissible>
+            Was unable to print!
+        </v-alert>
+        <v-row no-gutters>
+            <v-col cols="12" sm="6" md="4"  class="vCard100 ">
+                <v-card class="pa-2 orderScroll" outlined v-if="showOrderComponent">
+                    <i class="material-icons md-36 topcorner" @click="clearOrder()" v-if="showOrderComponent">close</i>
+                    <ul class="inner">
+                        <li>
+                            <orderList :orderProp="order" :key="orderChange"/>
+                        </li>
+                        <li class="selecti" v-if="!limited">
+                            <v-select v-if="showOrderComponent" :items="orderStatuses" v-model="statusModel" item-text="status_name" label="Change Status"></v-select>
+                        </li>
+                    </ul>
+                    <ul class="inner">
+                        <li>
+                            <v-btn v-if="showOrderComponent && !limited" @click="updateOrder()">Change </v-btn>
+                        </li>
+                    </ul>
+                    <ul class="inner">
+                        <li>
+                            <v-btn v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="re_open(selectedOrder)">
+                                <v-icon dark>open_in_new</v-icon>
                             </v-btn>
-                        <!-- <v-btn v-if="selectedOrder.payment_method_id == 4" @click="payOrder(selectedOrder)">Pay Order</v-btn> -->
-                    </li>
-                </ul>
- 
-            </v-card>
-        </v-col>
-        <v-col cols="6" md="8" class="vCard100">
-            <v-card class="pa-2" outlined tile>
-                <v-menu v-model="menu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-text-field v-model="date" label="Select Date" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
-                    </template>
-                    <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
-                </v-menu>
-                <v-tabs v-model="tab" fixed-tabs background-color="primary" dark>
-                    <v-tab v-for="(item, index) in items" :key="index" @click="getTab(item)">
-                        {{ item.tab }}
-                    </v-tab>
+                            <v-btn v-if="showOrderComponent" class="mx-2" fab dark small color="green" @click="rePrint(selectedOrder)">
+                                    <v-icon dark>print</v-icon>
+                                </v-btn>
+                            <!-- <v-btn v-if="selectedOrder.payment_method_id == 4" @click="payOrder(selectedOrder)">Pay Order</v-btn> -->
+                        </li>
+                    </ul>
 
-                    <v-tabs-items v-model="tab">
-                        <v-tab-item v-for="(item, index) in items" :key="index">
-                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+                </v-card>
+            </v-col>
+            <v-col cols="6" md="8" class="vCard100">
+                <v-card class="pa-2" outlined tile>
+                    <v-menu v-model="menu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field v-model="date" label="Select Date" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+                        </template>
+                        <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
+                    </v-menu>
+                    <v-tabs v-model="tab" fixed-tabs background-color="primary" dark>
+                        <v-tab v-for="(item, index) in items" :key="index" @click="getTab(item)">
+                            {{ item.tab }}
+                        </v-tab>
 
-                            <v-data-table v-model="selected" :search="search" :headers="headers" :items="filteredOrders" :items-per-page="itemsPerPage" item-key="order_id"  class="elevation-1" @page-count="pageCount = $event">
-                                <template v-slot:item="row">
-                                    <tr @click="onButtonClick(row.item)" :class="{selectedRow : row.item.id == selectedOrder.id}">
-                                        <td>{{Number(row.item.id)}}</td>
-                                        <td>{{row.item.order_data.paymentType}}</td>
-                                        <td>{{row.item.opay_status}}</td>
-                                        <td>{{ (Number(row.item.order_data.totalPrice) - Number(row.item.order_data.discPrice)).toFixed(2) }}</td>
-                                        <td>{{ row.item.createTime }}</td>
-                                        <td>{{row.item.order_data.deliveryMethod}}</td>
-                                        <td>{{row.item.order_data.pos_id }}</td>
-                                        <td>{{row.item.order_data.customer.code}}</td>
-                                        <td>{{row.item.order_data.customer.address}}</td>
-                                        <td>{{row.item.order_data.customer.name}}</td>
-                                        <td>{{row.item.order_data.customer.phone}}</td>
-                                        <!-- <td>{{ Number(row.item.order_data.discPrice).toFixed(2) }}</td> -->
-                                        <!-- <td v-if="!row.item.order_data.discountAmount">{{ (Number(row.item.order_data.totalPrice) - (Number(row.item.order_data.discPrice)/ 100 * Number(row.item.order_data.discount))).toFixed(2) }}</td> -->
-                                    </tr>
-                                </template>
-                            </v-data-table>
-                        </v-tab-item>
-                    </v-tabs-items>
-                </v-tabs>
-                <v-row>
-                    <!-- <v-btn elevation='2' dark large class="mx-2 my-2" v-for="status in orderStatuses" :key="status" @click="changeOrder(status)">
-                      {{ status.status_name }}
-                    </v-btn> -->
-                    <v-select :items="orderStatuses" v-on:change="changeOrder" item-text="status_name" item-value="id" clearable label="Filter Order"></v-select>
-                </v-row>
-            </v-card>
-        </v-col>
-    </v-row>
+                        <v-tabs-items v-model="tab">
+                            <v-tab-item v-for="(item, index) in items" :key="index">
+                                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
 
-    <v-bottom-sheet v-model="sheet">
-      <v-sheet
-        class="text-center"
-        height="200px"
-      >
-        <v-btn
-          class="mt-6"
+                                <v-data-table dense v-model="selected" :search="search" :headers="headers" :page.sync="page" hide-default-footer :items="filteredOrders" :items-per-page="itemsPerPage" item-key="order_id" @page-count="pageCount = $event">
+                                    <template v-slot:item="row">
+                                        <tr @click="onButtonClick(row.item)" :class="{selectedRow : row.item.id == selectedOrder.id}">
+                                            <td>{{Number(row.item.id)}}</td>
+                                            <td>{{row.item.order_data.paymentType}}</td>
+                                            <td>{{row.item.opay_status}}</td>
+                                            <td>{{ (Number(row.item.order_data.totalPrice) - Number(row.item.order_data.discPrice)).toFixed(2) }}</td>
+                                            <td>{{ row.item.createTime }}</td>
+                                            <td>{{row.item.order_data.deliveryMethod}}</td>
+                                            <td>{{row.item.order_data.pos_id }}</td>
+                                            <td>{{row.item.order_data.customer.code}}</td>
+                                            <td>{{row.item.order_data.customer.address}}</td>
+                                            <td>{{row.item.order_data.customer.name}}</td>
+                                            <td>{{row.item.order_data.customer.phone}}</td>
+                                            <!-- <td>{{ Number(row.item.order_data.discPrice).toFixed(2) }}</td> -->
+                                            <!-- <td v-if="!row.item.order_data.discountAmount">{{ (Number(row.item.order_data.totalPrice) - (Number(row.item.order_data.discPrice)/ 100 * Number(row.item.order_data.discount))).toFixed(2) }}</td> -->
+                                        </tr>
+                                    </template>
+                                </v-data-table>
+                                <v-pagination
+                                  v-model="page"
+                                  :length="pageCount"
+                                ></v-pagination>
+                                <v-text-field
+                                :value="itemsPerPage"
+                                :label="(`Items per page. Items Count: ` + filteredOrders.length)"
+                                type="number"
+                                min="1"
+                                max="20"
+                                @input="checkIPP($event)"
+                                ></v-text-field>
+                                <!-- <v-select
+                                :items="selectItems"
+                                :value="itemsPerPage"
+                                :menu-props="{ top: true, offsetY: true }"
+                                :label="(`Items per page. Items Count: ` + filteredOrders.length)"
+                                type="number"
+                                min="1"
+                                max="20"
+                                @input="checkIPP($event)"
+                              ></v-select> -->
+                            </v-tab-item>
+                        </v-tabs-items>
+                    </v-tabs>
+                    <v-row>
+                        <!-- <v-btn elevation='2' dark large class="mx-2 my-2" v-for="status in orderStatuses" :key="status" @click="changeOrder(status)">
+                          {{ status.status_name }}
+                        </v-btn> -->
+                        <v-select :items="orderStatuses" v-on:change="changeOrder" item-text="status_name" item-value="id" clearable label="Filter Order"></v-select>
+                    </v-row>
+                </v-card>
+            </v-col>
+        </v-row>
+
+        <v-bottom-sheet v-model="sheet">
+          <v-sheet
+            class="text-center"
+            height="200px"
+          >
+            <v-btn
+              class="mt-6"
+              text
+              color="red"
+              @click="sheet = !sheet"
+            >
+              close
+            </v-btn>
+            <div class="py-3">
+              <h1>
+                {{ errorText }}
+              </h1>
+            </div>
+          </v-sheet>
+        </v-bottom-sheet>
+
+        <v-alert
+          v-model="alertSuccess"
+          dense
           text
-          color="red"
-          @click="sheet = !sheet"
+          type="success"
         >
-          close
-        </v-btn>
-        <div class="py-3">
-          <h1>
-            {{ errorText }}
-          </h1>
-        </div>
-      </v-sheet>
-    </v-bottom-sheet>
+          <!-- <h1>{{ errorText }}</h1> -->
+          {{ errorText }}
+        </v-alert>
+        <v-alert
+          v-model="alertError"
+          dense
+          border="left"
+          type="warning"
+        >
+          {{ errorText }}
+        </v-alert>
 
-    <v-alert
-      v-model="alertSuccess"
-      dense
-      text
-      type="success"
-    >
-      <!-- <h1>{{ errorText }}</h1> -->
-      {{ errorText }}
-    </v-alert>
-    <v-alert
-      v-model="alertError"
-      dense
-      border="left"
-      type="warning"
-    >
-      {{ errorText }}
-    </v-alert>
-
-    <v-dialog v-model="wasteDialog" scrollable max-width="500px">
-        <v-card>
-            <v-card-title>Select Waste Item</v-card-title>
-            <v-divider></v-divider>
-            <v-card-text style="height: 400px;">
-                <v-checkbox v-for="(item, index) in selectedOrderItems" :key="index" v-model="selectedWaste" :label="item.name+' : '+item.price" :value="item"></v-checkbox>
+        <v-dialog v-model="wasteDialog" scrollable max-width="500px">
+            <v-card>
+                <v-card-title>Select Waste Item</v-card-title>
                 <v-divider></v-divider>
-                <v-textarea clearable clear-icon="mdi-close-circle" label="Comment" v-model="wasteComment"></v-textarea>
-            </v-card-text>
-            <v-divider></v-divider>
-            <v-card-actions>
-                <v-btn color="blue darken-1" text x-large @click="wasteDialog = false">
-                    Close
-                </v-btn>
-                <v-btn color="blue darken-1" x-large text @click="wasteOrder()">
-                    Done
-                </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
-</v-container>
+                <v-card-text style="height: 400px;">
+                    <v-checkbox v-for="(item, index) in selectedOrderItems" :key="index" v-model="selectedWaste" :label="item.name+' : '+item.price" :value="item"></v-checkbox>
+                    <v-divider></v-divider>
+                    <v-textarea clearable clear-icon="mdi-close-circle" label="Comment" v-model="wasteComment"></v-textarea>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                    <v-btn color="blue darken-1" text x-large @click="wasteDialog = false">
+                        Close
+                    </v-btn>
+                    <v-btn color="blue darken-1" x-large text @click="wasteOrder()">
+                        Done
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </v-container>
 </template>
 
 <style scoped>
 .selectedRow {
-    /* background-color:yellow; */
-    font-weight: bold;
+  /* background-color:yellow; */
+  font-weight: bold;
 }
 .vCard100 {
-    width: 100%;
+  width: 100%;
 }
 .orderScroll {
   /* position: fixed; */
@@ -162,7 +184,7 @@
 }
 .v-sheet.v-card
 {
-  height: 100%;
+  /* height: 100%; */
 }
 ul.inner li,
 ul.bottomInner li {
@@ -181,6 +203,7 @@ import axios from 'axios';
   export default {
     data () {
       return {
+        selectItems: [5, 10, 15, 20],
         orderChange: 0,
         orderFunctions : ['Reopen'],
         date: new Date(),
@@ -259,6 +282,9 @@ import axios from 'axios';
       this.timer = setInterval(this.$forceUpdate(), 1000)
     },
     computed: {
+      localApiIP() {
+        return this.$store.getters.getLocalApiURL;
+      },
       filteredOrdersComputed() {
         this.orders.forEach(x => {
             x.order_data = JSON.parse(x.order_data);
@@ -383,6 +409,12 @@ import axios from 'axios';
         orderList,
     },
     watch: {
+    itemsPerPage(val){
+      console.log(val.length());
+      if(val === null){
+        alert('BLA');
+      }
+    },
     date(val){
       this.updateOrdersDate(val);
     },
@@ -391,6 +423,12 @@ import axios from 'axios';
     },
   },
     methods: {
+      checkIPP(event){
+        this.itemsPerPage = parseInt(event, 10);
+        if(isNaN(this.itemsPerPage)){
+          this.itemsPerPage = 0;
+        }
+      },
       addZeroes(num) {
       return num.toLocaleString('en', {
         useGrouping: false,
@@ -420,7 +458,7 @@ import axios from 'axios';
           url:
             // this.$hostname + "orders/print",
             // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
-            this.$localServer + "orders/print",
+            this.localApiIP + "orders/print",
           headers: {
             Authorization: "Bearer " + TOKEN,
           },
@@ -774,7 +812,7 @@ import axios from 'axios';
               this.filteredOrders = this.orders.filter((x) => x.order_data.isFuture && x.status != 10);
             }
             else if(tab.content === 'takeout'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Take Out" && x.status != 10);
+              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Take Out" || x.order_data.deliveryMethod == "take_out" && x.status != 10);
             }
             this.$forceUpdate();
         },

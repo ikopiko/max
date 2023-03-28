@@ -2,10 +2,7 @@
 /* eslint-disable */
 </script>
 <template>
-<v-app>
-  <v-container >
-
-
+  <v-container data-app>
     <v-overlay
       :absolute="absolute"
       :opacity="opacity"
@@ -68,7 +65,7 @@
             </v-card>
             <div class="col-md-2 col-sm-12" >
               In Drivers
-              <v-card v-for="driver in availableDrivers" :key="driver.id"
+              <v-card v-for="driver in availableDrivers" :key="driver.id" style='z-index:1;'
                 class="mx-auto my-3" :class="{ active : activeDriver == driver.id }" color="#46BDF2" light max-width="200" @click="selectDriver(driver)" @dblclick="double()">
                   <v-card-title class="title font-weight-bold">
                     {{ driver.username }}
@@ -260,6 +257,7 @@
         <v-dialog
           v-model="editList"
           width="600"
+          style='z-index:20001;'
         >
           <v-card>
             <v-card-text>
@@ -448,7 +446,6 @@
           </v-sheet>
         </v-bottom-sheet>
   </v-container>
-</v-app>
 </template>
 
 <script>
@@ -957,80 +954,91 @@ export default {
             this.$forceUpdate();
         },
         driverOut(){
-          if(this.selectedOrders[0].status == '5' && this.selectedDriver.in_way == false){
-            this.overlay = true;
-            var orderIDs = [];
-            this.selectedOrders.forEach(x => {
-               orderIDs.push(x.id);
-            });
-            const TOKEN = this.loggedUser.token;
-            var bodyFormData = new FormData();
-            bodyFormData.set("order_id", orderIDs);
-            bodyFormData.set("driver_id", this.selectedDriver.id);
+          // alert(Object.keys(this.selectedDriver).length)
+          if(Object.keys(this.selectedDriver).length != 0){
 
-            axios
-            .request({
-                method: "post",
-                url:
-                this.$hostname + "manager/attach-order-to-driver",
-                headers: {
-                Authorization: "Bearer " + TOKEN,
-                },
-                data: bodyFormData,
-            })
-            .then((response) => {
-              if(response.is_error){
-                  console.log(response.error_message);
-              }
-                this.orders = response.data.data;
-                this.selectedOrders = [];
-                console.log("orders data: ", response.data.data);
-            });
+            if(this.selectedOrders[0].status == '5' && this.selectedDriver.in_way == false){
+              this.overlay = true;
+              var orderIDs = [];
+              this.selectedOrders.forEach(x => {
+                orderIDs.push(x.id);
+              });
+              const TOKEN = this.loggedUser.token;
+              var bodyFormData = new FormData();
+              bodyFormData.set("order_id", orderIDs);
+              bodyFormData.set("driver_id", this.selectedDriver.id);
 
-            var statusFormData = new FormData();
-            statusFormData.set("order_status", 'in_delivery');
-            statusFormData.set("id", this.selectedOrder.id);
-
-            axios
+              axios
               .request({
-                method: "post",
-                url:
-                  this.$hostname + "orders/change-status",
-                headers: {
+                  method: "post",
+                  url:
+                  this.$hostname + "manager/attach-order-to-driver",
+                  headers: {
                   Authorization: "Bearer " + TOKEN,
-                },
-                data: statusFormData,
+                  },
+                  data: bodyFormData,
               })
               .then((response) => {
-                setTimeout(() => {
-                    this.overlay = false;
-                  }, 5000);
-                if(response.data.is_error){
-                  console.log('Status Change Error: ', response.data.is_error);
+                if(response.is_error){
+                    console.log(response.error_message);
                 }
-                else{
-                  
-                  console.log("Order Status Changed Correctly: ", response.data);
+                  this.orders = response.data.data;
+                  this.selectedOrders = [];
+                  console.log("orders data: ", response.data.data);
+
                   setTimeout(() => {
                     this.overlay = false;
                     this.$router.go();
                   }, 1000);
-                }
-            });
-            
-          }
-          else{
-            alert('This order is not ready to go or driver is out!');
-          }
-          // this.getOrders();
-          // this.getDrivers();
-          setTimeout(() => {
-            this.getOrders();
-            this.getDrivers();
-            this.$forceUpdate();
-            this.overlay = false;
-            this.selectedDriver = null;
-        }, 50000);
+              });
+
+              // var statusFormData = new FormData();
+              // statusFormData.set("order_status", 'in_delivery');
+              // statusFormData.set("id", this.selectedOrder.id);
+
+              // axios
+              //   .request({
+              //     method: "post",
+              //     url:
+              //       this.$hostname + "orders/change-status",
+              //     headers: {
+              //       Authorization: "Bearer " + TOKEN,
+              //     },
+              //     data: statusFormData,
+              //   })
+              //   .then((response) => {
+              //     setTimeout(() => {
+              //         this.overlay = false;
+              //       }, 5000);
+              //     if(response.data.is_error){
+              //       console.log('Status Change Error: ', response.data.is_error);
+              //     }
+              //     else{
+                    
+              //       console.log("Order Status Changed Correctly: ", response.data);
+              //       setTimeout(() => {
+              //         this.overlay = false;
+              //         this.$router.go();
+              //       }, 1000);
+              //     }
+              // });
+              
+            }
+            else{
+              alert('This order is not ready to go or driver is out!');
+            }
+            // this.getOrders();
+            // this.getDrivers();
+            setTimeout(() => {
+              this.getOrders();
+              this.getDrivers();
+              this.$forceUpdate();
+              this.overlay = false;
+              this.selectedDriver = null;
+          }, 100000);
+        } else {
+          alert('Please Select Driver!')
+        }
     },
 
     deliveryProcess(){

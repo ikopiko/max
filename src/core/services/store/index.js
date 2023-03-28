@@ -20,12 +20,27 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     ordersList: [],
+    localAPIURL: null,
+    localAuthURL: null,
   },
   mutations: {
+    'SET_LOCAL'(state, payload){
+      state.localAPIURL = "http://" + payload + "/ronny/rest/web/index.php?r=v1/";
+      state.localAuthURL = "http://" + payload + "/ronny/rest/web/index.php?r=auth";
+
+      // state.localAPIURL = payload2;
+      // state.localAuthURL = payload1;
+  },
   },
   getters: {
     ordersGetter(state) {
       return state.ordersList;
+    },
+    getLocalApiURL(state) {
+      return state.localAPIURL;
+    },
+    getLocalAuthURL(state) {
+      return state.localAuthURL;
     },
   },
   actions: {
@@ -39,6 +54,9 @@ export default new Vuex.Store({
       });
       // state.postLoaded = true;
     },
+    getLocalIP({ commit }, payload){
+      commit('SET_LOCAL', payload)
+  },
   },
   modules: {
     auth,

@@ -23,6 +23,11 @@
               <v-list-item-title class="headline mb-1">{{ order.order_data.customer.email }}</v-list-item-title>
               <v-list-item-title class="headline mb-1 redText" v-if="order.opay_status != null">{{ order.order_data.paymentType }}: {{ order.opay_status }}</v-list-item-title>
               <v-list-item-title class="headline mb-1 redText" v-else>{{ order.order_data.paymentType }}</v-list-item-title>
+              <v-list-item-title class="headline mb-1 redText" v-if="order.opay_status != null && order.opay_status != 'success'" @click="checkOpayStatus(order)">
+                Click To Refresh Opay Status
+                <div v-if="opayCheck.status == 'success'" style="color: green !important"> {{ opayCheck.status }} </div>
+                <div v-else >{{ opayCheck.status }} </div>
+              </v-list-item-title>
               <v-list-item-title class="headline mb-1">
                 {{ order.order_data.customer.phone }}
                 <br>
@@ -59,7 +64,7 @@
                         >{{ item.qty }} {{ item.size.toUpperCase() }}
                         {{ item.name }}</strong
                       >
-                      <strong v-if="item.cuts"> 16 Cut</strong>
+                      <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                     </span>
                     <span>
                       {{ (item.totalPrice * item.qty).toFixed(2) }}
@@ -154,7 +159,7 @@
                   <div class="d-flex justify-content-between">
                     <span class="orderDisplay" @click="foobar(item)">
                       <strong>{{ item.qty }} {{ item.name }}</strong>
-                      <strong v-if="item.cuts"> 16 Cut</strong>
+                      <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                     </span>
                     <span>
                       {{ (item.price * item.qty).toFixed(2) }}
@@ -166,7 +171,7 @@
                   <div class="d-flex justify-content-between">
                     <span class="orderDisplay" @click="foobar(item)">
                       <strong>{{ item.qty }} {{ item.name }}</strong>
-                      <strong v-if="item.cuts"> 16 Cut</strong>
+                      <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                     </span>
                     <span>
                       {{ (item.totalPrice * item.qty).toFixed(2) }}
@@ -204,7 +209,7 @@
                         >{{ item.qty }}
                         {{ item.size.toUpperCase() }} A/B</strong
                       >
-                      <strong v-if="item.cuts"> 16 Cut</strong>
+                      <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                     </span>
                     <span>
                       {{ (item.totalPrice * item.qty).toFixed(2) }}
@@ -583,6 +588,7 @@ export default {
     },
   data() {
     return {
+      opayCheck: {status: ''},
       selectedBranch: null,
       activeCase: null,
       tab: null,
@@ -628,6 +634,9 @@ export default {
     this.getOrderPrep();
   },
   computed: {
+    localApiIP() {
+      return this.$store.getters.getLocalApiURL;
+    },
     filteredOrdersPos() {
       return this.prepOrder.filter((x) => x.source === "pos");
     },
@@ -675,6 +684,7 @@ export default {
       var bodyFormData = new FormData();
       bodyFormData.set("order_id", order.id);
       bodyFormData.set("duration", min);
+      bodyFormData.set("pos_id", this.loggedUser.pos_id);
       axios
         .request({
           method: "post",
@@ -692,6 +702,26 @@ export default {
 
         // this.printOrder(order.id);
     },
+    checkOpayStatus(order){
+      var bodyFormData = new FormData();
+      bodyFormData.set("order_id", order.opay_order_id);
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "ipay/checkout-payment",
+          headers: {
+            Authorization: "Bearer " + this.TOKEN,
+          },
+          data: bodyFormData,
+        })
+        .then((response) => {
+          console.log("Check Opay Status!", response);
+          this.opayCheck = response.data;
+        });
+
+        // this.printOrder(order.id);
+    },
     printOrder(orderID){
       // alert("BLA");
       const TOKEN = localStorage.getItem("TOKEN");
@@ -702,7 +732,7 @@ export default {
         url:
           // this.$hostname + "orders/print",
           // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
-          this.$localServer + "orders/print",
+          this.localApiIP + "orders/print",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },

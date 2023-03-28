@@ -40,7 +40,7 @@
                             >{{ item.qty }} {{ item.size.toUpperCase() }}
                             {{ item.name }}</strong
                         >
-                        <strong v-if="item.cuts"> 16 Cut</strong>
+                        <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                         </span>
                         <span>
                         {{ (item.totalPrice * item.qty).toFixed(2) }}
@@ -171,7 +171,7 @@
                     <div class="d-flex justify-content-between">
                         <span class="orderDisplay" @click="foobar(item)">
                         <strong>{{ item.qty }} {{ item.name }}</strong>
-                        <strong v-if="item.cuts"> 16 Cut</strong>
+                        <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                         </span>
                         <span>
                         {{ (item.price * item.qty).toFixed(2) }}
@@ -183,7 +183,7 @@
                     <div class="d-flex justify-content-between">
                         <span class="orderDisplay" @click="foobar(item)">
                         <strong>{{ item.qty }} {{ item.name }}</strong>
-                        <strong v-if="item.cuts"> 16 Cut</strong>
+                        <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                         </span>
                         <span>
                         {{ (item.totalPrice * item.qty).toFixed(2) }}
@@ -221,7 +221,7 @@
                             >{{ item.qty }}
                             {{ item.size.toUpperCase() }} A/B</strong
                         >
-                        <strong v-if="item.cuts"> 16 Cut</strong>
+                        <strong v-if="item.cuts"> {{ item.cutsCount }} Cut</strong>
                         </span>
                         <span>
                         {{ (item.totalPrice * item.qty).toFixed(2) }}

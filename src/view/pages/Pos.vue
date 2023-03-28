@@ -43,7 +43,6 @@
                               no-filter
                               hide-no-data 
                               return-object
-                              
                             ></v-autocomplete>
                           </template>
                         </v-col>
@@ -1568,6 +1567,7 @@
                     
                     <v-text-field v-model="curentCustomer.ltdId" v-if="corporateActive" class="my-2" label="LTD ID#" clearable></v-text-field>
 
+                    <!-- WITHOUT SALE -->
                     <!-- <v-btn
                       class="blue"
                       text
@@ -1585,7 +1585,7 @@
                       @click="woltCustomer('sale')"
                     >
                       Wolt SALE:  {{ (Number(totalNet) - Number(this.totalWoltSale)).toFixed(2) }}
-                    </v-btn>    -->
+                    </v-btn>     -->
                     <v-btn
                       class="blue mx-5"
                       text
@@ -2606,6 +2606,7 @@ export default {
         console.log('FOO: ', fooOrder)
         this.fullOrder = fooOrder;
         this.order = fooOrder.order_data;
+        // this.order.discount = 0;
         this.isReopen = true;
         this.itemIndex = this.order.items.length -1;
         if(this.order.deliveryFee > 0) {
@@ -2614,7 +2615,12 @@ export default {
           this.activeFee_el = -1;
         }
         this.customer = fooOrder.order_data.customer;
-        this.curentCustomer = fooOrder.order_data.customer;
+        this.search = this.customer.phone;
+        this.curentCustomer = this.customer;
+        if(this.curentCustomer.phone != ''){
+          this.search = this.curentCustomer.phone;
+          this.customerChecked = true;
+        }
         // alert(this.order.paymentType);
         if(this.order.paymentType == "invoice"){
           // alert("invoice");
@@ -2622,7 +2628,7 @@ export default {
         }
         if(this.order.deliveryMethod == 'Walk_In'){
           this.walkinActive('no');
-        } else if(this.order.deliveryMethod == 'Take Out'){
+        } else if(this.order.deliveryMethod == 'take_out'){
           this.takeoutActive('no');
         } else if(this.order.deliveryMethod == 'delivery'){
           this.ronnysDelivery('no');
@@ -2631,7 +2637,7 @@ export default {
         } else if(this.order.deliveryMethod == 'Glovo' || this.order.deliveryMethod == 'Glovo Cash'){
           this.glovoDelivery('no');
         }
-        this.curentCustomer = fooOrder.order_data.customer;
+        // this.curentCustomer = fooOrder.order_data.customer;
       }
       catch (e){
         localStorage.removeItem("reopenItem");
@@ -2650,7 +2656,7 @@ export default {
         this.order.totalPrice = this.totalPrice.toFixed(2);
         if(this.order.deliveryMethod == 'Walk_In'){
           this.walkinActive('no');
-        } else if(this.order.deliveryMethod == 'Take Out'){
+        } else if(this.order.deliveryMethod == 'take_out'){
           this.takeoutActive('no');
         } else if(this.order.deliveryMethod == 'delivery'){
           this.ronnysDelivery('no');
@@ -2678,6 +2684,9 @@ export default {
     SticksIngredients
   },
   computed: {
+    localApiIP() {
+      return this.$store.getters.getLocalApiURL;
+    },
     pinSync() {
       return this.pinDecon;
     },
@@ -2956,6 +2965,8 @@ export default {
   watch: {
       search (val) {
         if(this.checkNumber(val)){
+            // if(val.length == 9)
+          // alert('CUSTOMER CHECKED');
           this.curentCustomer.phone = val;
         }
         val && val != this.select && this.querySelections(val)
@@ -3393,7 +3404,7 @@ export default {
                 this.arrowIndex = this.filteredOrders.indexOf(this.selectedOrder);
                 if(this.order.deliveryMethod == 'Walk_In'){
                   this.walkinActive('no');
-                } else if(this.order.deliveryMethod == 'Take Out'){
+                } else if(this.order.deliveryMethod == 'take_out'){
                   this.takeoutActive('no');
                 } else if(this.order.deliveryMethod == 'delivery'){
                   this.ronnysDelivery('no');
@@ -3473,8 +3484,7 @@ export default {
         return totalPrice;
         },
 
-        checkUser(tel){
-          
+        checkUser(tel){ 
           const TOKEN = localStorage.getItem("TOKEN");
           var bodyFormData = new FormData();
           bodyFormData.set("phone", tel);
@@ -3520,6 +3530,7 @@ export default {
         
         isNumber(evt) {
           evt = (evt) ? evt : window.event;
+          console.log(evt);
           var charCode = (evt.which) ? evt.which : evt.keyCode;
           if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
             evt.preventDefault();         
@@ -5831,8 +5842,8 @@ export default {
       }
       this.order.deliveryFee = 0;
       this.deliveryFeeVar = 0;
-      this.order.deliveryMethod = 'Take Out';
-      this.order.deliveryType = 'Take Out';
+      this.order.deliveryMethod = 'take_out';
+      this.order.deliveryType = 'take_out';
       if(ND === 'no'){
         // pass
       }
@@ -5946,7 +5957,7 @@ export default {
         alert('You Should Select Delivery Fee For Order!');
       }
       else {
-        if(this.order.deliveryMethod === "Walk_In" || this.order.deliveryMethod === "Take Out"){
+        if(this.order.deliveryMethod === "Walk_In" || this.order.deliveryMethod === "take_out"){
           if(this.totalPrice > Number(this.cashInput)){
             alert('Enter Cash Ammount!');
           }
@@ -6057,7 +6068,7 @@ export default {
           this.payOrder();
         }
         else if(this.isReopen){
-        if(this.order.deliveryMethod == 'delivery' && this.order.deliveryFee == 0){
+        if(this.order.deliveryMethod == 'delivery' && this.activeFee_el == -1){
           alert("Please Select Delivery Fee!");
         } else {
         this.deliveryFeeVar = this.order.deliveryFee;
@@ -6178,7 +6189,7 @@ export default {
           url:
             // this.$hostname + "orders/print",
             // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
-            this.$localServer + "orders/print",
+            this.localApiIP + "orders/print",
             
             
           headers: {
@@ -6207,7 +6218,7 @@ export default {
         url:
           // this.$hostname + "orders/print",
           // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
-          this.$localServer + "orders/print",
+          this.localApiIP + "orders/print",
         headers: {
           Authorization: "Bearer " + TOKEN,
         },
@@ -6274,7 +6285,7 @@ export default {
       // console.log('Play Sound!');
     },
     telMsg() {
-      this.customer.phone = this.telMessage;
+      // this.customer.phone = this.telMessage;
       this.crmModal = true;
     },
     futureOrder() {
@@ -6661,8 +6672,8 @@ export default {
 
         this.order.customer = this.curentCustomer;
         this.order.deliveryFee = 0;
-        this.order.deliveryType = "Take_out";
-        this.order.deliveryMethod = "Take Out";
+        this.order.deliveryType = "take_out";
+        this.order.deliveryMethod = "take_out";
         this.takeOutModal = false;
         // if(this.activeInvoice){
         //   this.paymentConfirm();
@@ -6687,7 +6698,7 @@ export default {
         if(this.curentCustomer.address === '' || this.curentCustomer.phone === ''){
           alert('Adress and Phone Fields are required!');
         }
-        else if(this.deliveryFeeVar == -1){
+        else if(this.activeFee_el == -1){
           alert("You should select delivery fee!");
         }
         else {
@@ -6767,17 +6778,10 @@ export default {
     woltSale() {
       // var total;
       this.order.items.forEach( x => {
-
+        
+          // alert(x.size);
           if(x.size == 'xl'){
-            // var diff = x.totalPrice - x.price;
-            // x.diff = diff;
-            // x.totalPrice = (x.price * 0.8) + diff;
-            // total = total + (x.price * 0.2)
-            // alert(total);
-            x.woltSale = (x.price * 0.2) * x.qty;
-            // alert(x.woltSale);
-            // alert(x.woltSale);
-            // this.totalWoltSale = this.totalWoltSale + (x.price * 0.2);
+            x.woltSale = (x.price * 0.15) * x.qty;
           } else {
             x.woltSale = 0;
           }
@@ -6793,7 +6797,7 @@ export default {
           if(x.size == 'xl'){
             var diff = x.totalPrice - x.price;
             x.diff = diff;
-            x.totalPrice = (x.price * 0.8) + diff;
+            x.totalPrice = (x.price * 0.85) + diff;
           }
           
           // if(x.id == '42' || x.id == '32'){

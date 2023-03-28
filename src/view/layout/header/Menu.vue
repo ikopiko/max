@@ -136,14 +136,11 @@
         </li>
       </router-link>
 
-      <li
+      <!-- <li
           aria-haspopup="true"
           data-menu-toggle="hover"
           class="menu-item "
         >
-          <!-- <a class="menu-link">
-            <span class="menu-text red-text"> {{ ordersCount }} Pending Orders </span>
-          </a> -->
 
           <v-tooltip
           v-model="show"
@@ -169,19 +166,8 @@
           </template>
           <span>Pending orders in {{ loggedUser.branch_name }}</span>
         </v-tooltip>
+        </li> -->
 
-        
-          <!-- <v-badge
-            :content="ordersCount"
-            :value="ordersCount"
-            color="green"
-            overlap
-          >
-            <v-icon large>
-              notifications
-            </v-icon>
-          </v-badge> -->
-        </li>
     </ul>
   </div>
 </template>

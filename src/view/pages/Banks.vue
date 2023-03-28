@@ -1226,7 +1226,12 @@
                           <th class="text-left">
                             Delivery cash
                           </th>
-
+                          <th class="text-left">
+                            Web Sales
+                          </th>
+                          <th class="text-left">
+                            Invoices
+                          </th>
                           <th class="text-left">
                             Wolt
                           </th>
@@ -1247,6 +1252,8 @@
                           <td>{{ orderDetails.card }}</td>
                           <td>{{ driverTotals.card }}</td>
                           <td>{{ driverTotals.cash }}</td>
+                          <td>{{ orderDetails.opay }}</td>
+                          <td>{{ orderDetails.invoice }}</td>
                           <td>{{ orderDetails.wolt }}</td>
                           <td>{{ orderDetails.sumCash }}</td>
                           <td>{{ orderDetails.sumCard }}</td>
@@ -1783,24 +1790,23 @@ export default {
           // this.orderDetails.glovo_cash = Number(this.orderDetails.glovo_cash);
           // this.orderDetails.glovo_card = Number(this.orderDetails.glovo_card);
           // this.orderDetails.glovo = Number(this.orderDetails.glovo);
-          this.orderDetails.wolt = Number(this.orderDetails.wolt);
-          this.orderDetails.cash = Number(this.orderDetails.cash);
-          this.orderDetails.card = Number(this.orderDetails.card);
-          this.driverTotals.cash = Number(this.driverTotals.cash);
-          this.driverTotals.card = Number(this.driverTotals.card);
+          this.orderDetails.wolt = Number(this.orderDetails.wolt).toFixed(2);
+          this.orderDetails.cash = Number(this.orderDetails.cash).toFixed(2);
+          this.orderDetails.card = Number(this.orderDetails.card).toFixed(2);
+          this.driverTotals.cash = Number(this.driverTotals.cash).toFixed(2);
+          this.driverTotals.card = Number(this.driverTotals.card).toFixed(2);
 
-          // this.orderDetails.wolt = 100;
-          // this.orderDetails.glovo_cash = 100;
-          // this.orderDetails.glovo_card =100;
-          // this.orderDetails.glovo = 100;
-          // this.orderDetails.cash = 100;
-          // this.orderDetails.card = 100;
-          // this.driverTotals.cash = 100;
-          // this.driverTotals.card = 100;
+          
+          this.orderDetails.opay = Number(this.orderDetails.opay).toFixed(2)
+          this.orderDetails.wolt = Number(this.orderDetails.wolt).toFixed(2)
 
-          this.orderDetails.sumCash = Number( this.orderDetails.cash + this.driverTotals.cash);
-          this.orderDetails.sumCard = Number( this.orderDetails.card + this.driverTotals.card);
-          this.orderDetails.sumAll = Number(this.orderDetails.sumCash + this.orderDetails.sumCard + this.orderDetails.wolt);
+          // this.orderDetails.invoice = '100.52';
+
+          this.orderDetails.invoice = Number(this.orderDetails.invoice).toFixed(2)
+
+          this.orderDetails.sumCash = (Number(this.orderDetails.cash) + Number(this.driverTotals.cash)).toFixed(2);
+          this.orderDetails.sumCard = (Number(this.orderDetails.card) + Number(this.driverTotals.card)).toFixed(2);
+          this.orderDetails.sumAll = (Number(this.orderDetails.sumCash) + Number(this.orderDetails.sumCard) + Number(this.orderDetails.wolt) + Number(this.orderDetails.invoice) + Number(this.orderDetails.opay)).toFixed(2);
           
           this.$forceUpdate();
           });
