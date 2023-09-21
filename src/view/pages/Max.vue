@@ -151,7 +151,7 @@ export default {
             .request({
               method: "post",
               url:
-                this.$hostname + "orders/list",
+                this.$hostname + "orders/list-kds ",
               headers: {
                 Authorization: "Bearer " + TOKEN,
               },

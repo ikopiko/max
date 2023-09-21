@@ -58,16 +58,20 @@
                                     <template v-slot:item="row">
                                         <tr @click="onButtonClick(row.item)" :class="{selectedRow : row.item.id == selectedOrder.id}">
                                             <td>{{Number(row.item.id)}}</td>
-                                            <td>{{row.item.order_data.paymentType}}</td>
+                                            <td>{{row.item.paymentType}}</td>
                                             <td>{{row.item.opay_status}}</td>
-                                            <td>{{ (Number(row.item.order_data.totalPrice) - Number(row.item.order_data.discPrice)).toFixed(2) }}</td>
-                                            <td>{{ row.item.createTime }}</td>
-                                            <td>{{row.item.order_data.deliveryMethod}}</td>
-                                            <td>{{row.item.order_data.pos_id }}</td>
-                                            <td>{{row.item.order_data.customer.code}}</td>
-                                            <td>{{row.item.order_data.customer.address}}</td>
-                                            <td>{{row.item.order_data.customer.name}}</td>
-                                            <td>{{row.item.order_data.customer.phone}}</td>
+                                            <td>{{ row.item.totalDue }}</td>
+                                            <td>{{ row.item.created_hour }}</td>
+                                            <td>{{row.item.deliveryMethod}}</td>
+                                            <td>{{row.item.pos_id }}</td>
+                                            <td>{{row.item.customer.code}}</td>
+                                            <td>{{row.item.customer.address}}</td>
+                                            <td>{{row.item.customer.enterance}}</td>
+                                            <td>{{row.item.customer.security}}</td>
+                                            <td>{{row.item.customer.floor}}</td>
+                                            <td>{{row.item.customer.appartment}}</td>
+                                            <td>{{row.item.customer.name}}</td>
+                                            <td>{{row.item.customer.phone}}</td>
                                             <!-- <td>{{ Number(row.item.order_data.discPrice).toFixed(2) }}</td> -->
                                             <!-- <td v-if="!row.item.order_data.discountAmount">{{ (Number(row.item.order_data.totalPrice) - (Number(row.item.order_data.discPrice)/ 100 * Number(row.item.order_data.discount))).toFixed(2) }}</td> -->
                                         </tr>
@@ -265,16 +269,20 @@ import axios from 'axios';
         ],
         headers: [
           { text: "ID", value: "id" },
-          { text: "Payment Type", value: "order_data.paymentType" },
-          { text: "Opay Status", value: "order_data.opay_status" },
-          { text: "Total Due", value: "order_data.totalPrice" },
+          { text: "Payment Type", value: "paymentType" },
+          { text: "Opay Status", value: "opay_status" },
+          { text: "Total Due", value: "total_price" },
           { text: "Time", value: "createTime" },
           { text: "Source", value: "source" },
-          { text: "POS ID", value: "order_data.pos_id" },
-          { text: "Wolt #", value: "order_data.customer.code" },
-          { text: "Delivery Adress", value: "order_data.customer.address"},
-          { text: "Customer Name", value: "order_data.customer.name" },
-          { text: "Customer Phone", value: "order_data.customer.phone" },
+          { text: "POS ID", value: "pos_id" },
+          { text: "Wolt #", value: "customer.code" },
+          { text: "Delivery Adress", value: "customer.address" },
+          { text: "Enterance", value: "customer.enterance" },
+          { text: "Security", value: "customer.security" },
+          { text: "Floor", value: "customer.floor" },
+          { text: "Appartment", value: "customer.appartment" },
+          { text: "Customer Name", value: "customer.name" },
+          { text: "Customer Phone", value: "customer.phone" },
         ],
       }
     },
@@ -372,20 +380,20 @@ import axios from 'axios';
         // });
         this.orders.forEach(x => {
           x.id = Number(x.id);
-          if(x.order_data.discount > 0){
-            if(x.order_data.discountName == 'Diplomat'){
-                x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
-              }
-              else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
-                x.order_data.discPrice = x.order_data.discount;
-              }
-              else {
-                x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
-              }
-          }
-          else {
-            x.order_data.discPrice = 0;
-          }
+        //   if(x.order_data.discount > 0){
+        //     if(x.order_data.discountName == 'Diplomat'){
+        //         x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+        //       }
+        //       else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+        //         x.order_data.discPrice = x.order_data.discount;
+        //       }
+        //       else {
+        //         x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+        //       }
+        //   }
+        //   else {
+        //     x.order_data.discPrice = 0;
+        //   }
             var date = new Date(x.created_at);
             var hours = date.getHours().toString();
             var minutes = date.getMinutes().toString();
@@ -396,11 +404,9 @@ import axios from 'axios';
             x.createTime = hours + ":" + minutes;
 
         });
+
         this.filteredOrders = this.orders.filter((x) => x.status != "10" || x.status != "9");
-        // this.filteredOrders.forEach(x => {
-          // alert(x.order_data.totalPrice)
-        // x.totalPrice = this.addZeroes(x.totalPrice);
-        // });
+
         console.log("orders data: ", this.filteredOrders);
       });
 
@@ -543,31 +549,23 @@ import axios from 'axios';
             // this.orders.forEach(x => {
             //     x.order_data = JSON.parse(x.order_data);
             // });
+
             this.orders.forEach(x => {
-              if(x.order_data.discount > 0){
-                if(x.order_data.discountName == 'Diplomat'){
-                    x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
-                  }
-                  else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
-                    x.order_data.discPrice = x.order_data.discount;
-                  }
-                  else {
-                    x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
-                  }
-              }
-              else {
-                x.order_data.discPrice = 0;
-              }
-                var date = new Date(x.created_at);
-                var hours = date.getHours().toString();
-                var minutes = date.getMinutes().toString();
-                
-                if (minutes.length < 2) 
-                  minutes = '0' + minutes;
-                
-                x.createTime = hours + ":" + minutes;
-            });
+            x.id = Number(x.id);
+            var date = new Date(x.created_at);
+            var hours = date.getHours().toString();
+            var minutes = date.getMinutes().toString();
+            
+            if (minutes.length < 2) 
+              minutes = '0' + minutes;
+            
+            x.createTime = hours + ":" + minutes;
+
+        });
+           
             this.filteredOrders = this.orders.filter((x) => x.status != 10 && x.status != 9 );
+
+            this.$forceUpdate();
           });
       },
         wasteOrder(){
@@ -768,6 +766,28 @@ import axios from 'axios';
           this.showOrderComponent = false;
         },
         onButtonClick(item) {
+
+          const TOKEN = this.loggedUser.token;
+          var bodyFormData = new FormData();
+          bodyFormData.set("order_id", item.id);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "orders/get-order-data-by-id",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+            data: bodyFormData,
+          })
+          .then((response) => {
+            this.selectedOrder = response.data.data;
+            this.order = item;
+            this.order.order_data = this.selectedOrder;
+            this.selectedOrderItems = this.selectedOrder.items;
+          
+
           this.orderChange++;
           // alert(item);
           if(item == undefined) {return}
@@ -787,6 +807,7 @@ import axios from 'axios';
             // console.log("Status Model: ", this.statusModel);
 
             // console.log("Selected Item: ", this.selectedOrder);
+          });
         },
         getTab(tab){
             if(tab.content === 'all') {
@@ -797,22 +818,22 @@ import axios from 'axios';
               this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4' && x.status <= '6' && x.status != 10);
             }
             else if(tab.content === 'ronnys') {
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "delivery" && x.status != 10);
+              this.filteredOrders = this.orders.filter((x) => x.deliveryMethod === "delivery" && x.status != 10);
             }
             else if(tab.content === 'walkin'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Walk_In" || x.order_data.deliveryMethod === "walk_in" && x.status != 10);
+              this.filteredOrders = this.orders.filter((x) => x.deliveryMethod === "Walk_In" || x.deliveryMethod === "walk_in" && x.status != 10);
             }
             else if(tab.content === 'glovo'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryType === "Glovo" && x.status != 10);
+              this.filteredOrders = this.orders.filter((x) => x.deliveryMethod === "Glovo" && x.status != 10);
             }
             else if(tab.content === 'wolt'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Wolt" && x.status != 10);
+              this.filteredOrders = this.orders.filter((x) => x.deliveryMethod === "Wolt" && x.status != 10);
             }
             else if(tab.content === 'future'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.isFuture && x.status != 10);
+              this.filteredOrders = this.orders.filter((x) => x.isFuture && x.status != 10);
             }
             else if(tab.content === 'takeout'){
-              this.filteredOrders = this.orders.filter((x) => x.order_data.deliveryMethod === "Take Out" || x.order_data.deliveryMethod == "take_out" && x.status != 10);
+              this.filteredOrders = this.orders.filter((x) => x.deliveryMethod === "Take Out" || x.deliveryMethod == "take_out" && x.status != 10);
             }
             this.$forceUpdate();
         },

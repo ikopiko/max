@@ -16,17 +16,17 @@
                     </div>
                 </div>
                 <v-list-item-title class="headline cardStyle mb-1">{{
-                    order.order_data.customer.name
+                    order.customer.name
                 }}</v-list-item-title>
                 <v-list-item-title class="headline mb-1">{{
-                    order.order_data.customer.email
+                    order.customer.email
                 }}</v-list-item-title>
                 <v-list-item-title class="headline mb-1"
-                    >{{ order.order_data.customer.tel }}
-                    {{ order.order_data.customer.adress }}</v-list-item-title
+                    >{{ order.customer.tel }}
+                    {{ order.customer.adress }}</v-list-item-title
                 >
                 <v-list-item-title class="headline mb-1 delivery"
-                    >{{ order.order_data.deliveryType }} Delivery</v-list-item-title
+                    >{{ order.deliveryType }} Delivery</v-list-item-title
                 >
                 <div
                     class="row"

@@ -19,8 +19,8 @@
                   {{ order.date }}
                 </div>
               </div>
-              <v-list-item-title class="headline cardStyle mb-1">{{ order.order_data.customer.name }}</v-list-item-title>
-              <v-list-item-title class="headline mb-1">{{ order.order_data.customer.email }}</v-list-item-title>
+              <v-list-item-title class="headline cardStyle mb-1">{{ order.customer.name }}</v-list-item-title>
+              <v-list-item-title class="headline mb-1">{{ order.customer.email }}</v-list-item-title>
               <v-list-item-title class="headline mb-1 redText" v-if="order.opay_status != null">{{ order.order_data.paymentType }}: {{ order.opay_status }}</v-list-item-title>
               <v-list-item-title class="headline mb-1 redText" v-else>{{ order.order_data.paymentType }}</v-list-item-title>
               <v-list-item-title class="headline mb-1 redText" v-if="order.opay_status != null && order.opay_status != 'success'" @click="checkOpayStatus(order)">
@@ -29,9 +29,9 @@
                 <div v-else >{{ opayCheck.status }} </div>
               </v-list-item-title>
               <v-list-item-title class="headline mb-1">
-                {{ order.order_data.customer.phone }}
+                {{ order.customer.phone }}
                 <br>
-                {{ order.order_data.customer.address }}
+                {{ order.customer.address }}
                 </v-list-item-title>
               <v-list-item-title v-if="order.order_data.isFuture" class="headline mb-1 delivery">
                 Future Order
@@ -351,11 +351,10 @@
                 <strong>Total Price: {{ order.order_data.totalPrice }}</strong>
               </div>
               <div class="cardPrice">
-                <strong v-if="!order.order_data.discountAmount">Total Due: {{ order.order_data.totalPrice - ((order.order_data.totalPrice / 100) * order.order_data.discount) }}</strong>
-                <strong v-if="order.order_data.discountAmount">Total Due: {{ order.order_data.totalPrice - order.order_data.discount }}</strong>
+                <strong >Total Due: {{ order.totalDue }}</strong>
               </div>
               <v-list-item-title class="headline cardStyle mb-1">{{
-                order.order_data.customer.address
+                order.customer.address
               }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>

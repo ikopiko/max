@@ -69,7 +69,7 @@ Vue.prototype.$hostname = "http://posapi.ronnyspizza.grena.ge/rest/web/index.php
 
 // Vue.prototype.$authHostName = "http://192.168.13.250/ronny/rest/web/index.php?r=auth";  // SABURTALO LOCAL
 
-// Vue.prototype.$authHostName = "http://192.168.14.250/ronny/rest/web/index.php?r=auth";  // VAKE LOCAL
+// Vue.prototype.$authHostName = "http://192.168.14.250/ronny/rest/web/index.php?r=auth";  // VAKE LOCAL 
 
 // Vue.prototype.$authHostName = "http://192.168.12.250/ronny/rest/web/index.php?r=auth";  // GLDANI LOCAL
 

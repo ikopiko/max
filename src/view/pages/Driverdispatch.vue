@@ -145,9 +145,9 @@
                         @click="selectOrder(order)"
                         >
                         <td>{{ order.id }}</td>
-                        <td>{{ order.order_data.customer.address }}</td>
-                        <td>{{ order.order_data.customer.name }}</td>
-                        <td>{{ (Number(order.order_data.totalPrice) - Number(order.order_data.discPrice)).toFixed(2) }}</td>
+                        <td>{{ order.customer.address }}</td>
+                        <td>{{ order.customer.name }}</td>
+                        <td>{{ order.totalDue }}</td>
                         </tr>
                     </tbody>
                     </template>
@@ -170,7 +170,7 @@
                 <br>
                 Total : {{ selectedItem.order_data.totalPrice }}
                  <br>
-                Total Due : {{ (Number(selectedItem.order_data.totalPrice) - Number(selectedItem.order_data.discPrice)).toFixed(2) }} 
+                Total Due : {{ selectedItem.totalDue}} 
             </v-card-title>
 
             <v-card-text>
@@ -308,10 +308,10 @@
                         :key="order.id"
                         @click="editOrder(order)"
                         >
-                        <td>{{ order.id }}</td>
-                        <td>{{ order.order_data.customer.address }}</td>
-                        <td>{{ order.order_data.customer.name }}</td>
-                        <td>{{ (Number(order.order_data.totalPrice) - Number(order.order_data.discPrice)).toFixed(2) }}</td>
+                          <td>{{ order.id }}</td>
+                          <td>{{ order.customer.address }}</td>
+                          <td>{{ order.customer.name }}</td>
+                          <td>{{ order.totalDue }}</td>
                         </tr>
                     </tbody>
                     </template>
@@ -333,7 +333,7 @@
                 <br>
                 Total : {{ selectedItem.order_data.totalPrice }}
                  <br>
-                Total Due : {{ (Number(selectedItem.order_data.totalPrice) - Number(selectedItem.order_data.discPrice)).toFixed(2) }} 
+                Total Due : {{ selectedItem.totalDue }} 
             </v-card-title>
 
             <v-card-text>
@@ -412,7 +412,7 @@
                   Card
                 </v-btn>
                 <v-btn
-                  v-if="activateEdit && !activeInvoice"
+                  v-if="activateEdit && activeInvoice"
                   class="blue mx-2"
                   large
                   text
@@ -497,7 +497,7 @@ export default {
       driver: [],
       search: '',
       branch: 'saburtalo',
-      status: '1,2,3,4,5,6,7',
+      status: '4,5,6,7',
       deliveryStatus: 6,
       page: 0,
       tab: 0,
@@ -518,10 +518,9 @@ export default {
           sortable: false,
           value: "id",
       },
-      { text: "Delivery Adress", value: "order_data.customer.address" },
-      { text: "Customer Name", value: "order_data.customer.name" },
-      { text: "Customer Phone", value: "order_data.customer.phone" },
-      { text: "Order Items", value: "order_data.items[0].name" },
+      { text: "Delivery Adress", value: "customer.address" },
+      { text: "Customer Name", value: "customer.name" },
+      { text: "Customer Phone", value: "customer.phone" },
   ],
       headersDialog: [
         {
@@ -799,23 +798,23 @@ export default {
                 if(!response.data.is_error) {
                   console.log('Driver Data: ', response);
                   this.driverOrders = response.data.data;
-                this.driverOrders.forEach(x => {
-                    x.order_data = JSON.parse(x.order_data);
-                    if(x.order_data.discount > 0){
-                    if(x.order_data.discountName == 'Diplomat'){
-                        x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
-                      }
-                      else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
-                        x.order_data.discPrice = x.order_data.discount;
-                      }
-                      else {
-                        x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
-                      }
-                  }
-                  else {
-                    x.order_data.discPrice = 0;
-                  }
-                });
+                // this.driverOrders.forEach(x => {
+                //     x.order_data = JSON.parse(x.order_data);
+                //     if(x.order_data.discount > 0){
+                //     if(x.order_data.discountName == 'Diplomat'){
+                //         x.order_data.discPrice = x.order_data.totalPrice - x.order_data.totalPrice / 1.18;
+                //       }
+                //       else if(x.order_data.discountName == 'Manager' && x.order_data.discountAmount == true){
+                //         x.order_data.discPrice = x.order_data.discount;
+                //       }
+                //       else {
+                //         x.order_data.discPrice = ((x.order_data.totalPrice / 100) * x.order_data.discount).toFixed(2);
+                //       }
+                //   }
+                //   else {
+                //     x.order_data.discPrice = 0;
+                //   }
+                // });
                   this.filteredDriverOrders = this.driverOrders.filter((x) => x.status == '6');
                   this.editOrderList = this.driverOrders.filter((x) => x.status == '7');
                   this.isOrders = true;
@@ -836,20 +835,59 @@ export default {
 
     },
     selectOrder(item){
-       if(item.order_data.paymentType == 'invoice'){
+       if(item.paymentType == 'invoice'){
           this.activeInvoice = true;
         }
         else {
           this.activeInvoice = false;
         }
-        this.selectedItem = item;
+
+        const TOKEN = this.loggedUser.token;
+        var bodyFormData = new FormData();
+        bodyFormData.set("order_id", item.id);
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "orders/get-order-data-by-id",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+            data: bodyFormData,
+          })
+          .then((response) => {
+            this.selectedItem = item;
+            this.selectedItem.order_data = response.data.data;
+          });
+
+        // this.selectedItem = item;
         //this.driverOrderDialog = false;
         this.selectedItemDialog = true;
     },
     editOrder(item){
-        this.selectedItem = item;
-        //this.driverOrderDialog = false;
-        this.editDialog = true;
+
+      const TOKEN = this.loggedUser.token;
+          var bodyFormData = new FormData();
+          bodyFormData.set("order_id", item.id);
+
+      axios
+        .request({
+          method: "post",
+          url:
+            this.$hostname + "orders/get-order-data-by-id",
+          headers: {
+            Authorization: "Bearer " + TOKEN,
+          },
+            data: bodyFormData,
+          })
+          .then((response) => {
+            item.order_data = response.data.data;
+            this.selectedItem = item;
+            //this.driverOrderDialog = false;
+            this.editDialog = true;
+            
+          });
+
     },
     getOrders(){
       const TOKEN = this.loggedUser.token;
@@ -871,7 +909,7 @@ export default {
       })
       .then((response) => {
           this.orders = response.data.data;
-          this.orders = this.orders.filter((x) =>  x.order_data.deliveryType === "delivery" )
+          this.orders = this.orders.filter((x) =>  x.deliveryMethod === "delivery" )
           // this.orders.forEach(x => {
           //     x.order_data = JSON.parse(x.order_data);
           // });
@@ -988,7 +1026,7 @@ export default {
 
                   setTimeout(() => {
                     this.overlay = false;
-                    this.$router.go();
+                    // this.$router.go();
                   }, 1000);
               });
 

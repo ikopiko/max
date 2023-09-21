@@ -5,8 +5,6 @@
 <template>
 <v-app style="flow:hidden">
     <v-overlay
-        :absolute="absolute"
-        :opacity="opacity"
         :value="overlay"
       >
         <v-progress-circular
@@ -454,7 +452,7 @@
 
                   <!-- <div class="row" v-if="discountOrder || discountItem">
                       <div class="col w-3 gray">
-                          <div>
+                          <div>reopen
                               <h4>Discount:</h4>
                           </div>
                           <div>
@@ -556,7 +554,8 @@
                       </div>
                   </div>
                   <div class="row my-1">
-                      <div class="col-2 calcBtn blue" @click="checkManager()">CRM DISC</div>
+                      <!-- <div class="col-2 calcBtn blue" @click="checkManager()">CRM DISC</div> -->
+                      <div class="col-2 calcBtn blue" @click="managerPin = true">CRM DISC</div>
                       <div class="col-6 calcBtn lightGreen" @click="calcPayAll(totalPrice)">
                           PAY {{ Number(totalPrice).toFixed(2) }}
                       </div>
@@ -1586,6 +1585,14 @@
                     >
                       Wolt SALE:  {{ (Number(totalNet) - Number(this.totalWoltSale)).toFixed(2) }}
                     </v-btn>     -->
+                    <!-- <v-btn
+                      class="blue mx-5"
+                      text
+                      x-large
+                      @click="woltCustomer('plus')"
+                    >
+                      Wolt+  SALE:  {{ (Number(totalNet) - Number(this.totalWoltSalePlus)).toFixed(2) }}
+                    </v-btn>     -->
                     <v-btn
                       class="blue mx-5"
                       text
@@ -1713,13 +1720,12 @@
                       <template v-slot:item="row">
                           <tr @click="onButtonClick(row.item)">
                             <td>{{row.item.id}}</td>
-                            <td>{{row.item.order_data.deliveryMethod}}</td>
-                            <td>{{row.item.order_data.customer.code}}</td>
-                            <td>{{row.item.order_data.customer.phone}}</td>
-                            <td>{{row.item.order_data.customer.name}}</td>
-                            <td>{{row.item.order_data.customer.address}}</td>
-                            <td>{{row.item.order_data.items[0].name}}</td>
-                            <td>{{row.item.order_data.totalPrice}}</td>
+                            <td>{{row.item.deliveryMethod}}</td>
+                            <td>{{row.item.customer.code}}</td>
+                            <td>{{row.item.customer.phone}}</td>
+                            <td>{{row.item.customer.name}}</td>
+                            <td>{{row.item.customer.address}}</td>
+                            <td>{{row.item.totalPrice}}</td>
                             <td>{{row.item.created_at}}</td>
                             <td>
                               <v-btn class="mx-2" fab dark small color="green" @click="rePrint(row.item)">
@@ -2159,6 +2165,7 @@ export default {
     return {
       overlay: false,
       totalWoltSale: null,
+      totalWoltSalePlus: null,
       firstEnter: false,
       isLoading: null,
       feeSaleActive: false,
@@ -2203,7 +2210,6 @@ export default {
         { text: "Customer Phone", value: "order_data.customer.phone" },
         { text: "Customer Name", value: "order_data.customer.name" },
         { text: "Delivery Adress", value: "order_data.address" },
-        { text: "Order Items", value: "order_data.items[0].name" },
         { text: "Total", value: "order_data.totalPrice" },
         { text: "Date", value: "order_data.created_at" },
       ],
@@ -2558,7 +2564,7 @@ export default {
         // this.orders.forEach(x => {
         //     x.order_data = JSON.parse(x.order_data);
         // });
-        this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4' && x.order_data.paymentType != 'invoice');
+        this.filteredOrders = this.orders.filter((x) => x.payment_method_id === '4' && x.paymentType != 'invoice');
       });
 
     axios
@@ -2609,10 +2615,12 @@ export default {
         // this.order.discount = 0;
         this.isReopen = true;
         this.itemIndex = this.order.items.length -1;
+        this.checkDeliveryFee();
         if(this.order.deliveryFee > 0) {
-          this.order.deliveryFee = 0;
-          this.deliveryActiveVar = true;
-          this.activeFee_el = -1;
+          // this.deliveryFeeVar = this.order.deliveryFee;
+          // this.order.deliveryFee = 0;
+          // this.deliveryActiveVar = true;
+          // this.activeFee_el = -1;
         }
         this.customer = fooOrder.order_data.customer;
         this.search = this.customer.phone;
@@ -3026,6 +3034,16 @@ export default {
         this.seconds = this.checkSingleDigit(date.getSeconds());
       }, 1000);
     },
+    checkDeliveryFee(){
+      // alert(this.order.deliveryFee);
+      this.deliveryFee.forEach(x => {
+        if(x.fee == this.order.deliveryFee) {
+          this.activeFee_el = x.id;
+          this.deliveryActiveVar = true;
+          this.deliveryFeeVar = x.fee;
+        } 
+      });
+    },
     splitCashFoo(){
       // alert(this.splitCash);
       this.splitCashActive = true;
@@ -3392,6 +3410,25 @@ export default {
           // alert(this.arrowIndex);
         },
         onButtonClick(item) {
+
+              const TOKEN = localStorage.getItem("TOKEN");
+              var bodyFormData = new FormData();
+              bodyFormData.set("order_id", item.id);
+
+          axios
+            .request({
+              method: "post",
+              url:
+                this.$hostname + "orders/get-order-data-by-id",
+              headers: {
+                Authorization: "Bearer " + TOKEN,
+              },
+                data: bodyFormData,
+              })
+              .then((response) => {
+                item.order_data = response.data.data;
+                console.log("Selected Unpaid Order: " + response.data.data);
+              
                 this.showOrderComponent = true;
                 this.order = item.order_data;
                 this.order.id = item.id;
@@ -3416,6 +3453,7 @@ export default {
                 this.doneOrder();
 
                 console.log("Selected Item: ", this.selectedOrder);
+              });
             },
         validate () {
           if(this.$refs.form.validate()){
@@ -5822,6 +5860,7 @@ export default {
       this.order.deliveryFee = 0;
       this.deliveryFeeVar = 0;
       this.order.deliveryMethod = 'Walk_In';
+      this.order.deliveryType = 'Walk_In';
       this.order.customer = this.curentCustomer;
       if(ND === 'no'){
         // pass
@@ -5859,6 +5898,7 @@ export default {
         this.takeoutActiveVar = false;
       }
       this.order.deliveryMethod = 'Delivery';
+      this.order.deliveryType = 'Delivery';
       this.deliveryTypeModal = !this.deliveryTypeModal;
     },
     
@@ -6368,6 +6408,7 @@ export default {
       else {
         // this.checkWoltSale();
         this.woltSale();
+        this.woltSalePlus();
         this.woltModal = true;
       }
     },
@@ -6780,8 +6821,8 @@ export default {
       this.order.items.forEach( x => {
         
           // alert(x.size);
-          if(x.size == 'xl'){
-            x.woltSale = (x.price * 0.15) * x.qty;
+          if(x.size == 'm'){
+            x.woltSale = (x.price * 0.2) * x.qty;
           } else {
             x.woltSale = 0;
           }
@@ -6789,16 +6830,39 @@ export default {
           this.totalWoltSale = this.totalWoltSale + x.woltSale;
         });
     },
-  checkWoltSale() {
+    woltSalePlus() {
+      // var total;
+      this.order.items.forEach( x => {
+        
+          // alert(x.size);
+          if(x.size == 'm'){
+            x.woltSale = (x.price * 0.2) * x.qty;
+          } else if(x.size == 'xl'){
+            x.woltSale = (x.price * 0.3) * x.qty;
+          } else {
+            x.woltSale = 0;
+          }
+
+          this.totalWoltSalePlus = this.totalWoltSalePlus + x.woltSale;
+        });
+    },
+  checkWoltSale(val) {
     // WOLT SALE CHECK
         this.order.items.forEach( x => {
           // alert(x.size);
 
-          if(x.size == 'xl'){
+          if(x.size == 'm'){
             var diff = x.totalPrice - x.price;
             x.diff = diff;
-            x.totalPrice = (x.price * 0.85) + diff;
+            x.totalPrice = (x.price * 0.8) + diff;
           }
+          if(x.size == 'xl' && val == 'plus'){
+            var diff = x.totalPrice - x.price;
+            x.diff = diff;
+            x.totalPrice = (x.price * 0.7) + diff;
+          }
+
+
           
           // if(x.id == '42' || x.id == '32'){
           //   if(x.size == 'm'){
@@ -6820,16 +6884,11 @@ export default {
   },
    woltCustomer(sale){
 
-    // if(sale == 'sale'){
-    //   this.checkWoltSale();
-    // }
-     
-    //  e.preventDefault();
-    //   this.isLoading = true
-      
-    //   setTimeout(() => {
-    //   	this.isLoading = false
-    //   }, 1000)
+    if(sale == 'sale'){
+      this.checkWoltSale('sale');
+    } else if(sale == 'plus'){
+      this.checkWoltSale('plus');
+    }
 
    if(this.curentCustomer.code.length === 3 && this.curentCustomer.name !== '')
       {
