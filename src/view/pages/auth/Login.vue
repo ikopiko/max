@@ -234,7 +234,8 @@ export default {
         // var server = "192.168.11.250" // DIGOMI
         // var server = "192.168.12.250" // GLDANI
         // var server = "192.168.13.250" // SABURTALO
-        var server = "192.168.14.250" // VAKE 
+        // var server = "192.168.14.250" // VAKE 
+        var server = "192.168.15.250" // AVLABARI 
         
         this.$store.dispatch("getLocalIP", server);
 
@@ -482,12 +483,12 @@ export default {
             // this.getMac = 'D4:C9:EF:D5:6D:D2';  // SABURTALO NEW TEST
 
             // this.getMac = 'd4:c9:ef:d5:70:8f';  //  DIGOMI POS 1
-            // this.getMac = 'ec:b1:d7:6e:01:3b';  //  DIGOMI POS 2 
+            this.getMac = 'ec:b1:d7:6e:01:3b';  //  DIGOMI POS 2 
             // this.getMac = 'ec:b1:d7:6e:01:3r';  // DIGOMI POS 3
 
             // this.getMac = 'E8:39:35:5B:B7:CE';  // SABURTALO 1
             
-            this.getMac = 'd4:c9:ef:dc:4c:a5';  // VAKE 1
+            // this.getMac = 'd4:c9:ef:dc:4c:a5';  // VAKE 1
             // this.getMac = 'f0:92:1c:ea:90:2e';  // VAKE 2
 
             // this.getMac = 'd8:50:e6:b8:52:e8';  // GLDANI 1
@@ -496,7 +497,7 @@ export default {
             var bodyFormData=new FormData();
             bodyFormData.set("pin", pin);
             bodyFormData.set("mac", this.getMac);
-
+            
             axios.request({
                     method: "post",
                     url: this.$authHostName,

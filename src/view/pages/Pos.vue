@@ -651,7 +651,7 @@
                       </div>
                   </div>
                   <div class="col size paddingClear p-0">
-                      <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{size_static_half: smallHalf, size_static: cheesseLoversActive, active: activeSmall }" @click="addSize('s')">
+                      <div class="w-h-1 square paddingClear font-weight-bold" v-bind:class="{size_static_half: smallHalf, active: activeSmall }" @click="addSize('s')">
                           <span>S</span>
                       </div>
                   </div>
@@ -2135,7 +2135,7 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import Products from "../components/Products";
 import Drinks from "../components/Drinks"
 import Orders from "../components/Orders"
-import router from 'vue-router'
+// import router from 'vue-router'
 // import authService from "../services/auth.service";
 //import Pizzas from '../components/Pizzas'
 //import Categories from '../components/Categories';
@@ -3431,6 +3431,9 @@ export default {
               
                 this.showOrderComponent = true;
                 this.order = item.order_data;
+                this.deliveryFeeVar = this.order.deliveryFee;
+
+                this.checkDeliveryFee();
                 this.order.id = item.id;
                 this.restrictEdit = true;
                 // this.lastOrder = item.order_data;
@@ -3637,7 +3640,7 @@ export default {
                 toppings: [],
                 half1: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
                 half2: { name: "", sauce: "sauce", defaultToppings: [], toppings: [] },
-                toppingChange: 0,
+                // toppingChange: 0,
                 qty: 0,
             };
             if (this.customPizza.qty === 0) {
@@ -3691,7 +3694,7 @@ export default {
             toppings: [],
             half1: { toppings: [], defaultToppings: [] },
             half2: { toppings: [], defaultToppings: [] },
-            toppingChange: 0,
+            // toppingChange: 0,
             qty: 0,
           };
           this.pizza.defaultToppings = this.getRecipe(product);
@@ -5242,7 +5245,6 @@ export default {
     },
     addQty(product) {
       
-
       product.qty++;
 
       this.version++;
@@ -6073,6 +6075,10 @@ export default {
       this.overlay = true;
       // alert(this.overlay);
       this.order.customer = this.curentCustomer;
+      if(this.invoiceActiveVar) {
+        this.paymentType = 'invoice';
+      }
+
       if (this.paymentType == "cash") {
         this.confirmModal = false;
         this.order.paymentType = 'Cash';

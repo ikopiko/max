@@ -53,6 +53,14 @@
                         <v-tabs-items v-model="tab">
                             <v-tab-item v-for="(item, index) in items" :key="index">
                                 <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+                                <export-excel
+                                  class="btn btn-success"
+                                  :data="json_data"
+                                  :fields="json_fields"
+                                  worksheet="Worksheet"
+                                >
+                                  <i class="mdi mdi-download"> Excel Export </i>
+                                </export-excel>
 
                                 <v-data-table dense v-model="selected" :search="search" :headers="headers" :page.sync="page" hide-default-footer :items="filteredOrders" :items-per-page="itemsPerPage" item-key="order_id" @page-count="pageCount = $event">
                                     <template v-slot:item="row">
@@ -203,10 +211,16 @@ li.selecti {
 </style>
 <script>
 import orderList from '../components/Order';
+import Vue from "vue";
+import excel from "vue-excel-export";
 import axios from 'axios';
+
+Vue.use(excel);
+
   export default {
     data () {
       return {
+        
         selectItems: [5, 10, 15, 20],
         orderChange: 0,
         orderFunctions : ['Reopen'],
@@ -226,6 +240,23 @@ import axios from 'axios';
         ],
         itemIndex: -1,
         filteredOrders: [],
+        json_data: [],
+        json_fields: {
+            "Order ID": "id",
+            "delivery": "deliveryMethod",
+            "Customer Name": "customer.name",
+            "Total price": "total_price",
+            "Type":"discountName",
+            "Amount": "newdiscount",
+            "Split cash": "splitCash",
+            "Split card": "splitCard",
+            "Total due": "totalDue",
+            "Method":"paymentType",
+            "Wolt Code":"customer.code",
+            "Branch": "branch",
+            "status": "statusName",
+            "Date": "finish_date",
+        },
         order: {},
         limited: false,
         orderStatuses: [],
@@ -288,6 +319,9 @@ import axios from 'axios';
     },
     created() {
       this.timer = setInterval(this.$forceUpdate(), 1000)
+    },
+    beforeDestroy() {
+      clearInterval(this.timer);
     },
     computed: {
       localApiIP() {
@@ -426,6 +460,9 @@ import axios from 'axios';
     },
     statusModel(val){
       this.statusObject = this.orderStatuses.filter((x) => x.status_name === this.statusModel);
+    },
+    filteredOrders(val){
+      this.json_data = val;
     },
   },
     methods: {
@@ -710,7 +747,6 @@ import axios from 'axios';
           });
         },
         refundOrder(){
-
           const TOKEN = this.loggedUser.token;
           var bodyFormData = new FormData();
           bodyFormData.set("pos_id", this.loggedUserFull.pos_id);

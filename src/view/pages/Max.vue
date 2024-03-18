@@ -108,6 +108,9 @@ export default {
       this.timer = setInterval(this.updateOrders, 3000)
       this.timer = setInterval(this.updatePendingOrders, 3000)
     },
+    beforeDestroy(){
+      clearImmediate(this.timer)
+    },
   methods: {
     formatDate(date) {
           var d = new Date(date),

@@ -460,6 +460,7 @@ export default {
   },
   data() {
     return {
+      intervalVar: null,
       tip: null,
       activeInvoice: false,
       menu: false,
@@ -557,7 +558,7 @@ export default {
     });
   },
   mounted() {
-    setInterval(() => {
+    this.intervalVar = setInterval(() => {
       this.getOrders();
       this.getDrivers();
     }, 5000);
@@ -601,6 +602,9 @@ export default {
         console.log(val);
         this.updateDriverOrders(val);
       },
+  },
+  beforeDestroy() {
+    clearInterval(this.intervalVar);
   },
   methods: {
     removeDriver(){

@@ -587,6 +587,7 @@ export default {
     },
   data() {
     return {
+      blockPrint: false,
       opayCheck: {status: ''},
       selectedBranch: null,
       activeCase: null,
@@ -680,6 +681,7 @@ export default {
     },
 
     acceptOrder(order, min){
+      this.blockPrint = true;
       var bodyFormData = new FormData();
       bodyFormData.set("order_id", order.id);
       bodyFormData.set("duration", min);
@@ -729,8 +731,6 @@ export default {
       axios.request({
         method: "post",
         url:
-          // this.$hostname + "orders/print",
-          // "http://192.168.1.124/ronny/rest/web/index.php?r=v1/orders/print",
           this.localApiIP + "orders/print",
         headers: {
           Authorization: "Bearer " + TOKEN,
